@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <!-- == FUEL == -->
+
+        <record id="product_attribute_fuel" model="product.attribute">
+            <field name="name">Fuel</field>
+        </record>
+
+        <record id="product_attribute_value_gasoline" model="product.attribute.value">
+            <field name="name">Gasoline</field>
+            <field name="attribute_id" ref="product_attribute_fuel"/>
+        </record>
+
+        <record id="product_attribute_value_diesel" model="product.attribute.value">
+            <field name="name">Diesel</field>
+            <field name="attribute_id" ref="product_attribute_fuel"/>
+        </record>
+
+        <!-- == ENGINE == -->
+
+        <record id="product_attribute_engine" model="product.attribute">
+            <field name="name">Engine</field>
+        </record>
+
+        <!-- Gasoline Engines -->
+
+        <record id="product_attribute_value_218i" model="product.attribute.value">
+            <field name="name">218i</field>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="product_id" ref="product_engine_218i_coupe"/>
+        </record>
+
+        <record id="product_attribute_value_220i" model="product.attribute.value">
+            <field name="name">220i</field>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="product_id" ref="product_engine_220i_coupe"/>
+        </record>
+
+        <record id="product_attribute_value_228i" model="product.attribute.value">
+            <field name="name">228i</field>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="product_id" ref="product_engine_228i_coupe"/>
+        </record>
+
+        <record id="product_attribute_value_m235i" model="product.attribute.value">
+            <field name="name">M235i</field>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="product_id" ref="product_engine_m235i_coupe"/>
+        </record>
+
+        <record id="product_attribute_value_m235i_xdrive" model="product.attribute.value">
+            <field name="name">M235i xDrive</field>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="product_id" ref="product_engine_m2351_xdrive_coupe"/>
+        </record>
+
+        <!-- Diesel Engines -->
+
+        <record id="product_attribute_value_218d" model="product.attribute.value">
+            <field name="name">218d</field>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="product_id" ref="product_engine_218d_coupe"/>
+        </record>
+
+        <record id="product_attribute_value_220d" model="product.attribute.value">
+            <field name="name">220d</field>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="product_id" ref="product_engine_228i_coupe"/>
+        </record>
+
+        <record id="product_attribute_value_220d_xdrive" model="product.attribute.value">
+            <field name="name">220d xDrive</field>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="product_id" ref="product_engine_220d_xdrive_coupe"/>
+        </record>
+
+        <record id="product_attribute_value_225d" model="product.attribute.value">
+            <field name="name">225d</field>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="product_id" ref="product_engine_225d_coupe"/>
+        </record>
+
+        <!-- == LINES == -->
+
+        <record id="product_attribute_model_line" model="product.attribute">
+            <field name="name">Lines</field>
+        </record>
+
+        <record id="product_attribute_value_sport_line" model="product.attribute.value">
+            <field name="name">Sport Line</field>
+            <field name="attribute_id" ref="product_attribute_model_line"/>
+            <field name="product_id" ref="product_bmw_sport_line"/>
+        </record>
+
+        <record id="product_attribute_value_model_sport_line" model="product.attribute.value">
+            <field name="name">Model Sport Line</field>
+            <field name="attribute_id" ref="product_attribute_model_line"/>
+            <field name="product_id" ref="product_bmw_model_sport_line"/>
+        </record>
+
+        <record id="product_attribute_value_luxury_line" model="product.attribute.value">
+            <field name="name">Luxury Line</field>
+            <field name="attribute_id" ref="product_attribute_model_line"/>
+            <field name="product_id" ref="product_bmw_luxury_line"/>
+        </record>
+
+        <record id="product_attribute_value_model_luxury_line" model="product.attribute.value">
+            <field name="name">Model Luxury Line</field>
+            <field name="attribute_id" ref="product_attribute_model_line"/>
+            <field name="product_id" ref="product_bmw_model_luxury_line"/>
+        </record>
+
+        <record id="product_attribute_value_model_m_sport" model="product.attribute.value">
+            <field name="name">Model M Sport</field>
+            <field name="attribute_id" ref="product_attribute_model_line"/>
+            <field name="product_id" ref="product_bmw_model_m_sport"/>
+        </record>
+
+        <record id="product_attribute_value_model_advantage" model="product.attribute.value">
+            <field name="name">Model Advantage</field>
+            <field name="attribute_id" ref="product_attribute_model_line"/>
+            <field name="product_id" ref="product_bmw_model_advantage"/>
+        </record>
+
+        <!-- == COLOR == -->
+
+        <record id="product_attribute_color" model="product.attribute">
+            <field name="name">Color</field>
+        </record>
+
+        <record id="product_attribute_value_red" model="product.attribute.value">
+            <field name="name">Red</field>
+            <field name="attribute_id" ref="product_attribute_color"/>
+        </record>
+
+        <record id="product_attribute_value_silver" model="product.attribute.value">
+            <field name="name">Silver</field>
+            <field name="attribute_id" ref="product_attribute_color"/>
+            <field name="product_id" ref="product_paint_silver"/>
+        </record>
+
+        <record id="product_attribute_value_black" model="product.attribute.value">
+            <field name="name">Black</field>
+            <field name="attribute_id" ref="product_attribute_color"/>
+        </record>
+
+        <!-- == RIMS == -->
+
+        <record id="product_attribute_rims" model="product.attribute">
+            <field name="name">Rims</field>
+        </record>
+
+        <record id="product_attribute_value_rims_378" model="product.attribute.value">
+            <field name="name">V-spoke 16"</field>
+            <field name="attribute_id" ref="product_attribute_rims"/>
+        </record>
+
+        <record id="product_attribute_value_rims_387" model="product.attribute.value">
+            <field name="name">V-spoke 18"</field>
+            <field name="attribute_id" ref="product_attribute_rims"/>
+        </record>
+
+        <record id="product_attribute_value_rims_384" model="product.attribute.value">
+            <field name="name">Double-spoke 18"</field>
+            <field name="attribute_id" ref="product_attribute_rims"/>
+        </record>
+
+        <!-- == TAPISTRY == -->
+
+        <record id="product_attribute_tapistry" model="product.attribute">
+            <field name="name">Tapistry</field>
+        </record>
+
+        <record id="product_attribute_value_tapistry_black" model="product.attribute.value">
+            <field name="name">Black</field>
+            <field name="attribute_id" ref="product_attribute_tapistry"/>
+        </record>
+
+        <record id="product_attribute_value_tapistry_oyster_black" model="product.attribute.value">
+            <field name="name">Oyster/Black</field>
+            <field name="attribute_id" ref="product_attribute_tapistry"/>
+        </record>
+
+        <record id="product_attribute_value_tapistry_coral_red_black" model="product.attribute.value">
+            <field name="name">Coral Red/Black</field>
+            <field name="attribute_id" ref="product_attribute_tapistry"/>
+        </record>
+
+        <!-- == TRANSMISSION == -->
+
+        <record id="product_attribute_transmission" model="product.attribute">
+            <field name="name">Transmission</field>
+        </record>
+
+        <record id="product_attribute_value_steptronic" model="product.attribute.value">
+            <field name="name">Automatic (Steptronic)</field>
+            <field name="attribute_id" ref="product_attribute_transmission"/>
+            <field name="product_id" ref="product_2_series_transmission_steptronic"/>
+        </record>
+
+        <record id="product_attribute_value_steptronic_sport" model="product.attribute.value">
+            <field name="name">Automatic Sport (Steptronic)</field>
+            <field name="attribute_id" ref="product_attribute_transmission"/>
+            <field name="product_id" ref="product_2_series_transmission_steptronic_sport"/>
+        </record>
+
+        <!-- == Options == -->
+
+        <record id="product_attribute_options" model="product.attribute">
+            <field name="name">Options</field>
+        </record>
+
+        <record id="product_attribute_value_armrest" model="product.attribute.value">
+            <field name="name">Armrest</field>
+            <field name="attribute_id" ref="product_attribute_options"/>
+            <field name="product_id" ref="product_2_series_armrest"/>
+        </record>
+
+        <record id="product_attribute_value_smoker_package" model="product.attribute.value">
+            <field name="name">Smoker Package</field>
+            <field name="attribute_id" ref="product_attribute_options"/>
+            <field name="product_id" ref="product_2_series_smoker_package"/>
+        </record>
+
+        <record id="product_attribute_value_sunroof" model="product.attribute.value">
+            <field name="name">Sunroof</field>
+            <field name="attribute_id" ref="product_attribute_options"/>
+            <field name="product_id" ref="product_2_series_sunroof"/>
+        </record>
+
+        <record id="product_attribute_value_tow_hook" model="product.attribute.value">
+            <field name="name">Tow hook</field>
+            <field name="attribute_id" ref="product_attribute_options"/>
+            <field name="product_id" ref="product_2_series_towhook"/>
+        </record>
+
+
+        <!-- == Attribute Lines == -->
+
+        <record id="product_attribute_line_2_series_fuel" model="product.attribute.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_id" ref="product_attribute_fuel"/>
+            <field name="value_ids" eval="[(6,0,[
+                ref('product_configurator.product_attribute_value_gasoline'),
+                ref('product_configurator.product_attribute_value_diesel')]
+            )]"/>
+            <field name="required" eval="True"/>
+        </record>
+
+        <record id="product_attribute_line_2_series_engine" model="product.attribute.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="value_ids" eval="[(6,0,[
+                ref('product_configurator.product_attribute_value_218i'),
+                ref('product_configurator.product_attribute_value_220i'),
+                ref('product_configurator.product_attribute_value_228i'),
+                ref('product_configurator.product_attribute_value_m235i'),
+                ref('product_configurator.product_attribute_value_m235i_xdrive'),
+                ref('product_configurator.product_attribute_value_218d'),
+                ref('product_configurator.product_attribute_value_220d'),
+                ref('product_configurator.product_attribute_value_220d_xdrive'),
+                ref('product_configurator.product_attribute_value_225d'),
+                ]
+            )]"/>
+            <field name="required" eval="True"/>
+        </record>
+
+        <record id="product_attribute_line_2_series_model_line" model="product.attribute.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_id" ref="product_attribute_model_line"/>
+            <field name="value_ids" eval="[(6,0,[
+                ref('product_configurator.product_attribute_value_sport_line'),
+                ref('product_configurator.product_attribute_value_model_sport_line'),
+                ref('product_configurator.product_attribute_value_luxury_line'),
+                ref('product_configurator.product_attribute_value_model_luxury_line'),
+                ref('product_configurator.product_attribute_value_model_m_sport'),
+                ref('product_configurator.product_attribute_value_model_advantage'),
+                ]
+            )]"/>
+            <field name="required" eval="False"/>
+        </record>
+
+        <record id="product_attribute_line_2_series_color" model="product.attribute.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_id" ref="product_attribute_color"/>
+            <field name="value_ids" eval="[(6,0,[
+                ref('product_configurator.product_attribute_value_red'),
+                ref('product_configurator.product_attribute_value_black'),
+                ref('product_configurator.product_attribute_value_silver')]
+            )]"/>
+            <field name="required" eval="True"/>
+        </record>
+
+        <record id="product_attribute_line_2_series_rims" model="product.attribute.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_id" ref="product_attribute_rims"/>
+            <field name="value_ids" eval="[(6,0,[
+                ref('product_configurator.product_attribute_value_rims_378'),
+                ref('product_configurator.product_attribute_value_rims_387'),
+                ref('product_configurator.product_attribute_value_rims_384')]
+            )]"/>
+            <field name="required" eval="True"/>
+        </record>
+
+        <record id="product_attribute_line_2_series_tapistry" model="product.attribute.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_id" ref="product_attribute_tapistry"/>
+            <field name="value_ids" eval="[(6,0,[
+                ref('product_configurator.product_attribute_value_tapistry_black'),
+                ref('product_configurator.product_attribute_value_tapistry_oyster_black'),
+                ref('product_configurator.product_attribute_value_tapistry_coral_red_black')]
+            )]"/>
+            <field name="required" eval="True"/>
+        </record>
+
+        <record id="product_attribute_line_2_series_transmission" model="product.attribute.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_id" ref="product_attribute_transmission"/>
+            <field name="value_ids" eval="[(6,0,[
+                ref('product_configurator.product_attribute_value_steptronic'),
+                ref('product_configurator.product_attribute_value_steptronic_sport'),
+                ]
+            )]"/>
+            <field name="required" eval="True"/>
+        </record>
+
+        <record id="product_attribute_line_2_series_options" model="product.attribute.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_id" ref="product_attribute_options"/>
+            <field name="value_ids" eval="[(6,0,[
+                ref('product_configurator.product_attribute_value_armrest'),
+                ref('product_configurator.product_attribute_value_smoker_package'),
+                ref('product_configurator.product_attribute_value_sunroof'),
+                ref('product_configurator.product_attribute_value_tow_hook'),
+                ]
+            )]"/>
+            <field name="required" eval="True"/>
+            <field name="multi" eval="True"/>
+        </record>
+
+</odoo>

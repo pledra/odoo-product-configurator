@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="0">
+
+	<record id="product_config_category" model="ir.module.category">
+		<field name="name">Product Configurator</field>
+	</record>
+
+    <record id="group_product_configurator" model="res.groups">
+        <field name="name">Products</field>
+        <field name="category_id" ref="product_config_category"/>
+        <field name="implied_ids" eval="[(4, ref('product.group_product_variant'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+    </record>
+
+</data>
+</openerp>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+   <record id="product_template_form_view" model="ir.ui.view">
+        <field name="name">product.configurator.product.template.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+
+           <!--  <xpath expr="//div[@style='width: 390px;']" position="attributes">
+                <attribute name="class">oe_title oe_inline</attribute>
+            </xpath>
+ -->
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" name="toggle_config"
+                        type="object" icon="fa-wrench">
+                        <field name="config_ok" widget="boolean_button" options='{"terminology": "config"}'/>
+                    </button>
+                </div>
+
+            <xpath expr="//label[@for='purchase_ok' or @for='sale_ok']" position="after">
+                <div class="oe_left" name="options" groups="base.group_user">
+                    <field name="id" invisible="True"/>
+                </div>
+            </xpath>
+
+            <!-- Product attributes -->
+            <xpath expr="//field[@name='attribute_line_ids']" position="attributes">
+                <attribute name="context">{'show_attribute': False,'attribute_line_ids': attribute_line_ids}</attribute>
+            </xpath>
+
+            <!-- TODO: Implement a method to hide this field for non-configurable product templates -->
+            <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='value_ids']" position="after">
+                <field name="required" invisible="not context.get('default_config_ok', False)"/>
+                <field name="multi" invisible="not context.get('default_config_ok', False)"/>
+                <field name="custom" invisible="not context.get('default_config_ok', False)"/>
+            </xpath>
+
+            <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']" position="before">
+                <field name="sequence" widget="handle"/>
+            </xpath>
+
+            <!-- TODO: Apply domains so only values from template are available -->
+            <xpath expr="//notebook/page[@name='variants']" position="after">
+                <page string="Configurator" attrs="{'invisible': [('config_ok','=',False)]}">
+                <separator colspan="4" string="Configuration Restrictions"/>
+                <field name="config_line_ids"
+                       attrs="{'readonly': [('attribute_line_ids','=',[])]}"
+                       context="{'show_attribute': False}">
+                    <tree string="Attribute Value Dependencies" editable="bottom">
+                        <field name="sequence" widget="handle"/>
+                        <field name="attribute_line_id"
+                               domain="[('product_tmpl_id','=',parent.id)]"
+                               options="{'no_create': True, 'no_create_edit': True}"/>
+                        <!-- # TODO: Find a more elegant way to restrict the value_ids -->
+                        <field name="attr_line_val_ids"
+                               widget="many2many_tags"
+                               invisible="True"/>
+                        <field name="value_ids"
+                               widget="many2many_tags"
+                               attrs="{'readonly': [('attribute_line_id','=',False)]}"
+                               domain="[('id','in',attr_line_val_ids[0][2])]"
+                               options="{'no_create': True, 'no_create_edit': True}"
+                               context="{'show_attribute': False}"/>
+                        <field name="domain_id"/>
+                    </tree>
+                </field>
+                <separator colspan="4" string="Configuration Steps"/>
+                <field name="config_step_line_ids"
+                       attrs="{'readonly': [('attribute_line_ids','=',[])]}">
+                    <tree string="Configuration Steps" editable="bottom">
+                        <field name="sequence" widget="handle"/>
+                        <field name="config_step_id"/>
+                        <field name="attribute_line_ids"
+                               domain="[('product_tmpl_id', '=', parent.id)]"
+                               options="{'no_create': True, 'no_create_edit': True}"
+                               widget="many2many_tags"/>
+                    </tree>
+                </field>
+                <separator colspan="4" string="Configuration Images"/>
+                <field name="config_image_ids">
+                    <tree editable="bottom" string="Configuration Images">
+                        <field name="sequence" widget="handle"/>
+                        <field name="name"/>
+                        <field name="image" widget="image" height="30px"/>
+                        <field name="value_ids" widget="many2many_tags" context="{'_cfg_product_tmpl_id': parent.id}"/>
+                    </tree>
+                </field>
+                <!-- TODO: Uncomment when adding back presets -->
+                <!-- <separator colspan="4" string="Configuration Presets"/>
+                <field name="config_preset_ids">
+                    <tree editable="bottom">
+                        <field name="name"/>
+                        <field name="description"/> -->
+                        <!-- TODO: Disable search more option -->
+                        <!-- <field name="value_ids"
+                               widget="many2many_tags"
+                               context="{'_cfg_product_tmpl_id': parent.id, '_cfg_preset_val_ids': value_ids}"
+                               options="{'no_create': True, 'no_create_edit': True}"/>
+                    </tree>
+                </field> -->
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="product_form_view_custom_vals_inherit" model="ir.ui.view">
+        <field name="name">product.configurator.form.view.custom.vals</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Custom Values">
+                    <field name="value_custom_ids"/>
+<!--                         <tree string="Custom Values" editable="bottom">
+                            <field name="attribute_id" string="Attribute"/>
+                            <field name="value"/>
+                            <field name="attachment_ids"/>
+                        </tree>
+                    </field> -->
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

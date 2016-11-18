@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <!-- Gasoline Engines -->
+
+        <record id="product_config_domain_gasoline" model="product.config.domain">
+            <field name="name">Gasoline</field>
+        </record>
+
+        <record id="product_config_domain_line_1" model="product.config.domain.line">
+            <field name="domain_id" ref="product_config_domain_gasoline"/>
+            <field name="attribute_id" ref="product_attribute_fuel"/>
+            <field name="condition">in</field>
+            <field name="operator">and</field>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('product_attribute_value_gasoline')])]"/>
+        </record>
+
+        <!-- Diesel Engines -->
+
+        <record id="product_config_domain_diesel" model="product.config.domain">
+            <field name="name">Diesel</field>
+        </record>
+
+        <record id="product_config_domain_line_2" model="product.config.domain.line">
+            <field name="domain_id" ref="product_config_domain_diesel"/>
+            <field name="attribute_id" ref="product_attribute_fuel"/>
+            <field name="condition">in</field>
+            <field name="operator">and</field>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('product_attribute_value_diesel')])]"/>
+        </record>
+
+
+        <!-- Model Lines -->
+
+        <record id="product_config_domain_218_engine" model="product.config.domain">
+            <field name="name">218i Engine</field>
+        </record>
+
+        <record id="product_config_domain_line_3" model="product.config.domain.line">
+            <field name="domain_id" ref="product_config_domain_218_engine"/>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="condition">in</field>
+            <field name="operator">and</field>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('product_attribute_value_218i')])]"/>
+        </record>
+
+
+
+
+        <record id="product_config_domain_luxury_lines" model="product.config.domain">
+            <field name="name">Luxury Lines</field>
+        </record>
+
+        <record id="product_config_domain_line_4" model="product.config.domain.line">
+            <field name="domain_id" ref="product_config_domain_luxury_lines"/>
+            <field name="attribute_id" ref="product_attribute_engine"/>
+            <field name="condition">in</field>
+            <field name="operator">and</field>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('product_attribute_value_220i'),
+                ref('product_attribute_value_228i'),
+                ref('product_attribute_value_218d'),
+                ref('product_attribute_value_220d'),
+                ref('product_attribute_value_220d_xdrive')])]"/>
+        </record>
+
+</odoo>

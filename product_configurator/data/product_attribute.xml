@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="custom_attribute" model="product.attribute">
+            <field name="name">Custom</field>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="custom_attribute_value" model="product.attribute.value">
+            <field name="name">Custom</field>
+            <field name="attribute_id" ref="custom_attribute"/>
+            <field name="active" eval="True"/>
+        </record>
+
+    </data>
+</openerp>

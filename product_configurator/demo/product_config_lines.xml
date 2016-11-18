@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="product_config_line_gasoline_engines" model="product.config.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_line_id" ref="product_attribute_line_2_series_engine"/>
+            <field name="value_ids" eval="[(6, 0, [
+                ref('product_attribute_value_218i'),
+                ref('product_attribute_value_220i'),
+                ref('product_attribute_value_228i'),
+                ref('product_attribute_value_m235i'),
+                ref('product_attribute_value_m235i_xdrive')])]"/>
+            <field name="domain_id" ref="product_config_domain_gasoline"/>
+        </record>
+
+        <record id="product_config_line_diesel_engines" model="product.config.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_line_id" ref="product_attribute_line_2_series_engine"/>
+            <field name="value_ids" eval="[(6, 0, [
+              ref('product_attribute_value_218d'),
+              ref('product_attribute_value_220d'),
+              ref('product_attribute_value_220d_xdrive'),
+              ref('product_attribute_value_225d')])]"/>
+            <field name="domain_id" ref="product_config_domain_diesel"/>
+        </record>
+
+        <record id="product_config_line_218_lines" model="product.config.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_line_id" ref="product_attribute_line_2_series_model_line"/>
+            <field name="value_ids" eval="[(6, 0, [
+              ref('product_attribute_value_sport_line'),
+              ref('product_attribute_value_luxury_line')])]"/>
+            <field name="domain_id" ref="product_config_domain_218_engine"/>
+        </record>
+
+        <record id="product_config_line_luxury_lines" model="product.config.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="attribute_line_id" ref="product_attribute_line_2_series_model_line"/>
+            <field name="value_ids" eval="[(6, 0, [
+              ref('product_attribute_value_model_sport_line'),
+              ref('product_attribute_value_model_luxury_line'),
+              ref('product_attribute_value_model_m_sport'),
+              ref('product_attribute_value_model_advantage')])]"/>
+            <field name="domain_id" ref="product_config_domain_luxury_lines"/>
+        </record>
+
+</odoo>
