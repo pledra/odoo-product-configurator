@@ -28,6 +28,7 @@ addon | version | summary
 * WilldooIT
 * Camptocamp
 * Madsack Media Store
+* OpenIndustry.it
 * Asphalt Zipper
 
 Maintainer
