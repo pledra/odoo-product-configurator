@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_configurator_form" model="ir.ui.view">
+        <field name="name">product.configurator</field>
+        <field name="model">product.configurator</field>
+        <field name="arch" type="xml">
+            <form string="Product Configurator">
+                <header>
+                    <field name="state" widget="statusbar" clickable="True"/>
+                </header>
+                <sheet>
+                    <group col="4">
+                        <group name='static_form' colspan="3" states='select'>
+                            <field name="product_id" invisible="1"/>
+                            <field name="product_tmpl_id" attrs="{'readonly': [('product_id', '!=', False)]}" required="True"/>
+                            <field attrs="{'invisible': [('attribute_line_ids', '=', [])]}" name="attribute_line_ids">
+                                <tree>
+                                    <field name="attribute_id"/>
+                                    <field name="custom"/>
+                                    <field name="multi"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group colspan="1">
+                            <field attrs="{'invisible': [('product_img', '=', False)]}" name="product_img" readonly="1" nolabel="1" widget="image"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <field name="value_ids" invisible="1"/>
+                    <button type="object" name="action_previous_step" attrs="{'invisible': [('state','=','select')]}" string="Back" special="no_save"/>
+                    <button type="object" name="action_next_step" class="oe_highlight" string="Next"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

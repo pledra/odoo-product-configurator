@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="assets_backend" name="Product Configurator Reconfigure" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <link href="/product_configurator_wizard/static/css/style.css" rel="stylesheet"/>
+        </xpath>
+    </template>
+
+</odoo>

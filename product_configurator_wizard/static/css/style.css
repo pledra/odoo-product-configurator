@@ -1,0 +1,13 @@
+td[data-field="reconfigure_product"] {
+    vertical-align: middle;
+}
+
+td[data-field="reconfigure_product"] button i {
+    font-size: 1.4em;
+}
+
+/* Best use a new widget or extend the current one instead*/
+
+div.modal-body div.o_form_field_image img[name="product_img"]{
+    width: 100%;
+}
