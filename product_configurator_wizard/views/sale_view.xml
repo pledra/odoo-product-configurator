@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Add Configure Product button on sale order form view -->
+
+        <record id="action_wizard_product_configurator" model="ir.actions.act_window">
+            <field name="name">Configure Product</field>
+            <field name="res_model">product.configurator</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="product_configurator_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="sale_order_form_config" model="ir.ui.view">
+            <field name="name">sale.order.form.config</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='order_line']" position="before">
+                    <button name="%(action_wizard_product_configurator)s"
+                            states="draft,sent"
+                            class="oe_highlight"
+                            type="action"
+                            style="margin-top: 15px;"
+                            string="Configure Product"
+                            groups="product_configurator.group_product_configurator"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="after">
+                    <field name="config_ok" invisible="1"/>
+                    <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
+                            help="Reconfigure"
+                            icon="fa-cogs"
+                            type="object"
+                            attrs="{
+                                'invisible': [
+                                    '|',
+                                    ('config_ok','=',False),
+                                    ('state','not in',['draft','sent'])
+                                ]
+                            }"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

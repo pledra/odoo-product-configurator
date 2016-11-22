@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-<data noupdate="0">
+<data>
 
 	<record id="product_config_category" model="ir.module.category">
 		<field name="name">Product Configurator</field>
