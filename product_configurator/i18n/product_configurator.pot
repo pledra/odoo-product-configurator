@@ -6,14 +6,96 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 9.0c\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-18 08:13+0000\n"
-"PO-Revision-Date: 2016-11-18 08:13+0000\n"
+"POT-Creation-Date: 2016-11-26 10:05+0000\n"
+"PO-Revision-Date: 2016-11-26 10:05+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: product_configurator
+#: model:product.template,name:product_configurator.bmw_2_series
+msgid "2 Series"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_218d
+msgid "218d"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_218d_coupe
+#: model:product.template,name:product_configurator.product_engine_218d_coupe_product_template
+msgid "218d Coupé"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_218i
+msgid "218i"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_218i_coupe
+#: model:product.template,name:product_configurator.product_engine_218i_coupe_product_template
+msgid "218i Coupé"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_220d
+msgid "220d"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_220d_coupe
+#: model:product.template,name:product_configurator.product_engine_220d_coupe_product_template
+msgid "220d Coupé"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_220d_xdrive
+msgid "220d xDrive"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_220d_xdrive_coupe
+#: model:product.template,name:product_configurator.product_engine_220d_xdrive_coupe_product_template
+msgid "220d xDrive Coupé"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_220i
+msgid "220i"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_220i_coupe
+#: model:product.template,name:product_configurator.product_engine_220i_coupe_product_template
+msgid "220i Coupé"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_225d
+msgid "225d"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_225d_coupe
+#: model:product.template,name:product_configurator.product_engine_225d_coupe_product_template
+msgid "225d Coupé"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_228i
+msgid "228i"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_228i_coupe
+#: model:product.template,name:product_configurator.product_engine_228i_coupe_product_template
+msgid "228i Coupé"
+msgstr ""
 
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_active
@@ -35,6 +117,13 @@ msgstr ""
 #: model:ir.model.fields,help:product_configurator.field_product_attribute_line_multi
 #: model:ir.model.fields,help:product_configurator.field_product_attribute_multi
 msgid "Allow selection of multiple values for this attribute?"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_armrest
+#: model:product.product,name:product_configurator.product_2_series_armrest
+#: model:product.template,name:product_configurator.product_2_series_armrest_product_template
+msgid "Armrest"
 msgstr ""
 
 #. module: product_configurator
@@ -88,15 +177,50 @@ msgid "Attribute Values"
 msgstr ""
 
 #. module: product_configurator
-#: code:addons/product_configurator/product_config.py:495
+#: code:addons/product_configurator/models/product_config.py:505
+#: code:addons/product_configurator/product_config.py:525
 #, python-format
 msgid "Attribute custom type is binary, attachments are the only accepted values with this custom field type"
 msgstr ""
 
 #. module: product_configurator
-#: code:addons/product_configurator/product_config.py:500
+#: code:addons/product_configurator/models/product_config.py:510
+#: code:addons/product_configurator/product_config.py:530
 #, python-format
 msgid "Attribute custom type must be 'binary' for saving attachments to custom value"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_steptronic
+msgid "Automatic (Steptronic)"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_steptronic_sport
+msgid "Automatic Sport (Steptronic)"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_2_series_transmission_steptronic
+#: model:product.template,name:product_configurator.product_2_series_transmission_steptronic_product_template
+msgid "Automatic Transmission Steptronic"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.category,name:product_configurator.product_category_bmw
+msgid "BMW"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_black
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tapistry_black
+msgid "Black"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.config.step,name:product_configurator.config_step_body
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_body
+msgid "Body"
 msgstr ""
 
 #. module: product_configurator
@@ -116,7 +240,8 @@ msgid "Can be Configured"
 msgstr ""
 
 #. module: product_configurator
-#: code:addons/product_configurator/product_config.py:272
+#: code:addons/product_configurator/models/product_config.py:268
+#: code:addons/product_configurator/product_config.py:288
 #, python-format
 msgid "Cannot have a configuration step defined twice."
 msgstr ""
@@ -133,6 +258,7 @@ msgstr ""
 
 #. module: product_configurator
 #: selection:product.attribute,custom_type:0
+#: model:product.attribute,name:product_configurator.product_attribute_color
 msgid "Color"
 msgstr ""
 
@@ -216,7 +342,8 @@ msgid "Configuration Values"
 msgstr ""
 
 #. module: product_configurator
-#: code:addons/product_configurator/product_config.py:476
+#: code:addons/product_configurator/models/product_config.py:486
+#: code:addons/product_configurator/product_config.py:506
 #, python-format
 msgid "Configuration cannot have the same value inserted twice"
 msgstr ""
@@ -229,6 +356,56 @@ msgstr ""
 #. module: product_configurator
 #: model:ir.actions.act_window,name:product_configurator.product_configurable_variant_action
 msgid "Configured Variants"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tapistry_coral_red_black
+msgid "Coral Red/Black"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_3
+msgid "Coupé Black"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_9
+msgid "Coupé Black Rims 384"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_10
+msgid "Coupé Black Rims 387"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_1
+msgid "Coupé Red"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_5
+msgid "Coupé Red Rims 384"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_6
+msgid "Coupé Red Rims 387"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_2
+msgid "Coupé Silver"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_7
+msgid "Coupé Silver Rims 384"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_8
+msgid "Coupé Silver Rims 387"
 msgstr ""
 
 #. module: product_configurator
@@ -306,6 +483,11 @@ msgid "Determines the required value of this attribute though it can be change o
 msgstr ""
 
 #. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_diesel
+msgid "Diesel"
+msgstr ""
+
+#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_display_name
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_display_name
@@ -324,8 +506,26 @@ msgid "Done"
 msgstr ""
 
 #. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_rims_384
+msgid "Double-spoke 18\""
+msgstr ""
+
+#. module: product_configurator
 #: selection:product.config.session,state:0
 msgid "Draft"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_engine
+#: model:product.config.step,name:product_configurator.config_step_engine
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_engine
+msgid "Engine"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.config.step,name:product_configurator.config_step_extras
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_extras
+msgid "Extras"
 msgstr ""
 
 #. module: product_configurator
@@ -336,6 +536,16 @@ msgstr ""
 #. module: product_configurator
 #: selection:product.attribute,custom_type:0
 msgid "Float"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_fuel
+msgid "Fuel"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_gasoline
+msgid "Gasoline"
 msgstr ""
 
 #. module: product_configurator
@@ -369,8 +579,16 @@ msgid "Integer"
 msgstr ""
 
 #. module: product_configurator
-#: code:addons/product_configurator/product.py:295
-#: code:addons/product_configurator/product_config.py:424
+#: model:product.config.step,name:product_configurator.config_step_interior
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_interior
+msgid "Interior"
+msgstr ""
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product.py:290
+#: code:addons/product_configurator/models/product_config.py:434
+#: code:addons/product_configurator/product.py:296
+#: code:addons/product_configurator/product_config.py:454
 #, python-format
 msgid "Invalid Configuration"
 msgstr ""
@@ -425,6 +643,42 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_model_line
+#: model:product.config.step,name:product_configurator.config_step_lines
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_lines
+msgid "Lines"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_luxury_line
+#: model:product.product,name:product_configurator.product_bmw_luxury_line
+#: model:product.template,name:product_configurator.product_bmw_luxury_line_product_template
+msgid "Luxury Line"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_m235i
+msgid "M235i"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_m235i_coupe
+#: model:product.template,name:product_configurator.product_engine_m235i_coupe_product_template
+msgid "M235i Coupé"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_m235i_xdrive
+msgid "M235i xDrive"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_m2351_xdrive_coupe
+#: model:product.template,name:product_configurator.product_engine_m2351_xdrive_coupe_product_template
+msgid "M235i xDrive Coupe"
+msgstr ""
+
+#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_max_val
 msgid "Max Value"
 msgstr ""
@@ -438,6 +692,34 @@ msgstr ""
 #: model:ir.model.fields,help:product_configurator.field_product_attribute_max_val
 #: model:ir.model.fields,help:product_configurator.field_product_attribute_min_val
 msgid "Minimum value allowed"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_advantage
+#: model:product.product,name:product_configurator.product_bmw_model_advantage
+#: model:product.template,name:product_configurator.product_bmw_model_advantage_product_template
+msgid "Model Advantage"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_luxury_line
+#: model:product.product,name:product_configurator.product_bmw_model_luxury_line
+#: model:product.template,name:product_configurator.product_bmw_model_luxury_line_product_template
+msgid "Model Luxury Line"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_m_sport
+#: model:product.product,name:product_configurator.product_bmw_model_m_sport
+#: model:product.template,name:product_configurator.product_bmw_model_m_sport_product_template
+msgid "Model M Sport"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_sport_line
+#: model:product.product,name:product_configurator.product_bmw_model_sport_line
+#: model:product.template,name:product_configurator.product_bmw_model_sport_line_product_template
+msgid "Model Sport Line"
 msgstr ""
 
 #. module: product_configurator
@@ -459,6 +741,16 @@ msgstr ""
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_operator
 msgid "Operators"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_options
+msgid "Options"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tapistry_oyster_black
+msgid "Oyster/Black"
 msgstr ""
 
 #. module: product_configurator
@@ -510,6 +802,11 @@ msgid "Products"
 msgstr ""
 
 #. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_red
+msgid "Red"
+msgstr ""
+
+#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_product_id
 msgid "Related Product"
 msgstr ""
@@ -524,6 +821,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_domain_line_ids
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_line_domain_id
 msgid "Restrictions"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_rims
+msgid "Rims"
 msgstr ""
 
 #. module: product_configurator
@@ -560,6 +862,37 @@ msgid "Session"
 msgstr ""
 
 #. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_silver
+msgid "Silver"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_paint_silver
+#: model:product.template,name:product_configurator.product_paint_silver_product_template
+msgid "Silver Paint"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_smoker_package
+#: model:product.product,name:product_configurator.product_2_series_smoker_package
+#: model:product.template,name:product_configurator.product_2_series_smoker_package_product_template
+msgid "Smoker Package"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_2_series_transmission_steptronic_sport
+#: model:product.template,name:product_configurator.product_2_series_transmission_steptronic_sport_product_template
+msgid "Sport Automatic Transmission Steptronic"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_sport_line
+#: model:product.product,name:product_configurator.product_bmw_sport_line
+#: model:product.template,name:product_configurator.product_bmw_sport_line_product_template
+msgid "Sport Line"
+msgstr ""
+
+#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_session_state
 msgid "State"
 msgstr ""
@@ -567,6 +900,18 @@ msgstr ""
 #. module: product_configurator
 #: model:ir.model,name:product_configurator.model_stock_move
 msgid "Stock Move"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_sunroof
+#: model:product.product,name:product_configurator.product_2_series_sunroof
+#: model:product.template,name:product_configurator.product_2_series_sunroof_product_template
+msgid "Sunroof"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_tapistry
+msgid "Tapistry"
 msgstr ""
 
 #. module: product_configurator
@@ -580,8 +925,24 @@ msgid "The type of the custom field generated in the frontend"
 msgstr ""
 
 #. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tow_hook
+msgid "Tow hook"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_2_series_towhook
+#: model:product.template,name:product_configurator.product_2_series_towhook_product_template
+msgid "Towhook"
+msgstr ""
+
+#. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_trans_implied_ids
 msgid "Transitively inherits"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_transmission
+msgid "Transmission"
 msgstr ""
 
 #. module: product_configurator
@@ -592,6 +953,16 @@ msgstr ""
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_session_user_id
 msgid "User"
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_rims_378
+msgid "V-spoke 16\""
+msgstr ""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_rims_387
+msgid "V-spoke 18\""
 msgstr ""
 
 #. module: product_configurator
@@ -617,7 +988,8 @@ msgid "Values"
 msgstr ""
 
 #. module: product_configurator
-#: code:addons/product_configurator/product_config.py:217
+#: code:addons/product_configurator/models/product_config.py:213
+#: code:addons/product_configurator/product_config.py:232
 #, python-format
 msgid "Values entered for line '%s' generate a incompatible configuration"
 msgstr ""
