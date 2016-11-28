@@ -235,7 +235,7 @@ class ProductConfigurator(models.TransientModel):
 
     @api.model
     def fields_get(self, allfields=None, write_access=True, attributes=None):
-        """ Artifically inject fields which are dynamically created using the
+        """ Artificially inject fields which are dynamically created using the
         attribute_ids on the product.template as reference"""
         res = super(ProductConfigurator, self).fields_get(
             allfields=allfields,
