@@ -275,7 +275,7 @@ class ProductConfigSession(models.Model):
     @api.depends('value_ids')
     def _get_cfg_price(self):
         for session in self:
-            custom_vals = self._get_custom_vals_dict()
+            custom_vals = session._get_custom_vals_dict()
             price = session.product_tmpl_id.get_cfg_price(
                 session.value_ids.ids, custom_vals)
             session.price = price['total']
