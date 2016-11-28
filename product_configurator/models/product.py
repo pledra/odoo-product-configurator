@@ -131,14 +131,13 @@ class ProductTemplate(models.Model):
 
         tmpl_prices = self.taxes_id.sudo().compute_all(
             price_unit=self.list_price,
-            currency=currency,
             quantity=quantity,
             product=self,
             partner=partner
         )
 
         total_included = tmpl_prices['total_included']
-        total_excluded = tmpl_prices['total_excluded']
+        total_excluded = tmpl_prices['total']
 
         prices = {
             'vals': [
@@ -165,14 +164,13 @@ class ProductTemplate(models.Model):
 
             product_prices = val.product_id.taxes_id.sudo().compute_all(
                 price_unit=product_price,
-                currency=currency,
                 quantity=quantity,
                 product=val.product_id,
                 partner=partner
             )
 
             total_included = product_prices['total_included']
-            taxes = total_included - product_prices['total_excluded']
+            taxes = total_included - product_prices['total']
             prices['taxes'] += taxes
             prices['total'] += total_included
         return prices

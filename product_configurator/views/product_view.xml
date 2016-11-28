@@ -12,12 +12,13 @@
                 <attribute name="class">oe_title oe_inline</attribute>
             </xpath>
  -->
-                <div name="button_box" position="inside">
-                    <button class="oe_stat_button" name="toggle_config"
-                        type="object" icon="fa-wrench">
-                        <field name="config_ok" widget="boolean_button" options='{"terminology": "config"}'/>
-                    </button>
+
+            <xpath expr="//div[@name='options']" position="inside">
+                <div>
+                    <field name="config_ok"/>
+                    <label for="config_ok"/>
                 </div>
+            </xpath>
 
             <xpath expr="//label[@for='purchase_ok' or @for='sale_ok']" position="after">
                 <div class="oe_left" name="options" groups="base.group_user">

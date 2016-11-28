@@ -2,12 +2,19 @@ td[data-field="reconfigure_product"] {
     vertical-align: middle;
 }
 
-td[data-field="reconfigure_product"] button i {
+td[data-field="reconfigure_product"] button {
+    font-family: FontAwesome;
     font-size: 1.4em;
+    background: none !important;
+    border: none !important;
+}
+
+td[data-field="reconfigure_product"] button::before {
+    content: "\f085";
 }
 
 /* Best use a new widget or extend the current one instead*/
 
-div.modal-body div.o_form_field_image img[name="product_img"]{
+div.modal span.oe_form_field_image img[name="product_img"] {
     width: 100%;
 }

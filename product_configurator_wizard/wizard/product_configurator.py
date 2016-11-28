@@ -215,7 +215,8 @@ class ProductConfigurator(models.TransientModel):
         column2='config_step_id',
         string="Configuration Steps",
         readonly=True,
-        store=False
+        # store=False
+        # TODO: This causes an issue in v8 fields validation
     )
     product_id = fields.Many2one(
         comodel_name='product.product',

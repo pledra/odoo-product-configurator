@@ -31,7 +31,6 @@
                     <field name="config_ok" invisible="1"/>
                     <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
                             help="Reconfigure"
-                            icon="fa-cogs"
                             type="object"
                             attrs="{
                                 'invisible': [
