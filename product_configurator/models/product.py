@@ -511,7 +511,7 @@ class ProductProduct(models.Model):
         """ Compute the name of the configurable products and use template
             name for others"""
         for product in self:
-            if self.config_ok:
+            if product.config_ok:
                 product.config_name = product.get_config_name()
             else:
                 product.config_name = product.name
