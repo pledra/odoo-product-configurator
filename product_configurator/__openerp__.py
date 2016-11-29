@@ -27,7 +27,7 @@
         'data/product_attribute.xml',
         'security/configurator_security.xml',
         'security/ir.model.access.csv',
-        'view/assets.xml',
+        'views/assets.xml',
         'views/sale_view.xml',
         'views/product_view.xml',
         'views/product_attribute_view.xml',
