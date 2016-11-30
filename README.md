@@ -11,8 +11,8 @@ Available addons
 addon | version | summary
 --- | --- | ---
 [product_configurator](product_configurator/) | 1.0 | Base for product_configurator_wizard and website_product_config
-[product_configurator_wizard](https://www.indiegogo.com/projects/odoo-product-configurator--2) | 1.0 | Dynamic configuration wizard for Odoo backend
-[product_configurator_mrp](https://www.indiegogo.com/projects/odoo-product-configurator--2) | 1.0  | MRP Support for product variants generation
+[product_configurator_wizard](product_configurator_wizard/) | 1.0 | Dynamic configuration wizard for Odoo backend
+[product_configurator_mrp](product_configurator_mrp/) | 1.0  | MRP Support for product variants generation
 [website_product_config](https://www.indiegogo.com/projects/odoo-product-configurator--2) | 1.0 | Website configuration interface integrated with e-commerce
 [website_product_config_mrp](https://www.indiegogo.com/projects/odoo-product-configurator--2) | 1.0 | MRP Support for website_product_config
 
