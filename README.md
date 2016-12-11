@@ -30,6 +30,7 @@ addon | version | summary
 * Madsack Media Store
 * OpenIndustry.it
 * Asphalt Zipper
+* Access Windows and Doors Inc
 
 Maintainer
 ----------
