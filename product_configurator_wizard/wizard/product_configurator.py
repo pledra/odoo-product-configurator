@@ -164,7 +164,7 @@ class ProductConfigurator(models.TransientModel):
             cfg_step = self.product_tmpl_id.config_step_line_ids.filtered(
                 lambda x: x.id == cfg_step_id)
         except:
-            cfg_step = None
+            cfg_step = self.env['product.config.step.line']
 
         dynamic_fields = {
             k: v for k, v in values.iteritems() if k.startswith(
