@@ -1,0 +1,77 @@
+#product_config_form .form-group {
+    margin-bottom: 0;
+    margin-top: 12px;
+}
+
+#product_config_form {
+    padding: 10px;
+}
+
+.label-info {
+    background-color: #6C757C;
+}
+
+ul.product_vals {
+    list-style: none;
+}
+
+ul.product_vals li {
+    background-color: #EEEEEE;
+    border-radius: 4px;
+    margin-top: 5px;
+    display: block;
+    padding: 2px 15px 2px 15px;
+}
+
+ul.product_vals li span, ul.product_vals li span {
+    position: relative;
+    line-height: 1.8;
+}
+
+.mt6 {margin-top: 6px;}
+
+.attr_description {
+    display:none;
+    position:absolute;
+    border:1px solid #333;
+    background-color:#161616;
+    border-radius:5px;
+    padding:10px;
+    color:#fff;
+    font-size:12px Arial;
+}
+
+#cfg_toolbar {
+    text-align: left;
+    margin-top: 25px;
+}
+
+#product_config_form label.btn {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    background-color: #EFEFEF;
+    width: 100%;
+}
+
+#product_config_form label.btn.active {
+    background-color: #3071A9;
+    border: 1px solid #7E7E7E;
+    opacity: 0.9;
+}
+
+.cfg_tiles {
+    padding-right: 10px !important;
+}
+
+.cfg_tiles .form-control {
+    text-align: center;
+    min-height: 180px;
+    border-radius: 0;
+}
+
+.img-center {margin:0 auto;}
+
+#cfg_image {
+    margin: 20px auto;
+    max-height: 400px;
+}
