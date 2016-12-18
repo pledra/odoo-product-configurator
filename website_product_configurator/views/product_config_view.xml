@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Configuration Steps -->
+
+    <record id="config_step_tree_view" model="ir.ui.view">
+        <field name="name">website.product.config.config.step.tree</field>
+        <field name="model">product.config.step</field>
+        <field name="inherit_id" ref="product_configurator.config_step_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="view_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="config_step_form_view" model="ir.ui.view">
+        <field name="name">website.product.config.product.config.step.form</field>
+        <field name="model">product.config.step</field>
+        <field name="inherit_id" ref="product_configurator.config_step_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="view_id"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="product_config_session_tree_view" model="ir.ui.view">
+        <field name="name">website.product.config.product.config.session.tree</field>
+        <field name="model">product.config.session</field>
+        <field name="inherit_id" ref="product_configurator.product_config_session_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='custom_value_ids']" position="after">
+                <field name="session_id"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

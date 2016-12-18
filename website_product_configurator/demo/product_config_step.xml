@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_configurator.config_step_lines" model="product.config.step">
+        <field name="view_id" ref="config_form_radio"/>
+    </record>
+
+    <record id="product_configurator.config_step_extras" model="product.config.step">
+        <field name="view_id" ref="config_form_radio"/>
+    </record>
+
+</odoo>

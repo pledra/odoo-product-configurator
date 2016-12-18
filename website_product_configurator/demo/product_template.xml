@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_configurator.bmw_2_series" model="product.template">
+        <field name="website_published" eval="True"/>
+    </record>
+
+     <record id="product_configurator.product_bmw_sport_line" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_bmw_luxury_line" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_bmw_model_sport_line" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_bmw_model_luxury_line" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_bmw_model_m_sport" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_bmw_model_advantage" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_2_series_transmission_steptronic" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_2_series_transmission_steptronic_sport" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_2_series_sunroof" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_2_series_armrest" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_2_series_towhook" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_2_series_smoker_package" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_engine_218i_coupe" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_engine_220i_coupe" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_engine_228i_coupe" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_engine_m235i_coupe" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_engine_m2351_xdrive_coupe" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_engine_218d_coupe" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_engine_220d_coupe" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_engine_220d_xdrive_coupe" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_engine_225d_coupe" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+    <record id="product_configurator.product_paint_silver" model="product.product">
+        <field name="website_published" eval="True"/>
+    </record>
+
+</odoo>

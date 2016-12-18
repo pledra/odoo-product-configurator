@@ -1,0 +1,186 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* website_product_configurator
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-12-18 15:48+0000\n"
+"PO-Revision-Date: 2016-12-18 15:48+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator
+msgid "<span class=\"fa fa-exclamation\" aria-hidden=\"true\"/>\n"
+"                  <span class=\"sr-only\">Error:</span>"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.config_default_footer
+msgid "<span class=\"fa fa-long-arrow-left\"/> <span>Back</span>"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator
+msgid "<span class=\"fa fa-refresh\"/> Reset"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.config_default_footer
+msgid "<span>Configure</span>"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.config_default_footer
+msgid "<span>Continue</span>"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.cfg_session
+msgid "Add to Cart"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.config_form_select
+msgid "Custom"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.model.fields,field_description:website_product_configurator.field_sale_order_line_customer_remarks
+msgid "Customer Remarks"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator_list
+msgid "No product defined."
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator_list
+msgid "Options <span class=\"caret\"/>"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator_list
+#: model:website.menu,name:website_product_configurator.product_configurator_menu
+msgid "Product Configurator"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.cfg_session
+msgid "Product Name"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.cfg_session
+msgid "Product not available"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator_list
+msgid "Promote"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator_list
+msgid "Push down"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator_list
+msgid "Push to bottom"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator_list
+msgid "Push to top"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator_list
+msgid "Push up"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_items
+msgid "Sale"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.model,name:website_product_configurator.model_sale_order_line
+msgid "Sales Order Line"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.model.fields,field_description:website_product_configurator.field_product_config_session_session_id
+msgid "Session ID"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator_list
+msgid "Size"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.model.fields,help:website_product_configurator.field_product_config_step_view_id
+msgid "Specific view for rendering this attribute in the frontend"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator_list
+msgid "Styles"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator
+msgid "Taxes:"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator
+msgid "Total:"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.ui.view,arch_db:website_product_configurator.product_configurator_list
+msgid "Use the <i>'Content'</i> top menu to create a new product."
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.model.fields,help:website_product_configurator.field_product_config_session_website
+msgid "Used to filter website configuration session from others"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.model,name:website_product_configurator.model_website
+#: model:ir.model.fields,field_description:website_product_configurator.field_product_config_session_website
+msgid "Website"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.model.fields,field_description:website_product_configurator.field_product_config_step_view_id
+msgid "Website View"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.model.fields,help:website_product_configurator.field_product_config_session_session_id
+msgid "Website session ID to identify user"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.model,name:website_product_configurator.model_product_config_session
+msgid "product.config.session"
+msgstr ""
+
+#. module: website_product_configurator
+#: model:ir.model,name:website_product_configurator.model_product_config_step
+msgid "product.config.step"
+msgstr ""
+

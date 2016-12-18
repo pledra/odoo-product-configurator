@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+,,,,,,,
+public_config_line,Public Config Line,product_configurator.model_product_config_line,base.group_public,1,0,0,0
+public_config_image,Public Config Image,product_configurator.model_product_config_image,base.group_public,1,0,0,0
+public_config_domain,Public Config Domain,product_configurator.model_product_config_domain,base.group_public,1,0,0,0
+public_config_domain_line,Public Config Domain Line,product_configurator.model_product_config_domain_line,base.group_public,1,0,0,0
+public_config_step,Public Config Step,product_configurator.model_product_config_step,base.group_public,1,0,0,0
+public_config_step_line,Public Config Step Line,product_configurator.model_product_config_step_line,base.group_public,1,0,0,0
+public_config_custom_value,Public Custom Value,product_configurator.model_product_attribute_value_custom,base.group_public,1,0,0,0
+public_config_session,Public Config Session,product_configurator.model_product_config_session,base.group_public,1,0,0,0
+public_config_session_custom_value,Public Config Session Custom Value,product_configurator.model_product_config_session_custom_value,base.group_public,1,0,0,0
