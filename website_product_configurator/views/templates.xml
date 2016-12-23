@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+<!-- Add menu to website -->
+
+  <record id="product_configurator_menu" model="website.menu">
+      <field name="name">Product Configurator</field>
+      <field name="url">/configurator</field>
+      <field name="parent_id" ref="website.main_menu"/>
+      <field name="sequence" type="int">20</field>
+  </record>
+
+  <template id="assets_frontend" name="Product Configurator" inherit_id="website.assets_frontend">
+      <xpath expr="." position="inside">
+          <link rel="stylesheet" href="/website_product_configurator/static/src/css/custom.css"/>
+          <script type="text/javascript" src="/website_product_configurator/static/src/js/jquery.validate.js"></script>
+          <script type="text/javascript" src="/website_product_configurator/static/src/js/product_config.js"></script>
+          <script type="text/javascript" src="/website_product_configurator/static/src/js/website_product_config_tour_configure.js"></script>
+      </xpath>
+  </template>
+
+<template id="product_items" name="Product item">
+  <div itemscope="itemscope" itemtype="http://schema.org/Product">
+  <div class="ribbon-wrapper">
+    <div class="ribbon btn btn-danger">Sale</div>
+  </div>
+  <div class="oe_product_image">
+      <a itemprop="url" t-att-href="keep('/configurator/%s' % slug(product))">
+          <img itemprop="image" class="img img-responsive" t-att-src="website.image_url(product, 'image', None if product_image_big else '300x300')"/>
+      </a>
+  </div>
+  <section>
+      <h5 class="text-center"><strong><a itemprop="name" t-att-href="keep('/configurator/%s' % slug(product))" t-field="product.name"/></strong></h5>
+  </section>
+  </div>
+</template>
+
+<!-- Product configurator template list view -->
+
+  <template id="product_configurator_list">
+    <t t-call="website.layout">
+      <t t-set="additional_title">Product Configurator</t>
+      <div id="wrap" class="js_sale oe_website_sale">
+        <div class="oe_structure"/>
+        <div class="container">
+          <h1 class="mb32">Product Configurator</h1>
+          <div class="products_pager">
+<!--             <div class="row" style="width: 100%;">
+              <t t-call="website_sale.search"><t t-set="search_class">pagination form-inline col-md-3</t></t>
+              <t t-call="website.pager"/>
+            </div> -->
+          </div>
+          <div class='row'>
+            <div class="hidden" id="products_grid_before"></div>
+            <div class="col-md-12 mt8" id="products_grid">
+              <table width="100%">
+                <tbody>
+                  <tr t-ignore="true">
+                    <td t-foreach="range(0,rows)" t-as="row" t-attf-width="#{100/rows}%"></td>
+                  </tr>
+                  <tr t-foreach="bins" t-as="tr_product">
+                    <t t-foreach="tr_product" t-as="td_product">
+                      <t t-if="td_product">
+                      <t t-set="product" t-value="td_product['product']"/>
+                      <td t-att-colspan="td_product['x'] != 1 and td_product['x']"
+                          t-att-rowspan="td_product['y'] != 1 and td_product['y']"
+                          t-attf-class="oe_product oe_grid oe-height-#{td_product['y']*2} #{ td_product['class'] }">
+
+                          <div class="oe_product_cart" t-att-data-publish="product.website_published and 'on' or 'off'">
+
+                            <div class="css_options" t-ignore="true" groups="base.group_website_publisher">
+                              <div t-attf-class="dropdown js_options" t-att-data-id="product.id">
+                                <button class="btn btn-default" t-att-id="'dopprod-%s' % product.id" role="button" data-toggle="dropdown">Options <span class="caret"></span></button>
+                                <ul class="dropdown-menu" role="menu" t-att-aria-labelledby="'dopprod-%s' % product.id">
+                                  <li class='dropdown-submenu'>
+                                    <a tabindex="-1" href="#">Size</a>
+                                    <ul class="dropdown-menu" name="size">
+                                      <li><a href="#">
+                                        <table>
+                                          <tr>
+                                            <td class="selected"></td>
+                                            <td t-att-class="product.website_size_x > 1 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_x > 2 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_x > 3 and 'selected'"></td>
+                                          </tr>
+                                          <tr>
+                                            <td t-att-class="product.website_size_y > 1 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 1 and product.website_size_x > 1 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 1 and product.website_size_x > 2 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 1 and product.website_size_x > 3 and 'selected'"></td>
+                                          </tr>
+                                          <tr>
+                                            <td t-att-class="product.website_size_y > 2 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 2 and product.website_size_x > 1 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 2 and product.website_size_x > 2 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 2 and product.website_size_x > 3 and 'selected'"></td>
+                                          </tr>
+                                          <tr>
+                                            <td t-att-class="product.website_size_y > 3 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 3 and product.website_size_x > 1 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 3 and product.website_size_x > 2 and 'selected'"></td>
+                                            <td t-att-class="product.website_size_y > 3 and product.website_size_x > 3 and 'selected'"></td>
+                                          </tr>
+                                        </table>
+                                      </a></li>
+                                    </ul>
+                                  </li>
+                                  <li class='dropdown-submenu'>
+                                    <a tabindex="-1" href="#">Styles</a>
+                                    <ul class="dropdown-menu" name="style">
+                                      <t t-foreach="styles" t-as="style">
+                                        <li t-att-class="style_in_product(style, product) and 'active' or ''"><a href="#" t-att-data-id="style.id" t-att-data-class="style.html_class"><t t-esc="style.name"/></a></li>
+                                      </t>
+                                    </ul>
+                                  </li>
+                                  <li class='dropdown-submenu'>
+                                      <a tabindex="-1" href="#">Promote</a>
+                                      <ul class="dropdown-menu" name="sequence">
+                                          <li><a href="#" class="js_go_to_top">Push to top</a></li>
+                                          <li><a href="#" class="js_go_up">Push up</a>
+                                          </li>
+                                          <li><a href="#" class="js_go_down">Push down</a></li>
+                                          <li><a href="#" class="js_go_to_bottom">Push to bottom</a></li>
+                                      </ul>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                            <t t-set="product_image_big" t-value="td_product['x']+td_product['y'] > 2"/>
+                            <t t-call="website_product_configurator.product_items"/>
+                          </div>
+
+                      </td>
+                      </t>
+                      <td t-if="not td_product" class="oe-height-2"/>
+                    </t>
+                  </tr>
+                </tbody>
+              </table>
+              <t t-if="not bins">
+                <div class="text-center text-muted">
+                  <h3 class="css_editable_display">No product defined.</h3>
+                  <t groups="base.group_website_publisher">
+                    <p groups="base.group_sale_manager">Use the <i>'Content'</i> top menu to create a new product.</p>
+                  </t>
+                </div>
+              </t>
+            </div>
+          </div>
+<!--           <div class="products_pager">
+              <t t-call="website.pager"/>
+          </div> -->
+        </div>
+        <div class="oe_structure mb32"/>
+      </div>
+  </t>
+</template>
+
+<!-- Configuration steps statusbar -->
+
+<template id="config_steps" name="Configuraton Steps">
+  <ul class="wizard pull-right">
+    <t t-foreach="cfg_vars.get('config_steps', [])" t-as="step">
+      <t t-set="open_steps" t-value="product_tmpl.get_open_step_lines(cfg_val_ids.ids)"/>
+      <li t-att-class="'text-primary' if cfg_vars.get('active_step') == step else 'text-muted'">
+        <t t-if="step in open_steps">
+          <a t-att-href="'/configurator/%s/%s' % (slug(product_tmpl), slug(step))" class="text-success">
+            <span t-field="step.name"/><span class="chevron"></span>
+          </a>
+        </t>
+        <t t-if="step not in open_steps">
+          <span t-field="step.name"/><span class="chevron"></span>
+        </t>
+      </li>
+    </t>
+  </ul>
+</template>
+
+<template id="config_form" name="Configuration Form">
+  <t t-raw="0"/>
+  <t t-set="view_id" t-value="cfg_vars.get('view_id')"/>
+
+  <t t-if="view_id">
+    <t t-call="{{view_id}}"/>
+  </t>
+
+  <t t-if="not view_id">
+    <t t-call="website_product_configurator.config_form_select"/>
+  </t>
+</template>
+
+<!-- Product configurator wizard -->
+
+  <template id="product_configurator">
+    <t t-call="website.layout">
+        <t t-set="cfg_val_ids" t-value="cfg_vars['cfg_session'].value_ids"/>
+        <t t-set="additional_title">Product Configurator</t>
+        <div id="wrap">
+            <div class="oe_structure"/>
+            <div class="container mb32">
+            <div class="row mt8">
+              <!-- <div class="col-sm-4">
+                  <ol class="breadcrumb">
+                      <li><a t-att-href="keep(category=0)" onclick="history.go(-1); return false;">Products</a></li>
+                      <li t-if="category"><a t-att-href="keep('/shop/category/%s' % slug(category), category=0)" t-field="category.name"/></li>
+                      <li class="active"><span t-field="product_tmpl.name"/></li>
+                  </ol>
+              </div>      -->
+              <div class="col-lg-4 text-left" id="cfg_tmpl_name">
+                <h1 t-field="product_tmpl.name"/>
+              </div>
+              <div class="col-lg-2 text-center" id="cfg_toolbar">
+                <button type="button" class="btn btn-default btn-md cfg_clear center-block">
+                  <span class="fa fa-refresh"></span> Reset
+                </button>
+              </div>
+              <div class="col-lg-6" id="cfg_statusbar">
+                <t t-call="website_product_configurator.config_steps"/>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-8" id="config_error" t-if="fatal_error" >
+                <div class="alert alert-danger" role="alert">
+                  <span class="fa fa-exclamation" aria-hidden="true"></span>
+                  <span class="sr-only">Error:</span>
+                  <span t-esc="fatal_error"/>
+                </div>
+              </div>
+              <div id="cfg_container" class="col-md-8">
+                <t t-call="website_product_configurator.config_form"/>
+              </div>
+              <div class="col-md-4">
+                <img id="cfg_image" itemprop="image" class="img img-responsive" t-att-src="get_config_image(product_tmpl, cfg_vars['cfg_session'].value_ids.ids)"/>
+                <div id="cfg_price" class="row mt16">
+                  <t t-set="prices" t-value="product_tmpl.get_cfg_price(cfg_val_ids.ids)"/>
+                  <t t-set="vals" t-value="prices.get('vals')"/>
+                  <div id="cfg_price_tags" class="col-xs-12">
+                    <t t-foreach="vals" t-as="vals">
+                      <t t-if="vals[0]">
+                        <div class="col-sm-8 text-right">
+                          <div class="label label-info">
+                            <t t-esc="vals[0]"/>:
+                            <t t-esc="vals[1]"/>
+                          </div>
+                        </div>
+                        <div class="col-sm-4 text-right">
+                          <span style="white-space: nowrap;" t-esc="vals[2]"/>
+                          <span t-field="pricelist.currency_id"/>
+                        </div>
+                        <div class="clearfix"/>
+                      </t>
+                    </t>
+                  </div>
+                  <div class="col-xs-12 mt16">
+                    <div class="col-xs-6 text-right"><h4>Total: </h4></div>
+                    <div class="col-xs-6">
+                      <h4>
+                        <span id="cfg_total" style="white-space: nowrap;" t-esc="prices['total']"/>
+                        <span t-esc="prices['currency']"/>
+                      </h4>
+                    </div>
+                    <div class="col-xs-6 text-right" style="opacity: 0.8">
+                      <h5 style="margin: 0">Taxes:</h5>
+                    </div>
+                    <div class="col-xs-6">
+                      <h5 style="margin: 0">
+                        <span id="cfg_tax" t-esc="prices['taxes']"/>
+                        <span t-esc="prices['currency']"/>
+                      </h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+        </div>
+    </t>
+  </template>
+
+<!-- Product configurator checkout -->
+
+<template id="cfg_session" name="Configuration Session">
+  <t t-call="website.layout">
+      <t t-set="additional_title" t-value="product_tmpl.name"/>
+      <div itemscope="itemscope" itemtype="http://schema.org/Product" id="wrap" class="js_sale oe_website_sale">
+        <section t-attf-class="container" id="product_detail">
+          <div class="row">
+            <div class="col-xs-12 col-sm-4">
+                <ul class="mt16 product_vals">
+                  <t t-foreach="get_product_vals(cfg_session)" t-as="val">
+                    <li>
+                        <strong t-field="val.attribute_id.name"/>:
+                        <t t-if="str(val._model) == 'product.attribute.value'">
+                          <span t-field="val.name"/>
+                        </t>
+                        <t t-if="str(val._model) == 'product.config.session.custom.value'">
+                          <span t-field="val.value"/>
+                          <t t-foreach="val.attachment_ids" t-as="attachment">
+                            <br t-if="not attachment_first"/>
+                            <span t-field="attachment.name"/>
+                          </t>
+                        </t>
+                      </li>
+                  </t>
+                </ul>
+            </div>
+
+            <div class="col-xs-12 col-md-4">
+              <img id="cfg_image" itemprop="image" class="img img-responsive img-center" t-att-src="get_config_image(product_tmpl, cfg_session.value_ids.ids)"/>
+            </div>
+
+            <div class="col-xs-12 col-sm-4">
+                <h1 itemprop="name" t-field="product_tmpl.name">Product Name</h1>
+                <!-- <span itemprop="url" style="display:none;" t-attf-hre="/configurator/#{slug(product)}"/> -->
+
+                <form class="js_add_cart_variants" method="post">
+                  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                  <div class="js_product">
+                    <t t-placeholder="select">
+                      <input type="hidden" class="cfg_session_id" name="cfg_session_id" t-att-value="cfg_session.id"/>
+                    </t>
+
+                    <div itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer" class="product_price mt16">
+                        <h4 class="oe_price_h4 css_editable_mode_hidden">
+                            <span class="text-danger oe_default_price" style="text-decoration: line-through; white-space: nowrap;"
+                              t-field="cfg_session.price"
+                              t-field-options='{
+                                "widget": "monetary",
+                                "from_currency": "product_tmpl.currency_id",
+                                "display_currency": "website.currency_id"
+                             }'/>
+                            <b class="oe_price" style="white-space: nowrap;"
+                              t-field="cfg_session.price"
+                              t-field-options='{
+                                 "widget": "monetary",
+                                 "display_currency": "website.currency_id"
+                             }'/>
+                            <span itemprop="price" style="display:none;" t-esc="cfg_session.price"/>
+                            <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
+                        </h4>
+                        <h4 class="css_non_editable_mode_hidden">
+                          <span t-field="cfg_session.price"
+                                t-field-options='{
+                                   "widget": "monetary",
+                                  "display_currency": "product_tmpl.currency_id"
+                                }'/>
+                        </h4>
+                        <h4 class="hidden oe_not_available bg-warning">Product not available</h4>
+                    </div>
+
+                    <div class="mt8">
+                      <div class="input-group oe_website_spinner">
+                          <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json">
+                              <i class="fa fa-minus"></i>
+                          </a>
+                          <input type="text" class="js_quantity form-control" data-min="1" name="add_qty" value="1"/>
+                          <a t-attf-href="#" class="mb8 input-group-addon float_left js_add_cart_json">
+                              <i class="fa fa-plus"></i>
+                          </a>
+                      </div>
+                      <button id="add_to_cart" type="submit" class="btn btn-default pull-left mb32 mt8 btn-primary">
+                        Add to Cart
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                <hr t-if="product_tmpl.description_sale"/>
+                <div><p t-field="product_tmpl.description_sale" class="text-muted"/></div>
+            </div>
+          </div>
+        </section>
+        <div itemprop="description" t-field="product_tmpl.website_description" class="oe_structure mt16" id="product_full_description"/>
+      </div>
+  </t>
+</template>
+
+<!-- View providing "active" boolean marker checked in website.py to show/hide configurable products -->
+
+<template id="layout_config_products_show" inherit_id="website_sale.products" customize_show="True" name="Configurable Products"/>
+
+</data>
+</openerp>
