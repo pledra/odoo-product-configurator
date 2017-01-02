@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from openerp import models, fields, api
+from openerp import models, fields, api, _
+from openerp.exceptions import ValidationError
 
 # TODO: Implement a default attribute value field/method to load up on wizard
 
@@ -14,6 +15,16 @@ class ProductAttribute(models.Model):
             default.update({'name': attr.name + " (copy)"})
             attr = super(ProductAttribute, attr).copy(default)
             return attr
+
+    @api.model
+    def _get_nosearch_fields(self):
+        """Return a list of custom field types that do not support searching"""
+        return ['binary']
+
+    @api.onchange('custom_type')
+    def onchange_custom_type(self):
+        if self.custom_type in self._get_nosearch_fields():
+            self.search_ok = False
 
     CUSTOM_TYPES = [
         ('char', 'Char'),
@@ -86,6 +97,15 @@ class ProductAttribute(models.Model):
     # attribute lines
 
     _order = 'sequence'
+
+    @api.constrains('custom_type', 'search_ok')
+    def check_searchable_field(self):
+        nosearch_fields = self._get_nosearch_fields()
+        if self.custom_type in nosearch_fields and self.search_ok:
+            raise ValidationError(
+                _("Selected custom field type '%s' is not searchable" %
+                  self.custom_type)
+            )
 
 
 class ProductAttributeLine(models.Model):
