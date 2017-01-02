@@ -194,7 +194,10 @@ class ProductTemplate(models.Model):
             for value_id in value_ids:
                 domain.append(('attribute_value_ids', '=', value_id))
 
-            attr_search = attr_obj.search([('search_ok', '=', True)])
+            attr_search = attr_obj.search([
+                ('search_ok', '=', True),
+                ('custom_type', 'not in', attr_obj._get_nosearch_fields())
+            ])
 
             for attr_id, value in custom_values.iteritems():
                 if attr_id not in attr_search.ids:
