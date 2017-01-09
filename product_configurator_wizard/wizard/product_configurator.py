@@ -799,7 +799,7 @@ class ProductConfigurator(models.TransientModel):
         so.write({
             'order_line': [(0, 0, {
                 'product_id': variant.id,
-                'name': variant.name
+                'name': variant.name_get()[0][1]
             })]
         })
 
