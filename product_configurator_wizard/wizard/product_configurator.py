@@ -653,9 +653,15 @@ class ProductConfigurator(models.TransientModel):
                     attr_id: field_val
                 })
             elif attr_line.custom:
-                # TODO: Adapt for image upload the field written to
+                val = vals[custom_field_name]
+                if attr_line.attribute_id.custom_type == 'binary':
+                    # TODO: Add widget that enables multiple file uploads
+                    val = [{
+                        'name': 'custom',
+                        'datas': vals[custom_field_name]
+                    }]
                 custom_val_dict.update({
-                    attr_id: vals[custom_field_name]
+                    attr_id: val
                 })
 
             # Remove dynamic field from value list to prevent error
