@@ -135,7 +135,7 @@ class WebsiteProductConfig(http.Controller):
                 vals['value_ids'].append(val.id)
 
         vals['prices'] = product_tmpl.get_cfg_price(
-            cfg_val_ids, json_config['custom_vals'])
+            cfg_val_ids, json_config['custom_vals'], formatLang=True)
         return vals
 
     # TODO: Use the same variable name all over cfg_val, cfg_step, no mixup
