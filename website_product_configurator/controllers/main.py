@@ -214,7 +214,7 @@ class WebsiteProductConfig(http.Controller):
         }
         return request.render(template_name, values)
 
-    def parse_upload_file(self, field_name):
+    def parse_upload_file(self, field_name, multi=False):
         """ Parse uploaded file from request.files """
         # TODO: Set allowed extensions in the backend and compare
         files = request.httprequest.files.getlist(field_name)
@@ -224,6 +224,8 @@ class WebsiteProductConfig(http.Controller):
                 'name': secure_filename(file.filename),
                 'datas': base64.b64encode(file.stream.read())
             })
+            if not multi:
+                return attachments
         return attachments
 
     def parse_config_post(self, product_tmpl):
@@ -252,7 +254,8 @@ class WebsiteProductConfig(http.Controller):
             if val == 'custom':
                 custom_type = line.attribute_id.custom_type
                 if custom_type == 'binary':
-                    custom_val = self.parse_upload_file(custom_field_name)
+                    custom_val = self.parse_upload_file(
+                        custom_field_name, line.multi)
                 else:
                     custom_type = eval(custom_type) if custom_type in [
                         'float', 'int'] else None

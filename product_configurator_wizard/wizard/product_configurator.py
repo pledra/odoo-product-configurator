@@ -305,9 +305,9 @@ class ProductConfigurator(models.TransientModel):
 
                 # Set default field type
                 field_type = 'char'
+                field_types = self.env['ir.model.fields']._get_field_types()
 
                 if attribute.custom_type:
-                    field_types = self._get_fields_type()
                     custom_type = line.attribute_id.custom_type
                     # TODO: Rename int to integer in values
                     if custom_type == 'int':
@@ -648,9 +648,15 @@ class ProductConfigurator(models.TransientModel):
                     attr_id: field_val
                 })
             elif attr_line.custom:
-                # TODO: Adapt for image upload the field written to
+                val = vals[custom_field_name]
+                if attr_line.attribute_id.custom_type == 'binary':
+                    # TODO: Add widget that enables multiple file uploads
+                    val = [{
+                        'name': 'custom',
+                        'datas': vals[custom_field_name]
+                    }]
                 custom_val_dict.update({
-                    attr_id: vals[custom_field_name]
+                    attr_id: val
                 })
 
             # Remove dynamic field from value list to prevent error
@@ -795,7 +801,7 @@ class ProductConfigurator(models.TransientModel):
         so.write({
             'order_line': [(0, 0, {
                 'product_id': variant.id,
-                'name': variant.name_get()[0][1]
+                'name': variant.display_name
             })]
         })
 
