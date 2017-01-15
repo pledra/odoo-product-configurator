@@ -305,9 +305,9 @@ class ProductConfigurator(models.TransientModel):
 
                 # Set default field type
                 field_type = 'char'
+                field_types = self.env['ir.model.fields']._get_field_types()
 
                 if attribute.custom_type:
-                    field_types = self._get_fields_type()
                     custom_type = line.attribute_id.custom_type
                     # TODO: Rename int to integer in values
                     if custom_type == 'int':
