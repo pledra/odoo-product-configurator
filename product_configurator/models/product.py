@@ -3,6 +3,7 @@
 from lxml import etree
 from ast import literal_eval
 
+from openerp.report.report_sxw import rml_parse
 from openerp.exceptions import ValidationError
 from openerp import models, fields, api, tools, _
 from openerp.addons import decimal_precision as dp
@@ -110,13 +111,27 @@ class ProductTemplate(models.Model):
                 })
         return adjacent_steps
 
+    def formatPrices(self, prices={}):
+        formatLang = rml_parse(
+            self._cr, self._uid, [], context=self._context).formatLang
+        prices['taxes'] = formatLang(prices['taxes'], monetary=True)
+        prices['total'] = formatLang(prices['total'], monetary=True)
+        prices['vals'] = [
+            (v[0], v[1], formatLang(v[2], monetary=True))
+            for v in prices['vals']
+        ]
+        return prices
+
     @api.multi
-    def get_cfg_price(self, value_ids, custom_values={}, pricelist_id=None):
+    def get_cfg_price(self, value_ids, custom_values={},
+                      pricelist_id=None, formatLang=False):
         """ Computes the price of the configured product based on the configuration
-            passed in the config_vals dictionary
+            passed in via value_ids and custom_values
 
         :param value_ids: list of attribute value_ids
         :param custom_values: dictionary of custom attribute values
+        :param pricelist_id: id of pricelist to use for price computation
+        :param formatLang: boolean for formatting price dictionary
         :returns: dictionary of prices per attribute and total price"""
         self.ensure_one()
         if not pricelist_id:
@@ -173,6 +188,8 @@ class ProductTemplate(models.Model):
             taxes = total_included - product_prices['total']
             prices['taxes'] += taxes
             prices['total'] += total_included
+        if formatLang:
+            return self.formatPrices(prices)
         return prices
 
     @api.multi

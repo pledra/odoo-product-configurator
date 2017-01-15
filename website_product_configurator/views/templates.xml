@@ -233,7 +233,7 @@
               <div class="col-md-4">
                 <img id="cfg_image" itemprop="image" class="img img-responsive" t-att-src="get_config_image(product_tmpl, cfg_vars['cfg_session'].value_ids.ids)"/>
                 <div id="cfg_price" class="row mt16">
-                  <t t-set="prices" t-value="product_tmpl.get_cfg_price(cfg_val_ids.ids)"/>
+                  <t t-set="prices" t-value="product_tmpl.get_cfg_price(cfg_val_ids.ids, formatLang=True)"/>
                   <t t-set="vals" t-value="prices.get('vals')"/>
                   <div id="cfg_price_tags" class="col-xs-12">
                     <t t-foreach="vals" t-as="vals">
