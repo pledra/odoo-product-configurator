@@ -2,7 +2,53 @@
 Concept
 *******
 
-From a technical standpoint the Odoo Product Configurator makes little changes to standard behavior. Most of the logic resides in new models (like website configurator and backend configurator) that use information from the product.template model to generate dynamic forms. The collected information is used to create new variants using the standard orm methods.
+.. image:: images/configuration-process-diagram.png
+    :align: center
+    :alt: alternate text
+
+Configurable Template (product.template)
+----------------------------------------
+
+Product Templates with the boolean config_ok field checked become Configurable Templates.
+
+When config_ok is True the template does not generate variants automatically anymore.
+
+The attributes set on the template are only mere instructions for a configurator to generate a user
+friendly interface.
+
+Configuration interfaces
+------------------------
+
+In order to give control to the user on the options he can pick we must generate a user friendly interface.
+
+We have provided at the time of this writing two configuration interfaces: The Backend Wizard and Website / Ecommerce Configurator.
+
+These interfaces read data from the configurable templates (Attributes, Values, Configuration Restrictions / Steps / Images etc).
+
+Using this information we are able to generate an interface that allows the user to select the available options on the product.
+
+We also have quite a few handy helper methods on the product.template to operate a configuration interface.
+
+The most important part is enforcing restrictions so users cannot make mistakes and generate unbuildable variants.
+
+
+Configuration Session (product.config.session)
+----------------------------------------------
+
+Whenever a user starts a configuration process, his selections must be saved in a session.
+
+This way the user does not loose his progress when moving through multiple steps and he can also save his configuration.
+
+Configuration sessions store the options selected by the user in either interface and validates them according to the restrictions applied on the product.template
+
+
+Configurable Products (product.product)
+---------------------------------------
+
+Same as the product.template the configurable products or variants have a config_ok boolean field.
+
+After a configuration session is valid and findal we can use the information form the session to generate a new product variant.
+
 
 *********
 Structure
@@ -31,7 +77,7 @@ The logic is at the time of this writing divided between 3 modules:
 product.template model
 **********************
 
-The product.template object has a boolean field 'config_ok' that is used to determine if it is a regular template product or a configurable one. This is the marker that activates all the related functionality, without it behavior of the model remains completely unchanged.
+The product.template object has a boolean field 'config_ok' that is used to determine if it is a regular template product or a configurable one. This is the marker that activates all the related functionality, without it behavior of the original model remains completely unchanged.
 
 Once this is checked the product.template:
 
@@ -73,9 +119,6 @@ Sanitization of data to prevent invalid / malicious input is done via config_par
 	parsed_vals = self.config_parse(product_tmpl, post, config_step)
 
 If no errors were returned from the parsing method we can update the configuration for this user. This is used to retrieve the configuration values at a later time to pre-fill the values in the form. Also when the configuration is finished we can just create a new configurable variant using the validated and stored values.
-
-.. note::
-	There has been a debate wether the storage of configuration data should be done in the http session or in the product.config.session object added by the Product Configurator Base. While the session might have better speed we decided to go with model storage for the sake of unity with the backend configurator. We also have validation methods stored directly on the method and attachments can be saved as ir.attachment objects in the same place with all the other data.
 
 The related product.config.session model is updated with the validated values from the frontend and can be uniquely identified using the unique session id.
 
