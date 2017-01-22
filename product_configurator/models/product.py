@@ -426,6 +426,13 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
     _rec_name = 'config_name'
 
+    def _get_conversions_dict(self):
+        conversions = {
+            'float': float,
+            'int': int
+        }
+        return conversions
+
     @api.multi
     def _compute_product_price_extra(self):
         """Compute price of configurable products as sum
@@ -435,6 +442,7 @@ class ProductProduct(models.Model):
         if products:
             prices = super(ProductProduct, self)._compute_product_price_extra()
 
+        conversions = self._get_conversions_dict()
         for product in configurable_products:
             lst_price = product.product_tmpl_id.lst_price
             value_ids = product.attribute_value_ids.ids
@@ -442,9 +450,18 @@ class ProductProduct(models.Model):
             # and use same method to retrieve parsed custom val dict
             custom_vals = {}
             for val in product.value_custom_ids:
-                if val.attribute_id.custom_type in ['float', 'int']:
-                    # TODO: Needs a safer approach
-                    custom_vals[val.attribute_id.id] = literal_eval(val.value)
+                custom_type = val.attribute_id.custom_type
+                if custom_type in conversions:
+                    try:
+                        custom_vals[val.attribute_id.id] = conversions[
+                            custom_type](val.value)
+                    except:
+                        raise ValidationError(
+                            _("Could not convert custom value '%s' to '%s' on "
+                              "product variant: '%s'" % (val.value,
+                                                         custom_type,
+                                                         product.display_name))
+                        )
                 else:
                     custom_vals[val.attribute_id.id] = val.value
             prices = product.product_tmpl_id.get_cfg_price(
