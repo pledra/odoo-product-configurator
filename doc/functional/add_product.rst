@@ -15,17 +15,17 @@ The first thing we need to do is navigate to **Sales** tab in the back-end and a
 
 .. note::
     If you already have products in the database and wish to make them configurable just click on the form button with the wrench icon on the top right
-    
+
 .. image:: images/config_button_on.png
     :align: center
-    :alt: alternate text    
+    :alt: alternate text
 
 After we have clicked on the **Create** button in the first section we are now given Odoo's standard product form view. When we are done with naming our product and setting all the relevant information we can move on to the **Variants** tab inside the form.
 
 Adding attributes and values
 ============================
 
-.. note::	
+.. note::
     If you are already running the system as an Administrator you will have access to the Product Variants and Product Configurator from the start. In order for other users to gain access you must add them to the Product Configurator group which will activate Product Variants as well.
 
     To do this you must first activate Odoo's *Developer mode* as an Administrator. This is done by cliking in the right upper corner in the backend where the Administrator panel is located. Select **About** from the dropdown panel a pop-up window will appear. On the new opened pop-up window click the **Activate the developer mode**.
@@ -37,11 +37,11 @@ Every configurable product starts with the population of the *Attributes* table.
 We recomand adding data to the *Attributes* table by planing and analysing your product first. Include all possible options from the start, for example if colors, sizes and shapes the attribute table can be populated like this:
 
 ===============  =============================
- **Attributes**   **Attibute Values**         
+ **Attributes**   **Attibute Values**
 ---------------  -----------------------------
-  Color           Red, Blue, Green            
-  Size            Small, Medium, Large        
-  Shape           Square, Circle              
+  Color           Red, Blue, Green
+  Size            Small, Medium, Large
+  Shape           Square, Circle
 ===============  =============================
 
 The **Requierd** field makes sure that the configuration process of the product cannot finish until it a value has been provided for the specific attribute. Also depending on the configuration interface it might also enforce client-side validation. This prevents users from proceeding to the next step until setting a value for the attribute in question.

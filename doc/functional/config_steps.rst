@@ -11,8 +11,8 @@ The first parameter is the configuration step, you can just write any name (in o
 .. image:: images/conf_steps2.png
     :align: center
     :alt: alternate text
-    
-At this point in time when loading the configuration interface the product will have the Engine configuration step and the two attributes and input 
+
+At this point in time when loading the configuration interface the product will have the Engine configuration step and the two attributes and input
 fields to supply data.
 
 After adding as many steps as you please you can re-order them with drag and drop to change the sequence in which they appear through the configuration interface.
@@ -22,6 +22,6 @@ For the website interface you can change the select box default view. First navi
 Now when you access the website configurator and reach your step by clickin on the tab or via Next button you will be presented with the new display.
 
 .. note::
-	So far the Product Configurator comes with two pre-defined views (Select-Box & Radio-Thumbail). In order for the thumbnail view to shows images of
-	attributes you must link the attributes to products. See more here (link)
+    So far the Product Configurator comes with two pre-defined views (Select-Box & Radio-Thumbail). In order for the thumbnail view to shows images of
+    attributes you must link the attributes to products. See more here (link)
 

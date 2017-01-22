@@ -6,3 +6,4 @@ Technical Documentation
     :titlesonly:
 
    technical/concept
+   technical/pricing

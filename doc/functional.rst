@@ -12,3 +12,4 @@ Functional Documentation
     functional/config_restrictions
     functional/config_steps
     functional/config_images
+    functional/pricing
