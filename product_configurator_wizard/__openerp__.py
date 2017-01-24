@@ -21,6 +21,9 @@
         'views/assets.xml',
         'views/sale_view.xml',
     ],
+    'images': [
+        'static/description/cover.png'
+    ],
     'installable': True,
     'auto_install': False,
 }

@@ -41,6 +41,9 @@
         'demo/product_config_step.xml',
         'demo/config_image_ids.xml',
     ],
+    'images': [
+        'static/description/cover.png'
+    ],
     'test': [],
     'installable': True,
     'auto_install': False,
