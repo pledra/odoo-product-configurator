@@ -24,6 +24,8 @@
         'demo/product_template.xml',
         'demo/product_config_step.xml'
     ],
-
+    'images': [
+        'static/description/cover.png'
+    ],
     'application': True
 }
