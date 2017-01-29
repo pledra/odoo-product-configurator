@@ -8,14 +8,17 @@
 			<field name="inherit_id" ref="sale.view_order_form"/>
 			<field name="arch" type="xml">
 
-				<xpath expr="//form//notebook//field[@name='order_line']/form/field[@name='name']" position="before">
-					<label for="custom_value_ids"/>
-					<field name="custom_value_ids" nolabel="1" colspan="4">
-						<tree>
-							<field name="attribute_id"/>
-							<field name="name"/>
-						</tree>
-					</field>
+				<xpath expr="//form//notebook//field[@name='order_line']/form/field[@name='name']" position="after">
+					<div groups="product_configurator.group_product_configurator">
+						<label for="custom_value_ids"/>
+						<field name="custom_value_ids">
+							<tree>
+								<field name="attribute_id"/>
+								<field name="name"/>
+								<field name="attachment_ids" widget="many2many_tags"/>
+							</tree>
+						</field>
+					</div>
 				</xpath>
 
 			</field>
