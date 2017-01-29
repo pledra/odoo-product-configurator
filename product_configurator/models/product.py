@@ -111,13 +111,13 @@ class ProductTemplate(models.Model):
                 })
         return adjacent_steps
 
-    def formatPrices(self, prices={}):
+    def formatPrices(self, prices={}, dp='Product Price'):
         formatLang = rml_parse(
             self._cr, self._uid, [], context=self._context).formatLang
-        prices['taxes'] = formatLang(prices['taxes'], monetary=True)
-        prices['total'] = formatLang(prices['total'], monetary=True)
+        prices['taxes'] = formatLang(prices['taxes'], monetary=True, dp=dp)
+        prices['total'] = formatLang(prices['total'], monetary=True, dp=dp)
         prices['vals'] = [
-            (v[0], v[1], formatLang(v[2], monetary=True))
+            (v[0], v[1], formatLang(v[2], monetary=True, dp=dp))
             for v in prices['vals']
         ]
         return prices
