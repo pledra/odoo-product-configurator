@@ -111,11 +111,14 @@ class ProductTemplate(models.Model):
                 })
         return adjacent_steps
 
-    def formatPrices(self, prices={}):
-        prices['taxes'] = formatLang(self.env, prices['taxes'], monetary=True)
-        prices['total'] = formatLang(self.env, prices['total'], monetary=True)
+    def formatPrices(self, prices={}, dp='Product Price'):
+        dp = None
+        prices['taxes'] = formatLang(
+            self.env, prices['taxes'], monetary=True, dp=dp)
+        prices['total'] = formatLang(
+            self.env, prices['total'], monetary=True, dp=dp)
         prices['vals'] = [
-            (v[0], v[1], formatLang(self.env, v[2], monetary=True))
+            (v[0], v[1], formatLang(self.env, v[2], monetary=True, dp=dp))
             for v in prices['vals']
         ]
         return prices
