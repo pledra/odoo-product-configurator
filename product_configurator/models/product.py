@@ -111,7 +111,9 @@ class ProductTemplate(models.Model):
                 })
         return adjacent_steps
 
-    def formatPrices(self, prices={}, dp='Product Price'):
+    def formatPrices(self, prices=None, dp='Product Price'):
+        if prices is None:
+            prices = {}
         dp = None
         prices['taxes'] = formatLang(
             self.env, prices['taxes'], monetary=True, dp=dp)
@@ -124,7 +126,7 @@ class ProductTemplate(models.Model):
         return prices
 
     @api.multi
-    def get_cfg_price(self, value_ids, custom_values={},
+    def get_cfg_price(self, value_ids, custom_values=None,
                       pricelist_id=None, formatLang=False):
         """ Computes the price of the configured product based on the configuration
             passed in via value_ids and custom_values
@@ -135,6 +137,8 @@ class ProductTemplate(models.Model):
         :param formatLang: boolean for formatting price dictionary
         :returns: dictionary of prices per attribute and total price"""
         self.ensure_one()
+        if custom_values is None:
+            custom_values = {}
         if not pricelist_id:
             partner = self.env.user.partner_id
             pricelist = partner.property_product_pricelist
@@ -196,7 +200,7 @@ class ProductTemplate(models.Model):
         return prices
 
     @api.multi
-    def search_variant(self, value_ids, custom_values={}):
+    def search_variant(self, value_ids, custom_values=None):
         """ Searches product.variants with given value_ids and custom values
             given in the custom_values dict
 
@@ -205,6 +209,8 @@ class ProductTemplate(models.Model):
 
             :returns: product.product recordset of products matching domain
         """
+        if custom_values is None:
+            custom_values = {}
         attr_obj = self.env['product.attribute']
         for product_tmpl in self:
             domain = [('product_tmpl_id', '=', product_tmpl.id)]
@@ -251,7 +257,7 @@ class ProductTemplate(models.Model):
         return img_obj
 
     @api.multi
-    def get_variant_vals(self, value_ids, custom_values={}, **kwargs):
+    def get_variant_vals(self, value_ids, custom_values=None, **kwargs):
         """ Hook to alter the values of the product variant before creation
 
             :param value_ids: list of product.attribute.values ids
@@ -260,6 +266,8 @@ class ProductTemplate(models.Model):
             :returns: dictionary of values to pass to product.create() method
          """
         self.ensure_one()
+        if custom_values is None:
+            custom_values = {}
 
         image = self.get_config_image_obj(value_ids).image
         all_images = tools.image_get_resized_images(
@@ -296,7 +304,7 @@ class ProductTemplate(models.Model):
         return vals
 
     @api.multi
-    def create_variant(self, value_ids, custom_values={}):
+    def create_variant(self, value_ids, custom_values=None):
         """ Creates a product.variant with the attributes passed via value_ids
         and custom_values
 
@@ -306,6 +314,8 @@ class ProductTemplate(models.Model):
             :returns: product.product recordset of products matching domain
 
         """
+        if custom_values is None:
+            custom_values = {}
         valid = self.validate_configuration(value_ids, custom_values)
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
@@ -347,7 +357,7 @@ class ProductTemplate(models.Model):
         return True
 
     @api.multi
-    def validate_configuration(self, value_ids, custom_vals={}, final=True):
+    def validate_configuration(self, value_ids, custom_vals=None, final=True):
         """ Verifies if the configuration values passed via value_ids and custom_vals
         are valid
 
@@ -361,6 +371,8 @@ class ProductTemplate(models.Model):
         """
         # TODO: Raise ConfigurationError with reason
         # Check if required values are missing for final configuration
+        if custom_vals is None:
+            custom_vals = {}
         if final:
             for line in self.attribute_line_ids:
                 common_vals = set(value_ids) & set(line.value_ids.ids)

@@ -7,8 +7,11 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     @api.multi
-    def create_variant(self, value_ids, custom_values={}):
+    def create_variant(self, value_ids, custom_values=None):
         """Add bill of matrials to the configured variant."""
+        if custom_values is None:
+            custom_values = {}
+
         variant = super(ProductTemplate, self).create_variant(
             value_ids, custom_values=custom_values
         )

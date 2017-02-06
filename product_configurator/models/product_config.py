@@ -344,7 +344,7 @@ class ProductConfigSession(models.Model):
         return valid
 
     @api.multi
-    def update_config(self, attr_val_dict={}, custom_val_dict={}):
+    def update_config(self, attr_val_dict=None, custom_val_dict=None):
         """Update the session object with the given value_ids and custom values.
 
         Use this method instead of write in order to prevent incompatible
@@ -368,6 +368,10 @@ class ProductConfigSession(models.Model):
         }
 
         """
+        if attr_val_dict is None:
+            attr_val_dict = {}
+        if custom_val_dict is None:
+            custom_val_dict = {}
         update_vals = {}
 
         value_ids = self.value_ids.ids
