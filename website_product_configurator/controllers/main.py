@@ -140,13 +140,16 @@ class WebsiteProductConfig(http.Controller):
 
     # TODO: Use the same variable name all over cfg_val, cfg_step, no mixup
     # TODO: Rename cfg_vars to cfg_env everywhere, possibly turn into object
-    def config_vars(self, product_tmpl, active_step=None, data={}):
+    def config_vars(self, product_tmpl, active_step=None, data=None):
         """ Proccess configuration step variables from the product.template
 
         :param product_tmpl: product.template object being configured
         :param active_step: current product.config.step.line object
         :returns: dict of config related variables
         """
+        if data is None:
+            data = {}
+
         attr_lines = product_tmpl.attribute_line_ids
         cfg_lines = product_tmpl.config_line_ids
         config_steps = product_tmpl.config_step_line_ids
@@ -416,11 +419,18 @@ class WebsiteProductConfig(http.Controller):
                 values['errors'][field_name] = 'invalid'
         return values
 
-    def config_redirect(self, product_tmpl, config_step, post={},
-                        value_ids=[], custom_vals={}):
+    def config_redirect(self, product_tmpl, config_step, post=None,
+                        value_ids=None, custom_vals=None):
         """
         Redirect user to a certain url depending on the configuration state
         """
+        if post is None:
+            post = {}
+        if value_ids is None:
+            value_ids = []
+        if custom_vals is None:
+            custom_vals = {}
+
         cfg_steps = product_tmpl.config_step_line_ids
 
         product_tmpl_url = '/configurator/%s' % slug(product_tmpl)
@@ -560,7 +570,7 @@ class WebsiteProductConfig(http.Controller):
             json_config.get('attr_vals', {}).values())
         return self.get_config_image(product_tmpl, value_ids, size)
 
-    def configure_product(self, product_tmpl, value_ids, custom_vals={}):
+    def configure_product(self, product_tmpl, value_ids, custom_vals=None):
         """Used for searching a variant with the values passed in cfg_vals
            and returning a redirect to it. In case a product is not found with
            the given valid configuration a new variant is generated with the
@@ -573,6 +583,9 @@ class WebsiteProductConfig(http.Controller):
            """
         # TODO: Implement a search and create method that can be extended
         # easily
+        if custom_vals is None:
+            custom_vals = {}
+
         product = product_tmpl.search_variant(value_ids, custom_vals)
         if product:
             if len(product) > 1:
