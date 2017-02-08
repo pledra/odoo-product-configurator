@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from lxml import etree
-from ast import literal_eval
 
 from openerp.tools.misc import formatLang
 from openerp.exceptions import ValidationError
@@ -126,6 +125,43 @@ class ProductTemplate(models.Model):
         return prices
 
     @api.multi
+    def _get_option_values(self, value_ids, pricelist):
+        """Return only attribute values that have products attached with a
+        price set to them"""
+        value_obj = self.env['product.attribute.value'].with_context({
+            'pricelist': pricelist.id})
+        values = value_obj.browse(value_ids).filtered(
+            lambda x: x.product_id.price)
+        return values
+
+    @api.multi
+    def get_components_prices(self, prices, value_ids,
+                              custom_values, pricelist):
+        """Return prices of the components which make up the final
+        configured variant"""
+        vals = self._get_option_values(value_ids, pricelist)
+        for val in vals:
+            prices['vals'].append(
+                (val.attribute_id.name,
+                 val.product_id.name,
+                 val.product_id.price)
+            )
+            product = val.product_id.with_context({'pricelist': pricelist.id})
+            product_prices = product.taxes_id.sudo().compute_all(
+                price_unit=product.price,
+                currency=pricelist.currency_id,
+                quantity=1,
+                product=self,
+                partner=self.env.user.partner_id
+            )
+
+            total_included = product_prices['total_included']
+            taxes = total_included - product_prices['total_excluded']
+            prices['taxes'] += taxes
+            prices['total'] += total_included
+        return prices
+
+    @api.multi
     def get_cfg_price(self, value_ids, custom_values=None,
                       pricelist_id=None, formatLang=False):
         """ Computes the price of the configured product based on the configuration
@@ -140,25 +176,25 @@ class ProductTemplate(models.Model):
         if custom_values is None:
             custom_values = {}
         if not pricelist_id:
-            partner = self.env.user.partner_id
-            pricelist = partner.property_product_pricelist
+            pricelist = self.env.user.partner_id.property_product_pricelist
+            pricelist_id = pricelist.id
         else:
             pricelist = self.env['product.pricelist'].browse(pricelist_id)
-        value_obj = self.env['product.attribute.value']
-        vals = value_obj.browse(value_ids)
-        currency = pricelist.currency_id
-        quantity = 1
 
-        tmpl_prices = self.taxes_id.sudo().compute_all(
-            price_unit=self.list_price,
-            currency=currency,
-            quantity=quantity,
-            product=self,
-            partner=partner
+        currency = pricelist.currency_id
+
+        product = self.with_context({'pricelist': pricelist.id})
+
+        base_prices = product.taxes_id.sudo().compute_all(
+            price_unit=product.price,
+            currency=pricelist.currency_id,
+            quantity=1,
+            product=product,
+            partner=self.env.user.partner_id
         )
 
-        total_included = tmpl_prices['total_included']
-        total_excluded = tmpl_prices['total_excluded']
+        total_included = base_prices['total_included']
+        total_excluded = base_prices['total_excluded']
 
         prices = {
             'vals': [
@@ -169,32 +205,10 @@ class ProductTemplate(models.Model):
             'currency': currency.name
         }
 
-        for val in vals:
-            product_price = val.product_id.list_price
-            if not product_price:
-                continue
-            # TODO: This part might use refactoring
-            json_price = round(product_price)
-            # TODO: Elements will not be editable when
-            # updated with json
-            prices['vals'].append(
-                (val.attribute_id.name,
-                 val.product_id.name,
-                 json_price)
-            )
+        component_prices = self.get_components_prices(
+            prices, value_ids, custom_values, pricelist)
+        prices.update(component_prices)
 
-            product_prices = val.product_id.taxes_id.sudo().compute_all(
-                price_unit=product_price,
-                currency=currency,
-                quantity=quantity,
-                product=val.product_id,
-                partner=partner
-            )
-
-            total_included = product_prices['total_included']
-            taxes = total_included - product_prices['total_excluded']
-            prices['taxes'] += taxes
-            prices['total'] += total_included
         if formatLang:
             return self.formatPrices(prices)
         return prices
