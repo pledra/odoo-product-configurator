@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Configuration Steps -->
+
+		<record id="config_step_engine" model="product.config.step">
+    		<field name="name">Engine</field>
+    	</record>
+
+        <record id="config_step_body" model="product.config.step">
+            <field name="name">Body</field>
+        </record>
+
+        <record id="config_step_lines" model="product.config.step">
+            <field name="name">Lines</field>
+        </record>
+
+        <record id="config_step_interior" model="product.config.step">
+            <field name="name">Interior</field>
+        </record>
+
+    	<record id="config_step_extras" model="product.config.step">
+    		<field name="name">Extras</field>
+    	</record>
+
+        <!-- Configuration Lines -->
+
+        <record id="2_series_config_step_body" model="product.config.step.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="config_step_id" ref="config_step_body"/>
+            <field name="attribute_line_ids" eval="[(6, 0, [
+                ref('product_attribute_line_2_series_color'),
+                ref('product_attribute_line_2_series_rims')])]"/>
+        </record>
+
+        <record id="2_series_config_step_lines" model="product.config.step.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="config_step_id" ref="config_step_lines"/>
+            <field name="attribute_line_ids" eval="[(6, 0, [
+                ref('product_attribute_line_2_series_model_line')])]"/>
+        </record>
+
+        <record id="2_series_config_step_interior" model="product.config.step.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="config_step_id" ref="config_step_interior"/>
+            <field name="attribute_line_ids" eval="[(6, 0, [
+                ref('product_attribute_line_2_series_tapistry')])]"/>
+        </record>
+
+       <record id="2_series_config_step_engine" model="product.config.step.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="config_step_id" ref="config_step_engine"/>
+            <field name="attribute_line_ids" eval="[(6, 0, [
+                ref('product_attribute_line_2_series_engine'),
+                ref('product_attribute_line_2_series_fuel')])]"/>
+        </record>
+
+       <record id="2_series_config_step_extras" model="product.config.step.line">
+            <field name="product_tmpl_id" ref="bmw_2_series"/>
+            <field name="config_step_id" ref="config_step_extras"/>
+            <field name="attribute_line_ids" eval="[(6, 0, [
+                ref('product_attribute_line_2_series_transmission'),
+                ref('product_attribute_line_2_series_options')])]"/>
+        </record>
+
+
+
+    </data>
+</openerp>
