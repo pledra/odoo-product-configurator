@@ -15,7 +15,7 @@ Tour.register({
         },
         {
             title: "Check price",
-            element: "#cfg_total:contains(25000)",
+            element: "#cfg_total:contains(25,000.00)",
         },
         {
             title:  "Select fuel",
@@ -39,8 +39,8 @@ Tour.register({
         },
         {
             title: "Check price",
-            waitFor: "#cfg_total:contains(37634)",
-            element: "#cfg_price_tags:contains(div span:contains(12634)"
+            waitFor: "#cfg_total:contains(37,634.00)",
+            element: "#cfg_price_tags:contains(div span:contains(12,634.00)"
         },
         {
             title: "Next Step",
@@ -68,8 +68,8 @@ Tour.register({
         },
         {
             title: "Check price",
-            waitFor: "#cfg_total:contains(38360)",
-            element: "#cfg_price_tags:contains(div span:contains(726)"
+            waitFor: "#cfg_total:contains(38,360.00)",
+            element: "#cfg_price_tags:contains(div span:contains(726.00)"
         },
         {
             title: "Next Step",
@@ -115,7 +115,7 @@ Tour.register({
         },
         {
             title: "Check price",
-            element: "#cfg_total:contains(39390)",
+            element: "#cfg_total:contains(39,390.00)",
         },
         {
             title: "Submit Configuration",
@@ -123,7 +123,7 @@ Tour.register({
         },
         {
             title: "Check configuration price",
-            element: "b.oe_price span.oe_currency_value:contains(39,390)"
+            element: "b.oe_price span.oe_currency_value:contains(39,390.00)"
         },
         {
             title: 'Add to cart',
