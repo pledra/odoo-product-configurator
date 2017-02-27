@@ -627,11 +627,13 @@ class ProductConfigurator(models.TransientModel):
             field_name = self.field_prefix + str(attr_id)
             custom_field_name = self.custom_field_prefix + str(attr_id)
 
-            if field_name not in vals:
+            if field_name not in vals and custom_field_name not in vals:
                 continue
 
             # Add attribute values from the client except custom attribute
-            if vals[field_name] != custom_val.id:
+            # If a custom value is being written, but field name is not in
+            #   the write dictionary, then it must be a custom value!
+            if vals.get(field_name, custom_val.id) != custom_val.id:
                 if attr_line.multi and isinstance(vals[field_name], list):
                     if not vals[field_name]:
                         field_val = None
@@ -660,7 +662,8 @@ class ProductConfigurator(models.TransientModel):
                 })
 
             # Remove dynamic field from value list to prevent error
-            del vals[field_name]
+            if field_name in vals:
+                del vals[field_name]
             if custom_field_name in vals:
                 del vals[custom_field_name]
 
