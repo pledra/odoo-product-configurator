@@ -269,6 +269,32 @@ class ProductTemplate(models.Model):
         return img_obj
 
     @api.multi
+    def encode_custom_values(self, custom_values):
+        """ Hook to alter the values of the custom values before creating or writing
+
+            :param custom_values: dict {product.attribute.id: custom_value}
+
+            :returns: list of custom values compatible with write and create
+         """
+        custom_values = custom_values or {}
+
+        binary_attribute_ids = self.env['product.attribute'].search([
+            ('custom_type', '=', 'binary')]).ids
+
+        custom_lines = []
+
+        for key, val in custom_values.iteritems():
+            custom_vals = {'attribute_id': key}
+            if key in binary_attribute_ids:
+                custom_vals.update({
+                    'attachment_ids': [(6, 0, val.ids)]
+                })
+            else:
+                custom_vals.update({'value': val})
+            custom_lines.append((0, 0, custom_vals))
+        return custom_lines
+
+    @api.multi
     def get_variant_vals(self, value_ids, custom_values=None, **kwargs):
         """ Hook to alter the values of the product variant before creation
 
@@ -278,8 +304,6 @@ class ProductTemplate(models.Model):
             :returns: dictionary of values to pass to product.create() method
          """
         self.ensure_one()
-        if custom_values is None:
-            custom_values = {}
 
         image = self.get_config_image_obj(value_ids).image
         all_images = tools.image_get_resized_images(
@@ -294,24 +318,8 @@ class ProductTemplate(models.Model):
             'image_small': all_images['image_medium'],
         }
 
-        binary_attribute_ids = self.env['product.attribute'].search([
-            ('custom_type', '=', 'binary')]).ids
-
-        if not custom_values:
-            return vals
-
-        custom_lines = []
-
-        for key, val in custom_values.iteritems():
-            custom_vals = {'attribute_id': key}
-            if key in binary_attribute_ids:
-                custom_vals.update({
-                    'attachment_ids': [(6, 0, val.ids)]
-                })
-            else:
-                custom_vals.update({'value': val})
-            custom_lines.append((0, 0, custom_vals))
-        vals.update({'value_custom_ids': custom_lines})
+        if custom_values:
+            vals.update({'value_custom_ids': self.encode_custom_values(custom_values)})
 
         return vals
 

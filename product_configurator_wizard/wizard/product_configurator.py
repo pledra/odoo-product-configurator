@@ -783,7 +783,8 @@ class ProductConfigurator(models.TransientModel):
         if self.product_id:
             self.product_id.write({
                 'attribute_value_ids': [(6, 0, self.value_ids.ids)],
-                'value_custom_ids': [(6, 0, custom_vals)]
+                'value_custom_ids': map(lambda cv: (2, cv), self.product_id.value_custom_ids.ids) + \
+                                        self.product_id.product_tmpl_id.encode_custom_values(custom_vals),
             })
             self.unlink()
             return
