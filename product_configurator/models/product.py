@@ -275,7 +275,7 @@ class ProductTemplate(models.Model):
             :param custom_values: dict {product.attribute.id: custom_value}
 
             :returns: list of custom values compatible with write and create
-         """
+        """
         binary_attribute_ids = self.env['product.attribute'].search([
             ('custom_type', '=', 'binary')]).ids
 

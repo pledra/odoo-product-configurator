@@ -799,10 +799,11 @@ class ProductConfigurator(models.TransientModel):
         }
 
         if self.product_id:
+            remove_cv_links = map(lambda cv: (2, cv), self.product_id.value_custom_ids.ids)
+            new_cv_links = self.product_id.product_tmpl_id.encode_custom_values(custom_vals)
             self.product_id.write({
                 'attribute_value_ids': [(6, 0, self.value_ids.ids)],
-                'value_custom_ids': map(lambda cv: (2, cv), self.product_id.value_custom_ids.ids) + \
-                                        self.product_id.product_tmpl_id.encode_custom_values(custom_vals),
+                'value_custom_ids':  remove_cv_links + new_cv_links,
             })
             if self.order_line_id:
                 self.order_line_id.write(self._extra_line_values(self.order_line_id.order_id,
