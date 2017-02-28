@@ -230,6 +230,10 @@ class ProductConfigurator(models.TransientModel):
         default='select',
         string='State',
     )
+    order_line_id = fields.Many2one(
+        comodel_name='sale.order.line',
+        readonly=True,
+    )
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -778,6 +782,14 @@ class ProductConfigurator(models.TransientModel):
 
         return wizard_action
 
+    def _extra_line_values(self, so, product, new=True):
+        """ Hook to allow custom line values to be put on the newly created or edited lines.
+        """
+        vals = {}
+        if new:
+            vals.update({'name': product.display_name})
+        return vals
+
     @api.multi
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
@@ -792,6 +804,10 @@ class ProductConfigurator(models.TransientModel):
                 'value_custom_ids': map(lambda cv: (2, cv), self.product_id.value_custom_ids.ids) + \
                                         self.product_id.product_tmpl_id.encode_custom_values(custom_vals),
             })
+            if self.order_line_id:
+                self.order_line_id.write(self._extra_line_values(self.order_line_id.order_id,
+                                                                 self.product_id,
+                                                                 new=False))
             self.unlink()
             return
         #
@@ -815,11 +831,11 @@ class ProductConfigurator(models.TransientModel):
 
         so = self.env['sale.order'].browse(self.env.context.get('active_id'))
 
+        line_vals = {'product_id': variant.id}
+        line_vals.update(self._extra_line_values(so, variant, new=True))
+
         so.write({
-            'order_line': [(0, 0, {
-                'product_id': variant.id,
-                'name': variant.display_name
-            })]
+            'order_line': [(0, 0, line_vals)]
         })
 
         self.unlink()
