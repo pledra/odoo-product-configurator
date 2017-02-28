@@ -650,7 +650,10 @@ class ProductConfigurator(models.TransientModel):
                     attr_id: field_val
                 })
             elif attr_line.custom:
-                val = vals[custom_field_name]
+                # For non-binary fields, a custom field value may have been entered which
+                # is 0 or some other way False, and this will not be in the dictionary of
+                # values, so need to assume that if not passed it is a "False" value desired.
+                val = vals.get(custom_field_name, False)
                 if attr_line.attribute_id.custom_type == 'binary':
                     # TODO: Add widget that enables multiple file uploads
                     val = [{
