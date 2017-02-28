@@ -653,6 +653,10 @@ class ProductConfigurator(models.TransientModel):
                 attr_val_dict.update({
                     attr_id: field_val
                 })
+                # Ensure there is no custom value stored if we have switched from custom 
+                # to chosen value.
+                if attr_line.custom:
+                    custom_val_dict.update({attr_id: False})
             elif attr_line.custom:
                 # For non-binary fields, a custom field value may have been entered which
                 # is 0 or some other way False, and this will not be in the dictionary of
