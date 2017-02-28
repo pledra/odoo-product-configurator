@@ -288,6 +288,7 @@ class ProductTemplate(models.Model):
                     'attachment_ids': [(6, 0, val.ids)]
                 })
             else:
+                self.env['product.attribute'].browse(key).validate_custom_val(val)
                 custom_vals.update({'value': val})
             custom_lines.append((0, 0, custom_vals))
         return custom_lines

@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+from ast import literal_eval
 
 # TODO: Implement a default attribute value field/method to load up on wizard
 
@@ -100,6 +101,19 @@ class ProductAttribute(models.Model):
                   self.custom_type)
             )
 
+    def validate_custom_val(self, val):
+        """ Pass in a desired custom value and ensure it is valid.
+        Probaly should check type, etc, but let's assume fine for the moment.
+        """ 
+        self.ensure_one()
+        if self.custom_type in ('int', 'float'):
+            if self.min_val or self.max_val:
+                val = literal_eval(val)
+                if val < self.min_val or val > self.max_val:
+                    raise ValidationError(
+                        _("Selected custom value '%s' must be between %s and %s" %
+                          (self.name, self.min_val, self.max_val))
+                    )
 
 class ProductAttributeLine(models.Model):
     _inherit = 'product.attribute.line'

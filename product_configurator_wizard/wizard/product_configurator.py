@@ -794,9 +794,19 @@ class ProductConfigurator(models.TransientModel):
             })
             self.unlink()
             return
+        #
+        # This try except is too generic.
+        # The create_variant routine could effectively fail for
+        # a large number of reasons, including bad programming.
+        # It should be refactored.
+        # In the meantime, at least make sure that a validation
+        # error legitimately raised in a nested routine
+        # is passed through.
         try:
             variant = self.product_tmpl_id.create_variant(
                 self.value_ids.ids, custom_vals)
+        except ValidationError:
+            raise
         except:
             raise ValidationError(
                 _('Invalid configuration! Please check all '
