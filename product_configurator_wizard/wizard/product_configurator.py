@@ -230,6 +230,10 @@ class ProductConfigurator(models.TransientModel):
         default='select',
         string='State',
     )
+    order_line_id = fields.Many2one(
+        comodel_name='sale.order.line',
+        readonly=True,
+    )
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -627,11 +631,13 @@ class ProductConfigurator(models.TransientModel):
             field_name = self.field_prefix + str(attr_id)
             custom_field_name = self.custom_field_prefix + str(attr_id)
 
-            if field_name not in vals:
+            if field_name not in vals and custom_field_name not in vals:
                 continue
 
             # Add attribute values from the client except custom attribute
-            if vals[field_name] != custom_val.id:
+            # If a custom value is being written, but field name is not in
+            #   the write dictionary, then it must be a custom value!
+            if vals.get(field_name, custom_val.id) != custom_val.id:
                 if attr_line.multi and isinstance(vals[field_name], list):
                     if not vals[field_name]:
                         field_val = None
@@ -647,8 +653,15 @@ class ProductConfigurator(models.TransientModel):
                 attr_val_dict.update({
                     attr_id: field_val
                 })
+                # Ensure there is no custom value stored if we have switched from custom 
+                # to chosen value.
+                if attr_line.custom:
+                    custom_val_dict.update({attr_id: False})
             elif attr_line.custom:
-                val = vals[custom_field_name]
+                # For non-binary fields, a custom field value may have been entered which
+                # is 0 or some other way False, and this will not be in the dictionary of
+                # values, so need to assume that if not passed it is a "False" value desired.
+                val = vals.get(custom_field_name, False)
                 if attr_line.attribute_id.custom_type == 'binary':
                     # TODO: Add widget that enables multiple file uploads
                     val = [{
@@ -660,7 +673,8 @@ class ProductConfigurator(models.TransientModel):
                 })
 
             # Remove dynamic field from value list to prevent error
-            del vals[field_name]
+            if field_name in vals:
+                del vals[field_name]
             if custom_field_name in vals:
                 del vals[custom_field_name]
 
@@ -772,6 +786,14 @@ class ProductConfigurator(models.TransientModel):
 
         return wizard_action
 
+    def _extra_line_values(self, so, product, new=True):
+        """ Hook to allow custom line values to be put on the newly created or edited lines.
+        """
+        vals = {}
+        if new:
+            vals.update({'name': product.display_name})
+        return vals
+
     @api.multi
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
@@ -781,15 +803,31 @@ class ProductConfigurator(models.TransientModel):
         }
 
         if self.product_id:
+            remove_cv_links = map(lambda cv: (2, cv), self.product_id.value_custom_ids.ids)
+            new_cv_links = self.product_id.product_tmpl_id.encode_custom_values(custom_vals)
             self.product_id.write({
                 'attribute_value_ids': [(6, 0, self.value_ids.ids)],
-                'value_custom_ids': [(6, 0, custom_vals)]
+                'value_custom_ids':  remove_cv_links + new_cv_links,
             })
+            if self.order_line_id:
+                self.order_line_id.write(self._extra_line_values(self.order_line_id.order_id,
+                                                                 self.product_id,
+                                                                 new=False))
             self.unlink()
             return
+        #
+        # This try except is too generic.
+        # The create_variant routine could effectively fail for
+        # a large number of reasons, including bad programming.
+        # It should be refactored.
+        # In the meantime, at least make sure that a validation
+        # error legitimately raised in a nested routine
+        # is passed through.
         try:
             variant = self.product_tmpl_id.create_variant(
                 self.value_ids.ids, custom_vals)
+        except ValidationError:
+            raise
         except:
             raise ValidationError(
                 _('Invalid configuration! Please check all '
@@ -798,11 +836,11 @@ class ProductConfigurator(models.TransientModel):
 
         so = self.env['sale.order'].browse(self.env.context.get('active_id'))
 
+        line_vals = {'product_id': variant.id}
+        line_vals.update(self._extra_line_values(so, variant, new=True))
+
         so.write({
-            'order_line': [(0, 0, {
-                'product_id': variant.id,
-                'name': variant.display_name
-            })]
+            'order_line': [(0, 0, line_vals)]
         })
 
         self.unlink()
