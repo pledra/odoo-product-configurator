@@ -9,7 +9,7 @@ class TestUi(tests.HttpCase):
 
     def setUp(self):
         super(TestUi, self).setUp()
-        self.tour = "odoo.__DEBUG__.services['web.Tour']"
+        self.tour = "openerp.Tour"
 
     def test_admin_configuration(self):
         self.phantom_js(

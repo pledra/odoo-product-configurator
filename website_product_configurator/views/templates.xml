@@ -20,6 +20,12 @@
       </xpath>
   </template>
 
+  <template id="assets_editor" inherit_id="website.assets_editor" name="Product Configurator Editor" groups="base.group_sale_manager">
+  <xpath expr="." position="inside">
+      <script type="text/javascript" src="/website_product_configurator/static/src/js/website_product_config_tour_configure.js"></script>
+  </xpath>
+</template>
+
 <template id="product_items" name="Product item">
   <div itemscope="itemscope" itemtype="http://schema.org/Product">
   <div class="ribbon-wrapper">

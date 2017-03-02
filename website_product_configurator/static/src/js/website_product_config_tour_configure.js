@@ -1,9 +1,6 @@
 (function () {
     'use strict';
-
-    var _t = openerp._t;
-    var steps = openerp.Tour.tours.shop_buy_product.steps;
-
+    var img_url = '';
     openerp.Tour.register({
         id:   'configure_product',
         name: "Try to configure products",
@@ -16,7 +13,7 @@
             },
             {
                 title: "Check price",
-                element: "#cfg_total:contains(25000)",
+                element: "#cfg_total:contains(25000.00)",
             },
             {
                 title:  "Select fuel",
@@ -25,7 +22,7 @@
                     var option = $('select.cfg_input option:contains("Gasoline")');
                     var select = option.parent();
                     select.val(option.val()).change();
-                }
+                },
             },
             {
                 title:  "Select engine",
@@ -40,12 +37,12 @@
             },
             {
                 title: "Check price",
-                waitFor: "#cfg_total:contains(37634)",
-                element: "#cfg_price_tags:contains(div span:contains(12634)"
+                waitFor: "#cfg_total:contains(37634.00)",
+                element: "#cfg_price_tags:contains(div span:contains(12634.00)",
             },
             {
                 title: "Next Step",
-                element: "#submit_configuration"
+                element: "#submit_configuration",
             },
             {
                 title:  "Select color",
@@ -55,6 +52,7 @@
                     var option = $('select.cfg_input option:contains("Silver")');
                     var select = option.parent()
                     select.val(option.val()).change();
+                    openerp.Tour.defaultDelay = 2000;
                 },
             },
             {
@@ -69,12 +67,15 @@
             },
             {
                 title: "Check price",
-                waitFor: "#cfg_total:contains(38360)",
-                element: "#cfg_price_tags:contains(div span:contains(726)"
+                waitFor: "#cfg_total:contains(38360.00)",
+                element: "#cfg_price_tags:contains(div span:contains(726.00)",
+                onload: function() {
+                    openerp.Tour.defaultDelay = 120;
+                }
             },
             {
                 title: "Next Step",
-                element: "#submit_configuration"
+                element: "#submit_configuration",
             },
             {
                 title:     "Select interior step",
@@ -93,7 +94,7 @@
             },
             {
                 title: "Next Step",
-                element: "#submit_configuration"
+                element: "#submit_configuration",
             },
             {
                 title: "Select transmission",
@@ -101,7 +102,7 @@
                 onload: function() {
                     var radio = $("strong:contains('Automatic Sport (Steptronic)')").parent().parent().siblings('label').find('input')
                     radio.click();
-                }
+                },
             },
             {
                 title: "Select options",
@@ -109,26 +110,25 @@
                 onload: function() {
                     var checkbox = $("strong:contains('Smoker Package')").parent().parent().siblings('label').find('input');
                     checkbox.click();
-
                     var checkbox = $("strong:contains('Tow hook')").parent().parent().siblings('label').find('input');
                     checkbox.click();
-                }
+                },
             },
             {
                 title: "Check price",
-                element: "#cfg_total:contains(39390)",
+                element: "#cfg_total:contains(39390.00)",
             },
             {
                 title: "Submit Configuration",
-                element: "#submit_configuration"
+                element: "#submit_configuration",
             },
             {
                 title: "Check configuration price",
-                element: "b.oe_price span.oe_currency_value:contains(39,390)"
+                element: "b.oe_price span.oe_currency_value:contains(39390.00)",
             },
             {
                 title: 'Add to cart',
-                element: '#add_to_cart'
+                element: '#add_to_cart',
             },
             {
                 title:     "Finished",
@@ -137,4 +137,4 @@
         ]
 
     });
-});
+})();
