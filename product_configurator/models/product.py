@@ -4,7 +4,7 @@ from lxml import etree
 
 from openerp.report.report_sxw import rml_parse
 from openerp.exceptions import ValidationError
-from openerp import models, fields, api, tools, _
+from openerp import models, fields, api, tools, SUPERUSER_ID, _
 from openerp.addons import decimal_precision as dp
 
 
@@ -114,7 +114,7 @@ class ProductTemplate(models.Model):
         if prices is None:
             prices = {}
         formatLang = rml_parse(
-            self._cr, self._uid, [], context=self._context).formatLang
+            self._cr, SUPERUSER_ID, [], context=self._context).formatLang
         prices['taxes'] = formatLang(prices['taxes'], monetary=True, dp=dp)
         prices['total'] = formatLang(prices['total'], monetary=True, dp=dp)
         prices['vals'] = [
