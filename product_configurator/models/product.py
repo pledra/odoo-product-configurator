@@ -339,7 +339,7 @@ class ProductTemplate(models.Model):
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
         # TODO: Add all custom values to order line instead of product
-        
+
         variant_exists = self.search_variant(value_ids, custom_values)
         if variant_exists:
             return variant_exists
