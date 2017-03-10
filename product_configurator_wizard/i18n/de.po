@@ -1,0 +1,211 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_configurator_wizard
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0-20170309\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-09 16:50+0000\n"
+"PO-Revision-Date: 2017-03-10 09:54+0100\n"
+"Last-Translator: Ermin Trevisan <trevi@twanda.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: de\n"
+"X-Generator: Poedit 1.8.7.1\n"
+
+#. module: product_configurator_wizard
+#: code:addons/product_configurator_wizard/wizard/product_configurator.py:650
+#, python-format
+msgid "An error occursed while parsing value for attribute %s"
+msgstr "Fehler beim Analysieren des Wertes von Attribut %s"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_attachment_ids
+msgid "Attachments"
+msgstr "Dateianhänge"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_attribute_id
+msgid "Attribute"
+msgstr "Attribut"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_attribute_line_ids
+msgid "Attributes"
+msgstr "Attribute"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_config_session
+msgid "Automatically created field to link to parent product.config.session"
+msgstr "Automatisch erzeugtes Feld zur Verlinkung mit parent product.config.session"
+
+#. module: product_configurator_wizard
+#: model:ir.ui.view,arch_db:product_configurator_wizard.product_configurator_form
+msgid "Back"
+msgstr "Zurück"
+
+#. module: product_configurator_wizard
+#: code:addons/product_configurator_wizard/wizard/product_configurator.py:75
+#, python-format
+msgid "Changing the product template while having an active configuration will erase reset/clear all values"
+msgstr "Das Ändern der Produktvorlage während einer aktiven Konfiguration löscht alle Werte oder setzt sie zurück"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_sale_order_line_config_ok
+msgid "Configurable"
+msgstr "Konfigurierbar"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_product_tmpl_id
+msgid "Configurable Template"
+msgstr "Konfigurierbare Vorlage"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_config_step_ids
+msgid "Configuration Steps"
+msgstr "Konfigurationsschritte"
+
+#. module: product_configurator_wizard
+#: model:ir.actions.act_window,name:product_configurator_wizard.action_wizard_product_configurator
+#: model:ir.ui.view,arch_db:product_configurator_wizard.sale_order_form_config
+msgid "Configure Product"
+msgstr "Konfiguriere Produkt"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_create_uid
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_create_uid
+msgid "Created by"
+msgstr "Erstellt von"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_create_date
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_create_date
+msgid "Created on"
+msgstr "Angelegt am"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_ids
+msgid "Custom Values"
+msgstr "Benutzerdefinierte Werte"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_display_name
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_display_name
+msgid "Display Name"
+msgstr "Anzeigename"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_id
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_id
+msgid "ID"
+msgstr "ID"
+
+#. module: product_configurator_wizard
+#: code:addons/product_configurator_wizard/wizard/product_configurator.py:833
+#, python-format
+msgid "Invalid configuration! Please check all required steps and fields."
+msgstr "Ungültige Konfiguration! Bitte überprüfen Sie alle notwendigen Schritte und Felder."
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator___last_update
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value___last_update
+msgid "Last Modified on"
+msgstr "Zuletzt geändert am"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_write_uid
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_write_uid
+msgid "Last Updated by"
+msgstr "Zuletzt aktualisiert durch"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_write_date
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_write_date
+msgid "Last Updated on"
+msgstr "Zuletzt aktualisiert am"
+
+#. module: product_configurator_wizard
+#: model:ir.ui.view,arch_db:product_configurator_wizard.product_configurator_form
+msgid "Next"
+msgstr "Weiter"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_price
+msgid "Price"
+msgstr "Preis"
+
+#. module: product_configurator_wizard
+#: model:ir.ui.view,arch_db:product_configurator_wizard.product_configurator_form
+msgid "Product Configurator"
+msgstr "Produktkonfigurator"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_product_id
+msgid "Product Variant"
+msgstr "Produktvariante"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_product_img
+msgid "Product img"
+msgstr "Produktbild"
+
+#. module: product_configurator_wizard
+#: model:ir.ui.view,arch_db:product_configurator_wizard.sale_order_form_config
+msgid "Reconfigure"
+msgstr "Erneut konfigurieren"
+
+#. module: product_configurator_wizard
+#: model:ir.model,name:product_configurator_wizard.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Auftragsposition"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,help:product_configurator_wizard.field_product_configurator_product_id
+msgid "Set only when re-configuring a existing variant"
+msgstr "Nur setzen bei der Neukonfiguration einer existierenden Variante"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_state
+msgid "State"
+msgstr "Status"
+
+#. module: product_configurator_wizard
+#: code:addons/product_configurator_wizard/wizard/product_configurator.py:397
+#, python-format
+msgid "There was a problem rendering the view (dynamic_form not found)"
+msgstr "Es gibt ein Problem beim Erzeugen der Ansicht (dynamic_form nicht gefunden)"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_user_id
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_user_id
+msgid "User"
+msgstr "Benutzer"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_value
+msgid "Value"
+msgstr "Wert"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_value_ids
+msgid "Value ids"
+msgstr "Wert-IDs"
+
+#. module: product_configurator_wizard
+#: model:ir.model.fields,field_description:product_configurator_wizard.field_product_configurator_custom_value_wizard_id
+msgid "Wizard"
+msgstr "Assistent"
+
+#. module: product_configurator_wizard
+#: model:ir.model,name:product_configurator_wizard.model_product_configurator
+msgid "product.configurator"
+msgstr "product.configurator"
+
+#. module: product_configurator_wizard
+#: model:ir.model,name:product_configurator_wizard.model_product_configurator_custom_value
+msgid "product.configurator.custom.value"
+msgstr "product.configurator.custom.value"
