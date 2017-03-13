@@ -271,6 +271,34 @@ class ProductTemplate(models.Model):
         return img_obj
 
     @api.multi
+    def encode_custom_values(self, custom_values):
+        """ Hook to alter the values of the custom values before creating or writing
+
+            :param custom_values: dict {product.attribute.id: custom_value}
+
+            :returns: list of custom values compatible with write and create
+        """
+        attr_obj = self.env['product.attribute']
+        binary_attribute_ids = attr_obj.search([
+            ('custom_type', '=', 'binary')]).ids
+
+        custom_lines = []
+
+        for key, val in custom_values.iteritems():
+            custom_vals = {'attribute_id': key}
+            # TODO: Is this extra check neccesairy as we already make
+            # the check in validate_configuration?
+            attr_obj.browse(key).validate_custom_val(val)
+            if key in binary_attribute_ids:
+                custom_vals.update({
+                    'attachment_ids': [(6, 0, val.ids)]
+                })
+            else:
+                custom_vals.update({'value': val})
+            custom_lines.append((0, 0, custom_vals))
+        return custom_lines
+
+    @api.multi
     def get_variant_vals(self, value_ids, custom_values=None, **kwargs):
         """ Hook to alter the values of the product variant before creation
 
@@ -296,25 +324,10 @@ class ProductTemplate(models.Model):
             'image_small': all_images['image_medium'],
         }
 
-        binary_attribute_ids = self.env['product.attribute'].search([
-            ('custom_type', '=', 'binary')]).ids
-
-        if not custom_values:
-            return vals
-
-        custom_lines = []
-
-        for key, val in custom_values.iteritems():
-            custom_vals = {'attribute_id': key}
-            if key in binary_attribute_ids:
-                custom_vals.update({
-                    'attachment_ids': [(6, 0, val.ids)]
-                })
-            else:
-                custom_vals.update({'value': val})
-            custom_lines.append((0, 0, custom_vals))
-        vals.update({'value_custom_ids': custom_lines})
-
+        if custom_values:
+            vals.update({
+                'value_custom_ids': self.encode_custom_values(custom_values)
+            })
         return vals
 
     @api.multi
@@ -387,10 +400,15 @@ class ProductTemplate(models.Model):
         # Check if required values are missing for final configuration
         if custom_vals is None:
             custom_vals = {}
-        if final:
-            for line in self.attribute_line_ids:
+
+        for line in self.attribute_line_ids:
+            # Validate custom values
+            attr = line.attribute_id
+            if attr.id in custom_vals:
+                attr.validate_custom_val(custom_vals[attr.id])
+            if final:
                 common_vals = set(value_ids) & set(line.value_ids.ids)
-                custom_val = custom_vals.get(line.attribute_id.id)
+                custom_val = custom_vals.get(attr.id)
                 if line.required and not common_vals and not custom_val:
                     # TODO: Verify custom value type to be correct
                     return False

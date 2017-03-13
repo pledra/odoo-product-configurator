@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from ast import literal_eval
+
 from openerp import models, fields, api, _
 from openerp.exceptions import ValidationError
 
@@ -82,16 +84,12 @@ class ProductAttribute(models.Model):
         'this attribute?'
     )
 
-    sequence = fields.Integer(
-        string='Sequence',
-        default=10,
-        help='Gives the sequence of this line when '
-        'displaying the attributes'
+    uom_id = fields.Many2one(
+        comodel_name='product.uom',
+        string='Unit of Measure'
     )
 
-    uom_id = fields.Many2one('product.uom', string='Unit of Measure')
-
-    image = fields.Binary('Image')
+    image = fields.Binary(string='Image')
 
     # TODO prevent the same attribute from being defined twice on the
     # attribute lines
@@ -106,6 +104,31 @@ class ProductAttribute(models.Model):
                 _("Selected custom field type '%s' is not searchable" %
                   self.custom_type)
             )
+
+    def validate_custom_val(self, val):
+        """ Pass in a desired custom value and ensure it is valid.
+        Probaly should check type, etc, but let's assume fine for the moment.
+        """
+        self.ensure_one()
+        if self.custom_type in ('int', 'float'):
+            minv = self.min_val
+            maxv = self.max_val
+            val = literal_eval(val)
+            if minv and maxv and (val < minv or val > maxv):
+                raise ValidationError(
+                    _("Selected custom value '%s' must be between %s and %s"
+                        % (self.name, self.min_val, self.max_val))
+                )
+            elif minv and val < minv:
+                raise ValidationError(
+                    _("Selected custom value '%s' must be at least %s" %
+                        (self.name, self.min_val))
+                )
+            elif maxv and val > maxv:
+                raise ValidationError(
+                    _("Selected custom value '%s' must be lower than %s" %
+                        (self.name, self.max_val + 1))
+                )
 
 
 class ProductAttributeLine(models.Model):
