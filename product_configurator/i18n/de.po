@@ -1,0 +1,694 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_configurator
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0-20170309\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-09 16:46+0000\n"
+"PO-Revision-Date: 2017-03-10 09:16+0100\n"
+"Last-Translator: Ermin Trevisan <trevi@twanda.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: de\n"
+"X-Generator: Poedit 1.8.7.1\n"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_active
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_active
+msgid "Active"
+msgstr "Aktiv"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_val_custom
+msgid "Allow custom value for this attribute?"
+msgstr "Benutzerdefinierte Werte für dieses Attribut erlauben?"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_line_custom
+msgid "Allow custom values for this attribute?"
+msgstr "Benutzerdefinierte Werte für dieses Attribut erlauben?"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_line_multi
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_multi
+msgid "Allow selection of multiple values for this attribute?"
+msgstr "Auswahl von mehreren Werten für dieses Attribut erlauben?"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Attachment"
+msgstr "Dateianhang"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_attachment_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_attachment_ids
+msgid "Attachments"
+msgstr "Dateianhänge"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_attribute_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_attribute_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_attribute_id
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_custom
+msgid "Attribute"
+msgstr "Attribut"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_line_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_line_ids
+msgid "Attribute Dependencies"
+msgstr "Attributabhängigkeiten"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_attribute_line_id
+msgid "Attribute Line"
+msgstr "Attributzeile"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_attribute_line_ids
+msgid "Attribute Lines"
+msgstr "Attributzeilen"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Attribute Value Dependencies"
+msgstr "Attributwert-Abhängigkeiten"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_attr_line_val_ids
+msgid "Attribute Values"
+msgstr "Attributwerte"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:509
+#, python-format
+msgid "Attribute custom type is binary, attachments are the only accepted values with this custom field type"
+msgstr "Der benutzerdefinierte Attributstyp ist binär, nur Dateianhänge sind als Werte für diesen benutzerdefinierten Feldtyp erlaubt"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:514
+#, python-format
+msgid "Attribute custom type must be 'binary' for saving attachments to custom value"
+msgstr "Der benutzerdefinierte Attributstyp muss 'binär' sein um Dateianhänge zu dem benutzerdefinierten Wert zu speichern"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_value_active
+msgid "By unchecking the active field you can disable a attribute value without deleting it"
+msgstr "Durch Deaktivieren dieses aktiven Feldes können Sie einen Attributwert sperren ohne ihn zu löschen"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_active
+msgid "By unchecking the active field you can disable a attribute without deleting it"
+msgstr "Durch Deaktivieren dieses aktiven Feldes können Sie ein Attribut sperren ohne es zu löschen"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_ok
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_ok
+msgid "Can be Configured"
+msgstr "Kann konfiguriert werden"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:268
+#, python-format
+msgid "Cannot have a configuration step defined twice."
+msgstr "Ein Konfigurationsschritt kann nicht zweimal definiert werden."
+
+#. module: product_configurator
+#: sql_constraint:product.attribute.value.custom:0
+msgid "Cannot have two custom values for the same attribute"
+msgstr "Es darf keine zwei benutzerdefinierten Werte für das gleiche Attribut geben"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Char"
+msgstr "Char"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Color"
+msgstr "Farbe"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_condition
+msgid "Condition"
+msgstr "Bedingung"
+
+#. module: product_configurator
+#: model:ir.ui.menu,name:product_configurator.menu_product_configurable
+msgid "Configurable Products"
+msgstr "Konfigurierbare Produkte"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_product_tmpl_id
+msgid "Configurable Template"
+msgstr "Konfigurierbare Vorlage"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_configurable_template_action
+#: model:ir.ui.menu,name:product_configurator.menu_product_configurable_template_action
+msgid "Configurable Templates"
+msgstr "Konfigurierbare Vorlagen"
+
+#. module: product_configurator
+#: model:ir.ui.menu,name:product_configurator.menu_product_configurable_variants_action
+msgid "Configurable Variants"
+msgstr "Konfigurierbare Varianten"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_value_ids
+msgid "Configuration"
+msgstr "Konfiguration"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_image_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_image_ids
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configuration Images"
+msgstr "Konfigurationsbilder"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_step_line_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_step_line_ids
+msgid "Configuration Lines"
+msgstr "Konfigurationszeilen"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_config_domain_action
+#: model:ir.ui.menu,name:product_configurator.menu_product_config_domain_action
+#: model:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configuration Restrictions"
+msgstr "Konfigurationsbeschränkungen"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_config_session
+#: model:ir.ui.menu,name:product_configurator.menu_product_config_session
+#: model:ir.ui.view,arch_db:product_configurator.product_config_session_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_config_session_tree_view
+msgid "Configuration Sessions"
+msgstr "Konfigurationssitzungen"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_config_step_id
+#: model:ir.ui.view,arch_db:product_configurator.config_step_form_view
+#: model:ir.ui.view,arch_db:product_configurator.config_step_tree_view
+msgid "Configuration Step"
+msgstr "Konfigurationsschritt"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_config_steps_action
+#: model:ir.ui.menu,name:product_configurator.menu_product_config_steps_action
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configuration Steps"
+msgstr "Konfigurationsschritte"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_custom
+msgid "Configuration Values"
+msgstr "Konfigurationswerte"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:490
+#, python-format
+msgid "Configuration cannot have the same value inserted twice"
+msgstr "Der gleiche Wert kann nicht zweimal eingesetzt werden"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configurator"
+msgstr "Konfigurator"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_configurable_variant_action
+msgid "Configured Variants"
+msgstr "Konfigurierte Varianten"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product.py:497
+#, python-format
+msgid "Could not convert custom value '%s' to '%s' on product variant: '%s'"
+msgstr "Der benutzerdefinierte Wert '%s' kann nicht zu '%s' konvertiert werden für Produktvariante: '%s'"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_create_uid
+msgid "Created by"
+msgstr "Erstellt von"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_create_date
+msgid "Created on"
+msgstr "Angelegt am"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_custom
+#: model:product.attribute,name:product_configurator.custom_attribute
+#: model:product.attribute.value,name:product_configurator.custom_attribute_value
+msgid "Custom"
+msgstr "Benutzerdefiniert"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_val_custom
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_value
+msgid "Custom Value"
+msgstr "Benutzerdefinierter Wert"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_value_custom_ids
+#: model:ir.model.fields,field_description:product_configurator.field_sale_order_line_custom_value_ids
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_config_session_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_form_view_custom_vals_inherit
+msgid "Custom Values"
+msgstr "Benutzerdefinierte Werte"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_config_session_custom_value_value
+msgid "Custom value held as string"
+msgstr "Benutzerdefinierter Wert als Zeichenkette"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Date"
+msgstr "Datum"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "DateTime"
+msgstr "Datum&Uhrzeit"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_description
+msgid "Description"
+msgstr "Beschreibung"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_required
+msgid "Determines the required value of this attribute though it can be change on the template level"
+msgstr "Bestimmt den erforderlichen Wert für dieses Attribut auch wenn er in der Vorlage geändert werden kann"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_display_name
+msgid "Display Name"
+msgstr "Anzeigename"
+
+#. module: product_configurator
+#: selection:product.config.session,state:0
+msgid "Done"
+msgstr "Erledigt"
+
+#. module: product_configurator
+#: selection:product.config.session,state:0
+msgid "Draft"
+msgstr "Entwurf"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_custom_type
+msgid "Field Type"
+msgstr "Feldtyp"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Float"
+msgstr "Float"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_id
+msgid "ID"
+msgstr "ID"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_image
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_image
+msgid "Image"
+msgstr "Bild"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_implied_ids
+#: model:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
+msgid "Inherited"
+msgstr "Vererbt"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Integer"
+msgstr "Integer"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product.py:340
+#: code:addons/product_configurator/models/product_config.py:438
+#, python-format
+msgid "Invalid Configuration"
+msgstr "Ungültige Konfiguration"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_account_invoice_line
+msgid "Invoice Line"
+msgstr "Rechungsposition"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_line_required
+msgid "Is this attribute required?"
+msgstr "Ist dieses Attribute erforderlich?"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line___last_update
+msgid "Last Modified on"
+msgstr "Zuletzt geändert am"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_write_uid
+msgid "Last Updated by"
+msgstr "Zuletzt aktualisiert durch"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_write_date
+msgid "Last Updated on"
+msgstr "Zuletzt aktualisiert am"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_max_val
+msgid "Max Value"
+msgstr "Max. Wert"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_min_val
+msgid "Min Value"
+msgstr "Min. Wert"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_max_val
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_min_val
+msgid "Minimum value allowed"
+msgstr "Zuläßiger Mindestwert"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_multi
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_multi
+msgid "Multi"
+msgstr "Multi"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_name
+msgid "Name"
+msgstr "Name"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_operator
+msgid "Operators"
+msgstr "Operatoren"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_price
+msgid "Price"
+msgstr "Preis"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_product
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_product_tmpl_id
+msgid "Product"
+msgstr "Produkt"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute
+msgid "Product Attribute"
+msgstr "Produktattribut"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_form_view
+msgid "Product Attribute Values"
+msgstr "Produktattributwerte"
+
+#. module: product_configurator
+#: model:ir.module.category,name:product_configurator.product_config_category
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
+msgid "Product Configurator"
+msgstr "Productkonfigurator"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_product_id
+msgid "Product ID"
+msgstr "Produkt-ID"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_template
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_product_tmpl_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_product_tmpl_id
+msgid "Product Template"
+msgstr "Produktvorlage"
+
+#. module: product_configurator
+#: model:res.groups,name:product_configurator.group_product_configurator
+msgid "Products"
+msgstr "Produkte"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_product_id
+msgid "Related Product"
+msgstr "Ähnliches Produkt"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_required
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_required
+msgid "Required"
+msgstr "Erforderlich"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_domain_line_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_domain_id
+msgid "Restrictions"
+msgstr "Beschränkungen"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_domain_id
+msgid "Rule"
+msgstr "Regel"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
+msgid "Rules"
+msgstr "Regeln"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Auftragsposition"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_search_ok
+msgid "Searchable"
+msgstr "Durchsuchbar"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_attribute.py:100
+#, python-format
+msgid "Selected custom field type '%s' is not searchable"
+msgstr "Der gewählte benutzerdefinierte Feldtyp '%s' ist nicht durchsuchbar"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_attribute.py:115
+#, python-format
+msgid "Selected custom value '%s' must be between %s and %s"
+msgstr "Der gewählte benutzerdefinierte Wert '%s' muss zwischen %s und %s liegen"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_sequence
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_sequence
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_sequence
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_sequence
+msgid "Sequence"
+msgstr "Reihenfolge"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_cfg_session_id
+msgid "Session"
+msgstr "Sitzung"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_state
+msgid "State"
+msgstr "Status"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_stock_move
+msgid "Stock Move"
+msgstr "Lagerbuchung"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Textarea"
+msgstr "Textbereich"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_custom_type
+msgid "The type of the custom field generated in the frontend"
+msgstr "Typ des im Frontend generierten benutzerdefinierten Felds"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_trans_implied_ids
+msgid "Transitively inherits"
+msgstr "Erbt übergangsweise"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_uom_id
+msgid "Unit of Measure"
+msgstr "Mengeneinheit"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_user_id
+msgid "User"
+msgstr "Benutzer"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
+msgid "Validation"
+msgstr "Validierung"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_value
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_form_view
+msgid "Value"
+msgstr "Wert"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_value_ids
+msgid "Value ids"
+msgstr "Wert-IDs"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_value_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_value_ids
+msgid "Values"
+msgstr "Werte"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:213
+#, python-format
+msgid "Values entered for line '%s' generate a incompatible configuration"
+msgstr "Die für die Linie '%s' eingegebenen Werte erzeugen eine inkompatible Konfiguration"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_search_ok
+msgid "When checking for variants with the same configuration, do we include this field in the search?"
+msgstr "Schließen wir dieses Feld in der Suche ein, wenn wir Varianten mit der selben Konfiguration durchsuchen?"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute_line
+msgid "product.attribute.line"
+msgstr "product.attribute.line"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute_value
+msgid "product.attribute.value"
+msgstr "product.attribute.value"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute_value_custom
+msgid "product.attribute.value.custom"
+msgstr "product.attribute.value.custom"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_domain
+msgid "product.config.domain"
+msgstr "product.config.domain"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_domain_line
+msgid "product.config.domain.line"
+msgstr "product.config.domain.line"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_image
+msgid "product.config.image"
+msgstr "product.config.image"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_line
+msgid "product.config.line"
+msgstr "product.config.line"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_session
+msgid "product.config.session"
+msgstr "product.config.session"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_session_custom_value
+msgid "product.config.session.custom.value"
+msgstr "product.config.session.custom.value"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_step
+msgid "product.config.step"
+msgstr "product.config.step"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_step_line
+msgid "product.config.step.line"
+msgstr "product.config.step.line"
