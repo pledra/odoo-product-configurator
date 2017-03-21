@@ -176,17 +176,18 @@
                       </input>
                     </label>
                     <div class="form-control col-xs-12" style="height: auto;">
-                        <img class="img-rounded img-responsive img-center mt8" t-att-src="website.image_url(value.product_id, 'image') if value.product_id.image else '/web/static/src/img/placeholder.png'"/>
+                        <img class="img-rounded img-responsive img-center mt8" t-att-src="('data:image/*;base64,' + value.product_id.sudo().image) if value.product_id.sudo().image else '/web/static/src/img/placeholder.png'"/>
                           <!-- TODO use currency from pricelist -->
                           <!-- TODO have tiles be the same height without forcing height -->
                           <div class="mt8">
                             <strong t-field="value.name"/>
                           </div>
 
-                          <span t-field="value.product_id.lst_price"
+                          <span t-field="value.product_id.sudo().lst_price"
                                 t-field-options='{
-                                "widget": "monetary",
-                                "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"}'/>
+                                  "widget": "monetary",
+                                  "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
+                                }'/>
                     </div>
                   </div>
                 </t>

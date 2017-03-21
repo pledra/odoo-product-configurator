@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-###########################################################
-# © 2016 Pledra (<http://www.pledra.com/>)                #
-# Author: Paul Cătinean                                   #
-# Proprietary license, usage and/or distribution strictly #
-# prohibited in absence of signed license agreement       #
-###########################################################
 
 from openerp.tests.common import TransactionCase
 

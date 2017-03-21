@@ -130,7 +130,7 @@ class ProductTemplate(models.Model):
         price set to them"""
         value_obj = self.env['product.attribute.value'].with_context({
             'pricelist': pricelist.id})
-        values = value_obj.browse(value_ids).filtered(
+        values = value_obj.sudo().browse(value_ids).filtered(
             lambda x: x.product_id.price)
         return values
 
