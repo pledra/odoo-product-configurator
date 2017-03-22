@@ -460,7 +460,7 @@ class ProductConfigurator(models.TransientModel):
                         attr_depends[attr_field] |= set(
                             domain_line.value_ids.ids)
                     elif domain_line.condition == 'not in':
-                        val_ids = wiz.template_id.attribute_line_ids.filtered(
+                        val_ids = wiz.product_tmpl_id.attribute_line_ids.filtered(
                             lambda l: l.id == attr_id).value_ids
                         val_ids = val_ids - domain_line.value_ids
                         attr_depends[attr_field] |= set((val_ids))
