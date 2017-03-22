@@ -200,6 +200,13 @@
             <div class="oe_structure"/>
             <div class="container mb32">
             <div class="row mt8">
+              <div class="col-xs-12">
+                <t t-call="website.publish_management" groups="sales_team.group_sale_manager">
+                    <t t-set="object" t-value="product_tmpl" />
+                    <t t-set="publish_edit" t-value="True" />
+                    <t t-set="action" t-value="'product.product_template_action'" />
+                </t>
+              </div>
               <!-- <div class="col-sm-4">
                   <ol class="breadcrumb">
                       <li><a t-att-href="keep(category=0)" onclick="history.go(-1); return false;">Products</a></li>
