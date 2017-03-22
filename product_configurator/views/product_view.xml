@@ -63,6 +63,7 @@
                                options="{'no_create': True, 'no_create_edit': True}"
                                context="{'show_attribute': False}"/>
                         <field name="domain_id"/>
+                        <field name="rule_description" />
                     </tree>
                 </field>
                 <separator colspan="4" string="Configuration Steps"/>

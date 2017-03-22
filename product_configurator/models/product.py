@@ -340,7 +340,7 @@ class ProductTemplate(models.Model):
         """
         if custom_values is None:
             custom_values = {}
-        valid = self.validate_configuration(value_ids, custom_values)
+        valid = self.validate_configuration(value_ids, custom_values, do_raise=True)
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
         # TODO: Add all custom values to order line instead of product
@@ -353,7 +353,7 @@ class ProductTemplate(models.Model):
     # also a better method for building the domain using the logical
     # operators is required
     @api.multi
-    def value_available(self, attr_val_id, value_ids):
+    def value_available(self, attr_val_id, value_ids, do_raise=False):
         """Determines whether the attr_value from the product_template
             is available for selection given the configuration ids and the
             dependencies set on the product template
@@ -369,19 +369,25 @@ class ProductTemplate(models.Model):
             lambda l: attr_val_id in l.value_ids.ids
         )
 
-        domains = config_lines.mapped('domain_id').compute_domain()
-
-        for domain in domains:
-            if domain[1] == 'in':
-                if not set(domain[2]) & set(value_ids):
-                    return False
-            else:
-                if set(domain[2]) & set(value_ids):
-                    return False
+        for config_line in config_lines:
+            domains = config_line.mapped('domain_id').compute_domain()
+            for domain in domains:
+                if domain[1] == 'in':
+                    if not set(domain[2]) & set(value_ids):
+                        # Don't break if the module has not been upgraded...
+                        if do_raise and 'rule_description' in config_line._fields and config_line.rule_description:
+                            raise ValidationError(config_line.rule_description)
+                        return False
+                else:
+                    if set(domain[2]) & set(value_ids):
+                        # Don't break if the module has not been upgraded...
+                        if do_raise and 'rule_description' in config_line._fields and config_line.rule_description:
+                            raise ValidationError(config_line.rule_description)
+                        return False
         return True
 
     @api.multi
-    def validate_configuration(self, value_ids, custom_vals=None, final=True):
+    def validate_configuration(self, value_ids, custom_vals=None, final=True, do_raise=False):
         """ Verifies if the configuration values passed via value_ids and custom_vals
         are valid
 
@@ -407,14 +413,21 @@ class ProductTemplate(models.Model):
                 common_vals = set(value_ids) & set(line.value_ids.ids)
                 custom_val = custom_vals.get(attr.id)
                 if line.required and not common_vals and not custom_val:
+                    if do_raise:
+                        raise ValidationError(_("No value provided for %s") % line.attribute.name)
                     # TODO: Verify custom value type to be correct
                     return False
 
         # Check if all all the values passed are not restricted
         for val in value_ids:
             available = self.value_available(
-                val, [v for v in value_ids if v != val])
+                val, [v for v in value_ids if v != val], do_raise=do_raise)
             if not available:
+                # if do_raise is True, we may have already raised a specific error message.
+                # if not, then raise a more generic one...
+                if do_raise:
+                    attr_val = self.env['product.attribute.value'].browse(val)
+                    raise ValidationError(_("%s can not be selected for %s") % (attr_val.name, attr_val.attribute_id.name))
                 return False
 
         # Check if custom values are allowed
@@ -422,6 +435,9 @@ class ProductTemplate(models.Model):
             'custom').mapped('attribute_id').ids
 
         if not set(custom_vals.keys()) <= set(custom_attr_ids):
+            if do_raise:
+                # TODO: Provide a proper error description for this.
+                raise ValidationError(_())
             return False
 
         # Check if there are multiple values passed for non-multi attributes

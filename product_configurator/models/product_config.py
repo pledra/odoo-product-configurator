@@ -121,6 +121,8 @@ class ProductConfigDomainLine(models.Model):
 class ProductConfigLine(models.Model):
     _name = 'product.config.line'
 
+    rule_description = fields.Char(string='Rule Description', help='User Displayed error if rule is broken')
+
     # TODO: Prevent config lines having dependencies that are not set in other
     # config lines
     # TODO: Prevent circular depdencies: Length -> Color, Color -> Length
@@ -211,7 +213,7 @@ class ProductConfigImage(models.Model):
             if not valid:
                 raise ValidationError(
                     _("Values entered for line '%s' generate "
-                      "a incompatible configuration" % cfg_img.name)
+                      "an incompatible configuration" % cfg_img.name)
                 )
 
 
@@ -433,7 +435,7 @@ class ProductConfigSession(models.Model):
             for x in self.custom_value_ids
         }
         valid = self.product_tmpl_id.validate_configuration(
-            self.value_ids.ids, custom_val_dict, final=False)
+            self.value_ids.ids, custom_val_dict, final=False, do_raise=True)
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
         return res
