@@ -462,7 +462,7 @@ class ProductConfigurator(models.TransientModel):
                         val_ids = wiz.product_tmpl_id.attribute_line_ids.filtered(
                             lambda l: l.id == attr_id).value_ids
                         val_ids = val_ids - domain_line.value_ids
-                        attr_depends[attr_field] |= set((val_ids))
+                        attr_depends[attr_field] |= set(val_ids.ids)
 
                 for dependee_field, val_ids in attr_depends.iteritems():
                     if not val_ids:
