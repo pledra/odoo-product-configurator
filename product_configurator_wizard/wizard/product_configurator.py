@@ -236,10 +236,6 @@ class ProductConfigurator(models.TransientModel):
         comodel_name='sale.order.line',
         readonly=True,
     )
-    purchase_order_line_id = fields.Many2one(
-        comodel_name='purchase.order.line',
-        readonly=True,
-    )
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -829,6 +825,7 @@ class ProductConfigurator(models.TransientModel):
                     self.purchase_order_line_id.order_id, self.product_id, new=False)
                 self.purchase_order_line_id.write(purchase_line_vals)
             self.unlink()
+
             return
         #
         # This try except is too generic.
@@ -875,7 +872,7 @@ class ProductConfigurator(models.TransientModel):
             order = self.env['sale.order'].browse(self.env.context.get('active_id'))
             line_vals = {'product_id': variant.id}
 
-        line_vals.update(self._extra_line_values(so, variant, new=True))
+        line_vals.update(self._extra_line_values(order, variant, new=True))
 
         order.write({
             'order_line': [(0, 0, line_vals)]
