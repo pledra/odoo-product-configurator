@@ -652,7 +652,7 @@ class ProductConfigurator(models.TransientModel):
                     attr_id: field_val
                 })
                 # Ensure there is no custom value stored if we have switched
-                # from custom  value to selected attribute value.
+                # from custom value to selected attribute value.
                 if attr_line.custom:
                     custom_val_dict.update({attr_id: False})
             elif attr_line.custom:
@@ -666,6 +666,9 @@ class ProductConfigurator(models.TransientModel):
                 custom_val_dict.update({
                     attr_id: val
                 })
+                # Ensure there is no standard value stored if we have switched
+                # from selected value to custom value.
+                attr_val_dict.update({attr_id: False})
 
             # Remove dynamic field from value list to prevent error
             del vals[field_name]
