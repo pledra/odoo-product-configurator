@@ -183,7 +183,7 @@ class ProductConfigurator(models.TransientModel):
             if not v:
                 continue
             if isinstance(v, list):
-                view_val_ids &= set(v[0][2])
+                view_val_ids |= set(v[0][2])
             elif isinstance(v, int):
                 view_val_ids.add(v)
 
