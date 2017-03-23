@@ -2,9 +2,11 @@
 
 from lxml import etree
 
+from datetime import datetime
 from odoo.osv import orm
 from odoo import models, fields, api, _
 from odoo.exceptions import Warning, ValidationError
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
 class FreeSelection(fields.Selection):
@@ -232,6 +234,10 @@ class ProductConfigurator(models.TransientModel):
     )
     order_line_id = fields.Many2one(
         comodel_name='sale.order.line',
+        readonly=True,
+    )
+    purchase_order_line_id = fields.Many2one(
+        comodel_name='purchase.order.line',
         readonly=True,
     )
 
@@ -817,6 +823,10 @@ class ProductConfigurator(models.TransientModel):
                 order_line_vals = self._extra_line_values(
                     self.order_line_id.order_id, self.product_id, new=False)
                 self.order_line_id.write(order_line_vals)
+            if self.purchase_order_line_id:
+                self.purchase_order_line_id.write(self._extra_line_values(self.purchase_order_line_id.order_id,
+                                                                 self.product_id,
+                                                                 new=False))
             self.unlink()
             return
         #
@@ -827,23 +837,46 @@ class ProductConfigurator(models.TransientModel):
         # In the meantime, at least make sure that a validation
         # error legitimately raised in a nested routine
         # is passed through.
-        try:
-            variant = self.product_tmpl_id.create_variant(
-                self.value_ids.ids, custom_vals)
-        except ValidationError:
-            raise
-        except:
-            raise ValidationError(
-                _('Invalid configuration! Please check all '
-                  'required steps and fields.')
-            )
+        domain = [['product_tmpl_id', '=', self.product_tmpl_id.id]]
 
-        so = self.env['sale.order'].browse(self.env.context.get('active_id'))
+        template_products = self.env['product.product'].search(domain)
+        product_found = False
 
-        line_vals = {'product_id': variant.id}
+        if self.product_tmpl_id.reuse_variant:
+            for product in template_products:
+                if product.attribute_value_ids == self.value_ids:
+                    product_found = product
+                    break
+
+        if product_found:
+            variant = product_found
+            price = product_found.standard_price
+            uom = product_found.uom_id.id
+        else:
+            try:
+                variant = self.product_tmpl_id.create_variant(
+                    self.value_ids.ids, custom_vals)
+                price = self.product_tmpl_id.standard_price
+                uom = self.product_tmpl_id.uom_id.id
+            except ValidationError:
+                raise
+            except:
+                raise ValidationError(
+                    _('Invalid configuration! Please check all '
+                      'required steps and fields.')
+                )
+
+        if self.env.context.get('active_model') == 'purchase.order':
+            order = self.env['purchase.order'].browse(self.env.context.get('active_id'))
+            line_vals = {'product_id': variant.id, 'date_planned': datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                         'product_uom': uom, 'price_unit': price, 'product_qty': 1}
+        else:
+            order = self.env['sale.order'].browse(self.env.context.get('active_id'))
+            line_vals = {'product_id': variant.id}
+
         line_vals.update(self._extra_line_values(so, variant, new=True))
 
-        so.write({
+        order.write({
             'order_line': [(0, 0, line_vals)]
         })
 
