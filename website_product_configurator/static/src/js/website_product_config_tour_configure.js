@@ -1,6 +1,5 @@
 (function () {
     'use strict';
-    var img_url = '';
     openerp.Tour.register({
         id:   'configure_product',
         name: "Try to configure products",
