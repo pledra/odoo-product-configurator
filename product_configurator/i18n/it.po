@@ -206,7 +206,7 @@ msgstr "Passo di Configurazione"
 #: model:ir.ui.menu,name:product_configurator.menu_product_config_steps_action
 #: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
 msgid "Configuration Steps"
-msgstr "Pass1 di Configurazione"
+msgstr "Passi di Configurazione"
 
 #. module: product_configurator
 #: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_custom
