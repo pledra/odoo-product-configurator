@@ -4,19 +4,19 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 10.0\n"
+"Project-Id-Version: Odoo Server 10.0-20170309\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-28 10:31+0000\n"
-"PO-Revision-Date: 2017-03-28 10:49+0200\n"
-"Last-Translator: Andrea Piovesana <andrea.m.piovesana@gmail.com>\n"
-"Language-Team: Andrea PIovesana <andrea.m.piovesana@gmail.com>\n"
+"POT-Creation-Date: 2017-03-09 16:46+0000\n"
+"PO-Revision-Date: 2017-03-10 09:16+0100\n"
+"Last-Translator: Ermin Trevisan <trevi@twanda.com>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: it\n"
+"Plural-Forms: \n"
+"Language: de\n"
 "X-Generator: Poedit 1.8.7.1\n"
-"X-Poedit-SourceCharset: UTF-8\n"
+
 
 #. module: product_configurator_mrp
 #: model:ir.model,name:product_configurator_mrp.model_product_template
