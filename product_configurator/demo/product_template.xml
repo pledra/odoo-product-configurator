@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    	<record id="product_category_bmw" model="product.category">
+        <record id="product_category_bmw" model="product.category">
             <field name="parent_id" ref="product.product_category_all"/>
             <field name="name">BMW</field>
         </record>
 
-    	<record id="bmw_2_series" model="product.template">
-    		<field name="name">2 Series</field>
-    		<field name="config_ok" eval="True"/>
-    		<field name="type">product</field>
-    		<field name="categ_id" ref="product_category_bmw"/>
+        <record id="bmw_2_series" model="product.template">
+            <field name="name">2 Series</field>
+            <field name="config_ok" eval="True"/>
+            <field name="type">product</field>
+            <field name="categ_id" ref="product_category_bmw"/>
             <field name="list_price" eval="25000"/>
-    		<field name="image" type="base64" file="product_configurator/static/img/2-series-coupe.jpg"/>
-    	</record>
+            <field name="image" type="base64" file="product_configurator/static/img/2-series-coupe.jpg"/>
+        </record>
 
         <record id="product_bmw_sport_line" model="product.product">
             <field name="name">Sport Line</field>
