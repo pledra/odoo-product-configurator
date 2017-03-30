@@ -238,7 +238,7 @@ class ProductAttributeValueCustom(models.Model):
 
     @api.multi
     @api.depends('attribute_id', 'attribute_id.uom_id')
-    def compute_val_name(self):
+    def _compute_val_name(self):
         for attr_val_custom in self:
             uom = attr_val_custom.attribute_id.uom_id.name
             attr_val_custom.name = '%s%s' % (attr_val_custom.value, uom or '')
@@ -248,7 +248,7 @@ class ProductAttributeValueCustom(models.Model):
     name = fields.Char(
         string='Name',
         readonly=True,
-        compute="compute_val_name",
+        compute="_compute_val_name",
         store=True,
     )
     product_id = fields.Many2one(

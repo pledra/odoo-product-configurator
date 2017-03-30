@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Website Product Configurator",
-    'version': '1.0',
+    'version': '9.0.1.0.0',
     'summary': """Configure products in e-shop""",
-    'description': """
-        A frontend version of the product configurator enabling
-        users to generate configured product variants from the e-shop
-    """,
     'author': "Pledra",
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',

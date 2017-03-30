@@ -1,23 +1,9 @@
 # -*- coding: utf-8 -*-
-
 {
     'name': 'Product Configurator Base',
-    'version': '1.0',
+    'version': '9.0.1.0.0',
     'category': 'Generic Modules/Base',
     'summary': 'Base for product configuration interface modules',
-    'description': """
-        Base module offering configurable template products as a
-        set of instructions for configuration wizards/forms.
-
-        Features offered include:
-
-        - Inhibition of automatically created variants
-        - Extension of attribute lines to offer required, custom and multiple
-          selection
-        - Configuration / Compatibility rules between attributes
-        - Images for intermediate and final configurations
-        - Set of helper methods required for any Odoo configuration module
-    """,
     'author': 'Pledra',
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',

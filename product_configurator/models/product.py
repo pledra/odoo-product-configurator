@@ -278,19 +278,22 @@ class ProductTemplate(models.Model):
 
             :returns: list of custom values compatible with write and create
         """
-        binary_attribute_ids = self.env['product.attribute'].search([
+        attr_obj = self.env['product.attribute']
+        binary_attribute_ids = attr_obj.search([
             ('custom_type', '=', 'binary')]).ids
 
         custom_lines = []
 
         for key, val in custom_values.iteritems():
             custom_vals = {'attribute_id': key}
+            # TODO: Is this extra check neccesairy as we already make
+            # the check in validate_configuration?
+            attr_obj.browse(key).validate_custom_val(val)
             if key in binary_attribute_ids:
                 custom_vals.update({
                     'attachment_ids': [(6, 0, val.ids)]
                 })
             else:
-                self.env['product.attribute'].browse(key).validate_custom_val(val)
                 custom_vals.update({'value': val})
             custom_lines.append((0, 0, custom_vals))
         return custom_lines
@@ -320,7 +323,9 @@ class ProductTemplate(models.Model):
         }
 
         if custom_values:
-            vals.update({'value_custom_ids': self.encode_custom_values(custom_values)})
+            vals.update({
+                'value_custom_ids': self.encode_custom_values(custom_values)
+            })
         return vals
 
     @api.multi
