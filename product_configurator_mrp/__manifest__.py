@@ -5,7 +5,7 @@
     'category': 'Manufacturing',
     'summary': 'BOM Support for configurable products',
     'description': """Add boms to configured products""",
-    'author': 'Pledra',
+    'author': 'Pledra',  # pylint: disable=C8101
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',
     'depends': [
