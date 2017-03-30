@@ -2,9 +2,9 @@
 <openerp>
 <data>
 
-	<record id="product_config_category" model="ir.module.category">
-		<field name="name">Product Configurator</field>
-	</record>
+    <record id="product_config_category" model="ir.module.category">
+        <field name="name">Product Configurator</field>
+    </record>
 
     <record id="group_product_configurator" model="res.groups">
         <field name="name">Products</field>

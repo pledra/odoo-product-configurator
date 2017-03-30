@@ -8,16 +8,12 @@
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
 
-           <!--  <xpath expr="//div[@style='width: 390px;']" position="attributes">
-                <attribute name="class">oe_title oe_inline</attribute>
-            </xpath>
- -->
-                <div name="button_box" position="inside">
-                    <button class="oe_stat_button" name="toggle_config"
-                        type="object" icon="fa-wrench">
-                        <field name="config_ok" widget="boolean_button" options='{"terminology": "config"}'/>
-                    </button>
-                </div>
+            <div name="button_box" position="inside">
+                <button class="oe_stat_button" name="toggle_config"
+                    type="object" icon="fa-wrench">
+                    <field name="config_ok" widget="boolean_button" options='{"terminology": "config"}'/>
+                </button>
+            </div>
 
             <xpath expr="//label[@for='purchase_ok' or @for='sale_ok']" position="after">
                 <div class="oe_left" name="options" groups="base.group_user">
@@ -87,19 +83,6 @@
                         <field name="value_ids" widget="many2many_tags" context="{'_cfg_product_tmpl_id': parent.id}"/>
                     </tree>
                 </field>
-                <!-- TODO: Uncomment when adding back presets -->
-                <!-- <separator colspan="4" string="Configuration Presets"/>
-                <field name="config_preset_ids">
-                    <tree editable="bottom">
-                        <field name="name"/>
-                        <field name="description"/> -->
-                        <!-- TODO: Disable search more option -->
-                        <!-- <field name="value_ids"
-                               widget="many2many_tags"
-                               context="{'_cfg_product_tmpl_id': parent.id, '_cfg_preset_val_ids': value_ids}"
-                               options="{'no_create': True, 'no_create_edit': True}"/>
-                    </tree>
-                </field> -->
                 </page>
             </xpath>
 
@@ -114,12 +97,6 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Custom Values">
                     <field name="value_custom_ids"/>
-<!--                         <tree string="Custom Values" editable="bottom">
-                            <field name="attribute_id" string="Attribute"/>
-                            <field name="value"/>
-                            <field name="attachment_ids"/>
-                        </tree>
-                    </field> -->
                 </page>
             </xpath>
         </field>

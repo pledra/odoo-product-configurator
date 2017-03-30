@@ -102,7 +102,7 @@ class WebsiteProductConfig(http.Controller):
         cfg_tmpl_url + '/value_onchange',
         cfg_step_url + '/value_onchange'
     ], type='json', auth='public', website=True)
-    def value_onchange(self, product_tmpl, config_step=None, cfg_vals=[]):
+    def value_onchange(self, product_tmpl, config_step=None, cfg_vals=None):
         """ Check attribute domain restrictions on each value change and
             combine the form data sent from the frontend with the stored
             configured in the session
@@ -113,6 +113,9 @@ class WebsiteProductConfig(http.Controller):
 
             :returns: list of available ids for all options in the form
         """
+        if not cfg_vals:
+            cfg_vals = []
+
         vals = {
             'value_ids': [],
         }
@@ -199,7 +202,7 @@ class WebsiteProductConfig(http.Controller):
 
         template_obj = request.env['product.template']
         templates = template_obj.search([('config_ok', '=', True)])
-        template_name = 'website_product_configurator.product_configurator_list'
+        tmpl_ext_id = 'website_product_configurator.product_configurator_list'
 
         style_obj = request.env['product.style']
         styles = style_obj.search([])
@@ -215,7 +218,7 @@ class WebsiteProductConfig(http.Controller):
             'style_in_product': lambda style, product: style.id in [
                 s.id for s in product.website_style_ids],
         }
-        return request.render(template_name, values)
+        return request.render(tmpl_ext_id, values)
 
     def parse_upload_file(self, field_name, multi=False):
         """ Parse uploaded file from request.files """
@@ -260,8 +263,8 @@ class WebsiteProductConfig(http.Controller):
                     custom_val = self.parse_upload_file(
                         custom_field_name, line.multi)
                 else:
-                    custom_type = eval(custom_type) if custom_type in [
-                        'float', 'int'] else None
+                    class_mapper = {'int': int, 'float': float}
+                    custom_type = class_mapper.get(custom_type, None)
                     # For numerical values force datatype
                     custom_val = post.get(custom_field_name, type=custom_type)
                 config_code.update({
