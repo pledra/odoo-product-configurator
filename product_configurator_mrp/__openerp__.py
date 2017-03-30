@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Product Configurator Manufacturing',
-    'version': '1.0',
+    'version': '9.0.1.0.0',
     'category': 'Manufacturing',
     'summary': 'BOM Support for configurable products',
-    'description': """Add boms to configured products""",
     'author': 'Pledra',
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',

@@ -1,118 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data>
+<data>
 
-        <record id="product.variants_action" model="ir.actions.act_window">
-            <field name="view_mode">tree,form</field>
-        </record>
+    <record id="product.variants_action" model="ir.actions.act_window">
+        <field name="view_mode">tree,form</field>
+    </record>
 
-        <record id="product.attribute_action" model="ir.actions.act_window">
-            <field name="view_mode">tree,form</field>
-        </record>
+    <record id="product.attribute_action" model="ir.actions.act_window">
+        <field name="view_mode">tree,form</field>
+    </record>
 
-        <!-- Product Attributes -->
+    <!-- Product Attributes -->
 
-        <record id="product_attribute_tree_view" model="ir.ui.view">
-            <field name="name">product.config.product.attribute.tree</field>
-            <field name="model">product.attribute</field>
-            <field name="inherit_id" ref="product.attribute_tree_view"/>
-            <field name="arch" type="xml">
-                <xpath expr="//tree" position="attributes">
-                    <attribute name="editable"/>
-                </xpath>
+    <record id="product_attribute_tree_view" model="ir.ui.view">
+        <field name="name">product.config.product.attribute.tree</field>
+        <field name="model">product.attribute</field>
+        <field name="inherit_id" ref="product.attribute_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="editable"/>
+            </xpath>
 
-                <xpath expr="//field[@name='name']" position="before">
-                    <field name="sequence" widget="handle"/>
-                </xpath>
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="sequence" widget="handle"/>
+            </xpath>
 
-                <xpath expr="//field[@name='name']" position="after">
-                    <!-- <field name="type" /> -->
-                    <field name="search_ok" />
-                </xpath>
-            </field>
-        </record>
+            <xpath expr="//field[@name='name']" position="after">
+                <!-- <field name="type" /> -->
+                <field name="search_ok" />
+            </xpath>
+        </field>
+    </record>
 
-        <record model="ir.ui.view" id="product_attribute_form_view">
-            <field name="name">product.attribute.form.view</field>
-            <field name="model">product.attribute</field>
-            <field name="arch" type="xml">
-                <form string="Product Attributes">
-                    <div class="oe_left" style="width: 500px;">
-                        <field name="image" widget="image" class="oe_avatar oe_left"/>
-                        <div class="oe_title" style="width: 390px;">
-                            <label class="oe_edit_only" for="name" string="Attribute Name"/>
-                            <h1><field name="name" class="oe_inline"/></h1>
-                            <label for="active"/><field name="active"/>
-                        </div>
+    <record model="ir.ui.view" id="product_attribute_form_view">
+        <field name="name">product.attribute.form.view</field>
+        <field name="model">product.attribute</field>
+        <field name="arch" type="xml">
+            <form string="Product Attributes">
+                <div class="oe_left" style="width: 500px;">
+                    <field name="image" widget="image" class="oe_avatar oe_left"/>
+                    <div class="oe_title" style="width: 390px;">
+                        <label class="oe_edit_only" for="name" string="Attribute Name"/>
+                        <h1><field name="name" class="oe_inline"/></h1>
+                        <label for="active"/><field name="active"/>
                     </div>
-                    <notebook>
-                        <page string="Validation">
+                </div>
+                <notebook>
+                    <page string="Validation">
+                        <group>
                             <group>
-                                <group>
-                                    <!-- <field name="type"/> -->
-                                    <field name="required"/>
-                                    <field name="multi"/>
-                                </group>
-                                <group>
-                                    <field name="uom_id"/>
-                                </group>
-                                <field name="description" colspan="4"/>
+                                <!-- <field name="type"/> -->
+                                <field name="required"/>
+                                <field name="multi"/>
                             </group>
-                        </page>
-                        <page string="Custom Values">
                             <group>
-                                <group>
-                                    <field name="custom_type"/>
-                                    <field name="min_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
-                                    <field name="max_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
-                                </group>
-                                <group>
-                                    <field name="search_ok"/>
-                                </group>
+                                <field name="uom_id"/>
                             </group>
-                        </page>
-                    </notebook>
-                </form>
-            </field>
-        </record>
+                            <field name="description" colspan="4"/>
+                        </group>
+                    </page>
+                    <page string="Custom Values">
+                        <group>
+                            <group>
+                                <field name="custom_type"/>
+                                <field name="min_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
+                                <field name="max_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
+                            </group>
+                            <group>
+                                <field name="search_ok"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
+            </form>
+        </field>
+    </record>
 
-        <!-- Product Attribute Value -->
+    <!-- Product Attribute Value -->
 
-        <record id="product_attribute_value_tree_view" model="ir.ui.view">
-            <field name="name">product.config.attribute.value.tree</field>
-            <field name="model">product.attribute.value</field>
-            <field name="inherit_id" ref="product.variants_tree_view"/>
-            <field name="arch" type="xml">
-                <xpath expr="//tree" position="attributes">
-                    <attribute name="editable"/>
-                </xpath>
-            </field>
-        </record>
+    <record id="product_attribute_value_tree_view" model="ir.ui.view">
+        <field name="name">product.config.attribute.value.tree</field>
+        <field name="model">product.attribute.value</field>
+        <field name="inherit_id" ref="product.variants_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="editable"/>
+            </xpath>
+        </field>
+    </record>
 
-        <record model="ir.ui.view" id="product_attribute_value_form_view">
-            <field name="name">product.config.product.attribute.value.form.view</field>
-            <field name="model">product.attribute.value</field>
-            <field name="arch" type="xml">
-                <form string="Product Attribute Values">
-                    <div class="oe_left" style="width: 500px;">
-                        <div class="oe_title" style="width: 390px;">
-                            <label class="oe_edit_only" for="name" string="Value"/>
-                            <h1><field name="name" class="oe_inline"/></h1>
-                            <label for="active"/><field name="active"/>
-                        </div>
+    <record model="ir.ui.view" id="product_attribute_value_form_view">
+        <field name="name">product.config.product.attribute.value.form.view</field>
+        <field name="model">product.attribute.value</field>
+        <field name="arch" type="xml">
+            <form string="Product Attribute Values">
+                <div class="oe_left" style="width: 500px;">
+                    <div class="oe_title" style="width: 390px;">
+                        <label class="oe_edit_only" for="name" string="Value"/>
+                        <h1><field name="name" class="oe_inline"/></h1>
+                        <label for="active"/><field name="active"/>
                     </div>
+                </div>
+                <group>
                     <group>
-                        <group>
-                            <field name="attribute_id"/>
-                            <field name="price_extra"/>
-                        </group>
-                        <group>
-                            <field name="product_id"/>
-                        </group>
+                        <field name="attribute_id"/>
+                        <field name="price_extra"/>
                     </group>
-                </form>
-            </field>
-        </record>
+                    <group>
+                        <field name="product_id"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
 
-    </data>
+</data>
 </openerp>

@@ -174,8 +174,9 @@ class ProductConfigLine(models.Model):
             value_attributes = line.value_ids.mapped('attribute_id')
             if value_attributes != line.attribute_line_id.attribute_id:
                 raise ValidationError(
-                    "Values must belong to the attribute of the corresponding "
-                    "attribute_line set on the configuration line"
+                    _("Values must belong to the attribute of the "
+                      "corresponding attribute_line set on the configuration "
+                      "line")
                 )
 
 
@@ -273,7 +274,7 @@ class ProductConfigSession(models.Model):
 
     @api.multi
     @api.depends('value_ids')
-    def _get_cfg_price(self):
+    def _compute_cfg_price(self):
         for session in self:
             custom_vals = session._get_custom_vals_dict()
             price = session.product_tmpl_id.get_cfg_price(
@@ -316,7 +317,7 @@ class ProductConfigSession(models.Model):
         string='Custom Values'
     )
     price = fields.Float(
-        compute='_get_cfg_price',
+        compute='_compute_cfg_price',
         string='Price',
         store=True,
     )

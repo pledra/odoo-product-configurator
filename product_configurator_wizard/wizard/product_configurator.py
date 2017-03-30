@@ -30,7 +30,7 @@ class ProductConfigurator(models.TransientModel):
 
     @api.multi
     @api.depends('product_tmpl_id', 'value_ids', 'custom_value_ids')
-    def _get_cfg_image(self):
+    def _compute_cfg_image(self):
         # TODO: Update when allowing custom values to influence image
         product_tmpl = self.product_tmpl_id.with_context(bin_size=False)
         img_obj = product_tmpl.get_config_image_obj(self.value_ids.ids)
@@ -224,7 +224,7 @@ class ProductConfigurator(models.TransientModel):
         help='Set only when re-configuring a existing variant'
     )
     product_img = fields.Binary(
-        compute='_get_cfg_image',
+        compute='_compute_cfg_image',
         readonly=True
     )
     state = FreeSelection(
@@ -443,17 +443,18 @@ class ProductConfigurator(models.TransientModel):
             dependencies = config_lines.filtered(
                 lambda cl: cl.attribute_line_id == attr_line)
 
-            """ If a attribute field depends on another field from the same
-            configuration step then we must use attrs to enable/disable the
-            required and readonly depending on the value entered in the
-            dependee
-            """
+            # If an attribute field depends on another field from the same
+            # configuration step then we must use attrs to enable/disable the
+            # required and readonly depending on the value entered in the
+            # dependee
+
             if attr_line.value_ids <= dependencies.mapped('value_ids'):
                 attr_depends = {}
                 domain_lines = dependencies.mapped('domain_id.domain_line_ids')
                 for domain_line in domain_lines:
                     attr_id = domain_line.attribute_id.id
                     attr_field = self.field_prefix + str(attr_id)
+                    attr_lines = wiz.product_tmpl_id.attribute_line_ids
                     # If the fields it depends on are not in the config step
                     if config_steps and str(attr_line.id) != wiz.state:
                         continue
@@ -463,7 +464,7 @@ class ProductConfigurator(models.TransientModel):
                         attr_depends[attr_field] |= set(
                             domain_line.value_ids.ids)
                     elif domain_line.condition == 'not in':
-                        val_ids = wiz.product_tmpl_id.attribute_line_ids.filtered(
+                        val_ids = attr_lines.filtered(
                             lambda l: l.id == attr_id).value_ids
                         val_ids = val_ids - domain_line.value_ids
                         attr_depends[attr_field] |= set(val_ids.ids)
@@ -657,14 +658,11 @@ class ProductConfigurator(models.TransientModel):
                 attr_val_dict.update({
                     attr_id: field_val
                 })
-                # Ensure there is no custom value stored if we have switched from custom 
-                # to chosen value.
+                # Ensure there is no custom value stored if we have switched
+                # from custom value to selected attribute value.
                 if attr_line.custom:
                     custom_val_dict.update({attr_id: False})
             elif attr_line.custom:
-                # For non-binary fields, a custom field value may have been entered which
-                # is 0 or some other way False, and this will not be in the dictionary of
-                # values, so need to assume that if not passed it is a "False" value desired.
                 val = vals.get(custom_field_name, False)
                 if attr_line.attribute_id.custom_type == 'binary':
                     # TODO: Add widget that enables multiple file uploads
@@ -794,8 +792,8 @@ class ProductConfigurator(models.TransientModel):
         return wizard_action
 
     def _extra_line_values(self, so, product, new=True):
-        """ Hook to allow custom line values to be put on the newly created or edited lines.
-        """
+        """ Hook to allow custom line values to be put on the newly
+        created or edited lines."""
         vals = {}
         if new:
             vals.update({'name': product.display_name})
@@ -810,16 +808,18 @@ class ProductConfigurator(models.TransientModel):
         }
 
         if self.product_id:
-            remove_cv_links = map(lambda cv: (2, cv), self.product_id.value_custom_ids.ids)
-            new_cv_links = self.product_id.product_tmpl_id.encode_custom_values(custom_vals)
+            product_tmpl = self.product_id.product_tmpl_id
+            remove_cv_links = map(
+                lambda cv: (2, cv), self.product_id.value_custom_ids.ids)
+            new_cv_links = product_tmpl.encode_custom_values(custom_vals)
             self.product_id.write({
                 'attribute_value_ids': [(6, 0, self.value_ids.ids)],
                 'value_custom_ids':  remove_cv_links + new_cv_links,
             })
             if self.order_line_id:
-                self.order_line_id.write(self._extra_line_values(self.order_line_id.order_id,
-                                                                 self.product_id,
-                                                                 new=False))
+                order_line_vals = self._extra_line_values(
+                    self.order_line_id.order_id, self.product_id, new=False)
+                self.order_line_id.write(order_line_vals)
             self.unlink()
             return
         #
