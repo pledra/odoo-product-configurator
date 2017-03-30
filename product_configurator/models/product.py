@@ -344,10 +344,14 @@ class ProductTemplate(models.Model):
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
         # TODO: Add all custom values to order line instead of product
-        vals = self.get_variant_vals(value_ids, custom_values)
-        variant = self.env['product.product'].create(vals)
 
-        return variant
+        variant_exists = self.search_variant(value_ids, custom_values)
+        if variant_exists:
+            return variant_exists
+        else:
+            vals = self.get_variant_vals(value_ids, custom_values)
+            variant = self.env['product.product'].create(vals)
+            return variant
 
     # TODO: Refactor so multiple values can be checked at once
     # also a better method for building the domain using the logical
