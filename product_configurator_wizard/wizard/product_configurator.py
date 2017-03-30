@@ -28,7 +28,7 @@ class ProductConfigurator(models.TransientModel):
 
     @api.multi
     @api.depends('product_tmpl_id', 'value_ids', 'custom_value_ids')
-    def _get_cfg_image(self):
+    def _compute_cfg_image(self):
         # TODO: Update when allowing custom values to influence image
         product_tmpl = self.product_tmpl_id.with_context(bin_size=False)
         img_obj = product_tmpl.get_config_image_obj(self.value_ids.ids)
@@ -222,7 +222,7 @@ class ProductConfigurator(models.TransientModel):
         help='Set only when re-configuring a existing variant'
     )
     product_img = fields.Binary(
-        compute='_get_cfg_image',
+        compute='_compute_cfg_image',
         readonly=True
     )
     state = FreeSelection(
