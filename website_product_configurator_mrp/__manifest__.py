@@ -4,7 +4,7 @@
     'version': '10.0.1.0.0',
     'category': 'Website',
     'summary': 'Website integration of MRP',
-    'author': 'Pledra',  # pylint: disable=C8101
+    'author': 'Pledra',
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',
     'depends': [

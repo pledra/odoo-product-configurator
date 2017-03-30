@@ -3,7 +3,7 @@
     'name': "Website Product Configurator",
     'version': '10.0.1.0.0',
     'summary': """Configure products in e-shop""",
-    'author': "Pledra",  # pylint: disable=C8101
+    'author': "Pledra",
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',
     'category': 'website',

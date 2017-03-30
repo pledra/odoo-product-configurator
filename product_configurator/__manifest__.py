@@ -4,7 +4,7 @@
     'version': '10.0.1.0.0',
     'category': 'Generic Modules/Base',
     'summary': 'Base for product configuration interface modules',
-    'author': 'Pledra',  # pylint: disable=C8101
+    'author': 'Pledra',
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',
     'depends': ['sale_stock'],

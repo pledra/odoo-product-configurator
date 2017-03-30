@@ -439,6 +439,11 @@ class ProductConfigurator(models.TransientModel):
             dependencies = config_lines.filtered(
                 lambda cl: cl.attribute_line_id == attr_line)
 
+            # If an attribute field depends on another field from the same
+            # configuration step then we must use attrs to enable/disable the
+            # required and readonly depending on the value entered in the
+            # dependee
+
             if attr_line.value_ids <= dependencies.mapped('value_ids'):
                 attr_depends = {}
                 domain_lines = dependencies.mapped('domain_id.domain_line_ids')
