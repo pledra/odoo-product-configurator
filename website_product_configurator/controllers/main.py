@@ -263,8 +263,8 @@ class WebsiteProductConfig(http.Controller):
                     custom_val = self.parse_upload_file(
                         custom_field_name, line.multi)
                 else:
-                    custom_type = eval(custom_type) if custom_type in [
-                        'float', 'int'] else None
+                    class_mapper = {'int': int, 'float': float}
+                    custom_type = class_mapper.get(custom_type, None)
                     # For numerical values force datatype
                     custom_val = post.get(custom_field_name, type=custom_type)
                 config_code.update({

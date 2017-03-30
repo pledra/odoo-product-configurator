@@ -174,8 +174,9 @@ class ProductConfigLine(models.Model):
             value_attributes = line.value_ids.mapped('attribute_id')
             if value_attributes != line.attribute_line_id.attribute_id:
                 raise ValidationError(
-                    "Values must belong to the attribute of the corresponding "
-                    "attribute_line set on the configuration line"
+                    _("Values must belong to the attribute of the "
+                      "corresponding attribute_line set on the configuration "
+                      "line")
                 )
 
 
