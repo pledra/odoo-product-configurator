@@ -106,12 +106,17 @@ tour.register('configure_product', {
         }
     },
     {
-        content: "Select options",
-        trigger: "label:contains('Options')",
+        content: "Select Smoker Package Option",
+        trigger: "#cfg_price_tags:has(div.label:contains('Transmission: Sport Automatic Transmission Steptronic'))",
         run: function() {
             var checkbox = $("strong:contains('Smoker Package')").parent().parent().siblings('label').find('input');
             checkbox.click();
-
+        }
+    },
+    {
+        content: "Select Tow Hook Option",
+        trigger: "#cfg_price_tags:has(div.label:contains('Options: Smoker Package'))",
+        run: function() {
             var checkbox = $("strong:contains('Tow hook')").parent().parent().siblings('label').find('input');
             checkbox.click();
         }
