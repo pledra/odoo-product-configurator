@@ -16,7 +16,7 @@ tour.register('configure_product', {
     },
     {
         content: "Check price",
-        trigger: "#cfg_total:contains(25,000.00)",
+        trigger: "#cfg_total:contains(28,750.00)",
     },
     {
         content: "Select fuel",
@@ -43,7 +43,7 @@ tour.register('configure_product', {
     },
     {
         content: "Check total price",
-        trigger: "#cfg_total:contains(37,634.00)"
+        trigger: "#cfg_total:contains(43,279.10)"
     },
     {
         content: "Next Step",
@@ -73,7 +73,7 @@ tour.register('configure_product', {
     },
     {
         content: "Check total price",
-        trigger: "#cfg_total:contains(38,360.00)",
+        trigger: "#cfg_total:contains(44,114.00)",
     },
     {
         content: "Next Step",
@@ -118,7 +118,7 @@ tour.register('configure_product', {
     },
     {
         content: "Check price",
-        trigger: "#cfg_total:contains(39,390.00)",
+        trigger: "#cfg_total:contains(45,298.50)",
     },
     {
         content: "Submit Configuration",
@@ -126,7 +126,7 @@ tour.register('configure_product', {
     },
     {
         content: "Check configuration price",
-        trigger: "b.oe_price span.oe_currency_value:contains(39,390.00)"
+        trigger: "b.oe_price span.oe_currency_value:contains(45,298.50)"
     },
     {
         content: 'Add to cart',
