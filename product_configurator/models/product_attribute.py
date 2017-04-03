@@ -46,7 +46,9 @@ class ProductAttribute(models.Model):
     )
 
     min_val = fields.Integer(string="Min Value", help="Minimum value allowed")
-    max_val = fields.Integer(string="Max Value", help="Minimum value allowed")
+    max_val = fields.Integer(string="Max Value", help="Maximum value allowed, or 0 if not checked")
+    min_fval = fields.Float(string="Min Float Value", digits=(16,4), help="Minimum value allowed")
+    max_fval = fields.Float(string="Max Float Value", digits=(16,4), help="Maximum value allowed, or 0 if not checked")
 
     # TODO: Exclude self from result-set of dependency
     val_custom = fields.Boolean(
@@ -109,24 +111,29 @@ class ProductAttribute(models.Model):
         Probaly should check type, etc, but let's assume fine for the moment.
         """
         self.ensure_one()
-        if self.custom_type in ('int', 'float'):
+        # TODO remove check of undefined field - maybe has not been upgraded.
+        if self.custom_type == 'float' and 'min_fval' in self._fields:
+            minv = self.min_fval
+            maxv = self.max_fval
+        elif self.custom_type in ('int', 'float'):
             minv = self.min_val
             maxv = self.max_val
+        if self.custom_type in ('int', 'float'):
             val = literal_eval(val)
             if minv and maxv and (val < minv or val > maxv):
                 raise ValidationError(
                     _("Selected custom value '%s' must be between %s and %s"
-                        % (self.name, self.min_val, self.max_val))
+                        % (self.name, minv, maxv))
                 )
             elif minv and val < minv:
                 raise ValidationError(
                     _("Selected custom value '%s' must be at least %s" %
-                        (self.name, self.min_val))
+                        (self.name, minv))
                 )
             elif maxv and val > maxv:
                 raise ValidationError(
-                    _("Selected custom value '%s' must be lower than %s" %
-                        (self.name, self.max_val + 1))
+                    _("Selected custom value '%s' cannot be greater than %s" %
+                        (self.name, maxv))
                 )
 
 

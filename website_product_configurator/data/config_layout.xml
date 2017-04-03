@@ -52,6 +52,7 @@
                   <i class="fa fa-minus"></i>
               </a>
           </span>
+          <!-- TODO: Need to allow for min_fval and max_fval -->
           <input
               type="text"
               t-att-id="cfg_vars['custom_attr_field_prefix'] + str(line.attribute_id.id)"

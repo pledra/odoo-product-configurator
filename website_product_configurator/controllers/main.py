@@ -374,9 +374,14 @@ class WebsiteProductConfig(http.Controller):
                     custom_val = post.get(custom_field_name)
                     if custom_val:
                         custom_type = line.attribute_id.custom_type
-                        if custom_type in ['float', 'integer']:
+                        # TODO remove check of undefined field - maybe has not been upgraded.
+                        if custom_type == 'float' and 'min_fval' in line.attribute_id._fields:
+                            max_val = line.attribute_id.max_fval
+                            min_val = line.attribute_id.min_fval
+                        elif custom_type in ['float', 'integer']:
                             max_val = line.attribute_id.max_val
                             min_val = line.attribute_id.min_val
+                        if custom_type in ['float', 'integer']:
                             if max_val and custom_val > max_val:
                                 continue
                             elif min_val and custom_val < min_val:
