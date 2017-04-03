@@ -375,12 +375,16 @@ class ProductTemplate(models.Model):
                 if domain[1] == 'in':
                     if not set(domain[2]) & set(value_ids):
                         # Don't break if the module has not been upgraded...
+                        # TODO: remove check - replace with:
+                        # if do_raise and config_line.rule_description:
                         if do_raise and 'rule_description' in config_line._fields and config_line.rule_description:
                             raise ValidationError(config_line.rule_description)
                         return False
                 else:
                     if set(domain[2]) & set(value_ids):
                         # Don't break if the module has not been upgraded...
+                        # TODO: remove check - replace with:
+                        # if do_raise and config_line.rule_description:
                         if do_raise and 'rule_description' in config_line._fields and config_line.rule_description:
                             raise ValidationError(config_line.rule_description)
                         return False
@@ -418,7 +422,7 @@ class ProductTemplate(models.Model):
                     # TODO: Verify custom value type to be correct
                     return False
 
-        # Check if all all the values passed are not restricted
+        # Check if all the values passed are not restricted
         for val in value_ids:
             available = self.value_available(
                 val, [v for v in value_ids if v != val], do_raise=do_raise)
@@ -434,10 +438,11 @@ class ProductTemplate(models.Model):
         custom_attr_ids = self.attribute_line_ids.filtered(
             'custom').mapped('attribute_id').ids
 
-        if not set(custom_vals.keys()) <= set(custom_attr_ids):
+        invalid_custom_vals = set(custom_vals.keys()) - set(custom_attr_ids)
+        if invalid_custom_vals:
             if do_raise:
-                # TODO: Provide a proper error description for this.
-                raise ValidationError(_())
+                attributes_names = ', '.join(attr.name for attr in self.env['product.attribute'].browse(list(invalid_custom_vals)))
+                raise ValidationError(_('Attributes (%s) cannot hold custom values') % attributes_names)
             return False
 
         # Check if there are multiple values passed for non-multi attributes
