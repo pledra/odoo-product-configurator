@@ -465,7 +465,7 @@ class ProductConfigurator(models.TransientModel):
                             domain_line.value_ids.ids)
                     elif domain_line.condition == 'not in':
                         val_ids = attr_lines.filtered(
-                            lambda l: l.id == attr_id).value_ids
+                            lambda l: l.attribute_id.id == attr_id).value_ids
                         val_ids = val_ids - domain_line.value_ids
                         attr_depends[attr_field] |= set(val_ids.ids)
 
