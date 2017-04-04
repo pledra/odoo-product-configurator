@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields
-
+from odoo import models, fields, api
 
 # class sale_order_line_attribute(models.Model):
 #     _name = 'sale.order.line.attribute'
@@ -21,3 +20,15 @@ class SaleOrderLine(models.Model):
     )
 
     product_id = fields.Many2one(domain=[('config_ok', '=', False)])
+
+    @api.multi
+    def copy(self, default=None):
+        """ Ensure when a line is copied, it creates to a new configuration, not 
+        just points to the original.  Without this, changing one configuration
+        changes everywhere it appears.
+        """
+        if default is None:
+            default = {}
+        if  not('product_id') in default and self.product_id.config_ok:
+            default['product_id'] = self.product_id.copy_configurable().id
+        return super(SaleOrderLine, self).copy(default=default)
