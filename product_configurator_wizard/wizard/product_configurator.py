@@ -234,6 +234,11 @@ class ProductConfigurator(models.TransientModel):
         comodel_name='sale.order.line',
         readonly=True,
     )
+    # Needed if creating a new line for an order, so we don't rely on active_id.
+    order_id = fields.Many2one(
+        comodel_name='sale.order',
+        readonly=True,
+    )
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -812,39 +817,53 @@ class ProductConfigurator(models.TransientModel):
                 'attribute_value_ids': [(6, 0, self.value_ids.ids)],
                 'value_custom_ids':  remove_cv_links + new_cv_links,
             })
-            if self.order_line_id:
-                order_line_vals = self._extra_line_values(
-                    self.order_line_id.order_id, self.product_id, new=False)
-                self.order_line_id.write(order_line_vals)
+            variant = self.product_id
+        else:
+            #
+            # This try except is too generic.
+            # The create_variant routine could effectively fail for
+            # a large number of reasons, including bad programming.
+            # It should be refactored.
+            # In the meantime, at least make sure that a validation
+            # error legitimately raised in a nested routine
+            # is passed through.
+            try:
+                variant = self.product_tmpl_id.create_variant(
+                    self.value_ids.ids, custom_vals)
+            except ValidationError:
+                raise
+            except:
+                raise ValidationError(
+                    _('Invalid configuration! Please check all '
+                      'required steps and fields.')
+                )
+            # Redundant in current coding, but may be relied upon in the future...
+            self.product_id = variant
+
+        if self.order_line_id:
+            order_line_vals = self._extra_line_values(
+                self.order_line_id.order_id, self.product_id, new=False)
+            self.order_line_id.write(order_line_vals)
             self.unlink()
             return
-        #
-        # This try except is too generic.
-        # The create_variant routine could effectively fail for
-        # a large number of reasons, including bad programming.
-        # It should be refactored.
-        # In the meantime, at least make sure that a validation
-        # error legitimately raised in a nested routine
-        # is passed through.
-        try:
-            variant = self.product_tmpl_id.create_variant(
-                self.value_ids.ids, custom_vals)
-        except ValidationError:
-            raise
-        except:
-            raise ValidationError(
-                _('Invalid configuration! Please check all '
-                  'required steps and fields.')
-            )
 
-        so = self.env['sale.order'].browse(self.env.context.get('active_id'))
+        # TODO - remove this field check which is only if module has not been upgraded.
+        if not 'order_id' in self._fields:
+            # This does not work for scenarios where the order is being created in
+            # a chain - e.g. when creating a quote from an opportunity, this
+            # active_id is the opportunity id!!!!
+            so = self.env['sale.order'].browse(self.env.context.get('active_id'))
+        elif self.order_id:
+            so = self.order_id
+        else:
+            so = False # Maybe new type of object calling wizard - To be implemented
 
-        line_vals = {'product_id': variant.id}
-        line_vals.update(self._extra_line_values(so, variant, new=True))
-
-        so.write({
-            'order_line': [(0, 0, line_vals)]
-        })
+        if so:
+            line_vals = {'product_id': variant.id}
+            line_vals.update(self._extra_line_values(so, variant, new=True))
+            so.write({
+                'order_line': [(0, 0, line_vals)]
+            })
 
         self.unlink()
         return
