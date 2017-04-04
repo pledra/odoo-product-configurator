@@ -51,6 +51,7 @@
                         <group name="config_custom_vals">
                             <group>
                                 <field name="custom_type"/>
+                                <field name="custom_digits" attrs="{'invisible': [('custom_type','not in',['float'])]}"/>
                                 <field name="search_ok"/>
                             </group>
                             <group>

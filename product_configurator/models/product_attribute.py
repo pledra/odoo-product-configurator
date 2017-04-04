@@ -61,6 +61,10 @@ class ProductAttribute(models.Model):
         size=64,
         help='The type of the custom field generated in the frontend'
     )
+    custom_digits = fields.Integer(
+        string='Decimal Digits',
+        help='Number of digits accuracy on float entry'
+        )
 
     description = fields.Text(string='Description', translate=True)
 

@@ -326,6 +326,9 @@ class ProductConfigurator(models.TransientModel):
                     type=field_type,
                     sequence=line.sequence,
                 )
+                # TODO: Remove check of field being defined
+                if field_type == 'float' and 'custom_digits' in line.attribute_id._fields and line.attribute_id.custom_digits:
+                    res[self.custom_field_prefix + str(attribute.id)]['digits'] = (16,line.attribute_id.custom_digits)
 
             # Add the dynamic field to the resultset using the convention
             # "__attribute-DBID" to later identify and extract it
