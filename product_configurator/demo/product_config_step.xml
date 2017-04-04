@@ -3,9 +3,9 @@
 
         <!-- Configuration Steps -->
 
-		<record id="config_step_engine" model="product.config.step">
-    		<field name="name">Engine</field>
-    	</record>
+        <record id="config_step_engine" model="product.config.step">
+            <field name="name">Engine</field>
+        </record>
 
         <record id="config_step_body" model="product.config.step">
             <field name="name">Body</field>
@@ -19,9 +19,9 @@
             <field name="name">Interior</field>
         </record>
 
-    	<record id="config_step_extras" model="product.config.step">
-    		<field name="name">Extras</field>
-    	</record>
+        <record id="config_step_extras" model="product.config.step">
+            <field name="name">Extras</field>
+        </record>
 
         <!-- Configuration Lines -->
 
