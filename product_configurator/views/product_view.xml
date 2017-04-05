@@ -65,6 +65,24 @@
                         <field name="domain_id"/>
                     </tree>
                 </field>
+                <separator colspan="4" string="Configuration Defaults"/>
+                <field name="config_default_ids"
+                       attrs="{'readonly': [('attribute_line_ids','=',[])]}"
+                       context="{'show_attribute': True, 'for_template_id': id}">
+                    <tree string="Attribute Value Defaults" editable="bottom">
+                        <field name="sequence" widget="handle"/>
+                        <field name="domain_id"/>
+                        <!-- # TODO: Find a more elegant way to restrict the value_ids -->
+                        <field name="attr_line_val_ids"
+                               widget="many2many_tags"
+                               invisible="True"/>
+                        <field name="value_ids"
+                               widget="many2many_tags"
+                               domain="[('id','in',attr_line_val_ids[0][2])]"
+                               options="{'no_create': True, 'no_create_edit': True}"
+                               context="{'show_attribute': True}"/>
+                    </tree>
+                </field>
                 <separator colspan="4" string="Configuration Steps"/>
                 <field name="config_step_line_ids"
                        attrs="{'readonly': [('attribute_line_ids','=',[])]}">
