@@ -121,11 +121,6 @@ class ProductConfigDomainLine(models.Model):
 class ProductConfigLine(models.Model):
     _name = 'product.config.line'
 
-    rule_description = fields.Char(
-        string='Rule Description',
-        help='User Displayed error if rule is broken'
-    )
-
     # TODO: Prevent config lines having dependencies that are not set in other
     # config lines
     # TODO: Prevent circular depdencies: Length -> Color, Color -> Length
@@ -166,6 +161,11 @@ class ProductConfigLine(models.Model):
         comodel_name='product.config.domain',
         required=True,
         string='Restrictions'
+    )
+
+    rule_description = fields.Char(
+        string='Rule Description',
+        help='User Displayed error if rule is broken'
     )
 
     sequence = fields.Integer(string='Sequence', default=10)
