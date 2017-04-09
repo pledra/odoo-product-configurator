@@ -33,8 +33,8 @@ class ProductVariant(TransactionCase):
 
         return value_ids
 
-    def test_product_create(self):
-        """Test creation of a variant"""
+    def test_product_create_and_copy(self):
+        """Test creation and copy of a variant"""
 
         conf = [
             'gasoline', '228i', 'model_luxury_line', 'silver', 'rims_384',
@@ -46,13 +46,8 @@ class ProductVariant(TransactionCase):
         self.assertTrue(
             set(attr_val_ids) == set(product.attribute_value_ids.ids),
             "Product not created with correct attributes")
-        self.product = product
-
-    def test_product_copy(self):
-        """Test copy of a variant"""
-
-        product2 = self.product.copy_configurable()
+        product2 = product.copy_configurable()
         self.assertTrue(
-            set(self.product.attribute_value_ids.ids) ==
+            set(product.attribute_value_ids.ids) ==
             set(product2.attribute_value_ids.ids),
             "Product configuration copy failed")

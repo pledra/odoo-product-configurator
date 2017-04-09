@@ -596,5 +596,5 @@ class ProductProduct(models.Model):
         custom_vals = {v.attribute_id.id: v.value or v.attachment_ids.ids
                        for v in self.value_custom_ids}
         new_product = self.product_tmpl_id.create_variant(
-                        attribute_values, custom_vals)
+            attribute_values, custom_vals)
         return new_product
