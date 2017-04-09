@@ -29,7 +29,7 @@ Instead we use the price of the product linked to the product.attribute.value.
 
 **Base price (product.template) + sum of all products related to the attribute.values on the variant.**
 
-As such if you want to compute an extra price for a certain attribute, create a regular product, set a prince and link the product to the attribute value in the form view.
+As such if you want to compute an extra price for a certain attribute, create a regular product, set a price and link the product to the attribute value in the form view.
 
 .. note::
 
