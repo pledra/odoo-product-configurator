@@ -23,12 +23,12 @@ class SaleOrderLine(models.Model):
 
     @api.multi
     def copy(self, default=None):
-        """ Ensure when a line is copied, it creates to a new configuration, not 
-        just points to the original.  Without this, changing one configuration
-        changes everywhere it appears.
+        """ Ensure when a line is copied, it creates to a new configuration,
+        not just points to the original. Without this, changing one
+        configuration changes everywhere it appears.
         """
         if default is None:
             default = {}
-        if  not('product_id') in default and self.product_id.config_ok:
+        if 'product_id' not in default and self.product_id.config_ok:
             default['product_id'] = self.product_id.copy_configurable().id
         return super(SaleOrderLine, self).copy(default=default)
