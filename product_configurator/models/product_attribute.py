@@ -45,10 +45,24 @@ class ProductAttribute(models.Model):
         'disable a attribute without deleting it'
     )
 
-    min_val = fields.Integer(string="Min Value", help="Minimum value allowed")
-    max_val = fields.Integer(string="Max Value", help="Maximum value allowed, or 0 if not checked")
-    min_fval = fields.Float(string="Min Float Value", digits=(16,4), help="Minimum value allowed")
-    max_fval = fields.Float(string="Max Float Value", digits=(16,4), help="Maximum value allowed, or 0 if not checked")
+    min_val = fields.Integer(
+        string="Min Value",
+        help="Minimum value allowed"
+    )
+    max_val = fields.Integer(
+        string="Max Value",
+        help="Maximum value allowed, or 0 if not checked"
+    )
+    min_fval = fields.Float(
+        string="Min Float Value",
+        digits=(16, 4),
+        help="Minimum value allowed"
+    )
+    max_fval = fields.Float(
+        string="Max Float Value",
+        digits=(16, 4),
+        help="Maximum value allowed, or 0 if not checked"
+    )
 
     # TODO: Exclude self from result-set of dependency
     val_custom = fields.Boolean(
@@ -115,11 +129,10 @@ class ProductAttribute(models.Model):
         Probaly should check type, etc, but let's assume fine for the moment.
         """
         self.ensure_one()
-        # TODO remove check of undefined field - maybe has not been upgraded.
-        if self.custom_type == 'float' and 'min_fval' in self._fields:
+        if self.custom_type == 'float':
             minv = self.min_fval
             maxv = self.max_fval
-        elif self.custom_type in ('int', 'float'):
+        elif self.custom_type == 'int':
             minv = self.min_val
             maxv = self.max_val
         if self.custom_type in ('int', 'float'):
