@@ -447,7 +447,7 @@ class ProductTemplate(models.Model):
                 attributes_names = ', '.join(attr.name
                                              for attr in
                                              ProductAttribute.browse(
-                                                    list(invalid_custom_vals)))
+                                                 list(invalid_custom_vals)))
                 raise ValidationError(
                     _('Attributes (%s) cannot hold custom values') %
                     attributes_names)
