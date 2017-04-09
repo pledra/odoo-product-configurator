@@ -16,11 +16,11 @@ tour.register('configure_product', {
     },
     {
         content: "Check price",
-        trigger: "#cfg_total:contains(25000)",
+        trigger: "#cfg_total:contains(28,750.00)",
     },
     {
         content: "Select fuel",
-        trigger: "label span:contains('Fuel')",
+        trigger: "select.cfg_input:enabled:has(option:contains('Gasoline'))",
         run: function() {
             var option = $('select.cfg_input option:contains("Gasoline")');
             var select = option.parent();
@@ -29,8 +29,7 @@ tour.register('configure_product', {
     },
     {
         content: "Select engine",
-        trigger: "label span:contains('Engine')",
-        waitFor: "select.cfg_input:enabled option:not(.hidden):contains('228i')",
+        trigger: "select.cfg_input:enabled:has(option:contains('228i'))",
         run: function() {
             var option = $("select.cfg_input option:contains('228i')");
             var select = option.parent();
@@ -39,9 +38,12 @@ tour.register('configure_product', {
         },
     },
     {
-        content: "Check price",
-        waitFor: "#cfg_total:contains(37634)",
-        trigger: "#cfg_price_tags:contains(div span:contains(12634)"
+        content: "Check engine price",
+        trigger: "#cfg_price_tags:has(span:contains(12,634.00))"
+    },
+    {
+        content: "Check total price",
+        trigger: "#cfg_total:contains(43,279.10)"
     },
     {
         content: "Next Step",
@@ -49,8 +51,7 @@ tour.register('configure_product', {
     },
     {
         content: "Select color",
-        trigger: "label span:contains('Color')",
-        waitFor: "select.cfg_input:enabled option:not(.hidden):contains('Silver')",
+        trigger: "select.cfg_input:enabled:has(option:contains('Silver'))",
         run: function() {
             var option = $('select.cfg_input option:contains("Silver")');
             var select = option.parent()
@@ -59,8 +60,7 @@ tour.register('configure_product', {
     },
     {
         content: "Select rims",
-        trigger: "label span:contains('Rims')",
-        waitFor: "select.cfg_input:enabled option:not(.hidden):contains('Double-spoke 18')",
+        trigger: "select.cfg_input:enabled:has(option:contains('Double-spoke 18'))",
         run: function() {
             var option = $('select.cfg_input option:contains("Double-spoke 18")');
             var select = option.parent()
@@ -68,9 +68,12 @@ tour.register('configure_product', {
         },
     },
     {
-        content: "Check price",
-        waitFor: "#cfg_total:contains(38360)",
-        trigger: "#cfg_price_tags:contains(div span:contains(726)"
+        content: "Check rims price",
+        trigger: "#cfg_price_tags:has(span:contains(726.00))"
+    },
+    {
+        content: "Check total price",
+        trigger: "#cfg_total:contains(44,114.00)",
     },
     {
         content: "Next Step",
@@ -78,13 +81,12 @@ tour.register('configure_product', {
     },
     {
         content: "Select interior step",
-        waitFor: "select.cfg_input",
-        trigger: "#cfg_statusbar a:contains('Interior')",
+        extra_trigger: "label:contains('Lines')",
+        trigger: "#cfg_statusbar a:has(span:contains('Interior'))",
     },
     {
         content: "Select interior",
-        trigger: "label span:contains('Tapistry')",
-        waitFor: "select.cfg_input:enabled option:not(.hidden):contains('Black')",
+        trigger: "select.cfg_input:enabled:has(option:contains('Black'))",
         run: function() {
             var option = $('select.cfg_input option:contains("Black")');
             var select = option.parent();
@@ -104,19 +106,24 @@ tour.register('configure_product', {
         }
     },
     {
-        content: "Select options",
-        trigger: "label:contains('Options')",
+        content: "Select Smoker Package Option",
+        trigger: "#cfg_price_tags:has(div.label:contains('Transmission: Sport Automatic Transmission Steptronic'))",
         run: function() {
             var checkbox = $("strong:contains('Smoker Package')").parent().parent().siblings('label').find('input');
             checkbox.click();
-
+        }
+    },
+    {
+        content: "Select Tow Hook Option",
+        trigger: "#cfg_price_tags:has(div.label:contains('Options: Smoker Package'))",
+        run: function() {
             var checkbox = $("strong:contains('Tow hook')").parent().parent().siblings('label').find('input');
             checkbox.click();
         }
     },
     {
         content: "Check price",
-        trigger: "#cfg_total:contains(39390)",
+        trigger: "#cfg_total:contains(45,298.50)",
     },
     {
         content: "Submit Configuration",
@@ -124,7 +131,7 @@ tour.register('configure_product', {
     },
     {
         content: "Check configuration price",
-        trigger: "b.oe_price span.oe_currency_value:contains(39,390)"
+        trigger: "b.oe_price span.oe_currency_value:contains(45,298.50)"
     },
     {
         content: 'Add to cart',
@@ -132,7 +139,7 @@ tour.register('configure_product', {
     },
     {
         content: "Finished",
-        waitFor: "h1:contains('Shopping Cart')",
+        trigger: "h1:contains('Shopping Cart')",
     }
 ]
 );
