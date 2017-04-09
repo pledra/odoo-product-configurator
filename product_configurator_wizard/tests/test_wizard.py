@@ -48,3 +48,25 @@ class ConfigurationRules(TransactionCase):
 
         self.assertTrue(wizard.value_ids.ids == write_val_ids,
                         "Wizard write did not update the config session")
+
+        wizard.action_next_step()
+
+        write_dict = self.get_wizard_write_dict(wizard, ['red', 'rims_378'])
+        wizard.write(write_dict)
+        wizard.action_next_step()
+
+        write_dict = self.get_wizard_write_dict(wizard, ['luxury_line'])
+        wizard.write(write_dict)
+        wizard.action_next_step()
+
+        write_dict = self.get_wizard_write_dict(wizard, ['tapistry_black'])
+        wizard.write(write_dict)
+        wizard.action_next_step()
+
+        write_dict = self.get_wizard_write_dict(wizard, ['steptronic'])
+        wizard.write(write_dict)
+        wizard.action_next_step()
+
+        created_line = self.so.order_line
+        self.assertTrue(len(created_line) == 1,
+                        "Wizard did not create an order line")
