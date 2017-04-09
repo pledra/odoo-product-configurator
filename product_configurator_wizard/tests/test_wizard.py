@@ -31,7 +31,8 @@ class ConfigurationRules(TransactionCase):
 
         # Start a new configuration wizard
         wizard = self.env['product.configurator'].create({
-            'product_tmpl_id': self.cfg_tmpl.id
+            'order_id': self.so.id,
+            'product_tmpl_id': self.cfg_tmpl.id,
         })
 
         wizard.action_next_step()

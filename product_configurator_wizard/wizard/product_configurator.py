@@ -234,7 +234,7 @@ class ProductConfigurator(models.TransientModel):
         comodel_name='sale.order.line',
         readonly=True,
     )
-    # Needed if creating a new line for an order, so we don't rely on active_id.
+    # Needed if creating a new line for an order, so we don't rely on active_id
     order_id = fields.Many2one(
         comodel_name='sale.order',
         readonly=True,
@@ -837,7 +837,8 @@ class ProductConfigurator(models.TransientModel):
                     _('Invalid configuration! Please check all '
                       'required steps and fields.')
                 )
-            # Redundant in current coding, but may be relied upon in the future...
+            # Redundant in current coding, but may be relied upon
+            # in the future...
             self.product_id = variant
 
         if self.order_line_id:
@@ -847,18 +848,8 @@ class ProductConfigurator(models.TransientModel):
             self.unlink()
             return
 
-        # TODO - remove this field check which is only if module has not been upgraded.
-        if not 'order_id' in self._fields:
-            # This does not work for scenarios where the order is being created in
-            # a chain - e.g. when creating a quote from an opportunity, this
-            # active_id is the opportunity id!!!!
-            so = self.env['sale.order'].browse(self.env.context.get('active_id'))
-        elif self.order_id:
+        if self.order_id:
             so = self.order_id
-        else:
-            so = False # Maybe new type of object calling wizard - To be implemented
-
-        if so:
             line_vals = {'product_id': variant.id}
             line_vals.update(self._extra_line_values(so, variant, new=True))
             so.write({
