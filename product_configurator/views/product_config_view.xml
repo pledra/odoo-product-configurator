@@ -48,6 +48,7 @@
                     <page string="Rules">
                         <field name="domain_line_ids">
                             <tree editable="bottom">
+                                <field name="sequence" widget="handle"/>
                                 <field name="attribute_id"/>
                                 <field name="condition"/>
                                 <field

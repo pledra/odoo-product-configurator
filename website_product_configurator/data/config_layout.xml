@@ -109,7 +109,7 @@
         <t t-foreach="lines" t-as="line">
           <t t-set="custom_value" t-value="cfg_vars['cfg_session'].custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
           <t t-set="parent_val" t-value="cfg_vars['cfg_session'].value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
-          <t t-set="available_vals" t-value="[v for v in line.value_ids if product_tmpl.value_available(v.id, cfg_val_ids.ids)]"/>
+          <t t-set="available_vals" t-value="product_tmpl.values_available(line.value_ids, cfg_val_ids.ids)"/>
           <div class="form-group oe_website_sale">
             <label class="control-label col-xs-12 col-md-2" t-att-for="line.attribute_id.id">
               <span style="padding-right: 7px" t-esc="line.attribute_id.name"/>
@@ -166,7 +166,7 @@
             <div class="mt8 col-xs-12" role="group">
                 <t t-foreach="line.value_ids" t-as="value">
                   <t t-set="checked" t-value="value in cfg_vars['cfg_session'].value_ids"/>
-                  <div t-att-class="'input-group cfg_tiles mt16 col-xs-4 pull-left' + (' hidden' if not product_tmpl.value_available(value.id, cfg_vars['cfg_session'].value_ids.ids) else '')">
+                  <div t-att-class="'input-group cfg_tiles mt16 col-xs-4 pull-left' + (' hidden' if not product_tmpl.values_available([value.id], cfg_vars['cfg_session'].value_ids.ids) else '')">
                     <label t-att-class="'btn btn-default' + (' active' if checked else '')">
                       <input t-att-type="'checkbox' if line.multi else 'radio'"
                              t-att-name="cfg_vars['attr_field_prefix'] + str(line.attribute_id.id)"

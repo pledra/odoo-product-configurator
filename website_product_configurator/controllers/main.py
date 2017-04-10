@@ -113,12 +113,6 @@ class WebsiteProductConfig(http.Controller):
 
             :returns: list of available ids for all options in the form
         """
-        if not cfg_vals:
-            cfg_vals = []
-
-        vals = {
-            'value_ids': [],
-        }
 
         json_config = self.get_json_config(product_tmpl, cfg_vals, config_step)
         cfg_val_ids = product_tmpl.flatten_val_ids(
@@ -133,12 +127,12 @@ class WebsiteProductConfig(http.Controller):
 
         attr_vals = attr_lines.mapped('value_ids')
 
-        for val in attr_vals:
-            if product_tmpl.value_available(val.id, cfg_val_ids):
-                vals['value_ids'].append(val.id)
-
-        vals['prices'] = product_tmpl.get_cfg_price(
-            cfg_val_ids, json_config['custom_vals'], formatLang=True)
+        vals = {
+            'value_ids': product_tmpl.values_available(
+                attr_vals.ids, cfg_val_ids),
+            'prices': product_tmpl.get_cfg_price(
+                cfg_val_ids, json_config['custom_vals'], formatLang=True),
+        }
         return vals
 
     # TODO: Use the same variable name all over cfg_val, cfg_step, no mixup
@@ -615,7 +609,7 @@ class WebsiteProductConfig(http.Controller):
         if attr_line.required:
             classes.append('required')
 
-        if attr_value and not product_tmpl.value_available(attr_value.id):
+        if attr_value and not product_tmpl.values_available([attr_value.id]):
             classes.append('hidden')
 
         if custom:

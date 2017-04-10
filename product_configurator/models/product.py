@@ -67,10 +67,8 @@ class ProductTemplate(models.Model):
 
         for cfg_line in self.config_step_line_ids:
             for attr_line in cfg_line.attribute_line_ids:
-                available_vals = any(
-                    val for val in attr_line.value_ids if
-                    self.value_available(val.id, value_ids)
-                )
+                available_vals = self.values_available(attr_line.value_ids.ids,
+                                                       value_ids)
                 # TODO: Refactor when adding restriction to custom values
                 if available_vals or attr_line.custom:
                     open_step_lines |= cfg_line
@@ -350,36 +348,57 @@ class ProductTemplate(models.Model):
 
         return variant
 
-    # TODO: Refactor so multiple values can be checked at once
-    # also a better method for building the domain using the logical
-    # operators is required
     @api.multi
-    def value_available(self, attr_val_id, value_ids):
-        """Determines whether the attr_value from the product_template
-            is available for selection given the configuration ids and the
-            dependencies set on the product template
+    def values_available(self, attr_val_ids, sel_val_ids):
+        """Determines whether the attr_values from the product_template
+        are available for selection given the configuration ids and the
+        dependencies set on the product template
 
-            :param attr_val_id: int of product.attribute.value object
-            :param value_ids: list of attribute value ids
+        :param attr_val_ids: list of attribute values
+        :param sel_val_ids: list of attribute value ids already selected
 
-            :returns: True or False representing availability
-
+        :returns: list of available attribute values
         """
-        self.ensure_one()
-        config_lines = self.config_line_ids.filtered(
-            lambda l: attr_val_id in l.value_ids.ids
-        )
 
-        domains = config_lines.mapped('domain_id').compute_domain()
+        avail_val_ids = []
+        for attr_val_id in attr_val_ids:
 
-        for domain in domains:
-            if domain[1] == 'in':
-                if not set(domain[2]) & set(value_ids):
-                    return False
-            else:
-                if set(domain[2]) & set(value_ids):
-                    return False
-        return True
+            config_lines = self.config_line_ids.filtered(
+                lambda l: attr_val_id in l.value_ids.ids
+            )
+            domains = config_lines.mapped('domain_id').compute_domain()
+
+            # process domains as shown in this wikipedia pseudocode:
+            # https://en.wikipedia.org/wiki/Polish_notation#Order_of_operations
+            stack = []
+            for domain in reversed(domains):
+                if type(domain) == tuple:
+                    # evaluate operand and push to stack
+                    if domain[1] == 'in':
+                        if not set(domain[2]) & set(sel_val_ids):
+                            stack.append(False)
+                            continue
+                    else:
+                        if set(domain[2]) & set(sel_val_ids):
+                            stack.append(False)
+                            continue
+                    stack.append(True)
+                else:
+                    # evaluate operator and previous 2 operands
+                    # compute_domain() only inserts 'or' operators
+                    # compute_domain() enforces 2 operands per operator
+                    operand1 = stack.pop()
+                    operand2 = stack.pop()
+                    stack.append(operand1 or operand2)
+
+            # 'and' operator is implied for remaining stack elements
+            avail = True
+            while stack:
+                avail &= stack.pop()
+            if avail:
+                avail_val_ids.append(attr_val_id)
+
+        return avail_val_ids
 
     @api.multi
     def validate_configuration(self, value_ids, custom_vals=None, final=True):
@@ -412,11 +431,9 @@ class ProductTemplate(models.Model):
                     return False
 
         # Check if all all the values passed are not restricted
-        for val in value_ids:
-            available = self.value_available(
-                val, [v for v in value_ids if v != val])
-            if not available:
-                return False
+        avail_val_ids = self.values_available(value_ids, value_ids)
+        if set(value_ids) - set(avail_val_ids):
+            return False
 
         # Check if custom values are allowed
         custom_attr_ids = self.attribute_line_ids.filtered(

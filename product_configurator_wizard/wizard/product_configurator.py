@@ -96,7 +96,11 @@ class ProductConfigurator(models.TransientModel):
                 continue
 
             vals = values[field_name]
-            domains[field_name] = [('id', 'in', [])]
+
+            # get available values
+            avail_ids = self.product_tmpl_id.values_available(
+                line.value_ids.ids, cfg_val_ids)
+            domains[field_name] = [('id', 'in', avail_ids)]
 
             # Include custom value in the domain if attr line permits it
             if line.custom:
@@ -105,10 +109,6 @@ class ProductConfigurator(models.TransientModel):
                 domains[field_name][0][2].append(custom_val.id)
                 if line.multi and vals and custom_val.id in vals[0][2]:
                     continue
-            for value in line.value_ids:
-                # Add ids sequentially to domain is they are valid options
-                if self.product_tmpl_id.value_available(value.id, cfg_val_ids):
-                    domains[field_name][0][2].append(value.id)
         return domains
 
     def get_form_vals(self, dynamic_fields, domains):
@@ -298,10 +298,8 @@ class ProductConfigurator(models.TransientModel):
             attribute = line.attribute_id
             value_ids = line.value_ids.ids
 
-            value_ids = [
-                v for v in value_ids if wiz.product_tmpl_id.value_available(
-                    v, wiz.value_ids.ids)
-            ]
+            value_ids = wiz.product_tmpl_id.values_available(
+                value_ids, wiz.value_ids.ids)
 
             # If attribute lines allows custom values add the
             # generic "Custom" attribute.value to the list of options
