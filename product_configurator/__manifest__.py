@@ -24,6 +24,7 @@
         'demo/product_attribute.xml',
         'demo/product_config_domain.xml',
         'demo/product_config_lines.xml',
+        'demo/product_config_defaults.xml',
         'demo/product_config_step.xml',
         'demo/config_image_ids.xml',
     ],

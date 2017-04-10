@@ -127,17 +127,22 @@ class ProductConfigurator(models.TransientModel):
 
         # validate and eliminate values, and set defaults if they are on the
         # current step
-        step_val_ids = cfg_step and cfg_step.attribute_line_ids.mapped('value_ids').ids \
-                or self.product_tmpl_id.attribute_line_ids.mapped('value_ids').ids
+        step_val_ids = cfg_step and \
+            cfg_step.attribute_line_ids.mapped('value_ids').ids or \
+            self.product_tmpl_id.attribute_line_ids.mapped('value_ids').ids
         for k, v in dynamic_fields.iteritems():
             available_val_ids = domains[k][0][2]
-            config_val_ids = [dfv for dfv in dynamic_fields.values() if dfv and not isinstance(dfv, list)]
-            for list_dfv in [dfv for dfv in dynamic_fields.values() if dfv and isinstance(dfv, list)]:
+            config_val_ids = [dfv for dfv in dynamic_fields.values()
+                              if dfv and not isinstance(dfv, list)]
+            for list_dfv in [dfv for dfv in dynamic_fields.values()
+                             if dfv and isinstance(dfv, list)]:
                 config_val_ids.extend(list_dfv)
             if not v:
-                # if the value currently is blank and on the current step, see if one can be set
+                # if the value currently is blank and on the current step, see
+                # if one can be set
                 if set(available_val_ids) & set(step_val_ids):
-                    def_value_id = self.product_tmpl_id.find_default_value(available_val_ids, config_val_ids)
+                    def_value_id = self.product_tmpl_id.find_default_value(
+                       available_val_ids, config_val_ids)
                     if def_value_id:
                         dynamic_fields.update({k: def_value_id})
                         vals[k] = def_value_id
@@ -147,9 +152,11 @@ class ProductConfigurator(models.TransientModel):
                 dynamic_fields.update({k: value_ids})
                 vals[k] = [[6, 0, value_ids]]
             elif v not in available_val_ids:
-                # if the value is to be blanked, and it is on the current step, see if a default can be set
+                # if the value is to be blanked, and it is on the current
+                # step, see if a default can be set
                 if set(available_val_ids) & set(step_val_ids):
-                    def_value_id = self.product_tmpl_id.find_default_value(available_val_ids, config_val_ids) or None
+                    def_value_id = self.product_tmpl_id.find_default_value(
+                       available_val_ids, config_val_ids) or None
                 else:
                     def_value_id = None
                 dynamic_fields.update({k: def_value_id})
@@ -395,10 +402,14 @@ class ProductConfigurator(models.TransientModel):
         # set any default values
         wiz_vals = wiz.read(dynamic_fields.keys())[0]
         dynamic_field_vals = {
-            k: wiz_vals.get(k, [] if v['type'] == 'many2many' else False)
-                for k, v in fields.iteritems() if k.startswith(self.field_prefix)
+            k: wiz_vals.get(
+                k, [] if v['type'] == 'many2many' else False
+                )
+            for k, v in fields.iteritems()
+            if k.startswith(self.field_prefix)
         }
-        domains = {k: dynamic_fields[k]['domain'] for k in dynamic_field_vals.keys()}
+        domains = {k: dynamic_fields[k]['domain']
+                   for k in dynamic_field_vals.keys()}
         try:
             cfg_step_id = int(wiz.state)
             cfg_step = wiz.product_tmpl_id.config_step_line_ids.filtered(
