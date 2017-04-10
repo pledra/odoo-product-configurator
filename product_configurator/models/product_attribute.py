@@ -211,8 +211,8 @@ class ProductAttributeValue(models.Model):
             val_ids = set(tmpl_vals.ids)
             if preset_val_ids:
                 val_ids -= set(arg[2])
-            val_ids = [v for v in val_ids if product_tmpl.value_available(
-                v, preset_val_ids)]
+            val_ids = product_tmpl.values_available(
+                val_ids, preset_val_ids)
             new_args.append(('id', 'in', val_ids))
             mono_tmpl_lines = product_tmpl.attribute_line_ids.filtered(
                 lambda l: not l.multi)
