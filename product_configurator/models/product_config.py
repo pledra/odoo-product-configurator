@@ -223,7 +223,8 @@ class ProductConfigDefault(models.Model):
     domain_id = fields.Many2one(
         comodel_name='product.config.domain',
         string='Applied If',
-        help='Default will be attempted if this rule passes, or leave blank for a generic default'
+        help='Default will be attempted if this rule passes, or leave blank '
+        'for a generic default'
     )
 
     sequence = fields.Integer(string='Sequence', default=10)
@@ -233,15 +234,21 @@ class ProductConfigDefault(models.Model):
     @api.multi
     def _compute_attr_vals(self):
         for config_default in self:
-            config_default.attr_line_val_ids=config_default.product_tmpl_id.attribute_line_ids.mapped('value_ids')
+            config_default.attr_line_val_ids = \
+                config_default.product_tmpl_id.attribute_line_ids.mapped(
+                    'value_ids'
+                )
 
     @api.model
     def default_get(self, fields):
         result = super(ProductConfigDefault, self).default_get(fields)
         if self.env.context.get('for_template_id'):
             result['attr_line_val_ids'] = \
-                self.env['product.template'].browse(self.env.context['for_template_id']).attribute_line_ids.mapped('value_ids').ids
+                self.env['product.template'].browse(
+                    self.env.context['for_template_id']
+                ).attribute_line_ids.mapped('value_ids').ids
         return result
+
 
 class ProductConfigImage(models.Model):
     _name = 'product.config.image'
@@ -330,6 +337,7 @@ class ProductConfigStepLine(models.Model):
             lambda l: l != self).mapped('config_step_id')
         if self.config_step_id in cfg_steps:
             raise Warning(_('Cannot have a configuration step defined twice.'))
+
 
 class ProductConfigSession(models.Model):
     _name = 'product.config.session'

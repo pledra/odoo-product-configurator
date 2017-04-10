@@ -424,10 +424,6 @@ class ProductTemplate(models.Model):
         """
         self.ensure_one()
 
-        #TODO remove this check, which is only if the module has not been upgraded.
-        if not 'config_default_ids' in self._fields:
-            return False
-
         if not selectable_value_ids:
             return False
         # assume all values are from the same attribute line - they should be!
@@ -456,7 +452,9 @@ class ProductTemplate(models.Model):
             # parsed all lines without a match
             return False
         # pick one at random...
-        return (set(default_line.value_ids.ids) & set(selectable_value_ids)).pop()
+        return (
+            set(default_line.value_ids.ids) & set(selectable_value_ids)
+        ).pop()
 
     @api.multi
     def validate_configuration(self, value_ids, custom_vals=None, final=True):
