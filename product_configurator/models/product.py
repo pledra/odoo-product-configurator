@@ -357,7 +357,8 @@ class ProductTemplate(models.Model):
         """
         if custom_values is None:
             custom_values = {}
-        valid = self.validate_configuration(value_ids, custom_values)
+        valid = self.validate_configuration(value_ids, custom_values,
+                                            do_raise=True)
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
 
@@ -440,7 +441,8 @@ class ProductTemplate(models.Model):
         return avail_val_ids
 
     @api.multi
-    def validate_configuration(self, value_ids, custom_vals=None, final=True):
+    def validate_configuration(self, value_ids,
+                               custom_vals=None, final=True, do_raise=False):
         """ Verifies if the configuration values passed via value_ids and custom_vals
         are valid
 
@@ -466,6 +468,9 @@ class ProductTemplate(models.Model):
                 common_vals = set(value_ids) & set(line.value_ids.ids)
                 custom_val = custom_vals.get(attr.id)
                 if line.required and not common_vals and not custom_val:
+                    if do_raise:
+                        raise ValidationError(_("No value provided for %s") %
+                                              line.attribute.name)
                     # TODO: Verify custom value type to be correct
                     return False
 
@@ -478,7 +483,17 @@ class ProductTemplate(models.Model):
         custom_attr_ids = self.attribute_line_ids.filtered(
             'custom').mapped('attribute_id').ids
 
-        if not set(custom_vals.keys()) <= set(custom_attr_ids):
+        invalid_custom_vals = set(custom_vals.keys()) - set(custom_attr_ids)
+        if invalid_custom_vals:
+            if do_raise:
+                ProductAttribute = self.env['product.attribute']
+                attributes_names = ', '.join(attr.name
+                                             for attr in
+                                             ProductAttribute.browse(
+                                                 list(invalid_custom_vals)))
+                raise ValidationError(
+                    _('Attributes (%s) cannot hold custom values') %
+                    attributes_names)
             return False
 
         # Check if there are multiple values passed for non-multi attributes
