@@ -335,7 +335,7 @@
                 ref('product_configurator.product_attribute_value_tow_hook'),
                 ]
             )]"/>
-            <field name="required" eval="True"/>
+            <field name="required" eval="False"/>
             <field name="multi" eval="True"/>
         </record>
 
