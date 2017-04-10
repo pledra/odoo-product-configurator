@@ -12,9 +12,9 @@ class ConfigurationRules(TransactionCase):
         self.attr_repeater = self.env['product.attribute'].create(
             {'name': 'Repeater',
              'value_ids': [
-                (0, 0, {'name': '1'}),
-                (0, 0, {'name': '2'}),
-                ],
+                 (0, 0, {'name': '1'}),
+                 (0, 0, {'name': '2'}),
+                 ],
              'custom_type': 'int',
              'min_val': 3,
              'max_val': 10,
@@ -23,8 +23,8 @@ class ConfigurationRules(TransactionCase):
         self.attr_flux = self.env['product.attribute'].create(
             {'name': 'Flux Adjustment',
              'value_ids': [
-                (0, 0, {'name': 'Standard'}),
-                ],
+                 (0, 0, {'name': 'Standard'}),
+                 ],
              'custom_type': 'float',
              'custom_digits': 3,
              'min_fval': 0.750,
@@ -36,23 +36,24 @@ class ConfigurationRules(TransactionCase):
              'config_ok': True,
              'type': 'product',
              'categ_id': self.env['ir.model.data']  .xmlid_to_res_id(
-                           'product.product_category_5'),
+                 'product.product_category_5'
+             ),
              'attribute_line_ids': [
-                (0, 0, {'attribute_id': self.attr_repeater.id,
-                        'value_ids': [
-                            (6, 0, self.attr_repeater.value_ids.ids),
-                            ],
-                        'required': True,
-                        'custom': True,
-                        }),
-                (0, 0, {'attribute_id': self.attr_flux.id,
-                        'value_ids': [
-                            (6, 0, self.attr_flux.value_ids.ids),
-                            ],
-                        'required': True,
-                        'custom': True,
-                        })
-                ]
+                 (0, 0, {'attribute_id': self.attr_repeater.id,
+                         'value_ids': [
+                             (6, 0, self.attr_repeater.value_ids.ids),
+                             ],
+                         'required': True,
+                         'custom': True,
+                         }),
+                 (0, 0, {'attribute_id': self.attr_flux.id,
+                         'value_ids': [
+                             (6, 0, self.attr_flux.value_ids.ids),
+                             ],
+                         'required': True,
+                         'custom': True,
+                         })
+                 ]
              }
         )
 
