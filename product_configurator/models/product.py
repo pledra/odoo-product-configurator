@@ -472,10 +472,8 @@ class ProductTemplate(models.Model):
     def create_variant_ids(self):
         """ Prevent configurable products from creating variants as these serve
             only as a template for the product configurator"""
-        for product in self:
-            if self.config_ok:
-                return None
-            return super(ProductTemplate, self).create_variant_ids()
+        regular_templates = self.filtered(lambda t: not t.config_ok)
+        return super(ProductTemplate, regular_templates).create_variant_ids()
 
     @api.multi
     def unlink(self):
@@ -606,3 +604,18 @@ class ProductProduct(models.Model):
                 product.config_name = product.get_config_name()
             else:
                 product.config_name = product.name
+
+    @api.multi
+    def copy_configurable(self):
+        """ Creates a new product.variant with the same attributes, needed to
+            ensure custom_values are correctly recreated and not just pointed
+            to by the original"""
+        self.ensure_one()
+        assert self.config_ok
+
+        attribute_values = self.attribute_value_ids.ids
+        custom_vals = {v.attribute_id.id: v.value or v.attachment_ids.ids
+                       for v in self.value_custom_ids}
+        new_product = self.product_tmpl_id.create_variant(
+            attribute_values, custom_vals)
+        return new_product
