@@ -104,7 +104,7 @@ class ConfigurationRules(TransactionCase):
     def test_configuration_defaults(self):
         conf = ['gasoline', 'tapistry_black']
         engine_selections = self.env.ref(
-             'product_configurator.product_config_line_gasoline_engines'
+            'product_configurator.product_config_line_gasoline_engines'
         )
         attr_val_ids = self.get_attr_val_ids(conf)
         default_value_engine = self.cfg_tmpl.find_default_value(
@@ -112,9 +112,9 @@ class ConfigurationRules(TransactionCase):
             attr_val_ids,
         )
         self.assertEqual(
-             [default_value_engine], self.get_attr_val_ids(['218i']),
-             "Gasoline Engine default not set correctly"
-         )
+            [default_value_engine], self.get_attr_val_ids(['218i']),
+            "Gasoline Engine default not set correctly"
+        )
 
         color_selection_ids = self.get_attr_val_ids(['red', 'silver', 'black'])
         attr_val_ids = self.get_attr_val_ids(conf)
@@ -123,8 +123,8 @@ class ConfigurationRules(TransactionCase):
             attr_val_ids,
         )
         self.assertEqual(
-             [default_value_color], self.get_attr_val_ids(['red']),
-             "Gasoline Color default not set correctly"
+            [default_value_color], self.get_attr_val_ids(['red']),
+            "Gasoline Color default not set correctly"
         )
 
         color_selection_ids = self.get_attr_val_ids(['silver', 'black'])
@@ -134,8 +134,8 @@ class ConfigurationRules(TransactionCase):
             attr_val_ids,
         )
         self.assertFalse(
-             default_value_color,
-             "Gasoline Color should not have been returned unselectable value"
+            default_value_color,
+            "Gasoline Color should not have been returned unselectable value"
         )
 
     # Test configuration with disallowed custom type value

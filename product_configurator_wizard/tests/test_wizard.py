@@ -132,11 +132,11 @@ class ConfigurationRules(TransactionCase):
 
         dynamic_fields = {}
         for attribute_line in self.cfg_tmpl.attribute_line_ids:
-            dynamic_fields['%s%s' % (
-                             wizard.field_prefix,
-                             attribute_line.attribute_id.id
-                             )
-                           ] = [] if attribute_line.multi else False
+            field_name = '%s%s' % (
+                wizard.field_prefix,
+                attribute_line.attribute_id.id
+            )
+            dynamic_fields[field_name] = [] if attribute_line.multi else False
 
         write_dict_gasoline = self.get_wizard_write_dict(wizard, ['gasoline'])
         write_dict_218i = self.get_wizard_write_dict(wizard, ['218i'])
