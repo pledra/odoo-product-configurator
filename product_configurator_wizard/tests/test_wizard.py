@@ -12,7 +12,7 @@ class ConfigurationRules(TransactionCase):
 
         self.so = self.env.ref('sale.sale_order_5')
 
-    def get_wizard_write_dict(self, wizard, attr_val_ext_ids):
+    def get_wizard_write_dict(self, wizard, attr_val_ext_ids, multi=[]):
         """Turn a series of attribute.value objects to a dictionary meant for
         writing values to the product.configurator wizard"""
 
@@ -24,14 +24,24 @@ class ConfigurationRules(TransactionCase):
             write_dict.update({
                 wizard.field_prefix + str(val.attribute_id.id): val.id
             })
+        mv = {}
+        for ext_id in multi:
+            val = self.env.ref(ext_id_prefix % ext_id)
+            mv.setdefault(
+                wizard.field_prefix + str(val.attribute_id.id), []
+            ).append(val.id)
+        write_dict.update({k: [(6, 0, v)] for k, v in mv.iteritems()})
         return write_dict
 
     def test_wizard(self):
         """Test product configurator wizard"""
 
+        existing_lines = self.so.order_line
+
         # Start a new configuration wizard
         wizard = self.env['product.configurator'].create({
-            'product_tmpl_id': self.cfg_tmpl.id
+            'order_id': self.so.id,
+            'product_tmpl_id': self.cfg_tmpl.id,
         })
 
         wizard.action_next_step()
@@ -47,3 +57,29 @@ class ConfigurationRules(TransactionCase):
 
         self.assertTrue(wizard.value_ids.ids == write_val_ids,
                         "Wizard write did not update the config session")
+
+        wizard.action_next_step()
+
+        write_dict = self.get_wizard_write_dict(wizard, ['red', 'rims_378'])
+        wizard.write(write_dict)
+        wizard.action_next_step()
+
+        write_dict = self.get_wizard_write_dict(wizard, ['model_luxury_line'])
+        wizard.write(write_dict)
+        wizard.action_next_step()
+
+        write_dict = self.get_wizard_write_dict(wizard, ['tapistry_black'])
+        wizard.write(write_dict)
+        wizard.action_next_step()
+
+        write_dict = self.get_wizard_write_dict(
+            wizard,
+            ['steptronic'],
+            multi=['tow_hook', 'sunroof']
+        )
+        wizard.write(write_dict)
+        wizard.action_next_step()
+
+        created_line = self.so.order_line - existing_lines
+        self.assertTrue(len(created_line) == 1,
+                        "Wizard did not create an order line")
