@@ -142,7 +142,8 @@ class ProductConfigurator(models.TransientModel):
                 # if one can be set
                 if set(available_val_ids) & set(step_val_ids):
                     def_value_id = self.product_tmpl_id.find_default_value(
-                       available_val_ids, config_val_ids)
+                        available_val_ids, config_val_ids
+                    )
                     if def_value_id:
                         dynamic_fields.update({k: def_value_id})
                         vals[k] = def_value_id
@@ -156,7 +157,8 @@ class ProductConfigurator(models.TransientModel):
                 # step, see if a default can be set
                 if set(available_val_ids) & set(step_val_ids):
                     def_value_id = self.product_tmpl_id.find_default_value(
-                       available_val_ids, config_val_ids) or None
+                        available_val_ids, config_val_ids
+                    ) or None
                 else:
                     def_value_id = None
                 dynamic_fields.update({k: def_value_id})
