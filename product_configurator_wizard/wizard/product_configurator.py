@@ -793,6 +793,7 @@ class ProductConfigurator(models.TransientModel):
         vals = {}
         if new:
             vals.update({'name': product.display_name})
+            vals.update({'product_uom': product.uom_id.id})
         return vals
 
     @api.multi
