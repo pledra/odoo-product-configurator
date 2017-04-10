@@ -45,8 +45,24 @@ class ProductAttribute(models.Model):
         'disable a attribute without deleting it'
     )
 
-    min_val = fields.Integer(string="Min Value", help="Minimum value allowed")
-    max_val = fields.Integer(string="Max Value", help="Minimum value allowed")
+    min_val = fields.Integer(
+        string="Min Value",
+        help="Minimum value allowed"
+    )
+    max_val = fields.Integer(
+        string="Max Value",
+        help="Maximum value allowed, or 0 if not checked"
+    )
+    min_fval = fields.Float(
+        string="Min Float Value",
+        digits=(16, 4),
+        help="Minimum value allowed"
+    )
+    max_fval = fields.Float(
+        string="Max Float Value",
+        digits=(16, 4),
+        help="Maximum value allowed, or 0 if not checked"
+    )
 
     # TODO: Exclude self from result-set of dependency
     val_custom = fields.Boolean(
@@ -59,6 +75,10 @@ class ProductAttribute(models.Model):
         size=64,
         help='The type of the custom field generated in the frontend'
     )
+    custom_digits = fields.Integer(
+        string='Decimal Digits',
+        help='Number of digits accuracy on float entry'
+        )
 
     description = fields.Text(string='Description', translate=True)
 
@@ -109,24 +129,28 @@ class ProductAttribute(models.Model):
         Probaly should check type, etc, but let's assume fine for the moment.
         """
         self.ensure_one()
-        if self.custom_type in ('int', 'float'):
+        if self.custom_type == 'float':
+            minv = self.min_fval
+            maxv = self.max_fval
+        elif self.custom_type == 'int':
             minv = self.min_val
             maxv = self.max_val
+        if self.custom_type in ('int', 'float'):
             val = literal_eval(val)
             if minv and maxv and (val < minv or val > maxv):
                 raise ValidationError(
                     _("Selected custom value '%s' must be between %s and %s"
-                        % (self.name, self.min_val, self.max_val))
+                        % (self.name, minv, maxv))
                 )
             elif minv and val < minv:
                 raise ValidationError(
                     _("Selected custom value '%s' must be at least %s" %
-                        (self.name, self.min_val))
+                        (self.name, minv))
                 )
             elif maxv and val > maxv:
                 raise ValidationError(
-                    _("Selected custom value '%s' must be lower than %s" %
-                        (self.name, self.max_val + 1))
+                    _("Selected custom value '%s' cannot be greater than %s" %
+                        (self.name, maxv))
                 )
 
 

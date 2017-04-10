@@ -319,13 +319,17 @@ class ProductConfigurator(models.TransientModel):
                     elif custom_type in [f[0] for f in field_types]:
                         field_type = custom_type
 
+                custom_field = self.custom_field_prefix + str(attribute.id)
                 # TODO: Implement custom string on custom attribute
-                res[self.custom_field_prefix + str(attribute.id)] = dict(
+                res[custom_field] = dict(
                     default_attrs,
                     string="Custom",
                     type=field_type,
                     sequence=line.sequence,
                 )
+                if field_type == 'float' and line.attribute_id.custom_digits:
+                    res[self.custom_field]['digits'] = \
+                        (16, line.attribute_id.custom_digits)
 
             # Add the dynamic field to the resultset using the convention
             # "__attribute-DBID" to later identify and extract it
