@@ -39,3 +39,17 @@ class SaleOrderLine(models.Model):
             'target': 'new',
             'res_id': wizard.id,
         }
+
+
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+
+    @api.multi
+    def configure_product(self):
+        res = self.env['ir.actions.act_window'].for_xml_id(
+            'product_configurator_wizard',
+            'action_wizard_product_configurator'
+        )
+        res['context'] = {'default_order_id': self.id
+                          }
+        return res

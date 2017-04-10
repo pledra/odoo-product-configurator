@@ -54,10 +54,12 @@ class ConfigurationRules(TransactionCase):
     def test_wizard_configuration(self):
         """Test product configurator wizard"""
 
+        existing_lines = self.so.order_line
+
         # Start a new configuration wizard
         wizard_obj = self.env['product.configurator'].with_context({
             'active_model': 'sale.order',
-            'active_id': self.so.id
+            'default_order_id': self.so.id
         })
 
         wizard = wizard_obj.create({'product_tmpl_id': self.cfg_tmpl.id})
@@ -94,9 +96,15 @@ class ConfigurationRules(TransactionCase):
         self.assertTrue(len(config_variants) == 1,
                         "Wizard did not create a configurable variant")
 
+        created_line = self.so.order_line - existing_lines
+        self.assertTrue(len(created_line) == 1,
+                        "Wizard did not create an order line")
+
     def test_reconfiguration(self):
         """Test reconfiguration functionality of the wizard"""
         self.test_wizard_configuration()
+
+        existing_lines = self.so.order_line
 
         order_line = self.so.order_line.filtered(
             lambda l: l.product_id.config_ok
@@ -121,3 +129,24 @@ class ConfigurationRules(TransactionCase):
 
         self.assertTrue(len(config_variants) == 2,
                         "Wizard reconfiguration did not create a new variant")
+
+        created_line = self.so.order_line - existing_lines
+        self.assertTrue(len(created_line) == 0,
+                        "Wizard created an order line on reconfiguration")
+
+        # test that running through again with the same values does not
+        # create another variant
+        attr_vals = self.get_attr_values(['diesel', '220d'])
+        self.wizard_write_proceed(wizard, attr_vals)
+
+        # Cycle through steps until wizard ends
+        while wizard.action_next_step():
+            pass
+
+        config_variants = self.env['product.product'].search([
+            ('config_ok', '=', True)
+        ])
+
+        self.assertTrue(len(config_variants) == 2,
+                        "Wizard reconfiguration created a redundant variant")
+
