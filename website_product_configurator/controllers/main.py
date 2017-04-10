@@ -371,9 +371,13 @@ class WebsiteProductConfig(http.Controller):
                     custom_val = post.get(custom_field_name)
                     if custom_val:
                         custom_type = line.attribute_id.custom_type
-                        if custom_type in ['float', 'integer']:
+                        if custom_type == 'float':
+                            max_val = line.attribute_id.max_fval
+                            min_val = line.attribute_id.min_fval
+                        elif custom_type == 'integer':
                             max_val = line.attribute_id.max_val
                             min_val = line.attribute_id.min_val
+                        if custom_type in ['float', 'integer']:
                             if max_val and custom_val > max_val:
                                 continue
                             elif min_val and custom_val < min_val:

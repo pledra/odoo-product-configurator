@@ -164,6 +164,7 @@ odoo.define('website_product_configurator.website_form', function (require) {
         });
     }
 
+    // TODO: Need to allow for min_fval and max_fval
     config_form.on('click', 'a.js_add_qty', function (ev) {
         ev.preventDefault();
         var $link = $(ev.currentTarget);
