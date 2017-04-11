@@ -375,13 +375,11 @@ class ProductTemplate(models.Model):
             for domain in domains:
                 if domain[1] == 'in':
                     if not set(domain[2]) & set(value_ids):
-                        # Don't break if the module has not been upgraded...
                         if do_raise and config_line.rule_description:
                             raise ValidationError(config_line.rule_description)
                         return False
                 else:
                     if set(domain[2]) & set(value_ids):
-                        # Don't break if the module has not been upgraded...
                         if do_raise and config_line.rule_description:
                             raise ValidationError(config_line.rule_description)
                         return False
