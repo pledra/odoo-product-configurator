@@ -792,8 +792,10 @@ class ProductConfigurator(models.TransientModel):
         created or edited lines."""
         vals = {}
         if new:
-            vals.update({'name': product.display_name})
-            vals.update({'product_uom': product.uom_id.id})
+            vals.update({
+                'name': product.display_name,
+                'product_uom': product.uom_id.id,
+            })
         return vals
 
     @api.multi
