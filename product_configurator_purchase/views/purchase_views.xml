@@ -43,9 +43,10 @@
                                 ('state','not in',['draft','sent'])
                             ]}"/>
             </xpath>
-            <field name="date_planned" position="attributes">
+
+            <xpath expr="//label[@for='date_planned']/../div/field[@name='date_planned']" position="attributes">
                 <attribute name="required">0</attribute>
-            </field>
+            </xpath>
         </field>
     </record>
 
