@@ -90,6 +90,11 @@ class ProductAttribute(models.Model):
 
     image = fields.Binary(string='Image')
 
+    create_on_fly = fields.Boolean(
+        string='Can create value on the fly',
+        help='User can create new value with product configurator'
+    )
+
     # TODO prevent the same attribute from being defined twice on the
     # attribute lines
 

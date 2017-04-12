@@ -475,6 +475,7 @@ class ProductConfigurator(models.TransientModel):
                     attrs['required'].append(
                         (dependee_field, 'in', list(val_ids)))
 
+
             # Create the new field in the view
             node = etree.Element(
                 "field",
@@ -488,8 +489,8 @@ class ProductConfigurator(models.TransientModel):
                     'default_attribute_id': attribute_id
                 }),
                 options=str({
-                    # 'no_create': True,
-                    # 'no_create_edit': True,
+                    'no_create': not attr_line.attribute_id.create_on_fly,
+                    'no_create_edit': not attr_line.attribute_id.create_on_fly,
                     'no_open': True
                 })
             )
