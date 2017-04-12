@@ -43,6 +43,9 @@
                                 ('state','not in',['draft','sent'])
                             ]}"/>
             </xpath>
+            <field name="date_planned" position="attributes">
+                <attribute name="required">0</attribute>
+            </field>
         </field>
     </record>
 
