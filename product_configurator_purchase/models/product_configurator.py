@@ -34,7 +34,7 @@ class ProductConfigurator(models.Model):
                                                                  new=False))
             if self.purchase_order_line_id:
                 self.purchase_order_line_id.write(self._extra_line_values(self.purchase_order_line_id.order_id,
-                                                                 self.product_id,
-                                                                 new=False))
+                                                                          self.product_id,
+                                                                          new=False))
             self.unlink()
             return
