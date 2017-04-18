@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo.tests.common import TransactionCase
+from odoo.exceptions import ValidationError
 
 
 class ConfigurationRules(TransactionCase):
@@ -56,6 +57,10 @@ class ConfigurationRules(TransactionCase):
         validation = self.cfg_tmpl.validate_configuration(attr_val_ids)
         self.assertFalse(validation, "Incompatible values (Diesel Fuel -> "
                          "Gasoline Engine) configuration passed validation")
+        self.assertRaises(ValidationError,
+                          self.cfg_tmpl.validate_configuration,
+                          attr_val_ids, do_raise=True,
+                          )
 
     def test_missing_val_configuration(self):
         conf = [
