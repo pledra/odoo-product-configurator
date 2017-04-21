@@ -475,6 +475,7 @@ class ProductConfigurator(models.TransientModel):
                     attrs['required'].append(
                         (dependee_field, 'in', list(val_ids)))
 
+
             # Create the new field in the view
             node = etree.Element(
                 "field",
@@ -482,10 +483,14 @@ class ProductConfigurator(models.TransientModel):
                 on_change="onchange_attribute_value(%s, context)" % field_name,
                 default_focus="1" if attr_line == attr_lines[0] else "0",
                 attrs=str(attrs),
-                context="{'show_attribute': False}",
+                context=str({
+                    'show_attribute': False,
+                    'product_tmpl_id': wiz.product_tmpl_id.id,
+                    'default_attribute_id': attribute_id
+                }),
                 options=str({
-                    'no_create': True,
-                    'no_create_edit': True,
+                    'no_create': not attr_line.attribute_id.create_on_fly,
+                    'no_create_edit': not attr_line.attribute_id.create_on_fly,
                     'no_open': True
                 })
             )
@@ -819,7 +824,13 @@ class ProductConfigurator(models.TransientModel):
                 order_line_vals = self._extra_line_values(
                     self.order_line_id.order_id, self.product_id, new=False)
                 self.order_line_id.write(order_line_vals)
+
+            if self.purchase_order_line_id:
+                purchase_line_vals = self._extra_line_values(
+                    self.purchase_order_line_id.order_id, self.product_id, new=False)
+                self.purchase_order_line_id.write(purchase_line_vals)
             self.unlink()
+
             return
         #
         # This try except is too generic.
