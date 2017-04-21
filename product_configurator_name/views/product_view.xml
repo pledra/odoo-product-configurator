@@ -13,4 +13,15 @@
         </field>
     </record>
 
+    <record id="product_variant_easy_edit_view" model="ir.ui.view">
+        <field name="name">product.configurator.product.variant.easy.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+        <field name="arch" type="xml">
+            <field name="attribute_value_ids" position="after">
+                <field name="name_override"/>
+            </field>
+        </field>
+    </record>
+
 </odoo>
