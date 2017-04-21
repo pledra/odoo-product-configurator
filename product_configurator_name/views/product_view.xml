@@ -24,4 +24,16 @@
         </field>
     </record>
 
+    <record id="product_normal_form_view" model="ir.ui.view">
+        <field name="name">product.configurator.product.variant.normal.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <field name="attribute_value_ids" position="after">
+                <label for="name_override"/>
+                <field name="name_override"/>
+            </field>
+        </field>
+    </record>
+
 </odoo>
