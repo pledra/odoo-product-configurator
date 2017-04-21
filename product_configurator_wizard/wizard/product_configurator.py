@@ -845,6 +845,12 @@ class ProductConfigurator(models.TransientModel):
         template_products = self.env['product.product'].search(domain)
         product_found = False
 
+        if self.product_tmpl_id.reuse_variant:
+            for product in template_products:
+                if product.attribute_value_ids == self.value_ids:
+                    product_found = product
+                    break
+
         if product_found:
             variant = product_found
             price = product_found.standard_price
