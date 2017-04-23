@@ -101,4 +101,4 @@ class ConfigurationRules(TransactionCase):
         self.assertFalse(validation, "Custom value accepted for fixed "
                          "attribute color")
 
-    # Test configuration with disallowed custom type value
+    # TODO: Test configuration with disallowed custom type value
