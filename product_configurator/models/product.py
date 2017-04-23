@@ -328,13 +328,20 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def create_variant(self, value_ids, custom_values=None):
-        """ Creates a product.variant with the attributes passed via value_ids
-        and custom_values
+        """Wrapper method for backward compatibility"""
+        # TODO: Remove in newer versions
+        return self.create_get_variant(
+            value_ids=value_ids, custom_values=custom_values)
+
+    @api.multi
+    def create_get_variant(self, value_ids, custom_values=None):
+        """ Creates a new product variant with the attributes passed via value_ids
+        and custom_values or retrieves an existing one based on search result
 
             :param value_ids: list of product.attribute.values ids
             :param custom_values: dict {product.attribute.id: custom_value}
 
-            :returns: product.product recordset of products matching domain
+            :returns: new/existing product.product recordset
 
         """
         if custom_values is None:
@@ -342,7 +349,14 @@ class ProductTemplate(models.Model):
         valid = self.validate_configuration(value_ids, custom_values)
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
-        # TODO: Add all custom values to order line instead of product
+
+        duplicates = self.search_variant(value_ids)
+
+        # Only return duplicates without custom values for now:
+        if duplicates.filtered(lambda p: not p.value_custom_ids):
+            return duplicates[0]
+
+        # TODO: Handle duplicates with custom values
         vals = self.get_variant_vals(value_ids, custom_values)
         variant = self.env['product.product'].create(vals)
 
@@ -384,7 +398,8 @@ class ProductTemplate(models.Model):
         are available for selection given the configuration ids and the
         dependencies set on the product template
 
-        :param attr_val_ids: list of attribute values
+        :param attr_val_ids: list of attribute value ids to check for
+                             availability
         :param sel_val_ids: list of attribute value ids already selected
 
         :returns: list of available attribute values
@@ -500,6 +515,26 @@ class ProductProduct(models.Model):
             'int': int
         }
         return conversions
+
+    @api.constrains('attribute_value_ids')
+    def _check_duplicate_product(self):
+        if not self.config_ok:
+            return None
+
+        # All duplicates with and without custom values
+        duplicates = self.product_tmpl_id.search_variant(
+            self.attribute_value_ids.ids).filtered(lambda p: p.id != self.id)
+
+        # Prevent duplicates without custom values (only attribute values)
+        if duplicates.filtered(lambda p: not p.value_custom_ids):
+            raise ValidationError(
+                _("Configurable Products cannot have duplicates "
+                  "(identical attribute values)")
+            )
+
+        # TODO: For the future prevent duplicates with identical custom values
+        # or implement custom values on the order line level since they are
+        # specific to each order.
 
     @api.multi
     def _get_price_extra(self):
