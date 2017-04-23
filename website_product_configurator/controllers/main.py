@@ -568,28 +568,12 @@ class WebsiteProductConfig(http.Controller):
         return self.get_config_image(product_tmpl, value_ids, size)
 
     def configure_product(self, product_tmpl, value_ids, custom_vals=None):
-        """Used for searching a variant with the values passed in cfg_vals
-           and returning a redirect to it. In case a product is not found with
-           the given valid configuration a new variant is generated with the
-           specific values and then returned
-
-           :param product_tmpl: product.template object being configured
-           :param cfg_vals: dict representing the client-side configuration
-
-           :returns: product.product object found or created
-           """
-        # TODO: Implement a search and create method that can be extended
-        # easily
+        """Method kept for backward compatiblity"""
+        # TODO: Remove in next version
         if custom_vals is None:
             custom_vals = {}
 
-        product = product_tmpl.search_variant(value_ids, custom_vals)
-        if product:
-            if len(product) > 1:
-                return False
-            else:
-                return product
-        return product_tmpl.sudo().create_variant(value_ids, custom_vals)
+        return product_tmpl.sudo().create_get_variant(value_ids, custom_vals)
 
     def get_attr_classes(self, attr_line, attr_value=False, custom=False):
         """Computes classes for attribute elements in frontend for the purpose
@@ -713,11 +697,13 @@ class WebsiteProductConfig(http.Controller):
         except:
             return request.redirect('/configurator')
         if post:
-            product = self.configure_product(
-                cfg_session.product_tmpl_id, cfg_session.value_ids.ids, {
-                    x.attribute_id.id: x.value or x.attachment_ids for x in
-                    cfg_session.custom_value_ids
-                })
+            custom_vals = {
+                x.attribute_id.id: x.value or x.attachment_ids for x in
+                cfg_session.custom_value_ids
+            }
+            product = cfg_session.product_tmpl_id.sudo().create_get_variant(
+                cfg_session.value_ids.ids, custom_vals
+            )
             cfg_session.sudo().unlink()
             return self.cart_update(product, post)
 

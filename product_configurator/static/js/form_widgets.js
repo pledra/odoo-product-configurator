@@ -21,6 +21,6 @@ var FieldBooleanButton = core.form_widget_registry.map['boolean_button'].extend(
 });
 
 
-core.form_widget_registry.add('boolean_button', FieldBooleanButton)
+core.form_widget_registry.add('boolean_button', FieldBooleanButton);
 
-})
+});
