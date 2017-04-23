@@ -808,22 +808,6 @@ class ProductConfigurator(models.TransientModel):
                 l.value or l.attachment_ids for l in self.custom_value_ids
         }
 
-        if self.product_id:
-            product_tmpl = self.product_id.product_tmpl_id
-            remove_cv_links = map(
-                lambda cv: (2, cv), self.product_id.value_custom_ids.ids)
-            new_cv_links = product_tmpl.encode_custom_values(custom_vals)
-            self.product_id.write({
-                'attribute_value_ids': [(6, 0, self.value_ids.ids)],
-                'value_custom_ids':  remove_cv_links + new_cv_links,
-            })
-            if self.order_line_id:
-                order_line_vals = self._extra_line_values(
-                    self.order_line_id.order_id, self.product_id, new=False)
-                self.order_line_id.write(order_line_vals)
-            self.unlink()
-            return
-        #
         # This try except is too generic.
         # The create_variant routine could effectively fail for
         # a large number of reasons, including bad programming.
@@ -832,7 +816,7 @@ class ProductConfigurator(models.TransientModel):
         # error legitimately raised in a nested routine
         # is passed through.
         try:
-            variant = self.product_tmpl_id.create_variant(
+            variant = self.product_tmpl_id.create_get_variant(
                 self.value_ids.ids, custom_vals)
         except ValidationError:
             raise
@@ -845,11 +829,14 @@ class ProductConfigurator(models.TransientModel):
         so = self.env['sale.order'].browse(self.env.context.get('active_id'))
 
         line_vals = {'product_id': variant.id}
-        line_vals.update(self._extra_line_values(so, variant, new=True))
+        line_vals.update(self._extra_line_values(
+            self.order_line_id.order_id or so, variant, new=True)
+        )
 
-        so.write({
-            'order_line': [(0, 0, line_vals)]
-        })
+        if self.order_line_id:
+            self.order_line_id.write(line_vals)
+        else:
+            so.write({'order_line': [(0, 0, line_vals)]})
 
         self.unlink()
         return
