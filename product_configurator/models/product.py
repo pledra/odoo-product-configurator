@@ -348,6 +348,36 @@ class ProductTemplate(models.Model):
 
         return variant
 
+    def validate_domains_against_sels(self, domains, sel_val_ids):
+        # process domains as shown in this wikipedia pseudocode:
+        # https://en.wikipedia.org/wiki/Polish_notation#Order_of_operations
+        stack = []
+        for domain in reversed(domains):
+            if type(domain) == tuple:
+                # evaluate operand and push to stack
+                if domain[1] == 'in':
+                    if not set(domain[2]) & set(sel_val_ids):
+                        stack.append(False)
+                        continue
+                else:
+                    if set(domain[2]) & set(sel_val_ids):
+                        stack.append(False)
+                        continue
+                stack.append(True)
+            else:
+                # evaluate operator and previous 2 operands
+                # compute_domain() only inserts 'or' operators
+                # compute_domain() enforces 2 operands per operator
+                operand1 = stack.pop()
+                operand2 = stack.pop()
+                stack.append(operand1 or operand2)
+
+        # 'and' operator is implied for remaining stack elements
+        avail = True
+        while stack:
+            avail &= stack.pop()
+        return avail
+
     @api.multi
     def values_available(self, attr_val_ids, sel_val_ids):
         """Determines whether the attr_values from the product_template
@@ -368,33 +398,7 @@ class ProductTemplate(models.Model):
             )
             domains = config_lines.mapped('domain_id').compute_domain()
 
-            # process domains as shown in this wikipedia pseudocode:
-            # https://en.wikipedia.org/wiki/Polish_notation#Order_of_operations
-            stack = []
-            for domain in reversed(domains):
-                if type(domain) == tuple:
-                    # evaluate operand and push to stack
-                    if domain[1] == 'in':
-                        if not set(domain[2]) & set(sel_val_ids):
-                            stack.append(False)
-                            continue
-                    else:
-                        if set(domain[2]) & set(sel_val_ids):
-                            stack.append(False)
-                            continue
-                    stack.append(True)
-                else:
-                    # evaluate operator and previous 2 operands
-                    # compute_domain() only inserts 'or' operators
-                    # compute_domain() enforces 2 operands per operator
-                    operand1 = stack.pop()
-                    operand2 = stack.pop()
-                    stack.append(operand1 or operand2)
-
-            # 'and' operator is implied for remaining stack elements
-            avail = True
-            while stack:
-                avail &= stack.pop()
+            avail = self.validate_domains_against_sels(domains, sel_val_ids)
             if avail:
                 avail_val_ids.append(attr_val_id)
 
