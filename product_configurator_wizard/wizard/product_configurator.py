@@ -804,7 +804,7 @@ class ProductConfigurator(models.TransientModel):
                 l.value or l.attachment_ids for l in self.custom_value_ids
         }
 
-        if self.product_id:
+        if self.product_id and self.product_id.product_tmpl_id == self.product_tmpl_id:
             product_tmpl = self.product_id.product_tmpl_id
             remove_cv_links = map(
                 lambda cv: (2, cv), self.product_id.value_custom_ids.ids)
@@ -837,6 +837,16 @@ class ProductConfigurator(models.TransientModel):
                 _('Invalid configuration! Please check all '
                   'required steps and fields.')
             )
+
+        if self.product_id:
+            # A product was passed in, and reconfigured, but the template was changed.
+            # At the moment, this is only coded for orders where the order line is known
+            if self.order_line_id:
+                self.order_line_id.write(self._extra_line_values(self.order_line_id.order_id,
+                                                                 self.product_id,
+                                                                 new=False))
+            self.unlink()
+            return
 
         so = self.env['sale.order'].browse(self.env.context.get('active_id'))
 
