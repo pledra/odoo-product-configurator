@@ -472,17 +472,8 @@ class ProductTemplate(models.Model):
                 # No domain - always considered true. Use this.
                 break
             domains = default_line.mapped('domain_id').compute_domain()
-            for domain in domains:
-                if domain[1] == 'in':
-                    if not set(domain[2]) & set(value_ids):
-                        # Domain mismatch, skip this line
-                        break
-                else:
-                    if set(domain[2]) & set(value_ids):
-                        # Domain mismatch, skip this line
-                        break
-            else:
-                # All domains OK, use this
+            if self.validate_domains_against_sels(domains, value_ids):
+                # Domain OK, use this
                 break
         else:
             # parsed all lines without a match
