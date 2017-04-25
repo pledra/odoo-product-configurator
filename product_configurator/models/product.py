@@ -414,7 +414,7 @@ class ProductTemplate(models.Model):
         return avail
 
     @api.multi
-    def values_available(self, attr_val_ids, sel_val_ids):
+    def values_available(self, attr_val_ids, sel_val_ids, do_raise=False):
         """Determines whether the attr_values from the product_template
         are available for selection given the configuration ids and the
         dependencies set on the product template
@@ -422,6 +422,7 @@ class ProductTemplate(models.Model):
         :param attr_val_ids: list of attribute value ids to check for
                              availability
         :param sel_val_ids: list of attribute value ids already selected
+        :param do_raise: boolean on whether to raise a warning or just fail
 
         :returns: list of available attribute values
         """
@@ -437,7 +438,18 @@ class ProductTemplate(models.Model):
             avail = self.validate_domains_against_sels(domains, sel_val_ids)
             if avail:
                 avail_val_ids.append(attr_val_id)
-
+            elif do_raise:
+                if len(config_lines) == 1 and config_lines[0].rule_description:
+                    raise ValidationError(config_lines[0].rule_description)
+                else:
+                    attribute_value = \
+                        self.env['product.attribute.value'].browse(attr_val_id)
+                    raise ValidationError(
+                        _('%s for %s is not valid in this configuration') %
+                        (attribute_value.name,
+                         attribute_value.attribute_id.name
+                         )
+                        )
         return avail_val_ids
 
     @api.multi
@@ -450,12 +462,12 @@ class ProductTemplate(models.Model):
         :param custom_vals: custom values dict {attr_id: custom_val}
         :param final: boolean marker to check required attributes.
                       pass false to check non-final configurations
+        :param do_raise: boolean on whether to raise a warning or just fail
 
         :returns: Error dict with reason of validation failure
                   or True
         """
-        # TODO: Raise ConfigurationError with reason
-        # Check if required values are missing for final configuration
+        # TODO: Check if required values are missing for final configuration
         if custom_vals is None:
             custom_vals = {}
 
@@ -475,7 +487,8 @@ class ProductTemplate(models.Model):
                     return False
 
         # Check if all all the values passed are not restricted
-        avail_val_ids = self.values_available(value_ids, value_ids)
+        avail_val_ids = self.values_available(value_ids, value_ids,
+                                              do_raise=do_raise)
         if set(value_ids) - set(avail_val_ids):
             return False
 
