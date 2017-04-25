@@ -47,3 +47,48 @@ class ConfigurationRules(TransactionCase):
 
         self.assertTrue(wizard.value_ids.ids == write_val_ids,
                         "Wizard write did not update the config session")
+
+    def test_wizard_domains(self):
+        """Test product configurator wizard default values"""
+
+        # Start a new configuration wizard
+        wizard = self.env['product.configurator'].create({
+            'product_tmpl_id': self.cfg_tmpl.id
+        })
+
+        dynamic_fields = {}
+        for attribute_line in self.cfg_tmpl.attribute_line_ids:
+            field_name = '%s%s' % (
+                wizard.field_prefix,
+                attribute_line.attribute_id.id
+            )
+            dynamic_fields[field_name] = [] if attribute_line.multi else False
+
+        write_dict_gasoline = self.get_wizard_write_dict(wizard, ['gasoline'])
+        write_dict_218i = self.get_wizard_write_dict(wizard, ['218i'])
+        gasoline_engine_ids = self.env.ref(
+            'product_configurator.product_config_line_gasoline_engines'
+        ).value_ids.ids
+
+        oc_vals = dynamic_fields.copy()
+        oc_vals.update({'id': wizard.id,
+                        })
+        oc_vals.update(self.get_wizard_write_dict(wizard, ['gasoline']))
+        oc_result = wizard.onchange(
+            oc_vals,
+            write_dict_gasoline.keys()[0],
+            {}
+        )
+        k, v = write_dict_218i.iteritems().next()
+        self.assertEqual(
+            oc_result.get('value', {}).get(k),
+            v,
+            "Engine default value not set correctly by onchange wizard"
+        )
+        oc_domain = oc_result.get('domain', {}).get(k, [])
+        domain_ids = oc_domain and oc_domain[0][2] or []
+        self.assertEqual(
+            set(domain_ids),
+            set(gasoline_engine_ids),
+            "Engine domain value not set correctly by onchange wizard"
+        )
