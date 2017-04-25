@@ -11,6 +11,8 @@ class ProductTemplate(models.Model):
 
     config_ok = fields.Boolean(string='Can be Configured')
 
+    reuse_variant = fields.Boolean(string='Reuse variants if exists')
+
     config_line_ids = fields.One2many(
         comodel_name='product.config.line',
         inverse_name='product_tmpl_id',
