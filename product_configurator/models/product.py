@@ -473,10 +473,10 @@ class ProductTemplate(models.Model):
     def create_variant_ids(self):
         """ Prevent configurable products from creating variants as these serve
             only as a template for the product configurator"""
-        for product in self:
-            if self.config_ok:
-                return None
-            return super(ProductTemplate, self).create_variant_ids()
+        templates = self.filtered(lambda t: not t.config_ok)
+        if not templates:
+            return None
+        return super(ProductTemplate, templates).create_variant_ids()
 
     @api.multi
     def unlink(self):
