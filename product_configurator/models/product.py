@@ -435,65 +435,10 @@ class ProductTemplate(models.Model):
             if not default_line.domain_id:
                 # No domain - always considered true. Use this.
                 break
+
             domains = default_line.mapped('domain_id').compute_domain()
-            for domain in domains:
-                if domain[1] == 'in':
-                    if not set(domain[2]) & set(value_ids):
-                        # Domain mismatch, skip this line
-                        break
-                else:
-                    if set(domain[2]) & set(value_ids):
-                        # Domain mismatch, skip this line
-                        break
-            else:
-                # All domains OK, use this
-                break
-        else:
-            # parsed all lines without a match
-            return False
-        # pick one at random...
-        return (
-            set(default_line.value_ids.ids) & set(selectable_value_ids)
-        ).pop()
-
-    @api.multi
-    def find_default_value(self, selectable_value_ids, value_ids):
-        """Based on the current values, which of the available template value ids
-            is the best default value to use.
-
-            :param selectable_value_ids: list of product.attribute.value
-                object already trimmed down as selectable, for one
-                attribute line.
-            :param value_ids: list of attribute value ids already chosen
-
-            :returns: The first matched default id
-
-        """
-        self.ensure_one()
-
-        if not selectable_value_ids:
-            return False
-        # assume all values are from the same attribute line - they should be!
-        default_lines = self.config_default_ids.filtered(
-            lambda l: set(l.value_ids.ids) & set(selectable_value_ids)
-        )
-
-        for default_line in default_lines:
-            if not default_line.domain_id:
-                # No domain - always considered true. Use this.
-                break
-            domains = default_line.mapped('domain_id').compute_domain()
-            for domain in domains:
-                if domain[1] == 'in':
-                    if not set(domain[2]) & set(value_ids):
-                        # Domain mismatch, skip this line
-                        break
-                else:
-                    if set(domain[2]) & set(value_ids):
-                        # Domain mismatch, skip this line
-                        break
-            else:
-                # All domains OK, use this
+            if self.validate_domains_against_sels(domains, value_ids):
+                # Domain OK, use this
                 break
         else:
             # parsed all lines without a match
