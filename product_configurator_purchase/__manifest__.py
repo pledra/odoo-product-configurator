@@ -18,6 +18,7 @@
     ],
     "data": [
         'views/purchase_views.xml',
+        'views/stock_picking_views.xml',
     ],
     'demo': [
     ],
