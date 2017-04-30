@@ -243,7 +243,7 @@ class ProductConfigurator(models.TransientModel):
             cfg_val_ids = cfg_vals.ids + list(view_val_ids)
 
             domains = self.get_onchange_domains(values, cfg_val_ids)
-            nvals = self.get_form_vals(dynamic_fields, domains)
+            nvals = self.get_form_vals(dynamic_fields, domains, cfg_step)
             # Stop possible recursion by not including values which have
             # previously looped
             modified_dynamics = {k: v
