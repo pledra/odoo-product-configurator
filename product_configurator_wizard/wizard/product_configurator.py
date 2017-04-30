@@ -226,6 +226,30 @@ class ProductConfigurator(models.TransientModel):
 
         domains = self.get_onchange_domains(values, cfg_val_ids)
         vals = self.get_form_vals(dynamic_fields, domains, cfg_step)
+        modified_dynamics = {k: v
+                             for k, v in vals.iteritems()
+                             if k in dynamic_fields}
+
+        while modified_dynamics:
+            # modified values may change domains!
+            dynamic_fields.update(modified_dynamics)
+            for k, v in modified_dynamics.iteritems():
+                attr_id = int(k.split(self.field_prefix)[1])
+                view_val_ids -= set(self.env['product.attribute.value'].search(
+                    [('attribute_id', '=', attr_id)]).ids)
+                if v:
+                    view_val_ids.add(v)
+
+            cfg_val_ids = cfg_vals.ids + list(view_val_ids)
+
+            domains = self.get_onchange_domains(values, cfg_val_ids)
+            nvals = self.get_form_vals(dynamic_fields, domains)
+            # Stop possible recursion by not including values which have
+            # previously looped
+            modified_dynamics = {k: v
+                                 for k, v in nvals.iteritems()
+                                 if k in dynamic_fields and k not in vals}
+            vals.update(nvals)
         return {'value': vals, 'domain': domains}
 
     attribute_line_ids = fields.One2many(
