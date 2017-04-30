@@ -443,33 +443,57 @@ class ProductConfigurator(models.TransientModel):
             # dependee
 
             if attr_line.value_ids <= dependencies.mapped('value_ids'):
-                attr_depends = {}
-                domain_lines = dependencies.mapped('domain_id.domain_line_ids')
-                for domain_line in domain_lines:
-                    attr_id = domain_line.attribute_id.id
-                    attr_field = self.field_prefix + str(attr_id)
-                    attr_lines = wiz.product_tmpl_id.attribute_line_ids
-                    # If the fields it depends on are not in the config step
-                    if config_steps and str(attr_line.id) != wiz.state:
-                        continue
-                    if attr_field not in attr_depends:
-                        attr_depends[attr_field] = set()
-                    if domain_line.condition == 'in':
-                        attr_depends[attr_field] |= set(
-                            domain_line.value_ids.ids)
-                    elif domain_line.condition == 'not in':
-                        val_ids = attr_lines.filtered(
-                            lambda l: l.attribute_id.id == attr_id).value_ids
-                        val_ids = val_ids - domain_line.value_ids
-                        attr_depends[attr_field] |= set(val_ids.ids)
+                attrs['readonly'] = []
+                attrs['required'] = []
+                for dependency in dependencies:
+                    this_readonly = []
+                    this_required = []
+                    attr_depends = {}
+                    for domain_line in dependency.domain_id.domain_line_ids:
+                        # TODO: Note - THIS STILL ASSUMES "and"
+                        attr_id = domain_line.attribute_id.id
+                        attr_field = self.field_prefix + str(attr_id)
+                        attr_lines = wiz.product_tmpl_id.attribute_line_ids
+                        # If the fields it depends on are not in the config
+                        # step
+                        if config_steps and str(attr_line.id) != wiz.state:
+                            continue
+                        if attr_field not in attr_depends:
+                            attr_depends[attr_field] = set()
+                        if domain_line.condition == 'in':
+                            attr_depends[attr_field] |= set(
+                                domain_line.value_ids.ids)
+                        elif domain_line.condition == 'not in':
+                            val_ids = attr_lines.filtered(
+                                lambda l: l.attribute_id.id == attr_id
+                                ).value_ids
+                            val_ids = val_ids - domain_line.value_ids
+                            attr_depends[attr_field] |= set(val_ids.ids)
 
-                for dependee_field, val_ids in attr_depends.iteritems():
-                    if not val_ids:
-                        continue
-                    attrs['readonly'].append(
-                        (dependee_field, 'not in', list(val_ids)))
-                    attrs['required'].append(
-                        (dependee_field, 'in', list(val_ids)))
+                    for dependee_field, val_ids in attr_depends.iteritems():
+                        if not val_ids:
+                            continue
+                        this_readonly.append(
+                            (dependee_field, 'not in', list(val_ids)))
+                        this_required.append(
+                            (dependee_field, 'in', list(val_ids)))
+
+                    # Two different dependencies are "or"ed
+                    if this_readonly:
+                        if attrs["readonly"]:
+                            attrs["readonly"][0:0] = ['&']
+                        # TODO: because of the "and" assumptions within
+                        # one dependency, these work
+                        attrs["readonly"].extend(
+                            (['|'] * (len(this_readonly) - 1)) + this_readonly
+                             )
+                        if attrs["required"]:
+                            attrs["required"][0:0] = ['|']
+                        # TODO: because of the "and" assumptions within
+                        # one dependency, these work
+                        attrs["required"].extend(
+                            (['|'] * (len(this_required) - 1)) + this_required
+                             )
 
             # Create the new field in the view
             node = etree.Element(
