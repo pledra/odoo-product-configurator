@@ -31,6 +31,19 @@ class ProductTemplate(models.Model):
         string='Configuration Lines'
     )
 
+    @api.multi
+    @api.constrains('attribute_line_ids')
+    def _check_default_values(self):
+        """Validate default values set on the product template"""
+        default_val_ids = self.attribute_line_ids.filtered(
+            lambda l: l.default_val).mapped('default_val').ids
+
+        # TODO: Remove if cond when PR with raise error on github is merged
+        if not self.validate_configuration(default_val_ids, final=False):
+            raise ValidationError(
+                _('Default values provided generate an invalid configuration')
+            )
+
     def flatten_val_ids(self, value_ids):
         """ Return a list of value_ids from a list with a mix of ids
         and list of ids (multiselection)

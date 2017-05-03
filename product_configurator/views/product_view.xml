@@ -37,11 +37,20 @@
 
             <!-- Product attributes -->
             <xpath expr="//field[@name='attribute_line_ids']" position="attributes">
-                <attribute name="context">{'show_attribute': False,'attribute_line_ids': attribute_line_ids}</attribute>
+                <attribute name="context">{
+                    'show_attribute': False,
+                    'attribute_line_ids': attribute_line_ids,
+                    'first_val_default': True
+                }</attribute>
             </xpath>
 
             <!-- TODO: Implement a method to hide this field for non-configurable product templates -->
             <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='value_ids']" position="after">
+                <field name="default_val"
+                    domain="[('id', 'in', value_ids and value_ids[0][2])]"
+                    context="{'show_attribute': False}"
+                    options="{'no_create': True, 'no_create_edit': True}"
+                    invisible="not context.get('default_config_ok', False)"/>
                 <field name="required" invisible="not context.get('default_config_ok', False)"/>
                 <field name="multi" invisible="not context.get('default_config_ok', False)"/>
                 <field name="custom" invisible="not context.get('default_config_ok', False)"/>
