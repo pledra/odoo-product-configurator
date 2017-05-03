@@ -141,6 +141,15 @@ class ProductAttributeLine(models.Model):
         # TODO: Remove all dependencies pointed towards the attribute being
         # changed
 
+    @api.onchange('value_ids')
+    def onchange_values(self):
+        if self.default_val and self.default_val not in self.value_ids:
+            self.default_val = None
+
+        val_default = self._context.get('first_val_default', False)
+        if val_default and not self.default_val and len(self.value_ids) == 1:
+            self.default_val = self.value_ids[0]
+
     custom = fields.Boolean(
         string='Custom',
         help="Allow custom values for this attribute?"
@@ -154,6 +163,10 @@ class ProductAttributeLine(models.Model):
         string='Multi',
         help='Allow selection of multiple values for this attribute?'
     )
+    default_val = fields.Many2one(
+        comodel_name='product.attribute.value',
+        string='Default Value'
+    )
 
     sequence = fields.Integer(string='Sequence', default=10)
 
@@ -163,6 +176,18 @@ class ProductAttributeLine(models.Model):
 
     # TODO: Constraint not allowing introducing dependencies that do not exist
     # on the product.template
+
+    @api.multi
+    @api.constrains('value_ids', 'default_val')
+    def _check_default_values(self):
+        for line in self:
+            if line.default_val not in line.value_ids:
+                raise ValidationError(
+                    _("Default values for each attribute line must exist in "
+                      "the attribute values (%s: %s)" % (
+                          line.attribute_id.name, line.default_val.name)
+                      )
+                )
 
 
 class ProductAttributeValue(models.Model):
