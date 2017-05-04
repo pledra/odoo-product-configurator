@@ -100,16 +100,7 @@ class ConfigurationRules(TransactionCase):
         self.assertTrue(len(created_line) == 1,
                         "Wizard did not create an order line")
 
-    def test_reconfiguration(self):
-        """Test reconfiguration functionality of the wizard"""
-        self.test_wizard_configuration()
-
-        existing_lines = self.so.order_line
-
-        order_line = self.so.order_line.filtered(
-            lambda l: l.product_id.config_ok
-        )
-
+    def do_reconfigure(self, order_line):
         reconfig_action = order_line.reconfigure_product()
 
         wizard = self.env['product.configurator'].browse(
@@ -122,6 +113,18 @@ class ConfigurationRules(TransactionCase):
         # Cycle through steps until wizard ends
         while wizard.action_next_step():
             pass
+
+    def test_reconfiguration(self):
+        """Test reconfiguration functionality of the wizard"""
+        self.test_wizard_configuration()
+
+        existing_lines = self.so.order_line
+
+        order_line = self.so.order_line.filtered(
+            lambda l: l.product_id.config_ok
+        )
+
+        self.do_reconfigure(order_line)
 
         config_variants = self.env['product.product'].search([
             ('config_ok', '=', True)
@@ -136,12 +139,7 @@ class ConfigurationRules(TransactionCase):
 
         # test that running through again with the same values does not
         # create another variant
-        attr_vals = self.get_attr_values(['diesel', '220d'])
-        self.wizard_write_proceed(wizard, attr_vals)
-
-        # Cycle through steps until wizard ends
-        while wizard.action_next_step():
-            pass
+        self.do_reconfigure(order_line)
 
         config_variants = self.env['product.product'].search([
             ('config_ok', '=', True)
