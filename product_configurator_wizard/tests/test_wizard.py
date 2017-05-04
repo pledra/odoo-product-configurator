@@ -138,22 +138,25 @@ class ConfigurationRules(TransactionCase):
             )
             dynamic_fields[field_name] = [] if attribute_line.multi else False
 
-        write_dict_gasoline = self.get_wizard_write_dict(wizard, ['gasoline'])
-        write_dict_218i = self.get_wizard_write_dict(wizard, ['218i'])
-        gasoline_engine_ids = self.env.ref(
+        attr_gasoline_vals = self.get_attr_values(['gasoline'])
+        attr_gasoline_dict = self.get_wizard_write_dict(wizard,
+                                                        attr_gasoline_vals)
+        attr_218i_vals = self.get_attr_values(['218i'])
+        attr_218i_dict = self.get_wizard_write_dict(wizard, attr_218i_vals)
+        gasoline_engine_vals = self.env.ref(
             'product_configurator.product_config_line_gasoline_engines'
-        ).value_ids.ids
+        ).value_ids
 
         oc_vals = dynamic_fields.copy()
         oc_vals.update({'id': wizard.id,
                         })
-        oc_vals.update(self.get_wizard_write_dict(wizard, ['gasoline']))
+        oc_vals.update(attr_gasoline_dict)
         oc_result = wizard.onchange(
             oc_vals,
-            write_dict_gasoline.keys()[0],
+            attr_gasoline_dict.keys()[0],
             {}
         )
-        k, v = write_dict_218i.iteritems().next()
+        k, v = attr_218i_dict.iteritems().next()
         self.assertEqual(
             oc_result.get('value', {}).get(k),
             v,
@@ -163,6 +166,6 @@ class ConfigurationRules(TransactionCase):
         domain_ids = oc_domain and oc_domain[0][2] or []
         self.assertEqual(
             set(domain_ids),
-            set(gasoline_engine_ids),
+            set(gasoline_engine_vals.ids),
             "Engine domain value not set correctly by onchange wizard"
         )
