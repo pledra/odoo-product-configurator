@@ -180,7 +180,7 @@ class ProductAttributeLine(models.Model):
     @api.multi
     @api.constrains('value_ids', 'default_val')
     def _check_default_values(self):
-        for line in self:
+        for line in self.filtered(lambda l: l.default_val):
             if line.default_val not in line.value_ids:
                 raise ValidationError(
                     _("Default values for each attribute line must exist in "
