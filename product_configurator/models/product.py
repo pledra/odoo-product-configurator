@@ -221,31 +221,43 @@ class ProductTemplate(models.Model):
 
             :returns: product.product recordset of products matching domain
         """
+        self.ensure_one()
+
         if custom_values is None:
             custom_values = {}
         attr_obj = self.env['product.attribute']
-        for product_tmpl in self:
-            domain = [('product_tmpl_id', '=', product_tmpl.id)]
 
-            for value_id in value_ids:
-                domain.append(('attribute_value_ids', '=', value_id))
+        domain = [('product_tmpl_id', '=', self.id)]
 
-            attr_search = attr_obj.search([
-                ('search_ok', '=', True),
-                ('custom_type', 'not in', attr_obj._get_nosearch_fields())
-            ])
+        for value_id in value_ids:
+            domain.append(('attribute_value_ids', '=', value_id))
 
-            for attr_id, value in custom_values.iteritems():
-                if attr_id not in attr_search.ids:
-                    domain.append(
-                        ('value_custom_ids.attribute_id', '!=', int(attr_id)))
-                else:
-                    domain.append(
-                        ('value_custom_ids.attribute_id', '=', int(attr_id)))
-                    domain.append(('value_custom_ids.value', '=', value))
+        attr_search = attr_obj.search([
+            ('search_ok', '=', True),
+            ('custom_type', 'not in', attr_obj._get_nosearch_fields())
+        ])
 
-            products = self.env['product.product'].search(domain)
-            return products
+        for attr_id, value in custom_values.iteritems():
+            if attr_id not in attr_search.ids:
+                domain.append(
+                    ('value_custom_ids.attribute_id', '!=', int(attr_id)))
+            else:
+                domain.append(
+                    ('value_custom_ids.attribute_id', '=', int(attr_id)))
+                domain.append(('value_custom_ids.value', '=', value))
+
+        products = self.env['product.product'].search(domain)
+
+        # At this point, we might have found products with all of the passed
+        # in values, but it might have more attributes!  These are NOT
+        # matches
+        more_attrs = products.filtered(
+            lambda p:
+            len(p.attribute_value_ids) != len(value_ids) or
+            len(p.value_custom_ids) != len(custom_values)
+            )
+        products -= more_attrs
+        return products
 
     def get_config_image_obj(self, value_ids, size=None):
         """
@@ -350,13 +362,22 @@ class ProductTemplate(models.Model):
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
 
-        duplicates = self.search_variant(value_ids)
+        duplicates = self.search_variant(value_ids,
+                                         custom_values=custom_values)
 
-        # Only return duplicates without custom values for now:
-        if duplicates.filtered(lambda p: not p.value_custom_ids):
+        # At the moment, I don't have enough confidence with my understanding
+        # of binary attributes, so will leave these as not matching...
+        # In theory, they should just work, if they are set to "non search"
+        # in custom field def!
+        # TODO: Check the logic with binary attributes
+        if custom_values:
+            value_custom_ids = self.encode_custom_values(custom_values)
+            if any('attachment_ids' in cv[2] for cv in value_custom_ids):
+                duplicates = False
+
+        if duplicates:
             return duplicates[0]
 
-        # TODO: Handle duplicates with custom values
         vals = self.get_variant_vals(value_ids, custom_values)
         variant = self.env['product.product'].create(vals)
 
@@ -521,20 +542,29 @@ class ProductProduct(models.Model):
         if not self.config_ok:
             return None
 
-        # All duplicates with and without custom values
-        duplicates = self.product_tmpl_id.search_variant(
-            self.attribute_value_ids.ids).filtered(lambda p: p.id != self.id)
+        # At the moment, I don't have enough confidence with my understanding
+        # of binary attributes, so will leave these as not matching...
+        # In theory, they should just work, if they are set to "non search"
+        # in custom field def!
+        # TODO: Check the logic with binary attributes
+        if self.value_custom_ids.filtered(lambda cv: cv.attachment_ids):
+            pass
+        else:
+            custom_values = {
+                cv.attribute_id.id: cv.value
+                for cv in self.value_custom_ids
+                }
 
-        # Prevent duplicates without custom values (only attribute values)
-        if duplicates.filtered(lambda p: not p.value_custom_ids):
-            raise ValidationError(
-                _("Configurable Products cannot have duplicates "
-                  "(identical attribute values)")
-            )
+            duplicates = self.product_tmpl_id.search_variant(
+                self.attribute_value_ids.ids,
+                custom_values=custom_values
+                ).filtered(lambda p: p.id != self.id)
 
-        # TODO: For the future prevent duplicates with identical custom values
-        # or implement custom values on the order line level since they are
-        # specific to each order.
+            if duplicates:
+                raise ValidationError(
+                    _("Configurable Products cannot have duplicates "
+                      "(identical attribute values)")
+                )
 
     @api.multi
     def _get_price_extra(self):
