@@ -44,6 +44,17 @@ class ProductTemplate(models.Model):
                 _('Default values provided generate an invalid configuration')
             )
 
+    @api.multi
+    @api.constrains('config_line_ids')
+    def _check_default_value_domains(self):
+        try:
+            self._check_default_values()
+        except ValidationError:
+            raise ValidationError(
+                _('Restrictions added make the current default values '
+                  'generate an invalid configuration')
+            )
+
     def flatten_val_ids(self, value_ids):
         """ Return a list of value_ids from a list with a mix of ids
         and list of ids (multiselection)
