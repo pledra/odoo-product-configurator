@@ -238,7 +238,10 @@ class ProductConfigurator(models.TransientModel):
                 view_val_ids -= set(self.env['product.attribute.value'].search(
                     [('attribute_id', '=', attr_id)]).ids)
                 if v:
-                    view_val_ids.add(v)
+                    if isinstance(v, list):
+                        view_val_ids |= set(v[0][2])
+                    elif isinstance(v, int):
+                        view_val_ids.add(v)
 
             cfg_val_ids = cfg_vals.ids + list(view_val_ids)
 
