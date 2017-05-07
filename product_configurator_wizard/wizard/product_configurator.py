@@ -626,6 +626,7 @@ class ProductConfigurator(models.TransientModel):
             if attr_line.custom and custom_vals:
                 dynamic_vals.update({
                     field_name: custom_val.id,
+                    invis_field_name: custom_val.id,
                 })
                 if attr_line.attribute_id.custom_type == 'binary':
                     dynamic_vals.update({
