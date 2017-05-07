@@ -21,6 +21,7 @@ class ProductConfigurator(models.TransientModel):
     # Prefix for the dynamicly injected fields
     field_prefix = '__attribute-'
     custom_field_prefix = '__custom-'
+    invisible_field_prefix = '__invisible-'
 
     # TODO: Since the configuration process can take a bit of time
     # depending on complexity and AFK time we must increase the lifespan
@@ -78,7 +79,7 @@ class ProductConfigurator(models.TransientModel):
 
     def get_onchange_domains(self, values, cfg_val_ids):
         """Generate domains to be returned by onchange method in order
-        to restrict the availble values of dynamically inserted fields
+        to restrict the available values of dynamically inserted fields
 
         :param values: values argument passed to onchance wrapper
         :cfg_val_ids: current configuration passed as a list of value_ids
@@ -335,6 +336,13 @@ class ProductConfigurator(models.TransientModel):
                 relation='product.attribute.value',
                 sequence=line.sequence,
             )
+            res[self.invisible_field_prefix + str(attribute.id)] = dict(
+                default_attrs,
+                type='many2many' if line.multi else 'many2one',
+                string=line.attribute_id.name,
+                relation='product.attribute.value',
+                sequence=line.sequence,
+            )
 
         return res
 
@@ -358,8 +366,10 @@ class ProductConfigurator(models.TransientModel):
         # Get updated fields including the dynamic ones
         fields = self.fields_get()
         dynamic_fields = {
-            k: v for k, v in fields.iteritems() if k.startswith(
-                self.field_prefix) or k.startswith(self.custom_field_prefix)
+            k: v for k, v in fields.iteritems() if
+            k.startswith(self.field_prefix) or
+            k.startswith(self.custom_field_prefix) or
+            k.startswith(self.invisible_field_prefix)
         }
 
         res['fields'].update(dynamic_fields)
@@ -367,7 +377,6 @@ class ProductConfigurator(models.TransientModel):
 
         # Update result dict from super with modified view
         res.update({'arch': etree.tostring(mod_view)})
-
         return res
 
     @api.model
@@ -405,6 +414,7 @@ class ProductConfigurator(models.TransientModel):
             attribute_id = attr_line.attribute_id.id
             field_name = self.field_prefix + str(attribute_id)
             custom_field = self.custom_field_prefix + str(attribute_id)
+            invisible_field = self.invisible_field_prefix + str(attribute_id)
 
             # Check if the attribute line has been added to the db fields
             if field_name not in dynamic_fields:
@@ -498,6 +508,17 @@ class ProductConfigurator(models.TransientModel):
             orm.setup_modifiers(node)
             xml_dynamic_form.append(node)
 
+            # Create the new invisible field in the view
+            node = etree.Element(
+                "field",
+                name=invisible_field,
+                invisible='1'
+            )
+            if field_type == 'many2many':
+                node.attrib['widget'] = 'many2many_tags'
+            orm.setup_modifiers(node)
+            xml_dynamic_form.append(node)
+
             if attr_line.custom and custom_field in dynamic_fields:
                 widget = ''
                 custom_ext_id = 'product_configurator.custom_attribute_value'
@@ -560,8 +581,11 @@ class ProductConfigurator(models.TransientModel):
         custom_attr_vals = [
             f for f in fields if f.startswith(self.custom_field_prefix)
         ]
+        invis_vals = [
+            f for f in fields if f.startswith(self.invisible_field_prefix)
+        ]
 
-        dynamic_fields = attr_vals + custom_attr_vals
+        dynamic_fields = attr_vals + custom_attr_vals + invis_vals
         fields = [f for f in fields if f not in dynamic_fields]
 
         custom_ext_id = 'product_configurator.custom_attribute_value'
@@ -579,6 +603,8 @@ class ProductConfigurator(models.TransientModel):
 
             if field_name not in dynamic_fields:
                 continue
+
+            invis_field_name = self.invisible_field_prefix + str(attr_id)
 
             custom_field_name = self.custom_field_prefix + str(attr_id)
             custom_vals = self.custom_value_ids.filtered(
@@ -602,11 +628,15 @@ class ProductConfigurator(models.TransientModel):
                         custom_field_name: custom_vals.eval()
                     })
             elif attr_line.multi:
-                dynamic_vals = {field_name: [[6, 0, vals.ids]]}
+                dynamic_vals = {field_name: [[6, 0, vals.ids]],
+                                invis_field_name: [[6, 0, vals.ids]]
+                                }
             else:
                 try:
                     vals.ensure_one()
-                    dynamic_vals = {field_name: vals.id}
+                    dynamic_vals = {field_name: vals.id,
+                                    invis_field_name: vals.id
+                                    }
                 except:
                     continue
             res[0].update(dynamic_vals)
@@ -625,28 +655,45 @@ class ProductConfigurator(models.TransientModel):
         attr_val_dict = {}
         custom_val_dict = {}
 
+        # attributes which are part of the current step which are
+        # readonly are not submitted by the client!  We have to make sure
+        # these are treated as values to be written.
+        # They are submitted as part of an "invisible" field which is
+        # not readonly so that we can use that instead.
+
         for attr_line in self.product_tmpl_id.attribute_line_ids:
             attr_id = attr_line.attribute_id.id
             field_name = self.field_prefix + str(attr_id)
             custom_field_name = self.custom_field_prefix + str(attr_id)
+            invisible_field_name = self.invisible_field_prefix + str(attr_id)
 
-            if field_name not in vals and custom_field_name not in vals:
+            if field_name not in vals and \
+                    custom_field_name not in vals and \
+                    invisible_field_name not in vals:
                 continue
+
+            # If field value is not submitted, then perhaps it was readonly,
+            # in which case we should look at the invisible equivalent.
+            # If it was not submitted by the client, then it implies that we
+            # are here because a custom attribute was submitted.
+            field_val = vals[field_name] if field_name in vals else \
+                vals[invisible_field_name] if invisible_field_name in vals \
+                else custom_val.id
 
             # Add attribute values from the client except custom attribute
             # If a custom value is being written, but field name is not in
             #   the write dictionary, then it must be a custom value!
-            if vals.get(field_name, custom_val.id) != custom_val.id:
-                if attr_line.multi and isinstance(vals[field_name], list):
-                    if not vals[field_name]:
+            if field_val != custom_val.id:
+                if attr_line.multi and isinstance(field_val, list):
+                    if not field_val:
                         field_val = None
                     else:
-                        field_val = vals[field_name][0][2]
-                elif not attr_line.multi and isinstance(vals[field_name], int):
-                    field_val = vals[field_name]
+                        field_val = field_val[0][2]
+                elif not attr_line.multi and isinstance(field_val, int):
+                    pass
                 else:
                     raise Warning(
-                        _('An error occursed while parsing value for '
+                        _('An error occurred while parsing value for '
                           'attribute %s' % attr_line.attribute_id.name)
                     )
                 attr_val_dict.update({
