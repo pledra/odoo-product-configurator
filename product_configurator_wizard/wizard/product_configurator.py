@@ -198,6 +198,14 @@ class ProductConfigurator(models.TransientModel):
 
         domains = self.get_onchange_domains(values, cfg_val_ids)
         vals = self.get_form_vals(dynamic_fields, domains)
+
+        # the on changed value is stored in "invisible" equivalent in case they
+        # become readonly
+        for k, v in values.items():
+            if k.startswith(self.field_prefix):
+                vals[k.replace(self.field_prefix,
+                               self.invisible_field_prefix, 1)
+                     ] = v
         return {'value': vals, 'domain': domains}
 
     attribute_line_ids = fields.One2many(
