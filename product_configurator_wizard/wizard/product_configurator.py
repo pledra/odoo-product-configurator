@@ -486,14 +486,14 @@ class ProductConfigurator(models.TransientModel):
                         # one dependency, these work
                         attrs["readonly"].extend(
                             (['|'] * (len(this_readonly) - 1)) + this_readonly
-                             )
+                            )
                         if attrs["required"]:
                             attrs["required"][0:0] = ['|']
                         # TODO: because of the "and" assumptions within
                         # one dependency, these work
                         attrs["required"].extend(
                             (['|'] * (len(this_required) - 1)) + this_required
-                             )
+                            )
 
             # Create the new field in the view
             node = etree.Element(
