@@ -206,6 +206,12 @@ class ProductConfigurator(models.TransientModel):
                 vals[k.replace(self.field_prefix,
                                self.invisible_field_prefix, 1)
                      ] = v
+        # likewise, any returned values will be co-stored
+        for k, v in vals.items():
+            if k.startswith(self.field_prefix):
+                vals[k.replace(self.field_prefix,
+                               self.invisible_field_prefix, 1)
+                     ] = v
         return {'value': vals, 'domain': domains}
 
     attribute_line_ids = fields.One2many(

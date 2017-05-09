@@ -111,6 +111,14 @@ class ConfigurationAttributes(ConfigurationRules):
             wizard.field_prefix,
             self.attr_colour.id
         )
+        invisible_name_colour = '%s%s' % (
+            wizard.invisible_field_prefix,
+            self.attr_colour.id
+        )
+        invisible_name_size = '%s%s' % (
+            wizard.invisible_field_prefix,
+            self.attr_size.id
+        )
 
         # Define small without colour specified
         self.wizard_write_proceed(wizard, [self.attr_val_small])
@@ -166,6 +174,17 @@ class ConfigurationAttributes(ConfigurationRules):
         self.assertTrue(field_name_colour in oc_result['value'] and
                         not oc_result['value'][field_name_colour],
                         "Colour should have been cleared by wizard"
+                        )
+        self.assertTrue(invisible_name_colour in oc_result['value'] and
+                        not oc_result['value'][invisible_name_colour],
+                        "Invisible Attribute Colour should have been "
+                        "cleared by wizard"
+                        )
+        self.assertTrue(invisible_name_size in oc_result['value'] and
+                        oc_result['value'][invisible_name_size] ==
+                        self.attr_val_large.id,
+                        "Invisible Attribute Size should have been set "
+                        "by wizard"
                         )
         vals = self.get_wizard_write_dict(wizard, [self.attr_val_large],
                                           remove_values=[self.attr_val_blue])
