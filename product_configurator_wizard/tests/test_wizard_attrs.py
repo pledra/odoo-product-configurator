@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from odoo.tests.common import TransactionCase
-from odoo.exceptions import ValidationError
 from odoo.addons.product_configurator_wizard.tests.test_wizard \
     import ConfigurationRules
 
