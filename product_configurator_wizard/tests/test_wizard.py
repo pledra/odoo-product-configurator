@@ -23,7 +23,7 @@ class ConfigurationRules(TransactionCase):
 
         return attr_vals
 
-    def get_wizard_write_dict(self, wizard, attr_values):
+    def get_wizard_write_dict(self, wizard, attr_values, remove_values=[]):
         """Turn a series of attribute.value objects to a dictionary meant for
         writing values to the product.configurator wizard"""
 
@@ -39,6 +39,10 @@ class ConfigurationRules(TransactionCase):
                 write_dict[field_name][0][2].append(val.id)
                 continue
             write_dict.update({field_name: val.id})
+
+        for val in remove_values:
+            field_name = wizard.field_prefix + str(val.attribute_id.id)
+            write_dict.update({field_name: False})
 
         return write_dict
 
@@ -94,26 +98,34 @@ class ConfigurationRules(TransactionCase):
         self.assertTrue(len(config_variants) == 1,
                         "Wizard did not create a configurable variant")
 
-    def test_reconfiguration(self):
-        """Test reconfiguration functionality of the wizard"""
-        self.test_wizard_configuration()
-
-        order_line = self.so.order_line.filtered(
-            lambda l: l.product_id.config_ok
-        )
-
+    def do_reconfigure(self, order_line, attr_vals):
         reconfig_action = order_line.reconfigure_product()
 
         wizard = self.env['product.configurator'].browse(
             reconfig_action.get('res_id')
         )
 
-        attr_vals = self.get_attr_values(['diesel', '220d'])
         self.wizard_write_proceed(wizard, attr_vals)
 
-        # Cycle through steps until wizard ends
-        while wizard.action_next_step():
-            pass
+        # if wizard only had one step, it would already have completed
+        if wizard.exists():
+            # Cycle through steps until wizard ends
+            while wizard.action_next_step():
+                pass
+
+    def test_reconfiguration(self):
+        """Test reconfiguration functionality of the wizard"""
+        self.test_wizard_configuration()
+
+        existing_lines = self.so.order_line
+
+        order_line = self.so.order_line.filtered(
+            lambda l: l.product_id.config_ok
+        )
+
+        self.do_reconfigure(order_line,
+                            self.get_attr_values(['diesel', '220d'])
+                            )
 
         config_variants = self.env['product.product'].search([
             ('config_ok', '=', True)
@@ -121,3 +133,20 @@ class ConfigurationRules(TransactionCase):
 
         self.assertTrue(len(config_variants) == 2,
                         "Wizard reconfiguration did not create a new variant")
+
+        created_line = self.so.order_line - existing_lines
+        self.assertTrue(len(created_line) == 0,
+                        "Wizard created an order line on reconfiguration")
+
+        # test that running through again with the same values does not
+        # create another variant
+        self.do_reconfigure(order_line,
+                            self.get_attr_values(['diesel', '220d'])
+                            )
+
+        config_variants = self.env['product.product'].search([
+            ('config_ok', '=', True)
+        ])
+
+        self.assertTrue(len(config_variants) == 2,
+                        "Wizard reconfiguration created a redundant variant")

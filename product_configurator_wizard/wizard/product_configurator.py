@@ -81,7 +81,7 @@ class ProductConfigurator(models.TransientModel):
         """Generate domains to be returned by onchange method in order
         to restrict the available values of dynamically inserted fields
 
-        :param values: values argument passed to onchance wrapper
+        :param values: values argument passed to onchange wrapper
         :cfg_val_ids: current configuration passed as a list of value_ids
         (usually in the form of db value_ids + interface value_ids)
 
