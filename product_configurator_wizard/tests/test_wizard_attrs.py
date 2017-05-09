@@ -2,7 +2,7 @@
 
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import ValidationError
-from odoo.addons.product_configurtest_wizard.test_wizard \
+from odoo.addons.product_configurator_wizard.tests.test_wizard \
     import ConfigurationRules
 
 
