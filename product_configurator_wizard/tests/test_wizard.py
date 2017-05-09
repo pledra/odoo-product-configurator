@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo.tests.common import TransactionCase
-from ansible.module_utils.basic import remove_values
+from odoo.exceptions import ValidationError
 
 
 class ConfigurationRules(TransactionCase):

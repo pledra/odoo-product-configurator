@@ -95,7 +95,8 @@ class ConfigurationAttributes(ConfigurationRules):
         # Start a new configuration wizard
         wizard_obj = self.env['product.configurator'].with_context({
             'active_model': 'sale.order',
-            'default_order_id': self.so.id
+            'active_id': self.so.id
+            # 'default_order_id': self.so.id
         })
 
         wizard = wizard_obj.create({'product_tmpl_id': self.product_temp.id})
