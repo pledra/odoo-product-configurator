@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo.tests.common import TransactionCase
+from ansible.module_utils.basic import remove_values
 
 
 class ConfigurationRules(TransactionCase):
@@ -23,11 +24,13 @@ class ConfigurationRules(TransactionCase):
 
         return attr_vals
 
-    def get_wizard_write_dict(self, wizard, attr_values, remove_values=[]):
+    def get_wizard_write_dict(self, wizard, attr_values, remove_values=None):
         """Turn a series of attribute.value objects to a dictionary meant for
         writing values to the product.configurator wizard"""
 
         write_dict = {}
+        if remove_values is None:
+            remove_values = []
 
         multi_attr_ids = wizard.product_tmpl_id.attribute_line_ids.filtered(
             lambda x: x.multi).mapped('attribute_id').ids
