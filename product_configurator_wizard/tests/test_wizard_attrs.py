@@ -36,15 +36,15 @@ class ConfigurationAttributes(ConfigurationRules):
         domain_small_med = self.env['product.config.domain'].create(
             {'name': 'Small/Med',
              'domain_line_ids': [
-                (0, 0, {'attribute_id': self.attr_size.id,
-                        'condition': 'in',
-                        'operator': 'and',
-                        'value_ids':
-                            [(6, 0,
-                              [self.attr_val_small.id, self.attr_val_med.id]
-                              )]
-                        }),
-                ],
+                 (0, 0, {'attribute_id': self.attr_size.id,
+                         'condition': 'in',
+                         'operator': 'and',
+                         'value_ids':
+                             [(6, 0,
+                               [self.attr_val_small.id, self.attr_val_med.id]
+                               )]
+                         }),
+                 ],
              }
         )
         self.attr_colour = self.env['product.attribute'].create(
@@ -79,7 +79,7 @@ class ConfigurationAttributes(ConfigurationRules):
                              ],
                          'required': False,
                          })
-                ],
+                 ],
              }
         )
         colour_line = self.product_temp.attribute_line_ids.filtered(
