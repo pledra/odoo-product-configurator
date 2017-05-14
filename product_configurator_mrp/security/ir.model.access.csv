@@ -1,3 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 mrp_bom,BOM,mrp.model_mrp_bom,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
 mrp_bom_line,BOM,mrp.model_mrp_bom_line,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
+subproduct_line_mrp_config_manager,Subproduct Line MRP Config User,product_configurator_mrp.model_product_config_subproduct_line,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
+,,,,,,,
+user_subproduct_line,Subproduct Line Public User,product_configurator_mrp.model_product_config_subproduct_line,base.group_public,1,0,0,0

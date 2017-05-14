@@ -480,6 +480,49 @@ class ProductConfigSession(models.Model):
             vals.update({'value_ids': [(6, 0, default_val_ids)]})
         return super(ProductConfigSession, self).create(vals)
 
+    @api.multi
+    def get_session_search_domain(self, product_tmpl_id, state='draft',
+                                  parent_id=None):
+        domain = [
+            ('product_tmpl_id', '=', product_tmpl_id),
+            ('user_id', '=', self.env.uid),
+            ('state', '=', state),
+        ]
+        if parent_id:
+            domain.append(('parent_id', '=', parent_id))
+        return domain
+
+    @api.multi
+    def get_session_vals(self, product_tmpl_id, parent_id=None):
+        vals = {
+            'product_tmpl_id': product_tmpl_id,
+            'user_id': self.env.user.id,
+        }
+        if parent_id:
+            vals.update(parent_id=parent_id)
+        return vals
+
+    @api.multi
+    def search_session(self, product_tmpl_id, parent_id=None):
+        domain = self.get_session_search_domain(
+            product_tmpl_id=product_tmpl_id,
+            parent_id=parent_id
+        )
+        session = self.search(domain)
+        return session
+
+    @api.model
+    def create_get_session(self, product_tmpl_id, parent_id=None):
+        session = self.search_session(product_tmpl_id=product_tmpl_id,
+                                      parent_id=parent_id)
+        if session:
+            return session[0]
+        vals = self.get_session_vals(
+            product_tmpl_id=product_tmpl_id,
+            parent_id=parent_id
+        )
+        return self.create(vals)
+
     # TODO: Disallow duplicates
 
 

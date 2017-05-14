@@ -135,14 +135,17 @@
                         <field name="value_ids" widget="many2many_tags"/>
                         <field name="price"/>
                     </group>
-                    <separator string="Custom Values"/>
-                    <field name="custom_value_ids">
-                        <tree string="Custom Values" editable="bottom">
-                            <field name="attribute_id"/>
-                            <field name="value"/>
-                            <field name="attachment_ids" widget="many2many_tags"/>
-                        </tree>
-                    </field>
+                    <notebook>
+                        <page name="custom_vals" string="Custom Values">
+                            <field name="custom_value_ids">
+                                <tree string="Custom Values" editable="bottom">
+                                    <field name="attribute_id"/>
+                                    <field name="value"/>
+                                    <field name="attachment_ids" widget="many2many_tags"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

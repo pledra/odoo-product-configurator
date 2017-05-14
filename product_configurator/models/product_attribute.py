@@ -69,7 +69,6 @@ class ProductAttribute(models.Model):
         'the same configuration, do we '
         'include this field in the search?'
     )
-
     required = fields.Boolean(
         string='Required',
         default=True,
@@ -77,13 +76,11 @@ class ProductAttribute(models.Model):
         'attribute though it can be change on '
         'the template level'
     )
-
     multi = fields.Boolean(
         string="Multi",
         help='Allow selection of multiple values for '
         'this attribute?'
     )
-
     uom_id = fields.Many2one(
         comodel_name='product.uom',
         string='Unit of Measure'
@@ -154,7 +151,6 @@ class ProductAttributeLine(models.Model):
         string='Required',
         help="Is this attribute required?"
     )
-
     multi = fields.Boolean(
         string='Multi',
         help='Allow selection of multiple values for this attribute?'
