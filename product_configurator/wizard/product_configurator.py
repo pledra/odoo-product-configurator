@@ -18,7 +18,7 @@ class FreeSelection(fields.Selection):
 
 class ProductConfigurator(models.TransientModel):
     _name = 'product.configurator'
-    _inherits = {'product.config.session': 'config_session'}
+    _inherits = {'product.config.session': 'config_session_id'}
 
     # Prefix for the dynamicly injected fields
     field_prefix = '__attribute-'
@@ -234,6 +234,20 @@ class ProductConfigurator(models.TransientModel):
     )
 
     @api.model
+    def get_field_default_attrs(self):
+        return {
+            'company_dependent': False,
+            'depends': (),
+            'groups': False,
+            'readonly': False,
+            'manual': False,
+            'required': False,
+            'searchable': False,
+            'store': False,
+            'translate': False,
+        }
+
+    @api.model
     def fields_get(self, allfields=None, write_access=True, attributes=None):
         """ Artificially inject fields which are dynamically created using the
         attribute_ids on the product.template as reference"""
@@ -278,17 +292,7 @@ class ProductConfigurator(models.TransientModel):
         # the corresponding attributes
 
         # Default field attributes
-        default_attrs = {
-            'company_dependent': False,
-            'depends': (),
-            'groups': False,
-            'readonly': False,
-            'manual': False,
-            'required': False,
-            'searchable': False,
-            'store': False,
-            'translate': False,
-        }
+        default_attrs = self.get_field_default_attrs()
 
         for line in attribute_lines:
             attribute = line.attribute_id
@@ -369,7 +373,6 @@ class ProductConfigurator(models.TransientModel):
 
         # Update result dict from super with modified view
         res.update({'arch': etree.tostring(mod_view)})
-
         return res
 
     @api.model
@@ -679,7 +682,7 @@ class ProductConfigurator(models.TransientModel):
             if custom_field_name in vals:
                 del vals[custom_field_name]
 
-        self.config_session.update_config(attr_val_dict, custom_val_dict)
+        self.config_session_id.update_config(attr_val_dict, custom_val_dict)
         res = super(ProductConfigurator, self).write(vals)
         return res
 
@@ -687,7 +690,22 @@ class ProductConfigurator(models.TransientModel):
     def unlink(self):
         """Remove parent model as polymorphic inheritance unlinks inheriting
            model with the parent"""
-        return self.mapped('config_session').unlink()
+        return self.mapped('config_session_id').unlink()
+
+    @api.model
+    def get_active_step(self):
+        """Attempt to return product.config.step.line object that has the id
+        of the wizard state stored as string"""
+        cfg_step_line_obj = self.env['product.config.step.line']
+
+        try:
+            cfg_step_line_id = int(self.state)
+        except:
+            cfg_step_line_id = None
+
+        if cfg_step_line_id:
+            return cfg_step_line_obj.browse(cfg_step_line_id)
+        return cfg_step_line_obj
 
     @api.multi
     def action_next_step(self):
@@ -728,15 +746,10 @@ class ProductConfigurator(models.TransientModel):
                 self.state = 'configure'
                 return wizard_action
 
-        try:
-            cfg_step_line_id = int(self.state)
-        except:
-            cfg_step_line_id = None
+        active_step = self.get_active_step()
 
-        active_cfg_line_id = cfg_step_lines.filtered(
-            lambda x: x.id == cfg_step_line_id).id
         adjacent_steps = self.product_tmpl_id.get_adjacent_steps(
-            self.value_ids.ids, active_cfg_line_id)
+            self.value_ids.ids, active_step.id)
 
         next_step = adjacent_steps.get('next_step')
 

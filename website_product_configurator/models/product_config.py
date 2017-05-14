@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from openerp import models, fields
+from openerp import api, fields, models
+from openerp.http import request
 
 
 class ProductConfigStep(models.Model):
@@ -34,3 +35,32 @@ class ProductConfigSession(models.Model):
         string='Website',
         help='Used to filter website configuration session from others'
     )
+
+    @api.multi
+    def get_session_search_domain(self, product_tmpl_id, state='draft',
+                                  parent_id=None):
+        """Add website relevant arguments to the standard search domain"""
+        res = super(ProductConfigSession, self).get_session_search_domain(
+            product_tmpl_id=product_tmpl_id, state=state,
+            parent_id=parent_id
+        )
+        # TODO maybe have link with website instead of boolean?
+        if 'website_id' in self._context:
+            public_user_id = request.env.ref('base.public_user').id
+            res.append(('website', '=', True))
+            if request.env.uid == public_user_id:
+                res.append(('session_id', '=', request.session.sid))
+        return res
+
+    @api.multi
+    def get_session_vals(self, product_tmpl_id, parent_id=None):
+        """Add website relevant arguments to the session create values"""
+        res = super(ProductConfigSession, self).get_session_vals(
+            product_tmpl_id=product_tmpl_id, parent_id=parent_id
+        )
+        if 'website_id' in self._context:
+            res.update(website=True)
+            public_user_id = request.env.ref('base.public_user').id
+            if request.env.uid == public_user_id:
+                res.update(session_id=request.session.sid)
+        return res

@@ -1,10 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from openerp import api, models
+from openerp import api, fields, models
 
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
+
+    master_template = fields.Boolean(
+        string='Master Template',
+        default=True,
+        help="Indicates if this template can be configured as a "
+             "stand-alone product or only as a sub-product",
+    )
+
+    config_subproduct_ids = fields.One2many(
+        comodel_name='product.config.subproduct.line',
+        inverse_name='product_tmpl_id',
+        string='Configurable Subproducts',
+        help="Define what other products are needed"
+    )
 
     @api.multi
     def create_get_variant(self, value_ids, custom_values=None):
@@ -13,8 +27,8 @@ class ProductTemplate(models.Model):
             custom_values = {}
 
         variant = super(ProductTemplate, self).create_get_variant(
-            value_ids, custom_values=custom_values
-        )
+            value_ids, custom_values=custom_values)
+
         attr_products = variant.attribute_value_ids.mapped('product_id')
 
         line_vals = [
@@ -30,3 +44,66 @@ class ProductTemplate(models.Model):
         self.env['mrp.bom'].create(values)
 
         return variant
+
+    def get_open_step_lines(self, value_ids):
+        """Add steps with subproducts regardless of attributes or rules."""
+        open_steps = super(ProductTemplate, self).get_open_step_lines(
+            value_ids=value_ids
+        )
+        config_subproduct_lines = self.config_step_line_ids.filtered(
+            lambda l: l.config_subproduct_line_id
+        )
+        open_steps += config_subproduct_lines
+        return open_steps.sorted()
+
+    def get_adjacent_steps(self, value_ids, active_step_line_id=None):
+        """Load steps from subconfigurable products if any"""
+        steps = super(ProductTemplate, self).get_adjacent_steps(
+            value_ids=value_ids, active_step_line_id=active_step_line_id
+        )
+        if not steps:
+            return steps
+
+        cfg_step_line_obj = self.env['product.config.step.line']
+        cfg_session_obj = self.env['product.config.session']
+        cfg_session = cfg_session_obj.create_get_session(self.id)
+
+        if not active_step_line_id:
+            # TODO: What if there are no configuration step lines?
+            active_line = self.get_open_step_lines(value_ids)[0]
+        else:
+            active_line = self.config_step_line_ids.filtered(
+                lambda l: l.id == active_step_line_id)
+
+        subproduct = active_line.config_subproduct_line_id.subproduct_id.sudo()
+
+        if subproduct.config_ok:
+            session = cfg_session_obj.sudo().create_get_session(
+                subproduct.id, parent_id=cfg_session.id)
+            open_steps = subproduct.get_open_step_lines(session.value_ids.ids)
+            if open_steps:
+                steps['active_step'] = open_steps[0]
+
+        next_step = steps.get('next_step', cfg_step_line_obj)
+        prev_step = steps.get('prev_step', cfg_step_line_obj)
+
+        # TODO: Take into account subproducts with no configuration steps
+
+        if next_step.config_subproduct_line_id.subproduct_id.config_ok:
+            # Retrieve a session (if any) to get the first open step
+            session = cfg_session_obj.search_session(
+                subproduct.id, parent_id=cfg_session.id)
+            # Pass values from found/empty step
+            open_steps = subproduct.get_open_step_lines(session.value_ids.ids)
+            if open_steps:
+                # Override next step with subproduct if open step found
+                steps['next_step'] = open_steps[0]
+
+        if prev_step.config_subproduct_line_id.subproduct_id.config_ok:
+            session = cfg_session_obj.search_session(
+                subproduct.id, parent_id=cfg_session.id)
+            open_steps = subproduct.get_open_step_lines(session.value_ids.ids)
+            if open_steps:
+                steps['prev_step'] = subproduct.get_open_step_lines(
+                    session.value_ids.ids)
+        return steps

@@ -169,6 +169,7 @@ class WebsiteProductConfig(http.Controller):
         if not config_steps:
             return vals
 
+        # TODO: Check if the first step is open before accessing it
         if not active_step:
             active_step = config_steps[0]
 
@@ -495,6 +496,9 @@ class WebsiteProductConfig(http.Controller):
 
     def product_redirect(self, cfg_session):
         return request.redirect('/configurator/config/%s' % slug(cfg_session))
+
+
+    # TODO: Remove and use create_get_session instead
 
     def get_cfg_session(self, product_tmpl, force_create=False):
         """Retrieve the product.config.session from backend holding all the
