@@ -7,6 +7,7 @@ from ast import literal_eval
 
 class ProductConfigDomain(models.Model):
     _name = 'product.config.domain'
+    _order = 'sequence'
 
     @api.multi
     @api.depends('implied_ids')
@@ -75,6 +76,12 @@ class ProductConfigDomain(models.Model):
         column2='parent_id',
         string='Transitively inherits'
     )
+
+    sequence = fields.Integer(
+        string="Sequence",
+        default=1,
+        help="Set the order of operations for evaluation domain lines"
+    )   
 
 
 class ProductConfigDomainLine(models.Model):
