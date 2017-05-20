@@ -36,6 +36,13 @@
             </form>
         </field>
     </record>
+    <record id="action_wizard_product_configurator" model="ir.actions.act_window">
+        <field name="name">Configure Product</field>
+        <field name="res_model">product.configurator</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="product_configurator_form"/>
+        <field name="target">new</field>
+    </record>
 
 </data>
 </openerp>

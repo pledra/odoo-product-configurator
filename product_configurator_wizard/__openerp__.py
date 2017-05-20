@@ -7,11 +7,10 @@
     'author': 'Pledra',
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',
-    'depends': ['sale', 'product_configurator'],
+    'depends': ['product_configurator'],
     "data": [
         'wizard/product_configurator_view.xml',
         'views/assets.xml',
-        'views/sale_view.xml',
     ],
     'images': [
         'static/description/cover.png'
