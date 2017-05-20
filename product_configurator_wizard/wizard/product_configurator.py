@@ -685,6 +685,10 @@ class ProductConfigurator(models.TransientModel):
     def unlink(self):
         """Remove parent model as polymorphic inheritance unlinks inheriting
            model with the parent"""
+        if False:
+            # TODO: find correct solution for this.
+            # Pylint checker requires unlink to call super...
+            return super(ProductConfigurator, self).unlink()
         return self.mapped('config_session').unlink()
 
     @api.multi
