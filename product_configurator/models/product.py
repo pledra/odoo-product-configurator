@@ -357,7 +357,8 @@ class ProductTemplate(models.Model):
         """
         if custom_values is None:
             custom_values = {}
-        valid = self.validate_configuration(value_ids, custom_values)
+        valid = self.validate_configuration(value_ids, custom_values,
+                                            do_raise=True)
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
 
@@ -413,7 +414,7 @@ class ProductTemplate(models.Model):
         return avail
 
     @api.multi
-    def values_available(self, attr_val_ids, sel_val_ids):
+    def values_available(self, attr_val_ids, sel_val_ids, do_raise=False):
         """Determines whether the attr_values from the product_template
         are available for selection given the configuration ids and the
         dependencies set on the product template
@@ -421,6 +422,7 @@ class ProductTemplate(models.Model):
         :param attr_val_ids: list of attribute value ids to check for
                              availability
         :param sel_val_ids: list of attribute value ids already selected
+        :param do_raise: boolean on whether to raise a warning or just fail
 
         :returns: list of available attribute values
         """
@@ -436,24 +438,35 @@ class ProductTemplate(models.Model):
             avail = self.validate_domains_against_sels(domains, sel_val_ids)
             if avail:
                 avail_val_ids.append(attr_val_id)
+            elif do_raise:
+                if len(config_lines) == 1 and config_lines[0].rule_description:
+                    raise ValidationError(config_lines[0].rule_description)
+                else:
+                    attribute_value = \
+                        self.env['product.attribute.value'].browse(attr_val_id)
+                    raise ValidationError(
+                        _('%s for %s is not valid in this configuration') %
+                        (attribute_value.name,
+                         attribute_value.attribute_id.name
+                         )
+                        )
 
         return avail_val_ids
 
     @api.multi
-    def validate_configuration(self, value_ids, custom_vals=None, final=True):
+    def validate_configuration(self, value_ids,
+                               custom_vals=None, final=True, do_raise=False):
         """ Verifies if the configuration values passed via value_ids and custom_vals
         are valid
 
         :param value_ids: list of attribute value ids
         :param custom_vals: custom values dict {attr_id: custom_val}
-        :param final: boolean marker to check required attributes.
                       pass false to check non-final configurations
 
         :returns: Error dict with reason of validation failure
                   or True
         """
-        # TODO: Raise ConfigurationError with reason
-        # Check if required values are missing for final configuration
+        # TODO: Check if required values are missing for final configuration
         if custom_vals is None:
             custom_vals = {}
 
@@ -466,11 +479,15 @@ class ProductTemplate(models.Model):
                 common_vals = set(value_ids) & set(line.value_ids.ids)
                 custom_val = custom_vals.get(attr.id)
                 if line.required and not common_vals and not custom_val:
+                    if do_raise:
+                        raise ValidationError(_("No value provided for %s") %
+                                              line.attribute.name)
                     # TODO: Verify custom value type to be correct
                     return False
 
-        # Check if all all the values passed are not restricted
-        avail_val_ids = self.values_available(value_ids, value_ids)
+        # Check if all the values passed are not restricted
+        avail_val_ids = self.values_available(value_ids, value_ids,
+                                              do_raise=do_raise)
         if set(value_ids) - set(avail_val_ids):
             return False
 
@@ -478,7 +495,17 @@ class ProductTemplate(models.Model):
         custom_attr_ids = self.attribute_line_ids.filtered(
             'custom').mapped('attribute_id').ids
 
-        if not set(custom_vals.keys()) <= set(custom_attr_ids):
+        invalid_custom_vals = set(custom_vals.keys()) - set(custom_attr_ids)
+        if invalid_custom_vals:
+            if do_raise:
+                ProductAttribute = self.env['product.attribute']
+                attributes_names = ', '.join(attr.name
+                                             for attr in
+                                             ProductAttribute.browse(
+                                                 list(invalid_custom_vals)))
+                raise ValidationError(
+                    _('Attributes (%s) cannot hold custom values') %
+                    attributes_names)
             return False
 
         # Check if there are multiple values passed for non-multi attributes
