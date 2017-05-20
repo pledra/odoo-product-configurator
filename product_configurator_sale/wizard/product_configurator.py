@@ -22,6 +22,8 @@ class ProductConfigurator(models.TransientModel):
     @api.multi
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
+        if self._context.get('active_model', '') not in ('sale.order', 'sale.order.line'):
+            return super(ProductConfigurator, self).action_config_done()
         custom_vals = {
             l.attribute_id.id:
                 l.value or l.attachment_ids for l in self.custom_value_ids
