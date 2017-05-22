@@ -32,7 +32,7 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='order_line']" position="before">
-                    <button name="%(product_configurator_wizard.action_wizard_product_configurator)s"
+                    <button name="%(product_configurator.action_wizard_product_configurator)s"
                             states="draft,sent"
                             class="oe_highlight"
                             type="action"

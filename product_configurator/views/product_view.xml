@@ -14,7 +14,21 @@
                     <field name="config_ok" widget="boolean_button" options='{"terminology": "config"}'/>
                 </button>
             </div>
-
+            <xpath expr='//header' position="inside">
+                <button name="configure_product"
+                            class="oe_highlight"
+                            type="object"
+                            string="Configure Product"
+                            groups="product_configurator.group_product_configurator"/>
+            </xpath>
+            <xpath expr="//field[@name='attribute_line_ids']" position="before">
+                <button name="configure_product"
+                            class="oe_highlight"
+                            type="object"
+                            string="Configure Product"
+                            style="margin-top: 15px;margin-bottom: 15px;"
+                            groups="product_configurator.group_product_configurator"/>
+            </xpath>
             <xpath expr="//label[@for='purchase_ok' or @for='sale_ok']" position="after">
                 <div class="oe_left" name="options" groups="base.group_user">
                     <field name="id" invisible="True"/>

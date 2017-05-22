@@ -7,7 +7,7 @@
     'author': 'Pledra',
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',
-    'depends': ['sale_stock'],
+    'depends': ['account'],
     "data": [
         'data/menu_configurable_product.xml',
         'data/product_attribute.xml',
@@ -17,6 +17,7 @@
         'views/product_view.xml',
         'views/product_attribute_view.xml',
         'views/product_config_view.xml',
+        'wizard/product_configurator_view.xml',
     ],
     'demo': [
         'demo/product_template.xml',
