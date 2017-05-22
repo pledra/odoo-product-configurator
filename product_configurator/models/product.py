@@ -11,7 +11,7 @@ from openerp.addons import decimal_precision as dp
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    config_ok = fields.Boolean(string='Can be Configured')
+    config_ok = fields.Boolean(string='Can be Configured', default=False)
 
     config_line_ids = fields.One2many(
         comodel_name='product.config.line',
@@ -707,4 +707,4 @@ class ProductProduct(models.Model):
                 product.config_name = product.get_config_name()
             else:
                 product.config_name = product.name
-    
+
