@@ -14,6 +14,7 @@ class FreeSelection(fields.Selection):
 
 
 class ProductConfigurator(models.TransientModel):
+
     _inherit = 'product.configurator'
 
     order_line_id = fields.Many2one(comodel_name='sale.order.line',
