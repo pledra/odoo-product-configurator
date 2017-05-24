@@ -798,7 +798,8 @@ class ProductConfigurator(models.TransientModel):
 
     @api.multi
     def action_config_done(self):
-        """This method is for the final step which will be taken care by a separate module"""
+        """This method is for the final step which will be taken care by a
+        separate module"""
         # This try except is too generic.
         # The create_variant routine could effectively fail for
         # a large number of reasons, including bad programming.
@@ -830,6 +831,7 @@ class ProductConfigurator(models.TransientModel):
             ),
             'res_id': variant.id,
         }
+
 
 class ProductConfiguratorCustomValue(models.TransientModel):
     _name = 'product.configurator.custom.value'

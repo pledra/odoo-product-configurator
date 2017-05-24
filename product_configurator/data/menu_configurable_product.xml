@@ -4,7 +4,7 @@
 
         <menuitem id="menu_product_configurable" name="Configurator" parent="" web_icon="product_configurator,static/description/menu_icon.png" sequence="20" />
         <menuitem id="menu_product_configurable_product_main" name="Configurator" parent="menu_product_configurable" sequence="10" />
-        <menuitem id="menu_product_configurable_setting" name="Settings" parent="menu_product_configurable" sequence="20" />
+        <menuitem id="menu_product_configurable_settings" name="Settings" parent="menu_product_configurable" sequence="20" />
 
         <record id="product_configurable_template_action" model="ir.actions.act_window">
             <field name="name">Configurable Templates</field>
@@ -59,7 +59,7 @@
         <menuitem id="menu_product_config_steps_action"
                   action="product_config_steps_action"
                   name="Configuration Steps"
-                  parent="menu_product_configurable_setting" sequence="30"/>
+                  parent="menu_product_configurable_settings" sequence="30"/>
 
         <record id="product_config_domain_action" model="ir.actions.act_window">
             <field name="name">Configuration Restrictions</field>
@@ -72,7 +72,7 @@
         <menuitem id="menu_product_config_domain_action"
               action="product_config_domain_action"
               name="Configuration Restrictions"
-              parent="menu_product_configurable_setting" sequence="40"/>
+              parent="menu_product_configurable_settings" sequence="40"/>
 
         <record id="product_config_session" model="ir.actions.act_window">
             <field name="name">Configuration Sessions</field>
@@ -85,7 +85,7 @@
         <menuitem id="menu_product_config_session"
               action="product_config_session"
               name="Configuration Sessions"
-              parent="menu_product_configurable_setting" sequence="50"/>
+              parent="menu_product_configurable_settings" sequence="50"/>
 
     </data>
 </openerp>

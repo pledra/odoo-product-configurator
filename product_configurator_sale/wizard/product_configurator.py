@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from openerp.osv import orm
-from openerp.addons.base.ir.ir_model import _get_fields_type
 
 from openerp import models, fields, api, _
-from openerp.exceptions import Warning, ValidationError
+from openerp.exceptions import ValidationError
 
 
 class FreeSelection(fields.Selection):
@@ -23,7 +21,8 @@ class ProductConfigurator(models.TransientModel):
     @api.multi
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
-        if self._context.get('active_model', '') not in ('sale.order', 'sale.order.line'):
+        if self._context.get('active_model', '') not in (
+           'sale.order', 'sale.order.line'):
             return super(ProductConfigurator, self).action_config_done()
         custom_vals = {
             l.attribute_id.id:

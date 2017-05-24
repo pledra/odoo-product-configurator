@@ -12,7 +12,6 @@ class ConfigurationRules(TransactionCase):
         attribute_vals = self.cfg_tmpl.attribute_line_ids.mapped('value_ids')
         self.attr_vals = self.cfg_tmpl.attribute_line_ids.mapped('value_ids')
 
-
         self.attr_val_ext_ids = {
             v: k for k, v in attribute_vals.get_external_id().iteritems()
         }

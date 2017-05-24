@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from openerp.osv import orm
-from openerp.addons.base.ir.ir_model import _get_fields_type
 
 from openerp import models, fields, api, _
-from openerp.exceptions import Warning, ValidationError
+from openerp.exceptions import ValidationError
 
 
 class FreeSelection(fields.Selection):
@@ -18,7 +16,7 @@ class ProductConfigurator(models.TransientModel):
     _inherit = 'product.configurator'
 
     prodlot_id = fields.Many2one(comodel_name='stock.production.lot',
-                                    readonly=True)
+                                 readonly=True)
 
     @api.multi
     def action_config_done(self):
@@ -47,7 +45,8 @@ class ProductConfigurator(models.TransientModel):
                 _('Invalid configuration! Please check all '
                   'required steps and fields.')
             )
-        prod_lot = self.env['stock.production.lot'].browse(self.env.context['active_id'])
+        prod_lot = self.env['stock.production.lot'].browse(
+            self.env.context['active_id'])
         line_vals = {'product_id': variant.id}
 
         prod_lot.write(line_vals)
