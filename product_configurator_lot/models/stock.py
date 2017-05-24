@@ -2,6 +2,7 @@
 
 from openerp import models, fields, api
 
+
 class StockLot(models.Model):
     _inherit = 'stock.production.lot'
 
@@ -13,8 +14,6 @@ class StockLot(models.Model):
         """ Creates and launches a product configurator wizard with a linked
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
-
-        cfg_steps = self.product_id.product_tmpl_id.config_step_line_ids
 
         wizard_obj = self.env['product.configurator']
         wizard = wizard_obj.create({

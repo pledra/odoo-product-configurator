@@ -10,7 +10,7 @@ Available addons
 ----------------
 addon | version | summary
 --- | --- | ---
-[product_configurator](product_configurator/) | 1.0 | Dynamic configuration wizard for Odoo backen and dBase for website_product_config
+[product_configurator](product_configurator/) | 1.0 | Dynamic configuration wizard for Odoo back-end and Base for website_product_config
 [product_configurator_mrp](product_configurator_mrp/) | 1.0  | MRP Support for product variants generation
 [website_product_configurator](website_product_configurator/) | 1.0 | Website configuration interface integrated with e-commerce
 [website_product_configurator_mrp](website_product_configurator_mrp) | 1.0 | MRP Support for website_product_configurator

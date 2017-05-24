@@ -11,7 +11,7 @@ from openerp.addons import decimal_precision as dp
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    config_ok = fields.Boolean(string='Can be Configured', default=False)
+    config_ok = fields.Boolean(string='Can be Configured')
 
     config_line_ids = fields.One2many(
         comodel_name='product.config.line',
@@ -524,11 +524,11 @@ class ProductTemplate(models.Model):
                 self -= template
         res = super(ProductTemplate, self).unlink()
         return res
+
     @api.multi
     def configure_product(self):
-        """ Creates and launches a product configurator wizard with a linked
-        template and variant in order to re-configure a existing product. It is
-        esetially a shortcut to pre-fill configuration data of a variant"""
+        """ Creates and launches a product configurator wizard with a current
+        template to create the new variant for the current Template"""
 
         cfg_steps = self.config_step_line_ids
         active_step = str(cfg_steps[0].id) if cfg_steps else 'configure'
@@ -551,6 +551,7 @@ class ProductTemplate(models.Model):
             'target': 'new',
             'res_id': wizard.id,
         }
+
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
@@ -707,4 +708,3 @@ class ProductProduct(models.Model):
                 product.config_name = product.get_config_name()
             else:
                 product.config_name = product.name
-
