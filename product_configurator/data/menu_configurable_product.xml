@@ -30,7 +30,7 @@
             <field name="search_view_id" ref="product.product_search_form_view"/>
             <field name="view_id" eval="False"/> <!-- Force empty -->
             <field name="domain">[('config_ok','=',True)]</field>
-            <field name="context">{'default_config_ok': True, 'default_type': 'product'}</field>
+            <field name="context">{'default_config_ok': True, 'default_type': 'product', 'custom_create_variant': True}</field>
         </record>
 
         <menuitem id="menu_product_configurable_variants_action"

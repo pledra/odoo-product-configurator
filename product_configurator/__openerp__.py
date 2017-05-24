@@ -30,6 +30,7 @@
     'images': [
         'static/description/cover.png'
     ],
+    'qweb': ['static/xml/create_button.xml'],
     'test': [],
     'installable': True,
     'auto_install': False,
