@@ -1,0 +1,19 @@
+<templates>
+    
+    <t t-extend="ListView.buttons">
+        <t t-jquery="button.o_list_button_add" t-operation="after">
+            <button style="display:none"
+                type="button" class="btn btn-sm btn-primary o_list_button_add_custom">Create</button>
+        </t>
+    </t>
+    <t t-extend="FormView.buttons">
+    	<t t-jquery="button.o_form_button_create" t-operation="after">
+    		<button t-if="widget.is_action_enabled('create')" style="display:none"
+                    type="button" class="o_form_button_create_custom btn btn-default btn-sm"
+                    >
+                Create
+            </button>
+    	</t>
+    </t>
+
+</templates>
