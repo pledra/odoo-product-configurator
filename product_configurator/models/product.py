@@ -6,6 +6,22 @@ from openerp.tools.misc import formatLang
 from openerp.exceptions import ValidationError
 from openerp import models, fields, api, tools, _
 from openerp.addons import decimal_precision as dp
+from openerp.osv.expression import is_leaf, AND
+
+
+def process_config_domain(args):
+    """ Method for adding the config_ok = False domain if there is already no
+    domain related to config_ok"""
+    only_domains = filter(lambda arg: is_leaf(arg) or False, args)
+
+    fields = map(lambda domain: domain[0], only_domains)
+
+    if 'config_ok' not in fields:
+        if not args:
+            args = []
+        args = AND([[('config_ok', '=', False)], args])
+
+    return args
 
 
 class ProductTemplate(models.Model):
@@ -54,6 +70,23 @@ class ProductTemplate(models.Model):
                 _('Restrictions added make the current default values '
                   'generate an invalid configuration')
             )
+
+    def search(self, cr, user, args, offset=0, limit=None, order=None,
+               context=None, count=False):
+        """Always enforce config_ok = False in product searches to prevent usage of
+        configurable products in standard parts of Odoo"""
+        args = process_config_domain(args)
+        return super(ProductTemplate, self).search(
+            cr, user, args, offset=offset, limit=limit, order=order,
+            context=context, count=count)
+
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        """Always enforce config_ok = False in product searches to prevent usage of
+        configurable products in standard parts of Odoo"""
+        args = process_config_domain(args)
+        return super(ProductTemplate, self).name_search(
+            name, args, operator=operator, limit=limit)
 
     def flatten_val_ids(self, value_ids):
         """ Return a list of value_ids from a list with a mix of ids
@@ -520,15 +553,6 @@ class ProductTemplate(models.Model):
         for record in self:
             record.config_ok = not record.config_ok
 
-    # Override name_search delegation to variants introduced by Odony
-    # TODO: Verify this is still a problem in v9
-    @api.model
-    def name_search(self, name='', args=None, operator='ilike', limit=100):
-        return super(models.Model, self).name_search(name=name,
-                                                     args=args,
-                                                     operator=operator,
-                                                     limit=limit)
-
     @api.multi
     def create_variant_ids(self):
         """ Prevent configurable products from creating variants as these serve
@@ -681,6 +705,23 @@ class ProductProduct(models.Model):
     _constraints = [
         (_check_attribute_value_ids, None, ['attribute_value_ids'])
     ]
+
+    def search(self, cr, user, args, offset=0, limit=None, order=None,
+               context=None, count=False):
+        """Always enforce config_ok = False in product searches to prevent usage of
+        configurable products in standard parts of Odoo"""
+        args = process_config_domain(args)
+        return super(ProductProduct, self).search(
+            cr, user, args, offset=offset, limit=limit, order=order,
+            context=context, count=count)
+
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        """Always enforce config_ok = False in product searches to prevent usage of
+        configurable products in standard parts of Odoo"""
+        args = process_config_domain(args)
+        return super(ProductProduct, self).name_search(
+            name, args, operator=operator, limit=limit)
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form',

@@ -19,7 +19,6 @@ class SaleOrderLine(models.Model):
         related="product_id.value_custom_ids",
         string="Custom Values"
     )
-    product_id = fields.Many2one(domain=[('config_ok', '=', False)])
     config_ok = fields.Boolean(
         related='product_id.config_ok',
         string="Configurable"
