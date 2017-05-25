@@ -40,7 +40,6 @@
                 <attribute name="context">{
                     'show_attribute': False,
                     'attribute_line_ids': attribute_line_ids,
-                    'first_val_default': True
                 }</attribute>
             </xpath>
 

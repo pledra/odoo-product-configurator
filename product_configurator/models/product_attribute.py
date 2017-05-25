@@ -146,10 +146,6 @@ class ProductAttributeLine(models.Model):
         if self.default_val and self.default_val not in self.value_ids:
             self.default_val = None
 
-        val_default = self._context.get('first_val_default', False)
-        if val_default and not self.default_val and len(self.value_ids) == 1:
-            self.default_val = self.value_ids[0]
-
     custom = fields.Boolean(
         string='Custom',
         help="Allow custom values for this attribute?"

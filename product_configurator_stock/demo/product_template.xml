@@ -6,7 +6,7 @@
 
     <record id="product_configurator.bmw_2_series" model="product.template">
         <field name="type">product</field>
-        <field name="categ_id" ref="product_category_bmw"/>
+        <field name="categ_id" ref="product_configurator.product_category_bmw"/>
     </record>
 
     <record id="product_configurator.product_bmw_sport_line" model="product.product">
