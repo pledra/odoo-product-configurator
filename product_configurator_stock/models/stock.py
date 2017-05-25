@@ -3,15 +3,21 @@
 from openerp import models, fields, api
 
 
+class StockMove(models.Model):
+    _inherit = 'stock.move'
+
+    product_id = fields.Many2one(domain=[('config_ok', '=', False)])
+
+
 class StockLot(models.Model):
     _inherit = 'stock.production.lot'
 
     product_id = fields.Many2one(domain=[('config_ok', '=', False)])
-    description = fields.Text('Description')
+    description = fields.Text(string='Description')
 
     @api.multi
     def reconfigure_product(self):
-        """ Creates and launches a product configurator wizard with a linked
+        """ Create and launch a product configurator wizard with a linked
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
 
@@ -33,4 +39,3 @@ class StockLot(models.Model):
             'target': 'new',
             'res_id': wizard.id,
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

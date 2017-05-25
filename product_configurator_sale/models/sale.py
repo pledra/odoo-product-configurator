@@ -53,4 +53,3 @@ class SaleOrderLine(models.Model):
             'target': 'new',
             'res_id': wizard.id,
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

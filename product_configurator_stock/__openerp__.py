@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Product Configurator for Lot/Serial Number',
+    'name': 'Product Configurator for Stock',
     'version': '9.0.1.0.0',
     'category': 'Generic Modules/Stock',
-    'summary': 'product configuration interface modules for Lot/Serial Number',
+    'summary': 'Product configuration interface module for Stock',
     'author': 'Pledra',
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',
-    'depends': ['sale_stock', 'product_configurator'],
+    'depends': ['stock', 'product_configurator'],
     "data": [
         'views/stock_lot_view.xml',
     ],
     'demo': [
+        'demo/product_template.xml'
     ],
-    'images': [
-        'static/description/cover.png'
-    ],
+    'images': [],
     'test': [],
     'installable': True,
     'auto_install': False,

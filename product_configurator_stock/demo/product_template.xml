@@ -2,6 +2,7 @@
 <openerp>
 <data>
 
+    <!-- TODO: Workaround until we add more demo data Services + Products -->
 
     <record id="product_configurator.bmw_2_series" model="product.template">
         <field name="type">product</field>

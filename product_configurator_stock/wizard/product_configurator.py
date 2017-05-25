@@ -4,19 +4,14 @@ from openerp import models, fields, api, _
 from openerp.exceptions import ValidationError
 
 
-class FreeSelection(fields.Selection):
-
-    def convert_to_cache(self, value, record, validate=True):
-        return super(FreeSelection, self).convert_to_cache(
-            value=value, record=record, validate=False)
-
-
 class ProductConfigurator(models.TransientModel):
 
     _inherit = 'product.configurator'
 
-    prodlot_id = fields.Many2one(comodel_name='stock.production.lot',
-                                 readonly=True)
+    prodlot_id = fields.Many2one(
+        comodel_name='stock.production.lot',
+        readonly=True
+    )
 
     @api.multi
     def action_config_done(self):
@@ -29,7 +24,7 @@ class ProductConfigurator(models.TransientModel):
         }
 
         # This try except is too generic.
-        # The create_variant routine could effectively fail for
+        # The create_get_variant routine could effectively fail for
         # a large number of reasons, including bad programming.
         # It should be refactored.
         # In the meantime, at least make sure that a validation
@@ -53,4 +48,3 @@ class ProductConfigurator(models.TransientModel):
 
         self.unlink()
         return
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

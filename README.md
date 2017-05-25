@@ -5,7 +5,6 @@ Odoo modules enabling dynamic product configuration
 
 The product configurator modules suite prevents automatic generation of variants in Odoo and provides on-demand generation through friendly user interfaces.
 
-[//]: # (addons)
 Available addons
 ----------------
 addon | version | summary
@@ -20,7 +19,7 @@ addon | version | summary
 
 # Credits
 
-##Investors
+### Investors
 
 * initOS
 * Firma Casper Francke
