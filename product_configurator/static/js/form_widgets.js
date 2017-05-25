@@ -46,6 +46,7 @@ odoo.define('product_configurator.FormView', function (require) {
       this._super.apply(this, arguments); // Sets this.$buttons
       if(self.model == 'product.product' && self.dataset.context.custom_create_variant) {
         this.$buttons.find('.o_form_button_create').css('display', 'none')
+        this.$buttons.find('.oe_form_button_create').css('display', 'none')
         this.$buttons.find('.o_form_button_create_custom').css('display', 'inline')
         this.$buttons.on('click', '.o_form_button_create_custom', function(ev) {
           ev.preventDefault();
@@ -57,7 +58,6 @@ odoo.define('product_configurator.FormView', function (require) {
       }
     },
 });
-
 
 core.form_widget_registry.add('boolean_button', FieldBooleanButton);
 

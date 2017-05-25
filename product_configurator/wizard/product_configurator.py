@@ -828,6 +828,7 @@ class ProductConfigurator(models.TransientModel):
             'view_mode': 'form',
             'context': dict(
                 self.env.context,
+                custom_create_variant=True
             ),
             'res_id': variant.id,
         }
