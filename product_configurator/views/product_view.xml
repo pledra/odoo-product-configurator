@@ -103,6 +103,19 @@
         </field>
     </record>
 
+    <record id="product_template_search_view" model="ir.ui.view">
+        <field name="name">product.configurator.product.template.search.view</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='filter_to_sell']" position="after">
+                <separator/>
+                <filter string="Standard Products" name="filter_standard_products" domain="[('config_ok','=',False)]"/>
+                <filter string="Configurable Products" name="filter_config_ok" domain="[('config_ok','=',True)]"/>
+            </xpath>
+        </field>
+    </record>
+
     <record id="product_form_view_custom_vals_inherit" model="ir.ui.view">
         <field name="name">product.configurator.form.view.custom.vals</field>
         <field name="model">product.product</field>

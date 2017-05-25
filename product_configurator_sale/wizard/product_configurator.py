@@ -4,25 +4,20 @@ from openerp import models, fields, api, _
 from openerp.exceptions import ValidationError
 
 
-class FreeSelection(fields.Selection):
-
-    def convert_to_cache(self, value, record, validate=True):
-        return super(FreeSelection, self).convert_to_cache(
-            value=value, record=record, validate=False)
-
-
 class ProductConfigurator(models.TransientModel):
 
     _inherit = 'product.configurator'
 
-    order_line_id = fields.Many2one(comodel_name='sale.order.line',
-                                    readonly=True)
+    order_line_id = fields.Many2one(
+        comodel_name='sale.order.line',
+        readonly=True
+    )
 
     @api.multi
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
-        if self._context.get('active_model', '') not in (
-           'sale.order', 'sale.order.line'):
+        sale_models = ['sale.order', 'sale.order.line']
+        if self._context.get('active_model', '') not in sale_models:
             return super(ProductConfigurator, self).action_config_done()
         custom_vals = {
             l.attribute_id.id:
@@ -61,4 +56,3 @@ class ProductConfigurator(models.TransientModel):
 
         self.unlink()
         return
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

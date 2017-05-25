@@ -7,7 +7,6 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-
             <xpath expr="//form//notebook//field[@name='order_line']/form/field[@name='name']" position="after">
                 <div groups="product_configurator.group_product_configurator">
                     <label for="custom_value_ids"/>
@@ -20,47 +19,46 @@
                     </field>
                 </div>
             </xpath>
-
         </field>
     </record>
-        <!-- Add Configure Product button on sale order form view -->
 
+    <!-- Add Configure Product button on sale order form view -->
 
-        <record id="sale_order_form_config" model="ir.ui.view">
-            <field name="name">sale.order.form.config</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='order_line']" position="before">
-                    <button name="%(product_configurator.action_wizard_product_configurator)s"
-                            states="draft,sent"
-                            class="oe_highlight"
-                            type="action"
-                            style="margin-top: 15px;"
-                            string="Configure Product"
-                            groups="product_configurator.group_product_configurator"/>
-                </xpath>
+    <record id="sale_order_form_config" model="ir.ui.view">
+        <field name="name">sale.order.form.config</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']" position="before">
+                <button name="%(product_configurator.action_wizard_product_configurator)s"
+                        states="draft,sent"
+                        class="oe_highlight"
+                        type="action"
+                        style="margin-top: 15px;"
+                        string="Configure Product"
+                        groups="product_configurator.group_product_configurator"/>
+            </xpath>
 
-                <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
-                    <field name="config_ok" invisible="1"/>
-                </xpath>
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
+                <field name="config_ok" invisible="1"/>
+            </xpath>
 
-                <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="after">
-                    <field name="config_ok" invisible="1"/>
-                    <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
-                            help="Reconfigure"
-                            icon="fa-cogs"
-                            type="object"
-                            attrs="{
-                                'invisible': [
-                                    '|',
-                                    ('config_ok','=',False),
-                                    ('state','not in',['draft','sent'])
-                                ]
-                            }"/>
-                </xpath>
-            </field>
-        </record>
+            <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="after">
+                <field name="config_ok" invisible="1"/>
+                <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
+                        help="Reconfigure"
+                        icon="fa-cogs"
+                        type="object"
+                        attrs="{
+                            'invisible': [
+                                '|',
+                                ('config_ok','=',False),
+                                ('state','not in',['draft','sent'])
+                            ]
+                        }"/>
+            </xpath>
+        </field>
+    </record>
 
 </data>
 </openerp>
