@@ -15,21 +15,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def process_config_domain(args):
-    """ Method for adding the config_ok = False domain if there is already no
-    domain related to config_ok"""
-    only_domains = filter(lambda arg: is_leaf(arg) or False, args)
-
-    fields = map(lambda domain: domain[0], only_domains)
-
-    if 'config_ok' not in fields:
-        if not args:
-            args = []
-        args = AND([[('config_ok', '=', False)], args])
-
-    return args
-
-
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
@@ -82,20 +67,36 @@ class ProductTemplate(models.Model):
                   'generate an invalid configuration')
             )
 
-    def search(self, cr, user, args, offset=0, limit=None, order=None,
-               context=None, count=False):
+    @api.model
+    def get_config_domain(self, args=None):
+        """Add 'config_ok=False' to the search args to prevent configurable
+        products showing up in searches in standard Odoo modules"""
+        if not args:
+            args = []
+
+        if self._context.get('default_config_ok'):
+            return args
+
+        fields = [arg[0] for arg in args if is_leaf(arg)]
+
+        if 'config_ok' not in fields:
+            args = AND([[('config_ok', '=', False)], args])
+        return args
+
+    @api.model
+    def search(self, args, offset=0, limit=None, order=None, count=False):
         """Always enforce config_ok = False in product searches to prevent usage of
         configurable products in standard parts of Odoo"""
-        args = process_config_domain(args)
+        args = self.get_config_domain(args)
         return super(ProductTemplate, self).search(
-            cr, user, args, offset=offset, limit=limit, order=order,
-            context=context, count=count)
+            args, offset=offset, limit=limit, order=order, count=count
+        )
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
         """Always enforce config_ok = False in product searches to prevent usage of
         configurable products in standard parts of Odoo"""
-        args = process_config_domain(args)
+        args = self.get_config_domain(args)
         return super(ProductTemplate, self).name_search(
             name, args, operator=operator, limit=limit)
 
@@ -379,7 +380,7 @@ class ProductTemplate(models.Model):
             custom_lines.append((0, 0, custom_vals))
         return custom_lines
 
-    @api.multi
+    @api.model
     def get_variant_vals(self, value_ids, custom_values=None, **kwargs):
         """ Hook to alter the values of the product variant before creation
 
@@ -727,20 +728,20 @@ class ProductProduct(models.Model):
         (_check_attribute_value_ids, None, ['attribute_value_ids'])
     ]
 
-    def search(self, cr, user, args, offset=0, limit=None, order=None,
-               context=None, count=False):
+    @api.model
+    def search(self, args, offset=0, limit=None, order=None, count=False):
         """Always enforce config_ok = False in product searches to prevent usage of
         configurable products in standard parts of Odoo"""
-        args = process_config_domain(args)
+        args = self.product_tmpl_id.get_config_domain(args)
         return super(ProductProduct, self).search(
-            cr, user, args, offset=offset, limit=limit, order=order,
-            context=context, count=count)
+            args, offset=offset, limit=limit, order=order, count=count
+        )
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
         """Always enforce config_ok = False in product searches to prevent usage of
         configurable products in standard parts of Odoo"""
-        args = process_config_domain(args)
+        args = self.product_tmpl_id.get_config_domain(args)
         return super(ProductProduct, self).name_search(
             name, args, operator=operator, limit=limit)
 
