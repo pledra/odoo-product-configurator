@@ -52,7 +52,11 @@ class ProductTemplate(models.Model):
         inverse_name='product_tmpl_id',
         string='Configuration Lines'
     )
-    mako_tmpl_name = fields.Text('Make Template Name', help="Generate Name based on Mako Template")
+
+    mako_tmpl_name = fields.Text(
+        string='Variant name',
+        help="Generate Name based on Mako Template"
+    )
 
     @api.multi
     @api.constrains('attribute_line_ids')
@@ -153,10 +157,9 @@ class ProductTemplate(models.Model):
 
         active_cfg_step_line = config_step_lines.filtered(
             lambda l: l.id == active_step_line_id)
-        if value_ids:
-            open_step_lines = self.get_open_step_lines(value_ids)
-        else:
-            raise ValidationError(_('Configuration is not possible because not having attributes'))
+
+        open_step_lines = self.get_open_step_lines(value_ids)
+
         if not active_cfg_step_line:
             return {'next_step': open_step_lines[0]}
 
@@ -583,18 +586,7 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def configure_product(self):
-        """ Creates and launches a product configurator wizard with a current
-        template to create the new variant for the current Template"""
-
-        cfg_steps = self.config_step_line_ids
-        active_step = str(cfg_steps[0].id) if cfg_steps else 'configure'
-
-        wizard_obj = self.env['product.configurator']
-        wizard = wizard_obj.create({
-            'product_tmpl_id': self.id,
-            'state': active_step,
-        })
-
+        """ Return action for new product.configurator wizard"""
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'product.configurator',
@@ -602,10 +594,9 @@ class ProductTemplate(models.Model):
             'view_mode': 'form',
             'context': dict(
                 self.env.context,
-                wizard_id=wizard.id,
+                default_product_tmpl_id=self.id
             ),
             'target': 'new',
-            'res_id': wizard.id,
         }
 
 
@@ -686,21 +677,25 @@ class ProductProduct(models.Model):
             prices = product.product_tmpl_id.get_cfg_price(
                 value_ids, custom_vals)
             product.price_extra = prices['total'] - prices['taxes'] - lst_price
+
     @api.multi
-    def _get_mako_name(self):
+    def _get_config_name(self):
         for product in self:
             try:
                 mytemplate = Template(product.mako_tmpl_name or '')
                 buf = StringIO()
-                ctx = Context(buf, product=product,
-                              attribute_value=product.attribute_value_ids,
-                              steps=product.product_tmpl_id.config_step_line_ids,
-                              tempalte=product.product_tmpl_id)
-                value = mytemplate.render_context(ctx)
-                product.mako_display_name = buf.getvalue().replace('\n', '')
+                ctx = Context(
+                    buf, product=product,
+                    attribute_value=product.attribute_value_ids,
+                    steps=product.product_tmpl_id.config_step_line_ids,
+                    template=product.product_tmpl_id)
+                mytemplate.render_context(ctx)
+                return buf.getvalue().replace('\n', '')
             except:
-                _logger.error(_("Error while calculating mako product name: %s")%ex)
-                product.mako_display_name = product.display_name
+                _logger.error(
+                    _("Error while calculating mako product name: %s") %
+                    product.display_name)
+                return product.display_name
 
     config_name = fields.Char(
         string="Name",
@@ -719,7 +714,6 @@ class ProductProduct(models.Model):
         help="This is the sum of the extra price of all attributes",
         digits_compute=dp.get_precision('Product Price')
     )
-    mako_display_name = fields.Char('Calculated Name', compute='_get_mako_name')
 
     @api.multi
     def _check_attribute_value_ids(self):
@@ -774,12 +768,6 @@ class ProductProduct(models.Model):
                 res['fields'] = xfields
         return res
 
-    # TODO: Implement naming method for configured products
-    # TODO: Provide a field with custom name in it that defaults to a name
-    # pattern
-    def get_config_name(self):
-        return self.name
-
     @api.multi
     def unlink(self):
         """ Signal unlink from product variant through context so
@@ -794,6 +782,6 @@ class ProductProduct(models.Model):
             name for others"""
         for product in self:
             if product.config_ok:
-                product.config_name = product.get_config_name()
+                product.config_name = product._get_config_name()
             else:
                 product.config_name = product.name

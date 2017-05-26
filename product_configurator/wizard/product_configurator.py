@@ -713,6 +713,11 @@ class ProductConfigurator(models.TransientModel):
         if not self.product_tmpl_id:
             return wizard_action
 
+        if not self.product_tmpl_id.attribute_line_ids:
+            raise ValidationError(
+                _('Product Template does not have any attribute lines defined')
+            )
+
         cfg_step_lines = self.product_tmpl_id.config_step_line_ids
 
         if not cfg_step_lines:
