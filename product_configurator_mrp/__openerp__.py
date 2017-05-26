@@ -14,7 +14,6 @@
     "data": [
         'security/configurator_security.xml',
         'security/ir.model.access.csv',
-        'views/product_view.xml'
     ],
     'demo': [],
     'test': [],
