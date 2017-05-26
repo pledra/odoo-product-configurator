@@ -19,7 +19,7 @@ class ConfigurationCreate(TransactionCase):
         test_template = self.env['product.template'].create({
             'name': 'Test Configuration',
             'config_ok': True,
-            'type': 'product',
+            'type': 'consu',
             'categ_id': self.env.ref('product.product_category_5').id,
             'attribute_line_ids': [(0, 0, {
                 'attribute_id': attr_test.id,

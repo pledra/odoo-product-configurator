@@ -7,6 +7,12 @@ from openerp.exceptions import ValidationError
 from openerp import models, fields, api, tools, _
 from openerp.addons import decimal_precision as dp
 from openerp.osv.expression import is_leaf, AND
+from mako.template import Template
+from mako.runtime import Context
+from StringIO import StringIO
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 def process_config_domain(args):
@@ -46,6 +52,7 @@ class ProductTemplate(models.Model):
         inverse_name='product_tmpl_id',
         string='Configuration Lines'
     )
+    mako_tmpl_name = fields.Text('Make Template Name', help="Generate Name based on Mako Template")
 
     @api.multi
     @api.constrains('attribute_line_ids')
@@ -146,9 +153,10 @@ class ProductTemplate(models.Model):
 
         active_cfg_step_line = config_step_lines.filtered(
             lambda l: l.id == active_step_line_id)
-
-        open_step_lines = self.get_open_step_lines(value_ids)
-
+        if value_ids:
+            open_step_lines = self.get_open_step_lines(value_ids)
+        else:
+            raise ValidationError(_('Configuration is not possible because not having attributes'))
         if not active_cfg_step_line:
             return {'next_step': open_step_lines[0]}
 
@@ -678,6 +686,21 @@ class ProductProduct(models.Model):
             prices = product.product_tmpl_id.get_cfg_price(
                 value_ids, custom_vals)
             product.price_extra = prices['total'] - prices['taxes'] - lst_price
+    @api.multi
+    def _get_mako_name(self):
+        for product in self:
+            try:
+                mytemplate = Template(product.mako_tmpl_name or '')
+                buf = StringIO()
+                ctx = Context(buf, product=product,
+                              attribute_value=product.attribute_value_ids,
+                              steps=product.product_tmpl_id.config_step_line_ids,
+                              tempalte=product.product_tmpl_id)
+                value = mytemplate.render_context(ctx)
+                product.mako_display_name = buf.getvalue().replace('\n', '')
+            except:
+                _logger.error(_("Error while calculating mako product name: %s")%ex)
+                product.mako_display_name = product.display_name
 
     config_name = fields.Char(
         string="Name",
@@ -696,6 +719,7 @@ class ProductProduct(models.Model):
         help="This is the sum of the extra price of all attributes",
         digits_compute=dp.get_precision('Product Price')
     )
+    mako_display_name = fields.Char('Calculated Name', compute='_get_mako_name')
 
     @api.multi
     def _check_attribute_value_ids(self):

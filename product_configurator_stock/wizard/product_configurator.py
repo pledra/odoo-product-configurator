@@ -42,7 +42,7 @@ class ProductConfigurator(models.TransientModel):
             )
         prod_lot = self.env['stock.production.lot'].browse(
             self.env.context['active_id'])
-        line_vals = {'product_id': variant.id}
+        line_vals = {'product_id': variant.id, 'description': variant.mako_display_name}
 
         prod_lot.write(line_vals)
 

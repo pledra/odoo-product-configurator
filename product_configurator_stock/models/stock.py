@@ -3,7 +3,6 @@
 from openerp import models, fields, api
 
 
-
 class StockLot(models.Model):
     _inherit = 'stock.production.lot'
 
@@ -31,7 +30,7 @@ class StockLot(models.Model):
             'view_mode': 'form',
             'context': dict(
                 self.env.context,
-                wizard_id = wizard and wizard.id,
+                wizard_id=wizard and wizard.id,
             ),
             'target': 'new',
             'res_id': wizard and wizard.id,

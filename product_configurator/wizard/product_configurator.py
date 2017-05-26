@@ -729,7 +729,6 @@ class ProductConfigurator(models.TransientModel):
 
         active_cfg_line_id = cfg_step_lines.filtered(
             lambda x: x.id == cfg_step_line_id).id
-
         adjacent_steps = self.product_tmpl_id.get_adjacent_steps(
             self.value_ids.ids, active_cfg_line_id)
 
@@ -791,7 +790,7 @@ class ProductConfigurator(models.TransientModel):
         vals = {}
         if new:
             vals.update({
-                'name': product.display_name,
+                'name': product.mako_display_name,
                 'product_uom': product.uom_id.id,
             })
         return vals
