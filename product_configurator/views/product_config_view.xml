@@ -109,7 +109,7 @@
         <field name="name">product.config.session.tree</field>
         <field name="model">product.config.session</field>
         <field name="arch" type="xml">
-            <tree string="Configuration Sessions">
+            <tree string="Configuration Sessions" create="false">
                 <field name="product_tmpl_id"/>
                 <field name="value_ids" widget="many2many_tags"/>
                 <field name="user_id"/>
@@ -124,7 +124,7 @@
         <field name="name">product.config.session.form</field>
         <field name="model">product.config.session</field>
         <field name="arch" type="xml">
-            <form string="Configuration Sessions" editable="bottom">
+            <form string="Configuration Sessions" editable="bottom" create="false">
                 <header>
                     <field name="state" widget="statusbar"/>
                 </header>

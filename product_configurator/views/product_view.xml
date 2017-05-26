@@ -19,7 +19,8 @@
                             class="oe_highlight"
                             type="object"
                             string="Configure Product"
-                            groups="product_configurator.group_product_configurator"/>
+                            groups="product_configurator.group_product_configurator"
+                            attrs="{'invisible': [('config_ok', '=', False)]}"/>
             </xpath>
             <xpath expr="//field[@name='attribute_line_ids']" position="before">
                 <button name="configure_product"
@@ -27,7 +28,8 @@
                             type="object"
                             string="Configure Product"
                             style="margin-top: 15px;margin-bottom: 15px;"
-                            groups="product_configurator.group_product_configurator"/>
+                            groups="product_configurator.group_product_configurator"
+                            attrs="{'invisible': [('config_ok', '=', False)]}"/>
             </xpath>
             <xpath expr="//label[@for='purchase_ok' or @for='sale_ok']" position="after">
                 <div class="oe_left" name="options" groups="base.group_user">
@@ -61,8 +63,8 @@
 
             <!-- TODO: Apply domains so only values from template are available -->
             <xpath expr="//notebook/page[@name='variants']" position="after">
-                <page string="Configurator" attrs="{'invisible': [('config_ok','=',False)]}">
-                <separator colspan="4" string="Configuration Restrictions"/>
+                <page string="Configurator" attrs="{'invisible': [('config_ok','=',False)]}" name="configurator">
+                <separator colspan="4" string="Configuration Restrictions" name="configurator_restrictions"/>
                 <field name="config_line_ids"
                        attrs="{'readonly': [('attribute_line_ids','=',[])]}"
                        context="{'show_attribute': False}">
@@ -105,6 +107,8 @@
                         <field name="value_ids" widget="many2many_tags" context="{'_cfg_product_tmpl_id': parent.id}"/>
                     </tree>
                 </field>
+                <separator string="Template for Name" colspan="4"/>
+                <field name="mako_tmpl_name"/>
                 </page>
             </xpath>
 
@@ -132,6 +136,7 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Custom Values">
                     <field name="value_custom_ids"/>
+                    <field name="mako_display_name"/>
                 </page>
             </xpath>
         </field>

@@ -7,14 +7,19 @@
         <field name="model">stock.production.lot</field>
         <field name="inherit_id" ref="stock.view_production_lot_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[@class='oe_button_box']" position="inside">
-                <button name="reconfigure_product"
-                    icon="fa-cogs"
-                    class="oe_stat_button"
-                    type="object"
-                    colspan="1" col="1"
-                    string="Configure Product"
-                    groups="product_configurator.group_product_configurator"/>
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="reconfigure_product"
+                        class="oe_highlight"
+                        type="object"
+                        string="Configure Product"
+                        groups="product_configurator.group_product_configurator"/>
+                </header>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Description">
+                    <field name="description"/>
+                </page>
             </xpath>
         </field>
     </record>
