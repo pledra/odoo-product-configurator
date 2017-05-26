@@ -33,6 +33,15 @@
                 <field name="config_subproduct_line_id" options="{'no_create': True, 'no_create_edit': True}"/>
             </xpath>
 
+            <!-- MRP Routing -->
+
+            <xpath expr="//field[@name='config_image_ids']" position="after">
+                <separator name="configurator_mrp" string="MRP"/>
+                <group>
+                    <field name="routing_id"/>
+                </group>
+            </xpath>
+
         </field>
     </record>
 

@@ -6,13 +6,16 @@ from openerp import api, fields, models
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    routing_id = fields.Many2one(
+        comodel_name='mrp.routing',
+        string='Routing'
+    )
     master_template = fields.Boolean(
         string='Master Template',
         default=True,
         help="Indicates if this template can be configured as a "
              "stand-alone product or only as a sub-product",
     )
-
     config_subproduct_ids = fields.One2many(
         comodel_name='product.config.subproduct.line',
         inverse_name='product_tmpl_id',
@@ -39,6 +42,8 @@ class ProductTemplate(models.Model):
             'product_tmpl_id': self.id,
             'product_id': variant.id,
             'bom_line_ids': line_vals,
+            'type': 'normal',
+            'routing_id': self.routing_id.id or False,
         }
 
         self.env['mrp.bom'].create(values)
@@ -84,11 +89,10 @@ class ProductTemplate(models.Model):
             if open_steps:
                 steps['active_step'] = open_steps[0]
 
-        next_step = steps.get('next_step', cfg_step_line_obj)
-        prev_step = steps.get('prev_step', cfg_step_line_obj)
+        next_step = steps.get('next_step') or cfg_step_line_obj
+        prev_step = steps.get('prev_step') or cfg_step_line_obj
 
         # TODO: Take into account subproducts with no configuration steps
-
         if next_step.config_subproduct_line_id.subproduct_id.config_ok:
             # Retrieve a session (if any) to get the first open step
             session = cfg_session_obj.search_session(
