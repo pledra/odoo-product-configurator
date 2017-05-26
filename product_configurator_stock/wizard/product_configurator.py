@@ -44,7 +44,7 @@ class ProductConfigurator(models.TransientModel):
             self.env.context['active_id'])
         line_vals = {
             'product_id': variant.id,
-            'description': variant.mako_display_name
+            'description': variant.config_name
         }
 
         prod_lot.write(line_vals)
