@@ -11,6 +11,50 @@ class ProductConfigurator(models.TransientModel):
 
     subattr_prefix = '__subproduct_attribute-'
 
+    @api.multi
+    def onchange(self, values, field_name, field_onchange):
+        fld_type = type(field_name)
+        if fld_type == list or not field_name.startswith(self.subattr_prefix):
+            res = super(ProductConfigurator, self).onchange(
+                values, field_name, field_onchange)
+            return res
+
+        # Maybe we store the subproduct instead of searching for it?
+        active_step = self.get_active_step()
+        subproduct = active_step.config_subproduct_line_id.subproduct_id
+
+        if not subproduct:
+            # Raise warning ?
+            return res
+
+        subattr_vals = {
+            k: values[k] for k in values if k.startswith(self.subattr_prefix)
+        }
+
+        value_ids = [attr_id for attr_id in subattr_vals.values() if attr_id]
+
+        available_variants = self.env['product.product'].search([
+            ('product_tmpl_id', '=', subproduct.id),
+            ('attribute_value_ids', 'in', value_ids)
+        ])
+
+        domain = []
+
+        subattr_fields = [
+            k for k, v in values.iteritems() if k.startswith(self.subattr_prefix)
+        ]
+
+        for k in values:
+            attr_id = int(k.split(self.field_prefix)[1])
+
+        attr_vals_map = {
+            v.attribute_id.id: v for v in available_variants.mapped('attribute_value_ids')}
+
+
+        import pdb;pdb.set_trace()
+
+        return res
+
     @api.model
     def get_subproduct_fields(self, wiz, subproduct, default_attrs=None):
         if not default_attrs:

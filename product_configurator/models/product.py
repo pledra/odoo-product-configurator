@@ -588,6 +588,12 @@ class ProductTemplate(models.Model):
         res = super(ProductTemplate, self).unlink()
         return res
 
+    @api.model
+    def copy(self, default=None):
+        import pdb;pdb.set_trace()
+        res = super(ProductTemplate, self).copy(default=default)
+        return res
+
     @api.multi
     def configure_product(self):
         """ Return action for new product.configurator wizard"""
