@@ -199,6 +199,7 @@ class ConfigurationAttributes(ConfigurationRules):
                         "to remove invalid attribute")
 
         # Now test reqd attribute changes.
+        last_variant = new_variant
         self.template_colour_line.write({'required': True})
 
         # Redefine to medium - should make colour required
@@ -219,3 +220,14 @@ class ConfigurationAttributes(ConfigurationRules):
         self.assertTrue(oc_result['value'].get(reqd_name_colour),
                         "Colour should have become required"
                         )
+        # Redefine to large - should make colour not required, despite master
+        # file
+        vals = self.get_wizard_write_dict(wizard, [self.attr_val_large])
+        wizard.write(vals)
+        wizard.action_next_step()
+        if wizard.exists():
+            while wizard.action_next_step():
+                pass
+        self.assertTrue(order_line.product_id == last_variant,
+                        "Wizard did not end up with the same "
+                        "variant")
