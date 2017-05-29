@@ -309,7 +309,6 @@ class ProductConfigurator(models.TransientModel):
 
         # Get the wizard object from the database
         wiz = self.browse(wizard_id)
-        active_step_id = wiz.state
 
         # If the product template is not set it is still at the 1st step
         if not wiz.product_tmpl_id:
