@@ -9,7 +9,7 @@ class ConfigurationAttributes(ConfigurationRules):
     def setUp(self):
         """
         Product with 3 sizes:
-            Small or Medium allow Blue or Red, but colour is optional
+            Small or Medium allow Blue or Red, colour is required
             Large does not allow colour selection
         """
         super(ConfigurationAttributes, self).setUp()
@@ -80,11 +80,12 @@ class ConfigurationAttributes(ConfigurationRules):
                  ],
              }
         )
-        colour_line = self.product_temp.attribute_line_ids.filtered(
-            lambda a: a.attribute_id == self.attr_colour)
+        self.template_colour_line = \
+            self.product_temp.attribute_line_ids.filtered(
+                lambda a: a.attribute_id == self.attr_colour)
         self.env['product.config.line'].create({
             'product_tmpl_id': self.product_temp.id,
-            'attribute_line_id': colour_line.id,
+            'attribute_line_id': self.template_colour_line.id,
             'value_ids': [(6, 0, self.attr_colour.value_ids.ids)],
             'domain_id': domain_small_med.id,
             })
@@ -116,7 +117,7 @@ class ConfigurationAttributes(ConfigurationRules):
             self.attr_colour.id
         )
         reqd_name_colour = '%s%s' % (
-            wizard.ro_field_prefix,
+            wizard.reqd_field_prefix,
             self.attr_colour.id
         )
 
@@ -179,9 +180,9 @@ class ConfigurationAttributes(ConfigurationRules):
                         oc_result['value'][ro_name_colour],
                         "Colour should have become readonly"
                         )
-        self.assertTrue(oc_result['value'].get(reqd_name_colour),
-                        "Colour should not have become required"
-                        )
+        self.assertFalse(oc_result['value'].get(reqd_name_colour, False),
+                         "Colour should not have become required"
+                         )
 
         vals = self.get_wizard_write_dict(wizard, [self.attr_val_large],
                                           remove_values=[self.attr_val_blue])
@@ -196,3 +197,25 @@ class ConfigurationAttributes(ConfigurationRules):
                         set([self.attr_val_large.id]),
                         "Wizard did not accurately reconfigure a variant "
                         "to remove invalid attribute")
+
+        # Now test reqd attribute changes.
+        self.template_colour_line.write({'required': True})
+
+        # Redefine to medium - should make colour required
+        reconfig_action = order_line.reconfigure_product()
+        wizard = self.env['product.configurator'].browse(
+            reconfig_action.get('res_id')
+        )
+        attr_med_dict = self.get_wizard_write_dict(wizard,
+                                                   [self.attr_val_med])
+        oc_vals = dynamic_fields.copy()
+        oc_vals.update({'id': wizard.id})
+        oc_vals.update(attr_med_dict)
+        oc_result = wizard.onchange(
+            oc_vals,
+            attr_med_dict.keys()[0],
+            {}
+        )
+        self.assertTrue(oc_result['value'].get(reqd_name_colour),
+                        "Colour should have become required"
+                        )
