@@ -51,8 +51,9 @@
     </record>
 
 	<menuitem id="menu_product_configurable_purchase" name="Configurable Products" parent="purchase.menu_purchase_root" sequence="20" />
-    <menuitem action="product.attribute_action" id="menu_attribute_action" parent="purchase.menu_purchase_config" sequence="4" groups="product.group_product_variant"/>
-    <menuitem action="product.variants_action" id="menu_variants_action" parent="purchase.menu_purchase_config" sequence="5" groups="product.group_product_variant"/>
+    <menuitem id="purchase.prod_config_main" name="Products" parent="purchase.menu_purchase_config" sequence="3"/>
+    <menuitem action="product.attribute_action" id="menu_attribute_action" parent="purchase.prod_config_main" sequence="4" groups="product.group_product_variant"/>
+    <menuitem action="product.variants_action" id="menu_variants_action" parent="purchase.prod_config_main" sequence="5" groups="product.group_product_variant"/>
 	
     <record id="product_configurable_template_purchase_action" model="ir.actions.act_window">
         <field name="name">Configurable Templates</field>
