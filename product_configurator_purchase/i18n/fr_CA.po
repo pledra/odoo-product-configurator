@@ -1,0 +1,101 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_configurator_purchase
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-05-30 20:30+0000\n"
+"PO-Revision-Date: 2017-05-30 16:32-0400\n"
+"Last-Translator: Stéphane Le Cornec <slc@microcom.ca>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: fr_CA\n"
+"X-Generator: Poedit 1.8.7\n"
+
+#. module: product_configurator_purchase
+#: model:ir.model.fields,field_description:product_configurator_purchase.field_purchase_order_line_config_ok
+#: model:ir.model.fields,field_description:product_configurator_purchase.field_purchase_order_line_version_config_ok
+msgid "Configurable"
+msgstr "Configurable"
+
+#. module: product_configurator_purchase
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_configurable_purchase
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_configurable_stock
+msgid "Configurable Products"
+msgstr "Articles configurables"
+
+#. module: product_configurator_purchase
+#: model:ir.actions.act_window,name:product_configurator_purchase.product_configurable_template_purchase_action
+#: model:ir.actions.act_window,name:product_configurator_purchase.product_configurable_template_stock_action
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_configurable_template_purchase_action
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_configurable_template_stock_action
+msgid "Configurable Templates"
+msgstr "Modèles configurables"
+
+#. module: product_configurator_purchase
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_configurable_variants_purchase_action
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_configurable_variants_stock_action
+msgid "Configurable Variants"
+msgstr "Variantes configurables"
+
+#. module: product_configurator_purchase
+#: model:ir.actions.act_window,name:product_configurator_purchase.product_config_domain_purchase_action
+#: model:ir.actions.act_window,name:product_configurator_purchase.product_config_domain_stock_action
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_config_domain_purchase_action
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_config_domain_stock_action
+msgid "Configuration Restrictions"
+msgstr "Restrictions de configuration"
+
+#. module: product_configurator_purchase
+#: model:ir.actions.act_window,name:product_configurator_purchase.product_config_session_purchase_action
+#: model:ir.actions.act_window,name:product_configurator_purchase.product_config_session_stock_action
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_config_session_purchase_action
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_config_session_stock_action
+msgid "Configuration Sessions"
+msgstr "Sessions de configuration"
+
+#. module: product_configurator_purchase
+#: model:ir.actions.act_window,name:product_configurator_purchase.product_config_steps_purchase_action
+#: model:ir.actions.act_window,name:product_configurator_purchase.product_config_steps_stock_action
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_config_steps_purchase_action
+#: model:ir.ui.menu,name:product_configurator_purchase.menu_product_config_steps_stock_action
+msgid "Configuration Steps"
+msgstr "Étapes de configuration"
+
+#. module: product_configurator_purchase
+#: model:ir.actions.act_window,name:product_configurator_purchase.action_wizard_product_purchase_configurator
+#: model:ir.ui.view,arch_db:product_configurator_purchase.purchase_order_form_config
+msgid "Configure Product"
+msgstr "Configurer le Produit"
+
+#. module: product_configurator_purchase
+#: model:ir.actions.act_window,name:product_configurator_purchase.product_configurable_variant_purchase_action
+#: model:ir.actions.act_window,name:product_configurator_purchase.product_configurable_variant_stock_action
+msgid "Configured Variants"
+msgstr "Variantes configurées"
+
+#. module: product_configurator_purchase
+#: model:ir.model.fields,field_description:product_configurator_purchase.field_purchase_order_line_custom_value_ids
+#: model:ir.model.fields,field_description:product_configurator_purchase.field_purchase_order_line_version_custom_value_ids
+msgid "Custom Values"
+msgstr "Valeurs personnalisées"
+
+#. module: product_configurator_purchase
+#: model:ir.model.fields,field_description:product_configurator_purchase.field_purchase_order_line_version_product_id
+msgid "Product"
+msgstr "Article"
+
+#. module: product_configurator_purchase
+#: model:ir.model,name:product_configurator_purchase.model_purchase_order_line
+msgid "Purchase Order Line"
+msgstr "Ligne de commande fournisseur"
+
+#. module: product_configurator_purchase
+#: model:ir.ui.view,arch_db:product_configurator_purchase.purchase_order_form_config
+msgid "Reconfigure"
+msgstr "reconfigurer"
