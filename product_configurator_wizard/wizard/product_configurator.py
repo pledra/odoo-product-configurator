@@ -113,17 +113,30 @@ class ProductConfigurator(models.TransientModel):
                     continue
         return domains
 
-    def get_support_fields(self, k, available_val_ids, tmpl_attribute):
-        vals = {}
+    def get_support_fields(self, k, available_val_ids, attribute_line):
+        """ Sets the readonly, required, and invisible boolean values
+        which drive the behaviour of individual fields.
+
+        :param k: the field name of the dynamic field
+        :param available_val_ids: list of the possible value ids for the field
+        :param attribute_line: corresponding attribute line definition from the
+        product template
+
+        :returns vals: a dictionary with three values
+        """
         attribute_id = int(k.replace(self.field_prefix, ''))
-        vals[self.ro_field_prefix + str(attribute_id)] = \
-            len(available_val_ids) == 0
-        if tmpl_attribute.required:
+        ro_field = self.ro_field_prefix + str(attribute_id)
+        reqd_field = self.reqd_field_prefix + str(attribute_id)
+        invis_field = self.invis_field_prefix + str(attribute_id)
+
+        vals = {}
+        vals[ro_field] = len(available_val_ids) == 0
+        if attribute_line.required:
             required = len(available_val_ids) > 0
         else:
             required = False
-        vals[self.reqd_field_prefix + str(attribute_id)] = required
-        vals[self.invis_field_prefix + str(attribute_id)] = False
+        vals[reqd_field] = required
+        vals[invis_field] = False
         return vals
 
     def get_form_vals(self, dynamic_fields, domains, cfg_step):
@@ -142,12 +155,12 @@ class ProductConfigurator(models.TransientModel):
 
         for k, v in dynamic_fields.iteritems():
             attribute_id = int(k.replace(self.field_prefix, ''))
-            tmpl_attribute = self.product_tmpl_id.attribute_line_ids.filtered(
+            attribute_line = self.product_tmpl_id.attribute_line_ids.filtered(
                 lambda a: a.attribute_id.id == attribute_id)
             available_val_ids = domains[k][0][2]
 
             vals.update(
-                self.get_support_fields(k, available_val_ids, tmpl_attribute)
+                self.get_support_fields(k, available_val_ids, attribute_line)
             )
 
             if v and isinstance(v, list):
@@ -159,7 +172,7 @@ class ProductConfigurator(models.TransientModel):
                 vals[k] = None
                 v = None
             if not v:
-                if tmpl_attribute.required and not tmpl_attribute.multi and \
+                if attribute_line.required and not attribute_line.multi and \
                         len(available_val_ids) == 1:
                     dynamic_fields.update({k: available_val_ids[0]})
                     vals[k] = available_val_ids[0]
@@ -224,9 +237,9 @@ class ProductConfigurator(models.TransientModel):
 
         # See if any of the dynamic_fields were modified by the get_form_vals
         # (cleared or set), they may change domains!
-        modified_dynamics = {k: v
-                             for k, v in vals.iteritems()
-                             if k in dynamic_fields}
+        modified_dynamics = {
+            k: v for k, v in vals.iteritems() if k in dynamic_fields
+        }
         while modified_dynamics:
             dynamic_fields.update(modified_dynamics)
             for k, v in modified_dynamics.iteritems():
@@ -247,11 +260,16 @@ class ProductConfigurator(models.TransientModel):
             nvals = self.get_form_vals(dynamic_fields, domains, cfg_step)
             # Stop possible recursion by not including values which have
             # previously looped
-            modified_dynamics = {k: v
-                                 for k, v in nvals.iteritems()
-                                 if k in dynamic_fields and k not in vals}
+            modified_dynamics = {
+                k: v for k, v in nvals.iteritems()
+                if k in dynamic_fields and k not in vals
+            }
             vals.update(nvals)
 
+        # To ensure the full suite of support vals is written if any are
+        # changed by onchange.
+        if self.stored_support_vals:
+            vals['stored_support_vals'] = self.stored_support_vals + ' '
         return {'value': vals, 'domain': domains}
 
     attribute_line_ids = fields.One2many(
@@ -610,6 +628,8 @@ class ProductConfigurator(models.TransientModel):
 
     @api.multi
     def get_cfg_step(self):
+        """Attempt to return product.config.step.line object which
+        is encoded in the wizard state string"""
         self.ensure_one()
         try:
             cfg_step_id = int(self.state)
