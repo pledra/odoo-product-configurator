@@ -8,6 +8,14 @@
         <field name="arch" type="xml">
             <form string="Product Configurator">
                 <header>
+                    <button
+                        string="Reset"
+                        type="object"
+                        name="action_reset"
+                        confirm="Are you sure? This will remove your current configuration for this template!"
+                        special="no_save"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', ('product_tmpl_id', '=', False), ('state', '=', 'select')]}"/>
                     <field name="state" widget="statusbar" clickable="True"/>
                 </header>
                 <sheet>

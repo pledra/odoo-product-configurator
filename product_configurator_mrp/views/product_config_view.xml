@@ -37,10 +37,8 @@
         </field>
     </record>
 
-    <!-- Configuration Sessions -->
-
     <record id="product_config_session_form_view" model="ir.ui.view">
-        <field name="name">product.config.mrp.session.form.view</field>
+        <field name="name">product.config.mrp.session.form</field>
         <field name="model">product.config.session</field>
         <field name="inherit_id" ref="product_configurator.product_config_session_form_view"/>
         <field name="arch" type="xml">
@@ -58,7 +56,32 @@
                     </field>
                 </page>
             </xpath>
+            <xpath expr="//field[@name='price']" position="after">
+                <field name="quantity"/>
+            </xpath>
         </field>
     </record>
 
+    <record id="product_config_session_tree_view" model="ir.ui.view">
+        <field name="name">product.config.mrp.session.tree</field>
+        <field name="model">product.config.session</field>
+        <field name="inherit_id" ref="product_configurator.product_config_session_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price']" position="after">
+                <field name="quantity"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_config_session_subproducts_tree_view" model="ir.ui.view">
+        <field name="model">product.config.session</field>
+        <field name="priority" eval="99"/>
+        <field name="arch" type="xml">
+            <tree string="Configuration Subproduct Line" editable="bottom" create="false">
+                <field name="product_tmpl_id" readonly="True"/>
+                <field name="value_ids" widget="many2many_tags" readonly="True"/>
+                <field name="quantity"/>
+            </tree>
+        </field>
+    </record>
 </odoo>

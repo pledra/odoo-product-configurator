@@ -38,6 +38,24 @@ class ProductTemplate(models.Model):
             (0, 0, {'product_id': product.id}) for product in attr_products
         ]
 
+        session = self.env['product.config.session'].search_session(
+                product_tmpl_id=self.id)
+
+        if session:
+            for subsession in session[0].child_ids:
+                if subsession.product_tmpl_id.config_ok:
+                    # TODO: Create variant and add
+                    pass
+                else:
+                    val_ids = subsession.value_ids.ids
+                    product = self.env['product.product'].search([
+                        ('attribute_value_ids', '=', vid) for vid in val_ids
+                    ])
+                    line_vals.append((0, 0, {
+                        'product_id': product.id,
+                        'product_qty': subsession.quantity
+                    }))
+
         values = {
             'product_tmpl_id': self.id,
             'product_id': variant.id,
@@ -85,7 +103,7 @@ class ProductTemplate(models.Model):
         if subproduct.config_ok:
             session = cfg_session_obj.sudo().create_get_session(
                 subproduct.id, parent_id=cfg_session.id)
-            open_steps = subproduct.get_open_step_lines(session.value_ids.ids)
+            open_steps = subproduct.get_open_step_lines(session[0].value_ids.ids)
             if open_steps:
                 steps['active_step'] = open_steps[0]
 

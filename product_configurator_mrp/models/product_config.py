@@ -27,7 +27,6 @@ class ProductConfigSubproductLine(models.Model):
         string='Quantity',
         help='Allow setting quantities on this subproduct?'
     )
-    # TODO: Implement logic and add to view
     multi = fields.Boolean(
         string='Multi',
         help='Allow multiple configurations for this subproduct?'
@@ -52,18 +51,17 @@ class ProductConfigSession(models.Model):
     parent_id = fields.Many2one(
         comodel_name='product.config.session',
         readonly=True,
+        ondelete='cascade',
         string='Parent Session'
     )
     child_ids = fields.One2many(
         comodel_name='product.config.session',
         inverse_name='parent_id',
         string='Session Lines',
-        readonly=True,
         help='Child configuration sessions'
     )
     quantity = fields.Integer(
         string='Quantity',
-        readonly=True
     )
 
     @api.model
