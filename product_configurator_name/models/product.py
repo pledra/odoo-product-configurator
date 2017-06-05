@@ -52,14 +52,10 @@ class ProductProduct(models.Model):
                         if line.display_mode == 'hide':
                             continue
                         key = line.attribute_id.name
-                        if key not in value_dict:
-                            # attributes with a single value are not in attribute_value_ids
-                            if len(line.value_ids) == 0:
-                                value = line.value_ids[0].name
-                            else:
-                                continue  # should never happen
-                        else:
+                        if key in value_dict:
                             value = value_dict[key]
+                        else:
+                             continue
                         if line.display_mode == 'value':
                             name_elements.append(u'{}'.format(value))
                         elif line.display_mode == 'attribute':
