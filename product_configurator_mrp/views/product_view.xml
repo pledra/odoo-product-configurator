@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-   <record id="product_template_form_view" model="ir.ui.view">
+    <record id="product_template_form_view" model="ir.ui.view">
         <field name="name">product.configurator.product.template.form</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product_configurator.product_template_form_view"/>
@@ -23,6 +23,7 @@
                         <field name="subproduct_id" domain="[('id', '!=', parent.id)]"/>
                         <field name="quantity"/>
                         <field name="required"/>
+                        <field name="multi"/>
                     </tree>
                 </field>
             </xpath>

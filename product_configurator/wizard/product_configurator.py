@@ -201,6 +201,13 @@ class ProductConfigurator(models.TransientModel):
         vals = self.get_form_vals(dynamic_fields, domains)
         return {'value': vals, 'domain': domains}
 
+    config_session_id = fields.Many2one(
+        required=True,
+        ondelete='cascade',
+        comodel_name='product.config.session',
+        oldname='config_session',
+        string='Configuration Session'
+    )
     attribute_line_ids = fields.One2many(
         comodel_name='product.attribute.line',
         related='product_tmpl_id.attribute_line_ids',
@@ -363,12 +370,13 @@ class ProductConfigurator(models.TransientModel):
 
         # Get updated fields including the dynamic ones
         fields = self.fields_get()
+
         dynamic_fields = {
             k: v for k, v in fields.iteritems() if k.startswith(
                 self.field_prefix) or k.startswith(self.custom_field_prefix)
         }
-
         res['fields'].update(dynamic_fields)
+
         mod_view = self.add_dynamic_fields(res, dynamic_fields, wiz)
 
         # Update result dict from super with modified view
@@ -538,8 +546,6 @@ class ProductConfigurator(models.TransientModel):
     def create(self, vals):
         """Sets the configuration values of the product_id if given (if any).
         This is used in reconfiguration of a existing variant"""
-        vals.update(user_id=self.env.uid)
-
         if 'product_id' in vals:
             product = self.env['product.product'].browse(vals['product_id'])
             vals.update({
@@ -555,6 +561,12 @@ class ProductConfigurator(models.TransientModel):
                 }))
             if custom_vals:
                 vals.update({'custom_value_ids': custom_vals})
+
+        # Get existing session for this product_template or create a new one
+        session = self.env['product.config.session'].create_get_session(
+            product_tmpl_id=int(vals.get('product_tmpl_id'))
+        )
+        vals.update(user_id=self.env.uid, config_session_id=session.id)
         return super(ProductConfigurator, self).create(vals)
 
     @api.multi
@@ -688,9 +700,9 @@ class ProductConfigurator(models.TransientModel):
 
     @api.multi
     def unlink(self):
-        """Remove parent model as polymorphic inheritance unlinks inheriting
-           model with the parent"""
-        return self.mapped('config_session_id').unlink()
+        """Remove parent configuration session along with wizard"""
+        self.mapped('config_session_id').unlink()
+        return super(ProductConfigurator, self).unlink()
 
     @api.model
     def get_active_step(self):
@@ -802,6 +814,28 @@ class ProductConfigurator(models.TransientModel):
             self.state = 'select'
 
         return wizard_action
+
+    @api.multi
+    def action_reset(self):
+        """Delete wizard and configuration session then create
+        a new wizard+session and return an action for the new wizard object"""
+        product_tmpl_id = self.product_tmpl_id.id
+        if product_tmpl_id:
+            self.config_session_id.unlink()
+            self = self.create({'product_tmpl_id': product_tmpl_id})
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'name': "Configure Product",
+            'view_mode': 'form',
+            'context': dict(
+                self.env.context,
+                wizard_id=self.id,
+            ),
+            'target': 'new',
+            'res_id': self.id,
+        }
 
     @api.multi
     def action_config_done(self):
