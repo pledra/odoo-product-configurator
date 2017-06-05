@@ -295,7 +295,10 @@ class ProductTemplate(models.Model):
             custom_values = {}
         attr_obj = self.env['product.attribute']
 
-        domain = [('product_tmpl_id', '=', self.id)]
+        domain = [
+            ('product_tmpl_id', '=', self.id),
+            ('config_ok', '=', True)
+        ]
 
         for value_id in value_ids:
             domain.append(('attribute_value_ids', '=', value_id))
