@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from openerp import models, api
+from openerp import models, api, fields
 
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
+
+    routing_id = fields.Many2one('mrp.routing', string='Routing')
 
     @api.multi
     def create_get_variant(self, value_ids, custom_values=None):
@@ -24,7 +26,9 @@ class ProductTemplate(models.Model):
         values = {
             'product_tmpl_id': self.id,
             'product_id': variant.id,
-            'bom_line_ids': line_vals
+            'bom_line_ids': line_vals,
+            'type': 'normal',
+            'routing_id': self.routing_id and self.routing_id.id or False
         }
 
         self.env['mrp.bom'].create(values)
