@@ -36,4 +36,17 @@
         </field>
     </record>
 
+    <record id="product_product_tree_view" model="ir.ui.view">
+        <field name="name">product.product.tree</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field eval="7" name="priority"/>
+        <field name="arch" type="xml">
+            <field name="attribute_value_ids" position="replace">
+                <field name="display_name"/>
+                <field name="hidden_attribute_value_ids" widget="many2many_tags"/>
+            </field>
+        </field>
+    </record>
+
 </odoo>
