@@ -7,6 +7,18 @@ class ProductProduct(models.Model):
     _inherit = "product.product"
 
     name_override = fields.Char('Custom Name')
+    hidden_attribute_value_ids = fields.Many2many('product.attribute.value', string='Hidden Attributes', compute='_compute_hidden')
+
+    def _compute_hidden(self):
+        for product in self:
+            hidden_ids = self.env['product.attribute.value']
+            for line in product.attribute_line_ids.sorted('sequence'):
+                if line.display_mode == 'hide':
+                    key = line.attribute_id.name
+                    for value in product.attribute_value_ids:
+                        if value.attribute_id.name == key:
+                            hidden_ids += value
+            product.hidden_attribute_value_ids = hidden_ids
 
     @api.multi
     def name_get(self):
