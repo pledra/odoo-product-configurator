@@ -825,10 +825,6 @@ class ProductConfigurator(models.TransientModel):
                     self.order_line_id.order_id, self.product_id, new=False)
                 self.order_line_id.write(order_line_vals)
 
-            if self.purchase_order_line_id:
-                purchase_line_vals = self._extra_line_values(
-                    self.purchase_order_line_id.order_id, self.product_id, new=False)
-                self.purchase_order_line_id.write(purchase_line_vals)
             self.unlink()
 
             return
