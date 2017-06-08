@@ -689,11 +689,11 @@ class ProductProduct(models.Model):
                 buf = StringIO()
                 ctx = Context(
                     buf, product=product,
-                    attribute_value=product.attribute_value_ids,
+                    attribute_values=product.attribute_value_ids,
                     steps=product.product_tmpl_id.config_step_line_ids,
                     template=product.product_tmpl_id)
                 mytemplate.render_context(ctx)
-                return buf.getvalue().replace('\n', '')
+                return buf.getvalue()
             except:
                 _logger.error(
                     _("Error while calculating mako product name: %s") %
