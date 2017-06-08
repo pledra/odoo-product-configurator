@@ -3,6 +3,15 @@
 from openerp import api, fields, models
 
 
+class ProductAttributeLine(models.Model):
+    _inherit = 'product.attribute.line'
+
+    quantity = fields.Boolean(
+        string='Quantity',
+        help='Set quantity for variants related to attribute values selected?'
+    )
+
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
@@ -29,17 +38,23 @@ class ProductTemplate(models.Model):
         if custom_values is None:
             custom_values = {}
 
+        session = self.env['product.config.session'].search_session(
+                product_tmpl_id=self.id)
+
         variant = super(ProductTemplate, self).create_get_variant(
             value_ids, custom_values=custom_values)
 
-        attr_products = variant.attribute_value_ids.mapped('product_id')
+        qty_attr_lines = self.attribute_line_ids.filtered(lambda l: l.quantity)
+        qty_attr_vals = qty_attr_lines.mapped('value_ids')
+
+        attr_products = variant.attribute_value_ids.filtered(
+            lambda v: v not in qty_attr_vals).mapped('product_id')
 
         line_vals = [
             (0, 0, {'product_id': product.id}) for product in attr_products
         ]
 
-        session = self.env['product.config.session'].search_session(
-                product_tmpl_id=self.id)
+        import pdb;pdb.set_trace()
 
         if session:
             for subsession in session[0].child_ids:
@@ -48,14 +63,19 @@ class ProductTemplate(models.Model):
                     pass
                 else:
                     val_ids = subsession.value_ids.ids
-                    product = self.env['product.product'].search([
+                    domain = [
+                        ('product_tmpl_id', '=', subsession.product_tmpl_id.id)
+                    ]
+                    domain += [
                         ('attribute_value_ids', '=', vid) for vid in val_ids
-                    ])
-                    line_vals.append((0, 0, {
-                        'product_id': product.id,
-                        'product_qty': subsession.quantity
-                    }))
-
+                    ]
+                    product = self.env['product.product'].search(domain)
+                    if product:
+                        line_vals.append((0, 0, {
+                            'product_id': product.id,
+                            'product_qty': subsession.quantity
+                        }))
+                        subsession.action_confirm()
         values = {
             'product_tmpl_id': self.id,
             'product_id': variant.id,
@@ -103,7 +123,8 @@ class ProductTemplate(models.Model):
         if subproduct.config_ok:
             session = cfg_session_obj.sudo().create_get_session(
                 subproduct.id, parent_id=cfg_session.id)
-            open_steps = subproduct.get_open_step_lines(session[0].value_ids.ids)
+            open_steps = subproduct.get_open_step_lines(
+                session[0].value_ids.ids)
             if open_steps:
                 steps['active_step'] = open_steps[0]
 

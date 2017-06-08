@@ -62,6 +62,8 @@ class ProductConfigSession(models.Model):
     )
     quantity = fields.Integer(
         string='Quantity',
+        required=True,
+        default=1,
     )
 
     @api.model

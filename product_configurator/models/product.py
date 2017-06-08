@@ -453,6 +453,13 @@ class ProductTemplate(models.Model):
         vals = self.get_variant_vals(value_ids, custom_values)
         variant = self.env['product.product'].create(vals)
 
+        # TODO: Find a better way to locate the session (could be subsession)
+        session = self.env['product.config.session'].search_session(
+            product_tmpl_id=self.id)
+
+        if session:
+            session[0].action_confirm()
+
         return variant
 
     def validate_domains_against_sels(self, domains, sel_val_ids):
@@ -590,7 +597,6 @@ class ProductTemplate(models.Model):
 
     @api.model
     def copy(self, default=None):
-        import pdb;pdb.set_trace()
         res = super(ProductTemplate, self).copy(default=default)
         return res
 

@@ -9,6 +9,7 @@ from openerp import api, models
 class ProductConfigurator(models.TransientModel):
     _inherit = 'product.configurator'
 
+    attr_qty_prefix = '__attribute_qty-'
     subattr_prefix = '__subproduct_attribute-'
     subattr_qty_prefix = '__subproduct_qty-'
 
@@ -88,6 +89,25 @@ class ProductConfigurator(models.TransientModel):
         return res
 
     @api.model
+    def get_qty_fields(self, product_tmpl):
+        """Add quantity fields for attribute lines that have quantity selection
+        enabled"""
+        res = {}
+        qty_attr_lines = product_tmpl.attribute_line_ids.filtered(
+            lambda l: l.quantity)
+        for line in qty_attr_lines:
+            attribute = line.attribute_id
+            default_attrs = self.get_field_default_attrs()
+
+            res[self.attr_qty_prefix + str(attribute.id)] = dict(
+                default_attrs,
+                type='integer',
+                string='Quantity',
+                sequence=line.sequence,
+            )
+        return res
+
+    @api.model
     def get_cfg_subproduct_fields(
             self, wiz, subproduct_line, default_attrs=None):
         if not default_attrs:
@@ -123,6 +143,8 @@ class ProductConfigurator(models.TransientModel):
         if not product_tmpl:
             return res
 
+        res.update(self.get_qty_fields(product_tmpl))
+
         active_step = wiz.get_active_step()
         subproduct_line = active_step.config_subproduct_line_id
         default_attrs = self.get_field_default_attrs()
@@ -156,12 +178,52 @@ class ProductConfigurator(models.TransientModel):
         # Recall method to get the new sub-attribute fields
         dynamic_fields = {
             k: v for k, v in fields.iteritems() if k.startswith(
-                self.subattr_prefix) or k.startswith(self.subattr_qty_prefix)
+                self.subattr_prefix) or
+            k.startswith(self.subattr_qty_prefix) or
+            k.startswith(self.attr_qty_prefix)
         }
         res['fields'].update(dynamic_fields)
         # Send child_ids field to view
         res['fields'].update(child_ids=subsessions_field)
         return res
+
+    @api.model
+    def add_qty_fields(self, wiz, xml_view, fields):
+        """Add quantity fields to view after each dynamic field"""
+        qty_fields = [f for f in fields if f.startswith(self.attr_qty_prefix)]
+        for qty_field in qty_fields:
+            # If the matching attribute field is found in the view add after
+            attr_id = int(qty_field.replace(self.attr_qty_prefix, ''))
+            dynamic_field_name = self.field_prefix + str(attr_id)
+            dynamic_field = xml_view.xpath(
+                "//field[@name='%s']" % dynamic_field_name)
+            if not dynamic_field:
+                continue
+
+            active_step = wiz.get_active_step()
+
+            available_attr_ids = active_step.attribute_line_ids.mapped(
+                'attribute_id').ids
+
+            if attr_id not in available_attr_ids:
+                continue
+
+            qty_field = etree.Element(
+                'field',
+                name=qty_field,
+                attrs=str({
+                    'invisible': [
+                        '|',
+                        (dynamic_field_name, '=', False)],
+
+                })
+            )
+            orm.setup_modifiers(qty_field)
+            dynamic_form = dynamic_field[0].getparent()
+            dynamic_form.insert(
+                dynamic_form.index(dynamic_field[0]) + 1, qty_field
+            )
+        return xml_view
 
     @api.model
     def add_dynamic_fields(self, res, dynamic_fields, wiz):
@@ -174,13 +236,15 @@ class ProductConfigurator(models.TransientModel):
         # Continue only if product.template has substeps defined
         subproducts = any(step.config_subproduct_line_id for step in cfg_steps)
 
-        if not subproducts or not active_step:
-            return xml_view
-
         # TODO: Find a better method for both instances of this method
         # to have all the fields passed beforehand
         fields = self.fields_get()
         dynamic_form = xml_view.xpath("//group[@name='dynamic_form']")[0]
+
+        xml_view = self.add_qty_fields(wiz, xml_view, fields)
+
+        if not subproducts and not wiz.child_ids or not active_step:
+            return xml_view
 
         subproduct_notebook = etree.Element(
             'notebook',
@@ -314,6 +378,37 @@ class ProductConfigurator(models.TransientModel):
     def write(self, vals):
         res = super(ProductConfigurator, self).write(vals=vals)
 
+        attr_val_variant_qty_fields = {
+            k: v for k, v in vals.iteritems()
+            if k.startswith(self.attr_qty_prefix)
+        }
+
+        for qty_field, qty in attr_val_variant_qty_fields.iteritems():
+            if not qty:
+                continue
+            attr_id = int(qty_field.replace(self.attr_qty_prefix, ''))
+            value_id = vals.get(self.field_prefix + str(attr_id))
+            if value_id:
+                attr_val = self.env['product.attribute.value'].browse(value_id)
+            else:
+                attr_val = self.value_ids.filtered(
+                    lambda v: v.attribute_id.id == attr_id)
+
+            subtmpls = self.child_ids.mapped('product_tmpl_id')
+            product = attr_val.product_id
+            product_tmpl = product.product_tmpl_id
+
+            if len(attr_val) == 1 and product and product_tmpl not in subtmpls:
+                self.env['product.config.session'].create({
+                    'parent_id': self.config_session_id.id,
+                    'product_tmpl_id': attr_val.product_id.product_tmpl_id.id,
+                    'value_ids': attr_val.product_id.attribute_value_ids.ids,
+                    'state': 'done',
+                    'user_id': self.env.uid,
+                    'quantity': qty
+                })
+            vals.get(qty_field)
+
         subproduct_value_ids = [
             v for k, v in vals.iteritems() if k.startswith(self.subattr_prefix)
         ]
@@ -336,6 +431,7 @@ class ProductConfigurator(models.TransientModel):
             'user_id': self.env.uid,
             'parent_id': self.config_session_id.id,
             'value_ids': [(6, 0, subproduct[0].attribute_value_ids.ids)],
+            'state': 'done',
             'product_tmpl_id': product_tmpl_id,
             'quantity': vals.get(qty_field, 1),
         }

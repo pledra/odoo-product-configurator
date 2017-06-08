@@ -14,6 +14,12 @@
                 </div>
             </xpath>
 
+            <!-- Add quantity to attribute lines -->
+
+            <xpath expr="//field[@name='attribute_line_ids']//field[@name='custom']" position="after">
+                <field name="quantity" position="after"/>
+            </xpath>
+
             <!-- Configuration Subproducts -->
 
             <xpath expr="//field[@name='attribute_line_ids']" position="after">
