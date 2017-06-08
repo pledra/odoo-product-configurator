@@ -132,11 +132,13 @@ class ProductConfigurator(models.TransientModel):
             self.product_tmpl_id.attribute_line_ids.mapped('value_ids').ids
         for k, v in dynamic_fields.iteritems():
             available_val_ids = domains[k][0][2]
+            # Get this fresh every time as the loop can change the values as
+            # it goes!
             config_val_ids = [dfv for dfv in dynamic_fields.values()
                               if dfv and not isinstance(dfv, list)]
             for list_dfv in [dfv for dfv in dynamic_fields.values()
                              if dfv and isinstance(dfv, list)]:
-                config_val_ids.extend(list_dfv)
+                config_val_ids.extend(list_dfv[0][2])
             if not v:
                 # if the value currently is blank and on the current step, see
                 # if one can be set
@@ -150,7 +152,7 @@ class ProductConfigurator(models.TransientModel):
                 continue
             if isinstance(v, list):
                 value_ids = list(set(v[0][2]) & set(available_val_ids))
-                dynamic_fields.update({k: value_ids})
+                dynamic_fields[k] = [[6, 0, value_ids]]
                 vals[k] = [[6, 0, value_ids]]
             elif v not in available_val_ids:
                 # if the value is to be blanked, and it is on the current
@@ -164,8 +166,13 @@ class ProductConfigurator(models.TransientModel):
                 dynamic_fields.update({k: def_value_id})
                 vals[k] = def_value_id
 
+        config_val_ids = [dfv for dfv in dynamic_fields.values()
+                          if dfv and not isinstance(dfv, list)]
+        for list_dfv in [dfv for dfv in dynamic_fields.values()
+                         if dfv and isinstance(dfv, list)]:
+            config_val_ids.extend(list_dfv[0][2])
         product_img = self.product_tmpl_id.get_config_image_obj(
-            dynamic_fields.values())
+            config_val_ids)
 
         vals.update(product_img=product_img.image)
 
