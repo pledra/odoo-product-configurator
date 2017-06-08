@@ -354,15 +354,17 @@ class ProductConfigSession(models.Model):
     @api.multi
     def action_confirm(self):
         # TODO: Implement method to generate dict from custom vals
-        custom_val_dict = {
-            x.attribute_id.id: x.value or x.attachment_ids
-            for x in self.custom_value_ids
-        }
-        valid = self.product_tmpl_id.validate_configuration(
-            self.value_ids.ids, custom_val_dict)
-        if valid:
-            self.state = 'done'
-        return valid
+        if self.product_tmpl_id.config_ok:
+            custom_val_dict = {
+                x.attribute_id.id: x.value or x.attachment_ids
+                for x in self.custom_value_ids
+            }
+            valid = self.product_tmpl_id.validate_configuration(
+                self.value_ids.ids, custom_val_dict)
+            if not valid:
+                return valid
+        self.state = 'done'
+        return True
 
     @api.multi
     def update_config(self, attr_val_dict=None, custom_val_dict=None):
