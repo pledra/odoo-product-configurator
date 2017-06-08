@@ -12,17 +12,21 @@ class ProductConfigurator(models.TransientModel):
         comodel_name='stock.production.lot',
         readonly=True
     )
+
     @api.multi
     def action_next_step(self):
         if not self.product_tmpl_id.config_ok:
             return self.action_config_done()
         return super(ProductConfigurator, self).action_next_step()
+
     @api.multi
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
         if not self.product_tmpl_id.config_ok:
+            variant = self.product_tmpl_id.product_variant_ids[0]
             line_vals = {
-                'product_id': self.product_tmpl_id.product_variant_ids[0].id,
+                'product_id': variant.id,
+                'description': variant.display_name,
             }
             prod_lot = self.env['stock.production.lot'].create(line_vals)
 
@@ -61,6 +65,7 @@ class ProductConfigurator(models.TransientModel):
             )
         line_vals = {
             'product_id': variant.id,
+            'description': variant.config_name
         }
         prod_lot = self.env['stock.production.lot'].create(line_vals)
 
