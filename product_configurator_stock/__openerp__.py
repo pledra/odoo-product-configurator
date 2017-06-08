@@ -10,6 +10,7 @@
     'depends': ['stock', 'product_configurator'],
     "data": [
         'views/stock_lot_view.xml',
+        'views/assets.xml'
     ],
     'demo': [
         'demo/product_template.xml'
