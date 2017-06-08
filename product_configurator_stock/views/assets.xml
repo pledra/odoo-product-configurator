@@ -1,0 +1,11 @@
+<openerp>
+<data>
+
+    <template id="assets_backend" name="Product Configurator" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/product_configurator_stock/static/js/form_widgets.js"/>
+        </xpath>
+    </template>
+
+</data>
+</openerp>

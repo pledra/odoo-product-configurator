@@ -5,24 +5,43 @@ from openerp.exceptions import ValidationError
 
 
 class ProductConfigurator(models.TransientModel):
-
+    _name = 'product.configurator.lot'
     _inherit = 'product.configurator'
 
     prodlot_id = fields.Many2one(
         comodel_name='stock.production.lot',
         readonly=True
     )
-
+    @api.multi
+    def action_next_step(self):
+        if not self.product_tmpl_id.config_ok:
+            return self.action_config_done()
+        return super(ProductConfigurator, self).action_next_step()
     @api.multi
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
-        if self._context.get('active_model', '') != 'stock.production.lot':
-            return super(ProductConfigurator, self).action_config_done()
+        if not self.product_tmpl_id.config_ok:
+            line_vals = {
+                'product_id': self.product_tmpl_id.product_variant_ids[0].id,
+            }
+            prod_lot = self.env['stock.production.lot'].create(line_vals)
+
+            self.unlink()
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'stock.production.lot',
+                'name': "Serial Number/Lot",
+                'view_mode': 'form',
+                'context': dict(
+                    self.env.context,
+                    custom_create_variant=True
+                ),
+                'res_id': prod_lot.id,
+            }
         custom_vals = {
             l.attribute_id.id:
                 l.value or l.attachment_ids for l in self.custom_value_ids
         }
-
         # This try except is too generic.
         # The create_get_variant routine could effectively fail for
         # a large number of reasons, including bad programming.
@@ -40,14 +59,20 @@ class ProductConfigurator(models.TransientModel):
                 _('Invalid configuration! Please check all '
                   'required steps and fields.')
             )
-        prod_lot = self.env['stock.production.lot'].browse(
-            self.env.context['active_id'])
         line_vals = {
             'product_id': variant.id,
-            'description': variant.config_name
         }
-
-        prod_lot.write(line_vals)
+        prod_lot = self.env['stock.production.lot'].create(line_vals)
 
         self.unlink()
-        return
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'stock.production.lot',
+            'name': "Serial Number/Lot",
+            'view_mode': 'form',
+            'context': dict(
+                self.env.context,
+                custom_create_variant=True
+            ),
+            'res_id': prod_lot.id,
+        }

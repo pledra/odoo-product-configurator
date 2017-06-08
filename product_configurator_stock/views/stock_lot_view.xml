@@ -7,15 +7,6 @@
         <field name="model">stock.production.lot</field>
         <field name="inherit_id" ref="stock.view_production_lot_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//sheet" position="before">
-                <header>
-                    <button name="reconfigure_product"
-                        class="oe_highlight"
-                        type="object"
-                        string="Configure Product"
-                        groups="product_configurator.group_product_configurator"/>
-                </header>
-            </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="Description">
                     <field name="description"/>
@@ -23,6 +14,26 @@
             </xpath>
         </field>
     </record>
+    <record id="stock.action_production_lot_form" model="ir.actions.act_window">
+        <field name="context">{'custom_create_variant': True}</field>
+    </record>
 
+    <record id="product_configurator_lot_form" model="ir.ui.view">
+        <field name="name">product.configurator.lot</field>
+        <field name="model">product.configurator.lot</field>
+        <field name="inherit_id" ref="product_configurator.product_configurator_form"/>
+        <field name="arch" type="xml">
+            <field name="product_tmpl_id" position="replace">
+                <field name="product_tmpl_id" attrs="{'readonly': [('product_id', '!=', False)]}" required="True" options="{'no_create': True}" domain="['|', ('config_ok', '=', True), ('config_ok', '=', False)]"/>
+            </field>
+        </field>
+    </record>
+    <record id="action_wizard_product_configurator_lot" model="ir.actions.act_window">
+        <field name="name">Configure Product</field>
+        <field name="res_model">product.configurator.lot</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="product_configurator_lot_form"/>
+        <field name="target">new</field>
+    </record>
 </data>
 </openerp>

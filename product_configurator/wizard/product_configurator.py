@@ -343,6 +343,8 @@ class ProductConfigurator(models.TransientModel):
                         toolbar=False, submenu=False):
         """ Generate view dynamically using attributes stored on the
         product.template"""
+        if view_type == 'form' and not view_id:
+            view_id = self.env.ref('product_configurator.product_configurator_form').id
         res = super(ProductConfigurator, self).fields_view_get(
             view_id=view_id, view_type=view_type,
             toolbar=toolbar, submenu=submenu
@@ -719,7 +721,6 @@ class ProductConfigurator(models.TransientModel):
             )
 
         cfg_step_lines = self.product_tmpl_id.config_step_line_ids
-
         if not cfg_step_lines:
             if self.value_ids:
                 return self.action_config_done()
