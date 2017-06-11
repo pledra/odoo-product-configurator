@@ -54,13 +54,15 @@ class ProductTemplate(models.Model):
             (0, 0, {'product_id': product.id}) for product in attr_products
         ]
 
-        import pdb;pdb.set_trace()
-
         if session:
             for subsession in session[0].child_ids:
                 if subsession.product_tmpl_id.config_ok:
-                    # TODO: Create variant and add
-                    pass
+                    custom_vals = {
+                        l.attribute_id.id: l.value or l.attachment_ids
+                        for l in subsession.custom_value_ids
+                    }
+                    subvariant = subsession.product_tmpl_id.create_get_variant(
+                        subsession.value_ids.ids, custom_values=custom_vals)
                 else:
                     val_ids = subsession.value_ids.ids
                     domain = [
@@ -69,13 +71,13 @@ class ProductTemplate(models.Model):
                     domain += [
                         ('attribute_value_ids', '=', vid) for vid in val_ids
                     ]
-                    product = self.env['product.product'].search(domain)
-                    if product:
-                        line_vals.append((0, 0, {
-                            'product_id': product.id,
-                            'product_qty': subsession.quantity
-                        }))
-                        subsession.action_confirm()
+                    subvariant = self.env['product.product'].search(domain)
+
+                if subvariant:
+                    line_vals.append((0, 0, {
+                        'product_id': subvariant.id,
+                        'product_qty': subsession.quantity
+                    }))
         values = {
             'product_tmpl_id': self.id,
             'product_id': variant.id,
@@ -128,12 +130,53 @@ class ProductTemplate(models.Model):
             if open_steps:
                 steps['active_step'] = open_steps[0]
 
+        # TODO: Move step related methods to sesssion object
+        active_model = self._context.get('active_model', '')
+        active_model = active_model if active_model.startswith(
+            'product.configurator') else 'product.configurator'
+        wiz = self.env[active_model].browse(self._context.get('wizard_id'))
+
         next_step = steps.get('next_step') or cfg_step_line_obj
         prev_step = steps.get('prev_step') or cfg_step_line_obj
+
+        parent_session = wiz.config_session_id.parent_id
+
+        if not next_step and parent_session.state == 'draft':
+            # TODO: Make this step recursive so it checks all the parents
+            open_steps = parent_session.product_tmpl_id.get_open_step_lines(
+                parent_session.value_ids.ids
+            )
+            # TODO: This will fail with more steps that have the same subprod
+            subproduct_step = open_steps.filtered(
+                lambda l: l.config_subproduct_line_id.subproduct_id == self
+            )
+            if subproduct_step:
+                index = [l for l in open_steps.sorted()].index(subproduct_step)
+                try:
+                    steps['next_step'] = open_steps[index + 1]
+                except:
+                    steps['next_step'] = next_step
+
+        if not prev_step or prev_step == 'select' and parent_session.state == 'draft':
+            # TODO: Make this step recursive so it checks all the parents
+            open_steps = parent_session.product_tmpl_id.get_open_step_lines(
+                parent_session.value_ids.ids
+            )
+            # TODO: This will fail with more steps that have the same subprod
+            subproduct_step = open_steps.filtered(
+                lambda l: l.config_subproduct_line_id.subproduct_id == self
+            )
+            if subproduct_step:
+                index = [l for l in open_steps.sorted()].index(subproduct_step)
+                try:
+                    steps['prev_step'] = open_steps[index - 1]
+                except:
+                    steps['prev_step'] = prev_step
 
         # TODO: Take into account subproducts with no configuration steps
         if next_step.config_subproduct_line_id.subproduct_id.config_ok:
             # Retrieve a session (if any) to get the first open step
+            subproduct = next_step.config_subproduct_line_id.subproduct_id
             session = cfg_session_obj.search_session(
                 subproduct.id, parent_id=cfg_session.id)
             # Pass values from found/empty step
@@ -143,6 +186,7 @@ class ProductTemplate(models.Model):
                 steps['next_step'] = open_steps[0]
 
         if prev_step.config_subproduct_line_id.subproduct_id.config_ok:
+            subproduct = prev_step.config_subproduct_line_id.subproduct_id
             session = cfg_session_obj.search_session(
                 subproduct.id, parent_id=cfg_session.id)
             open_steps = subproduct.get_open_step_lines(session.value_ids.ids)

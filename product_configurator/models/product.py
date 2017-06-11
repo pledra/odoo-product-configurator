@@ -694,24 +694,27 @@ class ProductProduct(models.Model):
                 value_ids, custom_vals)
             product.price_extra = prices['total'] - prices['taxes'] - lst_price
 
-    @api.multi
+    @api.model
     def _get_config_name(self):
-        for product in self:
-            try:
-                mytemplate = Template(product.mako_tmpl_name or '')
-                buf = StringIO()
-                ctx = Context(
-                    buf, product=product,
-                    attribute_values=product.attribute_value_ids,
-                    steps=product.product_tmpl_id.config_step_line_ids,
-                    template=product.product_tmpl_id)
-                mytemplate.render_context(ctx)
-                return buf.getvalue()
-            except:
-                _logger.error(
-                    _("Error while calculating mako product name: %s") %
-                    product.display_name)
-                return product.display_name
+        return self.name
+
+    @api.multi
+    def _get_mako_tmpl_name(self):
+        try:
+            mytemplate = Template(self.mako_tmpl_name or '')
+            buf = StringIO()
+            ctx = Context(
+                buf, product=self,
+                attribute_values=self.attribute_value_ids,
+                steps=self.product_tmpl_id.config_step_line_ids,
+                template=self.product_tmpl_id)
+            mytemplate.render_context(ctx)
+            return buf.getvalue()
+        except:
+            _logger.error(
+                _("Error while calculating mako product name: %s") %
+                self.display_name)
+            return self.display_name
 
     config_name = fields.Char(
         string="Name",

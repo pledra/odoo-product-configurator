@@ -3,13 +3,6 @@
 from openerp import models, fields, api
 
 
-# class sale_order_line_attribute(models.Model):
-#     _name = 'sale.order.line.attribute'
-
-#     custom_value = fields.Char('Custom Value', size=64)
-#     sale_line_id = fields.Many2one('sale.order.line', 'Sale Order Line')
-
-
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 

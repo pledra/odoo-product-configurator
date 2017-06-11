@@ -65,7 +65,7 @@ class ProductConfigurator(models.TransientModel):
             )
         line_vals = {
             'product_id': variant.id,
-            'description': variant.config_name
+            'description': variant._get_mako_tmpl_name()
         }
         prod_lot = self.env['stock.production.lot'].create(line_vals)
 

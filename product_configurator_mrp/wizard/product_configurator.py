@@ -14,6 +14,14 @@ class ProductConfigurator(models.TransientModel):
     subattr_qty_prefix = '__subproduct_qty-'
 
     @api.multi
+    def get_state_selection(self):
+        """Remove select template step for subconfigurable products"""
+        res = super(ProductConfigurator, self).get_state_selection()
+        if self._context.get('subproduct_config'):
+            res.pop(0)
+        return res
+
+    @api.multi
     def onchange(self, values, field_name, field_onchange):
         res = super(ProductConfigurator, self).onchange(
             values=values, field_name=field_name,
@@ -359,19 +367,81 @@ class ProductConfigurator(models.TransientModel):
         return xml_view
 
     @api.multi
+    def action_previous_step(self):
+        """When a subproduct is loaded switch wizard to new config session"""
+        res = super(ProductConfigurator, self).action_previous_step()
+        active_step = self.get_active_step()
+        adjacent_steps = self.product_tmpl_id.get_adjacent_steps(
+            self.value_ids.ids, active_step.id
+        )
+        prev_step = adjacent_steps.get('prev_step')
+        parent_session = self.config_session_id.parent_id
+
+        if not active_step and prev_step and parent_session:
+            self.write({
+                'product_tmpl_id': prev_step.product_tmpl_id.id,
+                'config_session_id': parent_session.id,
+                'state': str(prev_step.id),
+            })
+        return res
+
+    @api.multi
     def action_next_step(self):
         """When a subproduct is loaded switch wizard to new config session"""
+        active_step_id = self.state
         res = super(ProductConfigurator, self).action_next_step()
+        # TODO: Find a better way
+        if not res or not self.exists():
+            return res
         active_step = self.get_active_step()
+        adjacent_steps = self.product_tmpl_id.get_adjacent_steps(
+            self.value_ids.ids, active_step.id
+        )
+
+        top_session = self.config_session_id
+
+        while top_session.parent_id:
+            top_session = top_session.parent_id
+
+        active_step = adjacent_steps.get('active_step', active_step)
         if active_step and active_step.product_tmpl_id != self.product_tmpl_id:
-            session = self.env['product.config.session'].create_get_session(
-                product_tmpl_id=active_step.product_tmpl_id.id,
-                parent_id=self.config_session_id.id
-            )
+            config_session_obj = self.env['product.config.session']
+            domain = [
+                ('product_tmpl_id', '=', active_step.product_tmpl_id.id),
+                ('user_id', '=', self.env.uid),
+                ('id', 'child_of', top_session.id),
+                ('state', '=', 'draft')
+            ]
+            session = config_session_obj.search(domain)
+            if not session:
+                session = config_session_obj.create({
+                    'product_tmpl_id': active_step.product_tmpl_id.id,
+                    'user_id': self.env.user.id,
+                    'parent_id': self.config_session_id.id
+                })
+
+            if self.config_session_id.parent_id:
+                valid = self.config_session_id.action_confirm()
+                if not valid:
+                    self.state = active_step_id
+                    return res
+                custom_vals = {
+                    l.attribute_id.id:
+                    l.value or l.attachment_ids for l in self.custom_value_ids
+                }
+                self.product_tmpl_id.create_get_variant(
+                    value_ids=self.value_ids.ids, custom_values=custom_vals
+                )
+
             self.write({
                 'product_tmpl_id': active_step.product_tmpl_id.id,
-                'config_session_id': session.id
+                'config_session_id': session.id,
+                'state': str(active_step.id),
             })
+
+        if self.config_session_id.parent_id:
+            res['context'].update({'subproduct_config': True})
+
         return res
 
     @api.multi
@@ -395,7 +465,7 @@ class ProductConfigurator(models.TransientModel):
                     lambda v: v.attribute_id.id == attr_id)
 
             subtmpls = self.child_ids.mapped('product_tmpl_id')
-            product = attr_val.product_id
+            product = attr_val[0].product_id
             product_tmpl = product.product_tmpl_id
 
             if len(attr_val) == 1 and product and product_tmpl not in subtmpls:
