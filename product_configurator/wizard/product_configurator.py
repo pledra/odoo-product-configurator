@@ -20,13 +20,38 @@ class ProductConfigurator(models.TransientModel):
     _name = 'product.configurator'
     _inherits = {'product.config.session': 'config_session_id'}
 
-    # Prefix for the dynamicly injected fields
-    field_prefix = '__attribute-'
-    custom_field_prefix = '__custom-'
+    @property
+    def _prefixes(self):
+        """Return a dictionary with all dynamic field prefixes used to generate
+        fields in the wizard. Any module extending this functionality should
+        override this method to add all extra prefixes"""
+        return {
+            'field_prefix': '__attribute-',
+            'custom_field_prefix': '__custom-',
+        }
 
-    # TODO: Since the configuration process can take a bit of time
-    # depending on complexity and AFK time we must increase the lifespan
-    # of this TransientModel life
+    def _remove_dynamic_fields(self, fields):
+        """Remove elements from the fields dictionary/list that begin with any
+        prefix from the _prefixes property
+            :param fields: list or dict of the form [fn1, fn2] / {fn1: val}
+        """
+        prefixes = self._prefixes.values()
+
+        field_type = type(fields)
+
+        if field_type == list:
+            static_fields = []
+        elif field_type == dict:
+            static_fields = {}
+
+        for field_name in fields:
+            if any(prefix in field_name for prefix in prefixes):
+                continue
+            if field_type == list:
+                static_fields.append(field_name)
+            elif field_type == dict:
+                static_fields[field_name] = fields[field_name]
+        return static_fields
 
     @api.multi
     @api.depends('product_tmpl_id', 'value_ids', 'custom_value_ids')
@@ -88,9 +113,11 @@ class ProductConfigurator(models.TransientModel):
 
         :returns: a dictionary of domains returned by onchance method
         """
+        field_prefix = self._prefixes.get('field_prefix')
+
         domains = {}
         for line in self.product_tmpl_id.attribute_line_ids.sorted():
-            field_name = self.field_prefix + str(line.attribute_id.id)
+            field_name = field_prefix + str(line.attribute_id.id)
 
             if field_name not in values:
                 continue
@@ -151,7 +178,9 @@ class ProductConfigurator(models.TransientModel):
         """
         field_type = type(field_name)
 
-        if field_type == list or not field_name.startswith(self.field_prefix):
+        field_prefix = self._prefixes.get('field_prefix')
+
+        if field_type == list or not field_name.startswith(field_prefix):
             res = super(ProductConfigurator, self).onchange(
                 values, field_name, field_onchange)
             return res
@@ -169,13 +198,12 @@ class ProductConfigurator(models.TransientModel):
             cfg_step = self.env['product.config.step.line']
 
         dynamic_fields = {
-            k: v for k, v in values.iteritems() if k.startswith(
-                self.field_prefix)
+            k: v for k, v in values.iteritems() if k.startswith(field_prefix)
         }
 
         # Get the unstored values from the client view
         for k, v in dynamic_fields.iteritems():
-            attr_id = int(k.split(self.field_prefix)[1])
+            attr_id = int(k.split(field_prefix)[1])
             line_attributes = cfg_step.attribute_line_ids.mapped(
                 'attribute_id')
             if not cfg_step or attr_id in line_attributes.ids:
@@ -258,6 +286,9 @@ class ProductConfigurator(models.TransientModel):
     def fields_get(self, allfields=None, write_access=True, attributes=None):
         """ Artificially inject fields which are dynamically created using the
         attribute_ids on the product.template as reference"""
+        field_prefix = self._prefixes.get('field_prefix')
+        custom_field_prefix = self._prefixes.get('custom_field_prefix')
+
         res = super(ProductConfigurator, self).fields_get(
             allfields=allfields,
             write_access=write_access,
@@ -329,7 +360,7 @@ class ProductConfigurator(models.TransientModel):
                         field_type = custom_type
 
                 # TODO: Implement custom string on custom attribute
-                res[self.custom_field_prefix + str(attribute.id)] = dict(
+                res[custom_field_prefix + str(attribute.id)] = dict(
                     default_attrs,
                     string="Custom",
                     type=field_type,
@@ -338,7 +369,7 @@ class ProductConfigurator(models.TransientModel):
 
             # Add the dynamic field to the resultset using the convention
             # "__attribute-DBID" to later identify and extract it
-            res[self.field_prefix + str(attribute.id)] = dict(
+            res[field_prefix + str(attribute.id)] = dict(
                 default_attrs,
                 type='many2many' if line.multi else 'many2one',
                 domain=[('id', 'in', value_ids)],
@@ -354,8 +385,12 @@ class ProductConfigurator(models.TransientModel):
                         toolbar=False, submenu=False):
         """ Generate view dynamically using attributes stored on the
         product.template"""
+        field_prefix = self._prefixes.get('field_prefix')
+        custom_field_prefix = self._prefixes.get('custom_field_prefix')
+
         if view_type == 'form' and not view_id:
-            view_id = self.env.ref('product_configurator.product_configurator_form').id
+            view_ext_id = 'product_configurator.product_configurator_form'
+            view_id = self.env.ref(view_ext_id).id
         res = super(ProductConfigurator, self).fields_view_get(
             view_id=view_id, view_type=view_type,
             toolbar=toolbar, submenu=submenu
@@ -373,7 +408,7 @@ class ProductConfigurator(models.TransientModel):
 
         dynamic_fields = {
             k: v for k, v in fields.iteritems() if k.startswith(
-                self.field_prefix) or k.startswith(self.custom_field_prefix)
+                field_prefix) or k.startswith(custom_field_prefix)
         }
         res['fields'].update(dynamic_fields)
 
@@ -388,6 +423,9 @@ class ProductConfigurator(models.TransientModel):
         """ Create the configuration view using the dynamically generated
             fields in fields_get()
         """
+        field_prefix = self._prefixes.get('field_prefix')
+        custom_field_prefix = self._prefixes.get('custom_field_prefix')
+
         try:
             # Search for view container hook and add dynamic view and fields
             xml_view = etree.fromstring(res['arch'])
@@ -416,8 +454,8 @@ class ProductConfigurator(models.TransientModel):
         for attr_line in attr_lines:
 
             attribute_id = attr_line.attribute_id.id
-            field_name = self.field_prefix + str(attribute_id)
-            custom_field = self.custom_field_prefix + str(attribute_id)
+            field_name = field_prefix + str(attribute_id)
+            custom_field = custom_field_prefix + str(attribute_id)
 
             # Check if the attribute line has been added to the db fields
             if field_name not in dynamic_fields:
@@ -460,7 +498,7 @@ class ProductConfigurator(models.TransientModel):
                 domain_lines = dependencies.mapped('domain_id.domain_line_ids')
                 for domain_line in domain_lines:
                     attr_id = domain_line.attribute_id.id
-                    attr_field = self.field_prefix + str(attr_id)
+                    attr_field = field_prefix + str(attr_id)
                     attr_lines = wiz.product_tmpl_id.attribute_line_ids
                     # If the fields it depends on are not in the config step
                     if config_steps and str(attr_line.id) != wiz.state:
@@ -573,13 +611,16 @@ class ProductConfigurator(models.TransientModel):
     def read(self, fields=None, load='_classic_read'):
         """Remove dynamic fields from the fields list and update the
         returned values with the dynamic data stored in value_ids"""
-        attr_vals = [f for f in fields if f.startswith(self.field_prefix)]
+        field_prefix = self._prefixes.get('field_prefix')
+        custom_field_prefix = self._prefixes.get('custom_field_prefix')
+
+        attr_vals = [f for f in fields if f.startswith(field_prefix)]
         custom_attr_vals = [
-            f for f in fields if f.startswith(self.custom_field_prefix)
+            f for f in fields if f.startswith(custom_field_prefix)
         ]
 
         dynamic_fields = attr_vals + custom_attr_vals
-        fields = [f for f in fields if f not in dynamic_fields]
+        fields = self._remove_dynamic_fields(fields)
 
         custom_ext_id = 'product_configurator.custom_attribute_value'
         custom_val = self.env.ref(custom_ext_id)
@@ -592,12 +633,12 @@ class ProductConfigurator(models.TransientModel):
 
         for attr_line in self.product_tmpl_id.attribute_line_ids:
             attr_id = attr_line.attribute_id.id
-            field_name = self.field_prefix + str(attr_id)
+            field_name = field_prefix + str(attr_id)
 
             if field_name not in dynamic_fields:
                 continue
 
-            custom_field_name = self.custom_field_prefix + str(attr_id)
+            custom_field_name = custom_field_prefix + str(attr_id)
             custom_vals = self.custom_value_ids.filtered(
                 lambda x: x.attribute_id.id == attr_id)
             vals = attr_line.value_ids.filtered(
@@ -627,6 +668,7 @@ class ProductConfigurator(models.TransientModel):
                 except:
                     continue
             res[0].update(dynamic_vals)
+
         return res
 
     @api.multi
@@ -635,6 +677,8 @@ class ProductConfigurator(models.TransientModel):
         to database persistent value_ids field"""
 
         # Get current database value_ids (current configuration)
+        field_prefix = self._prefixes.get('field_prefix')
+        custom_field_prefix = self._prefixes.get('custom_field_prefix')
 
         custom_ext_id = 'product_configurator.custom_attribute_value'
         custom_val = self.env.ref(custom_ext_id)
@@ -644,8 +688,8 @@ class ProductConfigurator(models.TransientModel):
 
         for attr_line in self.product_tmpl_id.attribute_line_ids:
             attr_id = attr_line.attribute_id.id
-            field_name = self.field_prefix + str(attr_id)
-            custom_field_name = self.custom_field_prefix + str(attr_id)
+            field_name = field_prefix + str(attr_id)
+            custom_field_name = custom_field_prefix + str(attr_id)
 
             if field_name not in vals and custom_field_name not in vals:
                 continue
@@ -688,13 +732,11 @@ class ProductConfigurator(models.TransientModel):
                 # from selected value to custom value.
                 attr_val_dict.update({attr_id: False})
 
-            # Remove dynamic field from value list to prevent error
-            if field_name in vals:
-                del vals[field_name]
-            if custom_field_name in vals:
-                del vals[custom_field_name]
-
         self.config_session_id.update_config(attr_val_dict, custom_val_dict)
+
+        # Remove all dynamic fields from write values
+        vals = self._remove_dynamic_fields(vals)
+
         res = super(ProductConfigurator, self).write(vals)
         return res
 
