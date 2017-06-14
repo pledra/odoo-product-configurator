@@ -9,9 +9,16 @@ from openerp import api, models
 class ProductConfigurator(models.TransientModel):
     _inherit = 'product.configurator'
 
-    attr_qty_prefix = '__attribute_qty-'
-    subattr_prefix = '__subproduct_attribute-'
-    subattr_qty_prefix = '__subproduct_qty-'
+    @property
+    def _prefixes(self):
+        """Add extra field prefixes to the configurator for subproducts"""
+        res = super(ProductConfigurator, self)._prefixes
+        res.update({
+            'attr_qty_prefix': '__attribute_qty-',
+            'subattr_prefix': '__subproduct_attribute-',
+            'subattr_qty_prefix': '__subproduct_qty-',
+        })
+        return res
 
     @api.multi
     def get_state_selection(self):
@@ -23,13 +30,16 @@ class ProductConfigurator(models.TransientModel):
 
     @api.multi
     def onchange(self, values, field_name, field_onchange):
+
+        subattr_prefix = self._prefixes.get('subattr_prefix')
+
         res = super(ProductConfigurator, self).onchange(
             values=values, field_name=field_name,
             field_onchange=field_onchange
         )
 
         fld_type = type(field_name)
-        if fld_type == list or not field_name.startswith(self.subattr_prefix):
+        if fld_type == list or not field_name.startswith(subattr_prefix):
             return res
 
         # Maybe we store the subproduct instead of searching for it?
@@ -41,7 +51,7 @@ class ProductConfigurator(models.TransientModel):
             return res
 
         subattr_vals = {
-            k: values[k] for k in values if k.startswith(self.subattr_prefix)
+            k: values[k] for k in values if k.startswith(subattr_prefix)
         }
 
         value_ids = [attr_id for attr_id in subattr_vals.values() if attr_id]
@@ -59,7 +69,7 @@ class ProductConfigurator(models.TransientModel):
 
         # Build domain to restrict options to existing variants only
         for val in available_attr_vals:
-            field_name = self.subattr_prefix + str(val.attribute_id.id)
+            field_name = subattr_prefix + str(val.attribute_id.id)
             if field_name not in values:
                 continue
             if field_name not in res['domain']:
@@ -71,6 +81,8 @@ class ProductConfigurator(models.TransientModel):
 
     @api.model
     def get_subproduct_fields(self, wiz, subproduct_line, default_attrs=None):
+        subattr_prefix = self._prefixes.get('subattr_prefix')
+        subattr_qty_prefix = self._prefixes.get('subattr_qty_prefix')
         if not default_attrs:
             default_attrs = {}
         subproduct = subproduct_line.subproduct_id
@@ -79,7 +91,7 @@ class ProductConfigurator(models.TransientModel):
         for line in subproduct_attr_lines:
             attribute = line.attribute_id
             value_ids = line.value_ids.ids
-            res[self.subattr_prefix + str(attribute.id)] = dict(
+            res[subattr_prefix + str(attribute.id)] = dict(
                 default_attrs,
                 type='many2one',
                 domain=[('id', 'in', value_ids)],
@@ -88,7 +100,7 @@ class ProductConfigurator(models.TransientModel):
                 sequence=line.sequence,
             )
         if subproduct_line.quantity:
-            res[self.subattr_qty_prefix + str(subproduct.id)] = dict(
+            res[subattr_qty_prefix + str(subproduct.id)] = dict(
                 default_attrs,
                 type='integer',
                 default='1',
@@ -101,13 +113,14 @@ class ProductConfigurator(models.TransientModel):
         """Add quantity fields for attribute lines that have quantity selection
         enabled"""
         res = {}
+        attr_qty_prefix = self._prefixes.get('attr_qty_prefix')
         qty_attr_lines = product_tmpl.attribute_line_ids.filtered(
             lambda l: l.quantity)
         for line in qty_attr_lines:
             attribute = line.attribute_id
             default_attrs = self.get_field_default_attrs()
 
-            res[self.attr_qty_prefix + str(attribute.id)] = dict(
+            res[attr_qty_prefix + str(attribute.id)] = dict(
                 default_attrs,
                 type='integer',
                 string='Quantity',
@@ -168,6 +181,10 @@ class ProductConfigurator(models.TransientModel):
     def fields_view_get(self, view_id=None, view_type='form',
                         toolbar=False, submenu=False):
 
+        subattr_prefix = self._prefixes.get('subattr_prefix')
+        subattr_qty_prefix = self._prefixes.get('subattr_qty_prefix')
+        attr_qty_prefix = self._prefixes.get('attr_qty_prefix')
+
         res = super(ProductConfigurator, self).fields_view_get(
             view_id=view_id, view_type=view_type,
             toolbar=toolbar, submenu=submenu
@@ -186,9 +203,9 @@ class ProductConfigurator(models.TransientModel):
         # Recall method to get the new sub-attribute fields
         dynamic_fields = {
             k: v for k, v in fields.iteritems() if k.startswith(
-                self.subattr_prefix) or
-            k.startswith(self.subattr_qty_prefix) or
-            k.startswith(self.attr_qty_prefix)
+                subattr_prefix) or
+            k.startswith(subattr_qty_prefix) or
+            k.startswith(attr_qty_prefix)
         }
         res['fields'].update(dynamic_fields)
         # Send child_ids field to view
@@ -198,11 +215,13 @@ class ProductConfigurator(models.TransientModel):
     @api.model
     def add_qty_fields(self, wiz, xml_view, fields):
         """Add quantity fields to view after each dynamic field"""
-        qty_fields = [f for f in fields if f.startswith(self.attr_qty_prefix)]
+        attr_qty_prefix = self._prefixes.get('attr_qty_prefix')
+        field_prefix = self._prefixes.get('field_prefix')
+        qty_fields = [f for f in fields if f.startswith(attr_qty_prefix)]
         for qty_field in qty_fields:
             # If the matching attribute field is found in the view add after
-            attr_id = int(qty_field.replace(self.attr_qty_prefix, ''))
-            dynamic_field_name = self.field_prefix + str(attr_id)
+            attr_id = int(qty_field.replace(attr_qty_prefix, ''))
+            dynamic_field_name = field_prefix + str(attr_id)
             dynamic_field = xml_view.xpath(
                 "//field[@name='%s']" % dynamic_field_name)
             if not dynamic_field:
@@ -235,6 +254,8 @@ class ProductConfigurator(models.TransientModel):
 
     @api.model
     def add_dynamic_fields(self, res, dynamic_fields, wiz):
+        subattr_prefix = self._prefixes.get('subattr_prefix')
+        subattr_qty_prefix = self._prefixes.get('subattr_qty_prefix')
         xml_view = super(ProductConfigurator, self).add_dynamic_fields(
             res=res, dynamic_fields=dynamic_fields, wiz=wiz)
 
@@ -329,7 +350,7 @@ class ProductConfigurator(models.TransientModel):
             }
             for attr_line in attr_lines:
                 attribute_id = attr_line.attribute_id.id
-                field_name = self.subattr_prefix + str(attribute_id)
+                field_name = subattr_prefix + str(attribute_id)
 
                 # Check if the attribute line has been added to the db fields
                 if field_name not in fields:
@@ -353,7 +374,7 @@ class ProductConfigurator(models.TransientModel):
                 orm.setup_modifiers(node)
                 subproduct_config_group.append(node)
 
-            qty_field = self.subattr_qty_prefix + str(subproduct.id)
+            qty_field = subattr_qty_prefix + str(subproduct.id)
             if qty_field in fields:
                 node = etree.Element(
                     "field",
@@ -446,18 +467,23 @@ class ProductConfigurator(models.TransientModel):
 
     @api.multi
     def write(self, vals):
+        attr_qty_prefix = self._prefixes.get('attr_qty_prefix')
+        field_prefix = self._prefixes.get('field_prefix')
+        subattr_prefix = self._prefixes.get('subattr_prefix')
+        subattr_qty_prefix = self._prefixes.get('subattr_qty_prefix')
+
         res = super(ProductConfigurator, self).write(vals=vals)
 
         attr_val_variant_qty_fields = {
             k: v for k, v in vals.iteritems()
-            if k.startswith(self.attr_qty_prefix)
+            if k.startswith(attr_qty_prefix)
         }
 
         for qty_field, qty in attr_val_variant_qty_fields.iteritems():
             if not qty:
                 continue
-            attr_id = int(qty_field.replace(self.attr_qty_prefix, ''))
-            value_id = vals.get(self.field_prefix + str(attr_id))
+            attr_id = int(qty_field.replace(attr_qty_prefix, ''))
+            value_id = vals.get(field_prefix + str(attr_id))
             if value_id:
                 attr_val = self.env['product.attribute.value'].browse(value_id)
             else:
@@ -480,7 +506,7 @@ class ProductConfigurator(models.TransientModel):
             vals.get(qty_field)
 
         subproduct_value_ids = [
-            v for k, v in vals.iteritems() if k.startswith(self.subattr_prefix)
+            v for k, v in vals.iteritems() if k.startswith(subattr_prefix)
         ]
 
         if not subproduct_value_ids:
@@ -495,7 +521,7 @@ class ProductConfigurator(models.TransientModel):
             return res
 
         product_tmpl_id = subproduct[0].product_tmpl_id.id
-        qty_field = self.subattr_qty_prefix + str(product_tmpl_id)
+        qty_field = subattr_qty_prefix + str(product_tmpl_id)
 
         product_vals = {
             'user_id': self.env.uid,
