@@ -3,13 +3,24 @@
 from odoo import models, fields, api
 
 
-class ProductConfigurator(models.Model):
+class ProductConfigurator(models.TransientModel):
     _inherit = 'product.configurator'
 
     purchase_order_line_id = fields.Many2one(
         comodel_name='purchase.order.line',
         readonly=True,
     )
+
+    def _extra_line_values(self, so, product, new=True):
+        """ Hook to allow custom line values to be put on the newly
+        created or edited lines."""
+        vals = {}
+        if new:
+            vals.update({'name': product.display_name})
+            vals.update({'product_uom': product.uom_id.id})
+        else:
+            vals.update({'name': product.display_name})
+        return vals
 
     @api.multi
     def action_config_done(self):
@@ -38,3 +49,5 @@ class ProductConfigurator(models.Model):
                                                                           new=False))
             self.unlink()
             return
+        else:
+            return super(ProductConfigurator, self).action_config_done()
