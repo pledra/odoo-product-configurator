@@ -11,17 +11,6 @@ class ProductConfigurator(models.TransientModel):
         readonly=True,
     )
 
-    def _extra_line_values(self, so, product, new=True):
-        """ Hook to allow custom line values to be put on the newly
-        created or edited lines."""
-        vals = {}
-        if new:
-            vals.update({'name': product.display_name})
-            vals.update({'product_uom': product.uom_id.id})
-        else:
-            vals.update({'name': product.display_name})
-        return vals
-
     @api.multi
     def action_config_done(self):
         """This fuction are copied from product_configurator_wizard.ProductConfigurator
