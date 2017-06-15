@@ -73,11 +73,10 @@ class ProductConfigurator(models.TransientModel):
 
         # Get the wizard id from context set via action_next_step method
         wizard_id = self.env.context.get('wizard_id')
+        wiz = self.browse(wizard_id).exists()
 
-        if not wizard_id:
+        if not wiz:
             return steps
-
-        wiz = self.browse(wizard_id)
 
         open_lines = wiz.product_tmpl_id.get_open_step_lines(
             wiz.value_ids.ids)
