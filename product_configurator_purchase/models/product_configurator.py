@@ -3,7 +3,7 @@
 from odoo import models, fields, api
 
 
-class ProductConfigurator(models.Model):
+class ProductConfigurator(models.TransientModel):
     _inherit = 'product.configurator'
 
     purchase_order_line_id = fields.Many2one(
@@ -38,3 +38,5 @@ class ProductConfigurator(models.Model):
                                                                           new=False))
             self.unlink()
             return
+        else:
+            return super(ProductConfigurator, self).action_config_done()
