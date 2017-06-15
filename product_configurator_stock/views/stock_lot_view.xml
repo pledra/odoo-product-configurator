@@ -33,6 +33,7 @@
         <field name="res_model">product.configurator.lot</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="product_configurator_lot_form"/>
+        <field name="context">{'wizard_model': 'product.configurator.lot'}</field>
         <field name="target">new</field>
     </record>
 </data>

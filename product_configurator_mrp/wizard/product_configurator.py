@@ -115,7 +115,7 @@ class ProductConfigurator(models.TransientModel):
         res = {}
         attr_qty_prefix = self._prefixes.get('attr_qty_prefix')
         qty_attr_lines = product_tmpl.attribute_line_ids.filtered(
-            lambda l: l.quantity)
+            lambda l: l.quantity and not l.multi)
         for line in qty_attr_lines:
             attribute = line.attribute_id
             default_attrs = self.get_field_default_attrs()

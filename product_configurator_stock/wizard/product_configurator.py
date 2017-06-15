@@ -4,7 +4,7 @@ from openerp import models, fields, api, _
 from openerp.exceptions import ValidationError
 
 
-class ProductConfigurator(models.TransientModel):
+class ProductConfiguratorLot(models.TransientModel):
     _name = 'product.configurator.lot'
     _inherit = 'product.configurator'
 
@@ -17,7 +17,7 @@ class ProductConfigurator(models.TransientModel):
     def action_next_step(self):
         if not self.product_tmpl_id.config_ok:
             return self.action_config_done()
-        return super(ProductConfigurator, self).action_next_step()
+        return super(ProductConfiguratorLot, self).action_next_step()
 
     @api.multi
     def action_config_done(self):

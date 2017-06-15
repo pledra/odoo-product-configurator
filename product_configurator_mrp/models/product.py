@@ -131,10 +131,10 @@ class ProductTemplate(models.Model):
                 steps['active_step'] = open_steps[0]
 
         # TODO: Move step related methods to sesssion object
-        active_model = self._context.get('active_model', '')
-        active_model = active_model if active_model.startswith(
-            'product.configurator') else 'product.configurator'
-        wiz = self.env[active_model].browse(self._context.get('wizard_id'))
+
+        # Todo find a better way to identify the model than through context
+        wiz_model = self._context.get('wizard_model', 'product.configurator')
+        wiz = self.env[wiz_model].browse(self._context.get('wizard_id'))
 
         next_step = steps.get('next_step') or cfg_step_line_obj
         prev_step = steps.get('prev_step') or cfg_step_line_obj
