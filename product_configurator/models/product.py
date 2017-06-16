@@ -703,11 +703,38 @@ class ProductProduct(models.Model):
         try:
             mytemplate = Template(self.mako_tmpl_name or '')
             buf = StringIO()
+
+            bom_lines = self.bom_ids[:1].bom_line_ids if self.bom_ids else []
+            cfg_parts = {}
+            for step in self.product_tmpl_id.config_step_line_ids:
+                attr_lines = step.attribute_line_ids
+                for attr_val in attr_lines.mapped('value_ids'):
+                    product = attr_val.product_id
+                    attr = attr_val.attribute_id
+                    if not product:
+                        continue
+                    bom_line = bom_lines.filtered(
+                        lambda b: b.product_id == product
+                    )
+                    cfg_part = {
+                        'attribute': attr,
+                        'quantity': bom_line.product_qty,
+                        'attribute_value': attr_val,
+                        'price': product.lst_price
+                    }
+                    if step not in cfg_parts:
+                        cfg_parts[step] = [cfg_part]
+                    else:
+                        cfg_parts[step].append(cfg_part)
+
             ctx = Context(
                 buf, product=self,
                 attribute_values=self.attribute_value_ids,
                 steps=self.product_tmpl_id.config_step_line_ids,
+                bom_lines=bom_lines,
+                cfg_parts=cfg_parts,
                 template=self.product_tmpl_id)
+
             mytemplate.render_context(ctx)
             return buf.getvalue()
         except:
