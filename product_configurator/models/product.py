@@ -6,7 +6,6 @@ from openerp.tools.misc import formatLang
 from openerp.exceptions import ValidationError
 from openerp import models, fields, api, tools, _
 from openerp.addons import decimal_precision as dp
-from openerp.osv.expression import is_leaf, AND
 from mako.template import Template
 from mako.runtime import Context
 from StringIO import StringIO
@@ -67,39 +66,6 @@ class ProductTemplate(models.Model):
                   'generate an invalid configuration')
             )
 
-    @api.model
-    def get_config_domain(self, args=None):
-        """Add 'config_ok=False' to the search args to prevent configurable
-        products showing up in searches in standard Odoo modules"""
-        if not args:
-            args = []
-
-        if self._context.get('default_config_ok'):
-            return args
-
-        fields = [arg[0] for arg in args if is_leaf(arg)]
-
-        if 'config_ok' not in fields:
-            args = AND([[('config_ok', '=', False)], args])
-        return args
-
-    @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
-        """Always enforce config_ok = False in product searches to prevent usage of
-        configurable products in standard parts of Odoo"""
-        args = self.get_config_domain(args)
-        return super(ProductTemplate, self).search(
-            args, offset=offset, limit=limit, order=order, count=count
-        )
-
-    @api.model
-    def name_search(self, name='', args=None, operator='ilike', limit=100):
-        """Always enforce config_ok = False in product searches to prevent usage of
-        configurable products in standard parts of Odoo"""
-        args = self.get_config_domain(args)
-        return super(ProductTemplate, self).name_search(
-            name, args, operator=operator, limit=limit)
-
     def flatten_val_ids(self, value_ids):
         """ Return a list of value_ids from a list with a mix of ids
         and list of ids (multiselection)
@@ -147,10 +113,9 @@ class ProductTemplate(models.Model):
 
     def get_adjacent_steps(self, value_ids, active_step_line_id=None):
         """Returns the previous and next steps given the configuration passed
-        via value_ids and the active step line passed via cfg_step_line_id.
+        via value_ids and the active step line passed via cfg_step_line_id."""
 
-        If there is no open step return empty dictionary"""
-
+        # If there is no open step return empty dictionary
         config_step_lines = self.config_step_line_ids
 
         if not config_step_lines:
@@ -281,19 +246,9 @@ class ProductTemplate(models.Model):
         return prices
 
     @api.multi
-    def search_variant(self, value_ids, custom_values=None):
-        """ Searches product.variants with given value_ids and custom values
-            given in the custom_values dict
-
-            :param value_ids: list of product.attribute.values ids
-            :param custom_values: dict {product.attribute.id: custom_value}
-
-            :returns: product.product recordset of products matching domain
-        """
-        self.ensure_one()
-
-        if custom_values is None:
-            custom_values = {}
+    def get_variant_search_domain(self, value_ids, custom_values):
+        """Method called by search_variant used to searc duplicates in the
+        database"""
         attr_obj = self.env['product.attribute']
 
         domain = [
@@ -317,6 +272,24 @@ class ProductTemplate(models.Model):
                 domain.append(
                     ('value_custom_ids.attribute_id', '=', int(attr_id)))
                 domain.append(('value_custom_ids.value', '=', value))
+        return domain
+
+    @api.multi
+    def search_variant(self, value_ids, custom_values=None):
+        """ Searches product.variants with given value_ids and custom values
+            given in the custom_values dict
+
+            :param value_ids: list of product.attribute.values ids
+            :param custom_values: dict {product.attribute.id: custom_value}
+
+            :returns: product.product recordset of products matching domain
+        """
+        self.ensure_one()
+
+        if custom_values is None:
+            custom_values = {}
+
+        domain = self.get_variant_search_domain(value_ids, custom_values)
 
         products = self.env['product.product'].search(domain)
 
@@ -327,7 +300,7 @@ class ProductTemplate(models.Model):
             lambda p:
             len(p.attribute_value_ids) != len(value_ids) or
             len(p.value_custom_ids) != len(custom_values)
-            )
+        )
         products -= more_attrs
         return products
 
@@ -428,6 +401,9 @@ class ProductTemplate(models.Model):
             :returns: new/existing product.product recordset
 
         """
+        sessions = self.env['product.config.session'].search_session(
+            product_tmpl_id=self.id)
+
         if custom_values is None:
             custom_values = {}
         valid = self.validate_configuration(value_ids, custom_values)
@@ -448,17 +424,17 @@ class ProductTemplate(models.Model):
                 duplicates = False
 
         if duplicates:
+            if sessions:
+                sessions[0].action_confirm()
             return duplicates[0]
 
         vals = self.get_variant_vals(value_ids, custom_values)
         variant = self.env['product.product'].create(vals)
 
         # TODO: Find a better way to locate the session (could be subsession)
-        session = self.env['product.config.session'].search_session(
-            product_tmpl_id=self.id)
 
-        if session:
-            session[0].action_confirm()
+        if sessions:
+            sessions[0].action_confirm()
 
         return variant
 
@@ -643,12 +619,11 @@ class ProductProduct(models.Model):
             custom_values = {
                 cv.attribute_id.id: cv.value
                 for cv in self.value_custom_ids
-                }
-
+            }
             duplicates = self.product_tmpl_id.search_variant(
                 self.attribute_value_ids.ids,
                 custom_values=custom_values
-                ).filtered(lambda p: p.id != self.id)
+            ).filtered(lambda p: p.id != self.id)
 
             if duplicates:
                 raise ValidationError(
@@ -706,6 +681,7 @@ class ProductProduct(models.Model):
 
             bom_lines = self.bom_ids[:1].bom_line_ids if self.bom_ids else []
             cfg_parts = {}
+
             for step in self.product_tmpl_id.config_step_line_ids:
                 attr_lines = step.attribute_line_ids
                 for attr_val in attr_lines.mapped('value_ids'):
@@ -769,23 +745,6 @@ class ProductProduct(models.Model):
     _constraints = [
         (_check_attribute_value_ids, None, ['attribute_value_ids'])
     ]
-
-    @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
-        """Always enforce config_ok = False in product searches to prevent usage of
-        configurable products in standard parts of Odoo"""
-        args = self.product_tmpl_id.get_config_domain(args)
-        return super(ProductProduct, self).search(
-            args, offset=offset, limit=limit, order=order, count=count
-        )
-
-    @api.model
-    def name_search(self, name='', args=None, operator='ilike', limit=100):
-        """Always enforce config_ok = False in product searches to prevent usage of
-        configurable products in standard parts of Odoo"""
-        args = self.product_tmpl_id.get_config_domain(args)
-        return super(ProductProduct, self).name_search(
-            name, args, operator=operator, limit=limit)
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form',

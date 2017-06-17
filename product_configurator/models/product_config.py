@@ -314,6 +314,9 @@ class ProductConfigSession(models.Model):
                 custom_vals[val.attribute_id.id] = val.value
         return custom_vals
 
+    config_step = fields.Char(
+        string='Configuration Step'
+    )
     product_tmpl_id = fields.Many2one(
         comodel_name='product.template',
         domain=[('config_ok', '=', True)],
