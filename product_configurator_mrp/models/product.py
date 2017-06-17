@@ -33,60 +33,71 @@ class ProductTemplate(models.Model):
     )
 
     @api.multi
-    def create_get_variant(self, value_ids, custom_values=None):
-        """Add bill of matrials to the configured variant."""
-        if custom_values is None:
-            custom_values = {}
+    def search_variant(self, value_ids, custom_values=None):
+        variants = super(ProductTemplate, self).search_variant(
+            value_ids, custom_values=custom_values
+        )
 
-        session = self.env['product.config.session'].search_session(
+        cfg_session_id = self._context.get('config_session_id')
+
+        if not cfg_session_id:
+            return variants
+
+        session_obj = self.env['product.config.session']
+        try:
+            session = session_obj.browse(int(cfg_session_id))
+        except:
+            session = session_obj
+
+        if not session.child_ids:
+            return variants
+
+        bom_obj = self.env['mrp.bom']
+
+        bom_line_vals = session.get_bom_line_vals()
+
+        for variant in variants:
+            bom = bom_obj.browse(bom_obj._bom_find(product_id=variant.id))
+            if not bom or len(bom.bom_line_ids) != len(bom_line_vals):
+                variants -= variant
+                continue
+            for line in bom_line_vals:
+                bom_line = bom.bom_line_ids.filtered(
+                    lambda b:
+                        b.product_id.id == line[2]['product_id'] and
+                        b.product_qty == line[2]['product_qty']
+                )
+                if not bom_line:
+                    variants -= variant
+                    continue
+        return variants[:1]
+
+    @api.multi
+    def create_get_variant(self, value_ids, custom_values=None, session=None):
+        """Add bill of matrials to the configured variant."""
+        if not session:
+            session = self.env['product.config.session'].search_session(
                 product_tmpl_id=self.id)
+
+        self = self.with_context(config_session_id=session.id)
 
         variant = super(ProductTemplate, self).create_get_variant(
             value_ids, custom_values=custom_values)
 
-        qty_attr_lines = self.attribute_line_ids.filtered(lambda l: l.quantity)
-        qty_attr_vals = qty_attr_lines.mapped('value_ids')
+        bom_obj = self.env['mrp.bom']
 
-        attr_products = variant.attribute_value_ids.filtered(
-            lambda v: v not in qty_attr_vals).mapped('product_id')
+        bom = bom_obj.browse(bom_obj._bom_find(product_id=variant.id))
 
-        line_vals = [
-            (0, 0, {'product_id': product.id}) for product in attr_products
-        ]
-
-        if session:
-            for subsession in session[0].child_ids:
-                if subsession.product_tmpl_id.config_ok:
-                    custom_vals = {
-                        l.attribute_id.id: l.value or l.attachment_ids
-                        for l in subsession.custom_value_ids
-                    }
-                    subvariant = subsession.product_tmpl_id.create_get_variant(
-                        subsession.value_ids.ids, custom_values=custom_vals)
-                else:
-                    val_ids = subsession.value_ids.ids
-                    domain = [
-                        ('product_tmpl_id', '=', subsession.product_tmpl_id.id)
-                    ]
-                    domain += [
-                        ('attribute_value_ids', '=', vid) for vid in val_ids
-                    ]
-                    subvariant = self.env['product.product'].search(domain)
-
-                if subvariant:
-                    line_vals.append((0, 0, {
-                        'product_id': subvariant.id,
-                        'product_qty': subsession.quantity
-                    }))
-        values = {
-            'product_tmpl_id': self.id,
-            'product_id': variant.id,
-            'bom_line_ids': line_vals,
-            'type': 'normal',
-            'routing_id': self.routing_id.id or False,
-        }
-
-        self.env['mrp.bom'].create(values)
+        if not bom:
+            bom_line_vals = session.get_bom_line_vals()
+            if bom_line_vals:
+                bom_obj.create({
+                    'product_tmpl_id': self.id,
+                    'product_id': variant.id,
+                    'bom_line_ids': bom_line_vals,
+                    'type': 'normal',
+                    'routing_id': self.routing_id.id or False,
+                })
 
         return variant
 
@@ -106,29 +117,12 @@ class ProductTemplate(models.Model):
         steps = super(ProductTemplate, self).get_adjacent_steps(
             value_ids=value_ids, active_step_line_id=active_step_line_id
         )
+        # At this point the parent method has run and changed the wizard to the
+        # next step
         if not steps:
             return steps
 
         cfg_step_line_obj = self.env['product.config.step.line']
-        cfg_session_obj = self.env['product.config.session']
-        cfg_session = cfg_session_obj.create_get_session(self.id)
-
-        if not active_step_line_id:
-            # TODO: What if there are no configuration step lines?
-            active_line = self.get_open_step_lines(value_ids)[0]
-        else:
-            active_line = self.config_step_line_ids.filtered(
-                lambda l: l.id == active_step_line_id)
-
-        subproduct = active_line.config_subproduct_line_id.subproduct_id.sudo()
-
-        if subproduct.config_ok:
-            session = cfg_session_obj.sudo().create_get_session(
-                subproduct.id, parent_id=cfg_session.id)
-            open_steps = subproduct.get_open_step_lines(
-                session[0].value_ids.ids)
-            if open_steps:
-                steps['active_step'] = open_steps[0]
 
         # TODO: Move step related methods to sesssion object
 
@@ -140,24 +134,36 @@ class ProductTemplate(models.Model):
         prev_step = steps.get('prev_step') or cfg_step_line_obj
 
         parent_session = wiz.config_session_id.parent_id
+        parent_draft_session = parent_session
+        parent_draft_session_tmpl = parent_draft_session.product_tmpl_id
 
-        if not next_step and parent_session.state == 'draft':
-            # TODO: Make this step recursive so it checks all the parents
-            open_steps = parent_session.product_tmpl_id.get_open_step_lines(
-                parent_session.value_ids.ids
+        # If we have reached the end of a subsession configuration
+        if not next_step and parent_session:
+
+            # Get the first grandparent in draft state
+            while parent_draft_session.state != 'draft':
+                parent_draft_session = parent_draft_session.parent_id
+
+            # Get all the open steps
+            open_steps = parent_draft_session_tmpl.get_open_step_lines(
+                parent_draft_session.value_ids.ids
             )
-            # TODO: This will fail with more steps that have the same subprod
-            subproduct_step = open_steps.filtered(
-                lambda l: l.config_subproduct_line_id.subproduct_id == self
-            )
-            if subproduct_step:
-                index = [l for l in open_steps.sorted()].index(subproduct_step)
+
+            # Get the actual config step corresponding to the id stored
+            try:
+                step_id = int(parent_draft_session.config_step)
+                active_step = open_steps.filtered(lambda l: l.id == step_id)
+            except:
+                active_step = cfg_step_line_obj
+
+            if active_step:
+                index = [l for l in open_steps.sorted()].index(active_step)
                 try:
                     steps['next_step'] = open_steps[index + 1]
                 except:
                     steps['next_step'] = next_step
 
-        if not prev_step or prev_step == 'select' and parent_session.state == 'draft':
+        if not prev_step or prev_step == 'select' and parent_session:
             # TODO: Make this step recursive so it checks all the parents
             open_steps = parent_session.product_tmpl_id.get_open_step_lines(
                 parent_session.value_ids.ids
@@ -173,24 +179,4 @@ class ProductTemplate(models.Model):
                 except:
                     steps['prev_step'] = prev_step
 
-        # TODO: Take into account subproducts with no configuration steps
-        if next_step.config_subproduct_line_id.subproduct_id.config_ok:
-            # Retrieve a session (if any) to get the first open step
-            subproduct = next_step.config_subproduct_line_id.subproduct_id
-            session = cfg_session_obj.search_session(
-                subproduct.id, parent_id=cfg_session.id)
-            # Pass values from found/empty step
-            open_steps = subproduct.get_open_step_lines(session.value_ids.ids)
-            if open_steps:
-                # Override next step with subproduct if open step found
-                steps['next_step'] = open_steps[0]
-
-        if prev_step.config_subproduct_line_id.subproduct_id.config_ok:
-            subproduct = prev_step.config_subproduct_line_id.subproduct_id
-            session = cfg_session_obj.search_session(
-                subproduct.id, parent_id=cfg_session.id)
-            open_steps = subproduct.get_open_step_lines(session.value_ids.ids)
-            if open_steps:
-                steps['prev_step'] = subproduct.get_open_step_lines(
-                    session.value_ids.ids)
         return steps

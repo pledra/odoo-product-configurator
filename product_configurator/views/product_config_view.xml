@@ -115,6 +115,7 @@
                 <field name="user_id"/>
                 <field name="custom_value_ids"/>
                 <field name="price"/>
+                <field name="config_step"/>
                 <field name="state"/>
             </tree>
         </field>
@@ -134,6 +135,7 @@
                         <field name="user_id"/>
                         <field name="value_ids" widget="many2many_tags"/>
                         <field name="price"/>
+                        <field name="config_step"/>
                     </group>
                     <notebook>
                         <page name="custom_vals" string="Custom Values">

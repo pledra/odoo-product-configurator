@@ -603,7 +603,11 @@ class ProductConfigurator(models.TransientModel):
         session = self.env['product.config.session'].create_get_session(
             product_tmpl_id=int(vals.get('product_tmpl_id'))
         )
-        vals.update(user_id=self.env.uid, config_session_id=session.id)
+        vals.update({
+            'user_id': self.env.uid,
+            'config_session_id': session.id,
+            'state': session.config_step or vals.get('state')
+        })
         return super(ProductConfigurator, self).create(vals)
 
     @api.multi
@@ -674,6 +678,10 @@ class ProductConfigurator(models.TransientModel):
     def write(self, vals):
         """Prevent database storage of dynamic fields and instead write values
         to database persistent value_ids field"""
+
+        if 'config_step' not in vals:
+            # Save configuration step to related session
+            vals['config_step'] = self.state
 
         # Get current database value_ids (current configuration)
         field_prefix = self._prefixes.get('field_prefix')
@@ -773,7 +781,7 @@ class ProductConfigurator(models.TransientModel):
         wizard_action = {
             'type': 'ir.actions.act_window',
             'res_model': self._name,
-            'name': "Configure Product",
+            'name': 'Configure Product',
             'view_mode': 'form',
             'context': dict(
                 self.env.context,
@@ -860,23 +868,25 @@ class ProductConfigurator(models.TransientModel):
     def action_reset(self):
         """Delete wizard and configuration session then create
         a new wizard+session and return an action for the new wizard object"""
-        product_tmpl_id = self.product_tmpl_id.id
-        if product_tmpl_id:
-            self.config_session_id.unlink()
-            self = self.create({'product_tmpl_id': product_tmpl_id})
+        ctx = dict(self._context)
+        try:
+            session = self.config_session_id
+            while session.parent_id:
+                session = session.parent_id
+            ctx.update(default_product_tmpl_id=session.product_tmpl_id.id)
+            session.unlink()
+        except:
+            session = self.env['product.config.step']
 
-        return {
+        action = {
             'type': 'ir.actions.act_window',
             'res_model': self._name,
             'name': "Configure Product",
             'view_mode': 'form',
-            'context': dict(
-                self.env.context,
-                wizard_id=self.id,
-            ),
+            'context': dict(ctx, wizard_id=None),
             'target': 'new',
-            'res_id': self.id,
         }
+        return action
 
     @api.multi
     def action_config_done(self):

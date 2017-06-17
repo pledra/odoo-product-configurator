@@ -408,59 +408,91 @@ class ProductConfigurator(models.TransientModel):
 
     @api.multi
     def action_next_step(self):
-        """When a subproduct is loaded switch wizard to new config session"""
-        active_step_id = self.state
+        """Override parent method to support subconfiguration navigation"""
+
         res = super(ProductConfigurator, self).action_next_step()
-        # TODO: Find a better way
+        # Here the state has been changed and we are already on the next step
+
+        # TODO: Find a better way to detect if wizard has been set to done
         if not res or not self.exists():
             return res
+
+        cfg_session_obj = self.env['product.config.session']
+        cfg_step_line_obj = self.env['product.config.step.line']
+
         active_step = self.get_active_step()
-        adjacent_steps = self.product_tmpl_id.get_adjacent_steps(
-            self.value_ids.ids, active_step.id
-        )
+        parent_product_tmpl = self.parent_id.product_tmpl_id
 
-        top_session = self.config_session_id
+        subproduct_line = active_step.config_subproduct_line_id
+        subproduct = subproduct_line.subproduct_id.sudo()
 
-        while top_session.parent_id:
-            top_session = top_session.parent_id
-
-        active_step = adjacent_steps.get('active_step', active_step)
-        if active_step and active_step.product_tmpl_id != self.product_tmpl_id:
-            config_session_obj = self.env['product.config.session']
-            domain = [
-                ('product_tmpl_id', '=', active_step.product_tmpl_id.id),
-                ('user_id', '=', self.env.uid),
-                ('id', 'child_of', top_session.id),
-                ('state', '=', 'draft')
-            ]
-            session = config_session_obj.search(domain)
-            if not session:
-                session = config_session_obj.create({
-                    'product_tmpl_id': active_step.product_tmpl_id.id,
-                    'user_id': self.env.user.id,
-                    'parent_id': self.config_session_id.id
-                })
-
-            if self.config_session_id.parent_id:
-                valid = self.config_session_id.action_confirm()
-                if not valid:
-                    self.state = active_step_id
-                    return res
-                custom_vals = {
-                    l.attribute_id.id:
-                    l.value or l.attachment_ids for l in self.custom_value_ids
-                }
-                self.product_tmpl_id.create_get_variant(
-                    value_ids=self.value_ids.ids, custom_values=custom_vals
+        # If the active step belongs to another template we should point the
+        # wizard towards the parent session to reflect the active configuration
+        # This happens at the end of a subconfiguration process only
+        if active_step.product_tmpl_id != self.product_tmpl_id:
+            custom_vals = self.config_session_id._get_custom_vals_dict()
+            valid = self.product_tmpl_id.validate_configuration(
+                self.value_ids.ids, custom_vals=custom_vals)
+            if not valid:
+                open_steps = self.product_tmpl_id.get_open_step_lines(
+                    value_ids=self.value_ids.ids
                 )
+                self.state = open_steps[0].id
+                return res
 
+            # If configuration is valid set session to done and navigate up
+            self.config_session_id.action_confirm()
             self.write({
-                'product_tmpl_id': active_step.product_tmpl_id.id,
-                'config_session_id': session.id,
-                'state': str(active_step.id),
+                'config_session_id': self.parent_id.id,
+                'product_tmpl_id': parent_product_tmpl.id,
             })
+            return res
 
-        if self.config_session_id.parent_id:
+        if not subproduct:
+            return res
+
+        # Get all current subsessions for this subproduct
+        sessions = self.child_ids.filtered(
+            lambda s: s.product_tmpl_id == subproduct)
+
+        # If there is no subsession defined but it is required create one
+        # TODO: and subproduct_line.required and add cfg new subproduct button
+        if not sessions:
+            sessions = cfg_session_obj.create_get_session(
+                subproduct.id, parent_id=self.config_session_id.id)
+
+        draft_sessions = sessions.filtered(lambda s: s.state == 'draft')
+
+        # If this session does not have any draft subsessions skip
+        if not draft_sessions:
+            return res
+
+        session = draft_sessions[0]
+        session_step = cfg_session_obj
+        # If the session has a saved step write it on the wizard
+        # TODO: Move to separate method
+        if session.config_step:
+            try:
+                step_id = int(session.config_step)
+                session_step = cfg_step_line_obj.browse(step_id)
+            except:
+                pass
+        if not session_step:
+            open_steps = subproduct.get_open_step_lines(session.value_ids.ids)
+            if open_steps:
+                session_step = open_steps[0]
+
+        # TODO: Go to last subproduct in draft state not step just before
+
+        self.write({
+            'config_session_id': session.id,
+            'product_tmpl_id': subproduct.id,
+            'state': session_step.id,
+            'config_step': session_step.id,
+        })
+
+        # If this is a subsession add context flag to remove 'select' step
+        if self.parent_id:
             res['context'].update({'subproduct_config': True})
 
         return res
