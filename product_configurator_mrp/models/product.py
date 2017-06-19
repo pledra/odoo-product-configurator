@@ -61,7 +61,7 @@ class ProductProduct(models.Model):
             for attr_value in variant.attribute_value_ids:
                 bom_line_vals = attr_value.bom_line_dictionary()
                 if bom_line_vals:
-                    line_vals.append([(0, 0, bom_line_vals)])
+                    line_vals.append((0, 0, bom_line_vals))
 
             Mrp_bom.create(values)
 
