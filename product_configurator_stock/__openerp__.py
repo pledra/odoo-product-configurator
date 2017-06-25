@@ -7,7 +7,8 @@
     'author': 'Pledra',
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',
-    'depends': ['stock', 'product_configurator'],
+    # TODO: Enable loading mrp module before lot and remove direct dependency
+    'depends': ['stock', 'product_configurator_mrp'],
     "data": [
         'views/stock_lot_view.xml',
         'views/assets.xml'
