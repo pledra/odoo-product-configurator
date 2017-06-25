@@ -17,11 +17,10 @@ class ProductConfigurator(models.TransientModel):
         """ Hook to allow custom line values to be put on the newly
         created or edited lines."""
         vals = {}
-        if new:
-            vals.update({
-                'name': product.config_name,
-                'product_uom': product.uom_id.id,
-            })
+        vals.update({
+            'name': product._get_mako_tmpl_name(),
+            'product_uom': product.uom_id.id,
+        })
         return vals
 
     @api.multi

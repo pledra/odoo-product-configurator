@@ -314,6 +314,9 @@ class ProductConfigSession(models.Model):
                 custom_vals[val.attribute_id.id] = val.value
         return custom_vals
 
+    config_step = fields.Char(
+        string='Configuration Step'
+    )
     product_tmpl_id = fields.Many2one(
         comodel_name='product.template',
         domain=[('config_ok', '=', True)],
@@ -354,15 +357,14 @@ class ProductConfigSession(models.Model):
     @api.multi
     def action_confirm(self):
         # TODO: Implement method to generate dict from custom vals
-        custom_val_dict = {
-            x.attribute_id.id: x.value or x.attachment_ids
-            for x in self.custom_value_ids
-        }
-        valid = self.product_tmpl_id.validate_configuration(
-            self.value_ids.ids, custom_val_dict)
-        if valid:
-            self.state = 'done'
-        return valid
+        if self.product_tmpl_id.config_ok:
+            valid = self.product_tmpl_id.validate_configuration(
+                self.value_ids.ids, self._get_custom_vals_dict()
+            )
+            if not valid:
+                return valid
+        self.state = 'done'
+        return True
 
     @api.multi
     def update_config(self, attr_val_dict=None, custom_val_dict=None):
@@ -449,12 +451,9 @@ class ProductConfigSession(models.Model):
         """Validate configuration when writing new values to session"""
         # TODO: Issue warning when writing to value_ids or custom_val_ids
         res = super(ProductConfigSession, self).write(vals)
-        custom_val_dict = {
-            x.attribute_id.id: x.value or x.attachment_ids
-            for x in self.custom_value_ids
-        }
         valid = self.product_tmpl_id.validate_configuration(
-            self.value_ids.ids, custom_val_dict, final=False)
+            self.value_ids.ids, self._get_custom_vals_dict(), final=False
+        )
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
         return res
@@ -479,6 +478,49 @@ class ProductConfigSession(models.Model):
                 )
             vals.update({'value_ids': [(6, 0, default_val_ids)]})
         return super(ProductConfigSession, self).create(vals)
+
+    @api.multi
+    def get_session_search_domain(self, product_tmpl_id, state='draft',
+                                  parent_id=None):
+        domain = [
+            ('product_tmpl_id', '=', product_tmpl_id),
+            ('user_id', '=', self.env.uid),
+            ('state', '=', state),
+        ]
+        if parent_id:
+            domain.append(('parent_id', '=', parent_id))
+        return domain
+
+    @api.multi
+    def get_session_vals(self, product_tmpl_id, parent_id=None):
+        vals = {
+            'product_tmpl_id': product_tmpl_id,
+            'user_id': self.env.user.id,
+        }
+        if parent_id:
+            vals.update(parent_id=parent_id)
+        return vals
+
+    @api.multi
+    def search_session(self, product_tmpl_id, parent_id=None):
+        domain = self.get_session_search_domain(
+            product_tmpl_id=product_tmpl_id,
+            parent_id=parent_id
+        )
+        session = self.search(domain)
+        return session
+
+    @api.model
+    def create_get_session(self, product_tmpl_id, parent_id=None):
+        session = self.search_session(product_tmpl_id=product_tmpl_id,
+                                      parent_id=parent_id)
+        if session:
+            return session[0]
+        vals = self.get_session_vals(
+            product_tmpl_id=product_tmpl_id,
+            parent_id=parent_id
+        )
+        return self.create(vals)
 
     # TODO: Disallow duplicates
 

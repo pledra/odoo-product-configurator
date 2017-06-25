@@ -14,6 +14,7 @@ class StockLot(models.Model):
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
 
+        # TODO: This does not work
         wizard_obj = self.env['product.configurator']
         wizard = False
         if self.product_id.product_tmpl_id.config_ok:
