@@ -64,7 +64,7 @@ class ProductProduct(models.Model):
         cfg_parts = self.get_mako_cfg_parts(bom)
 
         ctx_vars = res.kwargs
-        ctx_vars.update(cfg_parts=cfg_parts)
+        ctx_vars.update(cfg_parts=cfg_parts, bom=bom)
         res = Context(buf, **ctx_vars)
         return res
 

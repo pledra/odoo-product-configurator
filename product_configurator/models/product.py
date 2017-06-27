@@ -683,11 +683,6 @@ class ProductProduct(models.Model):
 
     @api.model
     def _get_mako_tmpl_name(self):
-        mytemplate = Template(self.mako_tmpl_name or '')
-        buf = StringIO()
-        ctx = self._get_mako_context(buf)
-        mytemplate.render_context(ctx)
-        return buf.getvalue()
         try:
             mytemplate = Template(self.mako_tmpl_name or '')
             buf = StringIO()
