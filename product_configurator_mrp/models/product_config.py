@@ -94,7 +94,7 @@ class ProductConfigSession(models.Model):
                 domain += [
                     ('attribute_value_ids', '=', vid) for vid in val_ids
                 ]
-                subvariant = self.env['product.product'].search(domain)
+                subvariant = self.env['product.product'].search(domain)[:1]
             if subvariant:
                 line_vals.append((0, 0, {
                     'product_id': subvariant.id,

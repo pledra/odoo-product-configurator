@@ -899,10 +899,7 @@ class ProductConfigurator(models.TransientModel):
         # In the meantime, at least make sure that a validation
         # error legitimately raised in a nested routine
         # is passed through.
-        custom_vals = {
-            l.attribute_id.id:
-                l.value or l.attachment_ids for l in self.custom_value_ids
-        }
+        custom_vals = self.config_session_id._get_custom_vals_dict()
         try:
             variant = self.product_tmpl_id.create_get_variant(
                 self.value_ids.ids, custom_vals)

@@ -448,7 +448,7 @@ class ProductConfigurator(models.TransientModel):
             })
             return res
 
-        if not subproduct:
+        if not subproduct or not subproduct.config_ok:
             return res
 
         # Get all current subsessions for this subproduct
