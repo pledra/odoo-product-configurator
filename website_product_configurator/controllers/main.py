@@ -113,12 +113,6 @@ class WebsiteProductConfig(http.Controller):
 
             :returns: list of available ids for all options in the form
         """
-        if not cfg_vals:
-            cfg_vals = []
-
-        vals = {
-            'value_ids': [],
-        }
 
         json_config = self.get_json_config(product_tmpl, cfg_vals, config_step)
         cfg_val_ids = product_tmpl.flatten_val_ids(
@@ -133,12 +127,12 @@ class WebsiteProductConfig(http.Controller):
 
         attr_vals = attr_lines.mapped('value_ids')
 
-        for val in attr_vals:
-            if product_tmpl.value_available(val.id, cfg_val_ids):
-                vals['value_ids'].append(val.id)
-
-        vals['prices'] = product_tmpl.get_cfg_price(
-            cfg_val_ids, json_config['custom_vals'], formatLang=True)
+        vals = {
+            'value_ids': product_tmpl.values_available(
+                attr_vals.ids, cfg_val_ids),
+            'prices': product_tmpl.get_cfg_price(
+                cfg_val_ids, json_config['custom_vals'], formatLang=True),
+        }
         return vals
 
     # TODO: Use the same variable name all over cfg_val, cfg_step, no mixup
@@ -574,28 +568,12 @@ class WebsiteProductConfig(http.Controller):
         return self.get_config_image(product_tmpl, value_ids, size)
 
     def configure_product(self, product_tmpl, value_ids, custom_vals=None):
-        """Used for searching a variant with the values passed in cfg_vals
-           and returning a redirect to it. In case a product is not found with
-           the given valid configuration a new variant is generated with the
-           specific values and then returned
-
-           :param product_tmpl: product.template object being configured
-           :param cfg_vals: dict representing the client-side configuration
-
-           :returns: product.product object found or created
-           """
-        # TODO: Implement a search and create method that can be extended
-        # easily
+        """Method kept for backward compatiblity"""
+        # TODO: Remove in next version
         if custom_vals is None:
             custom_vals = {}
 
-        product = product_tmpl.search_variant(value_ids, custom_vals)
-        if product:
-            if len(product) > 1:
-                return False
-            else:
-                return product
-        return product_tmpl.sudo().create_variant(value_ids, custom_vals)
+        return product_tmpl.sudo().create_get_variant(value_ids, custom_vals)
 
     def get_attr_classes(self, attr_line, attr_value=False, custom=False):
         """Computes classes for attribute elements in frontend for the purpose
@@ -615,7 +593,7 @@ class WebsiteProductConfig(http.Controller):
         if attr_line.required:
             classes.append('required')
 
-        if attr_value and not product_tmpl.value_available(attr_value.id):
+        if attr_value and not product_tmpl.values_available([attr_value.id]):
             classes.append('hidden')
 
         if custom:
@@ -719,11 +697,13 @@ class WebsiteProductConfig(http.Controller):
         except:
             return request.redirect('/configurator')
         if post:
-            product = self.configure_product(
-                cfg_session.product_tmpl_id, cfg_session.value_ids.ids, {
-                    x.attribute_id.id: x.value or x.attachment_ids for x in
-                    cfg_session.custom_value_ids
-                })
+            custom_vals = {
+                x.attribute_id.id: x.value or x.attachment_ids for x in
+                cfg_session.custom_value_ids
+            }
+            product = cfg_session.product_tmpl_id.sudo().create_get_variant(
+                cfg_session.value_ids.ids, custom_vals
+            )
             cfg_session.sudo().unlink()
             return self.cart_update(product, post)
 

@@ -96,7 +96,11 @@ class ProductConfigurator(models.TransientModel):
                 continue
 
             vals = values[field_name]
-            domains[field_name] = [('id', 'in', [])]
+
+            # get available values
+            avail_ids = self.product_tmpl_id.values_available(
+                line.value_ids.ids, cfg_val_ids)
+            domains[field_name] = [('id', 'in', avail_ids)]
 
             # Include custom value in the domain if attr line permits it
             if line.custom:
@@ -105,10 +109,6 @@ class ProductConfigurator(models.TransientModel):
                 domains[field_name][0][2].append(custom_val.id)
                 if line.multi and vals and custom_val.id in vals[0][2]:
                     continue
-            for value in line.value_ids:
-                # Add ids sequentially to domain is they are valid options
-                if self.product_tmpl_id.value_available(value.id, cfg_val_ids):
-                    domains[field_name][0][2].append(value.id)
         return domains
 
     def get_form_vals(self, dynamic_fields, domains):
@@ -297,10 +297,8 @@ class ProductConfigurator(models.TransientModel):
             attribute = line.attribute_id
             value_ids = line.value_ids.ids
 
-            value_ids = [
-                v for v in value_ids if wiz.product_tmpl_id.value_available(
-                    v, wiz.value_ids.ids)
-            ]
+            value_ids = wiz.product_tmpl_id.values_available(
+                value_ids, wiz.value_ids.ids)
 
             # If attribute lines allows custom values add the
             # generic "Custom" attribute.value to the list of options
@@ -811,24 +809,6 @@ class ProductConfigurator(models.TransientModel):
                 l.value or l.attachment_ids for l in self.custom_value_ids
         }
 
-        if self.product_id:
-            product_tmpl = self.product_id.product_tmpl_id
-            remove_cv_links = map(
-                lambda cv: (2, cv), self.product_id.value_custom_ids.ids)
-            new_cv_links = product_tmpl.encode_custom_values(custom_vals)
-            self.product_id.write({
-                'attribute_value_ids': [(6, 0, self.value_ids.ids)],
-                'value_custom_ids':  remove_cv_links + new_cv_links,
-            })
-            if self.order_line_id:
-                order_line_vals = self._extra_line_values(
-                    self.order_line_id.order_id, self.product_id, new=False)
-                self.order_line_id.write(order_line_vals)
-
-            self.unlink()
-
-            return
-        #
         # This try except is too generic.
         # The create_variant routine could effectively fail for
         # a large number of reasons, including bad programming.
@@ -873,11 +853,14 @@ class ProductConfigurator(models.TransientModel):
             order = self.env['sale.order'].browse(self.env.context.get('active_id'))
             line_vals = {'product_id': variant.id}
 
-        line_vals.update(self._extra_line_values(order, variant, new=True))
+        line_vals.update(self._extra_line_values(
+            self.order_line_id.order_id or order, variant, new=True)
+        )
 
-        order.write({
-            'order_line': [(0, 0, line_vals)]
-        })
+        if self.order_line_id:
+            self.order_line_id.write(line_vals)
+        else:
+            order.write({'order_line': [(0, 0, line_vals)]})
 
         self.unlink()
         return
