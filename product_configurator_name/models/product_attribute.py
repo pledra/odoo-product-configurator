@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api
 
-DISPLAY_SELECTION = [('hide', 'Hide'), ('value', 'Value'), ('attribute', 'Attribute')]
+DISPLAY_SELECTION = [('hide', 'Hide'), ('value', 'Only Value'), ('attribute', 'With Label')]
 
 
 class ProductAttributeLine(models.Model):
@@ -11,7 +11,7 @@ class ProductAttributeLine(models.Model):
 
 
     sequence = fields.Integer(string='Sequence', default=10)
-    display_mode = fields.Selection(DISPLAY_SELECTION, default='value')
+    display_mode = fields.Selection(DISPLAY_SELECTION, default='value', required=True)
 
     def display_format(self):
         result = []
