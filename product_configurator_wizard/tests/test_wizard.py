@@ -121,3 +121,51 @@ class ConfigurationRules(TransactionCase):
 
         self.assertTrue(len(config_variants) == 2,
                         "Wizard reconfiguration did not create a new variant")
+
+    def test_wizard_domains(self):
+        """Test product configurator wizard default values"""
+
+        # Start a new configuration wizard
+        wizard = self.env['product.configurator'].create({
+            'product_tmpl_id': self.cfg_tmpl.id
+        })
+
+        dynamic_fields = {}
+        for attribute_line in self.cfg_tmpl.attribute_line_ids:
+            field_name = '%s%s' % (
+                wizard.field_prefix,
+                attribute_line.attribute_id.id
+            )
+            dynamic_fields[field_name] = [] if attribute_line.multi else False
+
+        attr_gasoline_vals = self.get_attr_values(['gasoline'])
+        attr_gasoline_dict = self.get_wizard_write_dict(wizard,
+                                                        attr_gasoline_vals)
+        attr_218i_vals = self.get_attr_values(['218i'])
+        attr_218i_dict = self.get_wizard_write_dict(wizard, attr_218i_vals)
+        gasoline_engine_vals = self.env.ref(
+            'product_configurator.product_config_line_gasoline_engines'
+        ).value_ids
+
+        oc_vals = dynamic_fields.copy()
+        oc_vals.update({'id': wizard.id,
+                        })
+        oc_vals.update(attr_gasoline_dict)
+        oc_result = wizard.onchange(
+            oc_vals,
+            attr_gasoline_dict.keys()[0],
+            {}
+        )
+        k, v = attr_218i_dict.iteritems().next()
+        self.assertEqual(
+            oc_result.get('value', {}).get(k),
+            v,
+            "Engine default value not set correctly by onchange wizard"
+        )
+        oc_domain = oc_result.get('domain', {}).get(k, [])
+        domain_ids = oc_domain and oc_domain[0][2] or []
+        self.assertEqual(
+            set(domain_ids),
+            set(gasoline_engine_vals.ids),
+            "Engine domain value not set correctly by onchange wizard"
+        )
