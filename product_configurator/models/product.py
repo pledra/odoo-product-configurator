@@ -683,17 +683,18 @@ class ProductProduct(models.Model):
 
     @api.model
     def _get_mako_tmpl_name(self):
-        try:
-            mytemplate = Template(self.mako_tmpl_name or '')
-            buf = StringIO()
-            ctx = self._get_mako_context(buf)
-            mytemplate.render_context(ctx)
-            return buf.getvalue()
-        except:
-            _logger.error(
-                _("Error while calculating mako product name: %s") %
-                self.display_name)
-            return self.display_name
+        if self.mako_tmpl_name:
+            try:
+                mytemplate = Template(self.mako_tmpl_name or '')
+                buf = StringIO()
+                ctx = self._get_mako_context(buf)
+                mytemplate.render_context(ctx)
+                return buf.getvalue()
+            except:
+                _logger.error(
+                    _("Error while calculating mako product name: %s") %
+                    self.display_name)
+        return self.display_name
 
     config_name = fields.Char(
         string="Name",
