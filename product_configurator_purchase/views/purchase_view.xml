@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<openerp>
+<data>
+
+    <record id="purchase_order_form" model="ir.ui.view">
+        <field name="name">product.configurator.purchase.order.form.view</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="after">
+                <field name="config_ok" invisible="1"/>
+                <field name="parent_state" invisible="1"/>
+                <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
+                        help="Reconfigure"
+                        icon="fa-cogs"
+                        type="object"
+                        attrs="{
+                            'invisible': [
+                                '|',
+                                ('config_ok','=',False),
+                                ('parent_state','not in',['draft','sent'])
+                            ]
+                        }"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']" position="before">
+                <button name="action_config_start"
+                        states="draft,sent"
+                        class="oe_highlight"
+                        style="margin: 12px 0 12px 0"
+                        type="object"
+                        string="Configure Product"
+                        groups="product_configurator.group_product_configurator"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_order_line_tree" model="ir.ui.view">
+        <field name="name">product.configurator.purchase.order.form.view</field>
+        <field name="model">purchase.order.line</field>
+        <field name="inherit_id" ref="purchase.purchase_order_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="config_ok" invisible="1"/>
+                <field name="parent_state" invisible="1"/>
+                <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
+                        help="Reconfigure"
+                        icon="fa-cogs"
+                        type="object"
+                        attrs="{
+                            'invisible': [
+                                '|',
+                                ('config_ok','=',False),
+                                ('parent_state','not in',['draft','sent'])
+                            ]
+                        }"/>
+            </xpath>
+        </field>
+    </record>
+
+</data>
+</openerp>
