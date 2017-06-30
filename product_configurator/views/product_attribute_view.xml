@@ -44,6 +44,7 @@
                             <group>
                                 <field name="required"/>
                                 <field name="multi"/>
+                                <field name="create_on_fly" />
                             </group>
                         </group>
                     </page>
@@ -52,7 +53,6 @@
                             <group>
                                 <field name="custom_type"/>
                                 <field name="search_ok"/>
-                                <field name="create_on_fly" />
                             </group>
                             <group>
                                 <field name="min_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
