@@ -13,11 +13,7 @@ class ProductAttributeLine(models.Model):
     sequence = fields.Integer(string='Sequence', default=10)
     display_mode = fields.Selection(DISPLAY_SELECTION, default='value', required=True)
 
-    def display_format(self):
-        result = []
-        for record in self:
-            if record.display_mode == 'value':
-                result.append(u'{%s}' % record.attribute_id.name)
-            elif record.display_mode == 'attribute':
-                result.append(u'%s: {%s}' % (record.attribute_id.name, record.attribute_id.name))
-        return ', '.join(result)
+
+class ProductAttributeValue(models.Model):
+    _inherit = 'product.attribute.value'
+    _order = 'sequence, name'
