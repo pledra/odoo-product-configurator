@@ -33,14 +33,14 @@ msgid "Hide"
 msgstr "Masquer"
 
 #. module: product_configurator_name
-#: selection:product.attribute.line,display_mode:0
-msgid "Only Value"
-msgstr "Valeur seule"
-
-#. module: product_configurator_name
 #: model:ir.model,name:product_configurator_name.model_product_product
 msgid "Product"
 msgstr "Produit"
+
+#. module: product_configurator_name
+#: selection:product.attribute.line,display_mode:0
+msgid "Value Only"
+msgstr "Valeur seule"
 
 #. module: product_configurator_name
 #: selection:product.attribute.line,display_mode:0

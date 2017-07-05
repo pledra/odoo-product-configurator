@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api
 
-DISPLAY_SELECTION = [('hide', 'Hide'), ('value', 'Only Value'), ('attribute', 'With Label')]
+DISPLAY_SELECTION = [('hide', 'Hide'), ('value', 'Value Only'), ('attribute', 'With Label')]
 
 
 class ProductAttributeLine(models.Model):
@@ -17,3 +17,4 @@ class ProductAttributeLine(models.Model):
 class ProductAttributeValue(models.Model):
     _inherit = 'product.attribute.value'
     _order = 'sequence, name'
+    # test failed because of random order

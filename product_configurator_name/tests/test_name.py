@@ -40,6 +40,15 @@ class ConfigurationCreate(TransactionCase):
 
         return value_ids
 
+    def test_name_get_odoo(self):
+        """Test variant with name_override set"""
+
+        variant = self.env.ref('product.product_product_11')
+
+        res = variant.name_get()
+        expected = [(variant.id, '[E-COM12] iPod (16 GB)')]
+        self.assertEqual(res, expected, 'Product should display iPod name')
+
     def test_name_get_name_override(self):
         """Test variant with name_override set"""
 

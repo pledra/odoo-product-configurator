@@ -1,13 +1,14 @@
-#Odoo Product Configurator Purchase
+#Odoo Product Configurator Name
 
-This module is an extension to product configurator to add widjet to purchase and add possibility to choose a product variant instead of always create a new one.
+This module is an extension to product configurator to hide unnecessary attributes from product name
+and show the attribute name as label when ambiguities might arise.
 
 Features
 ========
 
-- Add configure button to Purchase order.
+- Add display mode to comfigurable templates attributes (under variants tab)
 
 Usage
 =====
 
-To complete
+Change the display mode of the attribute to hide or with label as needed.
