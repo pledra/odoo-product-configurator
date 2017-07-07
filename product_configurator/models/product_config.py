@@ -197,6 +197,59 @@ class ProductConfigLine(models.Model):
                 )
 
 
+class ProductConfigDefault(models.Model):
+    _name = 'product.config.default'
+
+    product_tmpl_id = fields.Many2one(
+        comodel_name='product.template',
+        string='Product Template',
+        ondelete='cascade',
+        required=True
+    )
+
+    # TODO: Find a more elegant way to restrict the value_ids
+    attr_line_val_ids = fields.Many2many(
+        comodel_name='product.attribute.value',
+        compute='_compute_attr_vals'
+    )
+
+    value_ids = fields.Many2many(
+        comodel_name='product.attribute.value',
+        id1="cfg_dflt_id",
+        id2="attr_val_id",
+        string="Values"
+    )
+
+    domain_id = fields.Many2one(
+        comodel_name='product.config.domain',
+        string='Applied If',
+        help='Default will be attempted if this rule passes, or leave blank '
+        'for a generic default'
+    )
+
+    sequence = fields.Integer(string='Sequence', default=10)
+
+    _order = 'product_tmpl_id, sequence, id'
+
+    @api.multi
+    def _compute_attr_vals(self):
+        for config_default in self:
+            config_default.attr_line_val_ids = \
+                config_default.product_tmpl_id.attribute_line_ids.mapped(
+                    'value_ids'
+                )
+
+    @api.model
+    def default_get(self, fields):
+        result = super(ProductConfigDefault, self).default_get(fields)
+        if self.env.context.get('for_template_id'):
+            result['attr_line_val_ids'] = \
+                self.env['product.template'].browse(
+                    self.env.context['for_template_id']
+                ).attribute_line_ids.mapped('value_ids').ids
+        return result
+
+
 class ProductConfigImage(models.Model):
     _name = 'product.config.image'
 
