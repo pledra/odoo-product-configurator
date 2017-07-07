@@ -24,12 +24,14 @@ class ProductProduct(models.Model):
     def name_get(self):
         """ Override variant name
         """
-
         def _name_get(d):
             name = d.get('name', '')
-            code = self._context.get('display_default_code', True) and d.get('default_code', False) or False
-            if code:
-                name = '[%s] %s' % (code,name)
+            supplier_code = self._context.get('display_default_code', True) and d.get('supplier_code', False) or False
+            default_code = self._context.get('display_default_code', True) and d.get('default_code', False) or False
+            if supplier_code:
+                name = '[%s] %s' % (supplier_code,name) 
+            if default_code:
+                name = '[%s] %s' % (default_code,name)
             return (d['id'], name)
 
         partner_id = self._context.get('partner_id')
@@ -93,7 +95,9 @@ class ProductProduct(models.Model):
                     mydict = {
                               'id': product.id,
                               'name': seller_variant or name,
-                              'default_code': s.product_code or product.default_code,
+                              'default_code' : product.default_code or '',
+                              'supplier_code': s.product_code or ''
+                              
                               }
                     temp = _name_get(mydict)
                     if temp not in result:
