@@ -13,7 +13,7 @@
         </field>
     </record>
 
-    <record id="product_variant_easy_edit_view" model="ir.ui.view">
+<!--    <record id="product_variant_easy_edit_view" model="ir.ui.view">
         <field name="name">product.configurator.product.variant.easy.form</field>
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
@@ -34,7 +34,7 @@
                 <field name="name_override"/>
             </field>
         </field>
-    </record>
+    </record> -->
 
     <record id="product_product_tree_view" model="ir.ui.view">
         <field name="name">product.product.tree</field>
@@ -48,5 +48,35 @@
             </field>
         </field>
     </record>
+
+    <record id="product_normal_form_view" model="ir.ui.view">
+        <field name="name">product.configurator.product.variant.normal.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <group name="description" position="after">
+                <group>
+                    <field name="name_override"/>
+                </group>
+            </group>
+        </field>
+    </record>
+
+    <record id="product_variant_easy_edit_view" model="ir.ui.view">
+        <field name="name">product.configurator.product.variant.easy.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+        <field name="arch" type="xml">
+            <sheet position="inside">
+                <group>
+                    <group>
+                    </group>
+                    <field name="name_override"/>
+                </group>
+            </sheet>
+        </field>
+    </record>
+
+
 
 </odoo>
