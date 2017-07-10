@@ -177,7 +177,8 @@ class ProductAttributeValue(models.Model):
         if self.env.context.get('product_tmpl_id'):
             # intercept already-created value
             product_tmpl_id = self.env.context.get('product_tmpl_id')
-            attribute_id = vals.get('attribute_id')
+            attribute_id = vals.get('attribute_id',
+                                    self.env.context.get('default_attribute_id'))
             line = self.env['product.attribute.line'].search([
                 ('product_tmpl_id', '=', product_tmpl_id),
                 ('attribute_id', '=', attribute_id)])
