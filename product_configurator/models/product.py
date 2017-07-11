@@ -481,9 +481,12 @@ class ProductTemplate(models.Model):
             # parsed all lines without a match
             return False
         # pick one at random...
-        return (
-            set(default_line.value_ids.ids) & set(selectable_value_ids)
-        ).pop()
+        value_ids = list(set(default_line.value_ids.ids) & set(selectable_value_ids))
+        attribute_line_id = self.attribute_line_ids.filtered(lambda al: value_ids[0] in al.value_ids.ids)
+        if attribute_line_id.multi:
+            return [[6, False, value_ids]]
+        else:
+            return value_ids[0]
 
     @api.multi
     def validate_configuration(self, value_ids, custom_vals=None, final=True):
