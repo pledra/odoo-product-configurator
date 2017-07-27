@@ -44,6 +44,7 @@
                             <group>
                                 <field name="required"/>
                                 <field name="multi"/>
+                                <field name="create_on_fly" />
                             </group>
                         </group>
                     </page>

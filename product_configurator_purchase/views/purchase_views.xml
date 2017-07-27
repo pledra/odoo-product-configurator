@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add Configure Product button on sale order form view -->
+
+    <record id="action_wizard_product_purchase_configurator" model="ir.actions.act_window">
+        <field name="name">Configure Product</field>
+        <field name="res_model">product.configurator</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="product_configurator_wizard.product_configurator_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <record id="purchase_order_form_config" model="ir.ui.view">
+        <field name="name">purchase.order.form.config</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']" position="before">
+                <button name="%(action_wizard_product_purchase_configurator)s"
+                        states="draft,sent"
+                        class="oe_highlight"
+                        type="action"
+                        style="margin-top: 15px;margin-bottom: 10px;"
+                        string="Configure Product"
+                        groups="product_configurator.group_product_configurator"/>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
+                <field name="config_ok" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="after">
+                <field name="config_ok" invisible="1"/>
+                <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
+                        help="Reconfigure"
+                        icon="fa-cogs"
+                        type="object"
+                        attrs="{
+                            'invisible': [
+                                '|',
+                                ('config_ok','=',False),
+                                ('state','not in',['draft','sent'])
+                            ]}"/>
+            </xpath>
+
+            <xpath expr="//label[@for='date_planned']/../div/field[@name='date_planned']" position="attributes">
+                <attribute name="required">0</attribute>
+            </xpath>
+        </field>
+    </record>
+
+	<menuitem id="menu_product_configurable_purchase" name="Configurable Products" parent="purchase.menu_purchase_root" sequence="20" />
+    <menuitem id="purchase.prod_config_main" name="Products" parent="purchase.menu_purchase_config" sequence="3"/>
+    <menuitem action="product.attribute_action" id="menu_attribute_action" parent="purchase.prod_config_main" sequence="4" groups="product.group_product_variant"/>
+    <menuitem action="product.variants_action" id="menu_variants_action" parent="purchase.prod_config_main" sequence="5" groups="product.group_product_variant"/>
+	
+    <record id="product_configurable_template_purchase_action" model="ir.actions.act_window">
+        <field name="name">Configurable Templates</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="product.product_template_kanban_view"/>
+        <field name="domain">[('config_ok','=',True)]</field>
+        <field name="context">{'default_config_ok': True, 'default_type': 'product'}</field>
+    </record>
+
+    <menuitem action="product_configurable_template_purchase_action"
+              id="menu_product_configurable_template_purchase_action"
+              parent="menu_product_configurable_purchase" sequence="20" />
+
+    <record id="product_configurable_variant_purchase_action" model="ir.actions.act_window">
+        <field name="name">Configured Variants</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="view_type">form</field>
+        <field name="search_view_id" ref="product.product_search_form_view"/>
+        <field name="view_id" eval="False"/> <!-- Force empty -->
+        <field name="domain">[('config_ok','=',True)]</field>
+        <field name="context">{'default_config_ok': True, 'default_type': 'product'}</field>
+    </record>
+
+    <menuitem id="menu_product_configurable_variants_purchase_action"
+              action="product_configurable_variant_purchase_action"
+              name="Configurable Variants"
+              parent="menu_product_configurable_purchase" sequence="25"/>
+
+
+    <record id="product.product_template_action" model="ir.actions.act_window">
+        <field name="domain">[('config_ok','=',False)]</field>
+    </record>
+
+    <record id="product.product_normal_action_sell" model="ir.actions.act_window">
+        <field name="domain">[('config_ok','=',False)]</field>
+    </record>
+
+
+    <record id="product_config_steps_purchase_action" model="ir.actions.act_window">
+        <field name="name">Configuration Steps</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.config.step</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_type">form</field>
+    </record>
+
+    <menuitem id="menu_product_config_steps_purchase_action"
+              action="product_config_steps_purchase_action"
+              name="Configuration Steps"
+              parent="menu_product_configurable_purchase" sequence="30"/>
+
+    <record id="product_config_domain_purchase_action" model="ir.actions.act_window">
+        <field name="name">Configuration Restrictions</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.config.domain</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_type">form</field>
+    </record>
+
+    <menuitem id="menu_product_config_domain_purchase_action"
+          action="product_config_domain_purchase_action"
+          name="Configuration Restrictions"
+          parent="menu_product_configurable_purchase" sequence="40"/>
+
+    <record id="product_config_session_purchase_action" model="ir.actions.act_window">
+        <field name="name">Configuration Sessions</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.config.session</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_type">form</field>
+    </record>
+
+    <menuitem id="menu_product_config_session_purchase_action"
+          action="product_config_session_purchase_action"
+          name="Configuration Sessions"
+          parent="menu_product_configurable_purchase" sequence="50"/>
+
+</odoo>

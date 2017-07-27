@@ -90,6 +90,11 @@ class ProductAttribute(models.Model):
 
     image = fields.Binary(string='Image')
 
+    create_on_fly = fields.Boolean(
+        string='Can create value on the fly',
+        help='User can create new value with product configurator'
+    )
+
     # TODO prevent the same attribute from being defined twice on the
     # attribute lines
 
@@ -166,6 +171,28 @@ class ProductAttributeLine(models.Model):
 
 class ProductAttributeValue(models.Model):
     _inherit = 'product.attribute.value'
+
+    @api.model
+    def create(self, vals):
+        if self.env.context.get('product_tmpl_id'):
+            # intercept already-created value
+            product_tmpl_id = self.env.context.get('product_tmpl_id')
+            attribute_id = vals.get('attribute_id',
+                                    self.env.context.get('default_attribute_id'))
+            line = self.env['product.attribute.line'].search([
+                ('product_tmpl_id', '=', product_tmpl_id),
+                ('attribute_id', '=', attribute_id)])
+            match = line.attribute_id.value_ids.filtered(lambda rec: rec.name == vals['name'])
+            if match:
+                record = match[0]
+            else:
+                # default behavior
+                record = super(ProductAttributeValue, self).create(vals)
+            # create related line
+            line.value_ids += record
+        else:
+            record = super(ProductAttributeValue, self).create(vals)
+        return record
 
     @api.multi
     def copy(self, default=None):

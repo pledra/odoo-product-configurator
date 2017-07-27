@@ -11,10 +11,18 @@ class ProductTemplate(models.Model):
 
     config_ok = fields.Boolean(string='Can be Configured')
 
+    reuse_variant = fields.Boolean(string='Reuse variants if exists')
+
     config_line_ids = fields.One2many(
         comodel_name='product.config.line',
         inverse_name='product_tmpl_id',
         string="Attribute Dependencies"
+    )
+
+    config_default_ids = fields.One2many(
+        comodel_name='product.config.default',
+        inverse_name='product_tmpl_id',
+        string="Attribute Defaults"
     )
 
     config_image_ids = fields.One2many(
@@ -438,6 +446,47 @@ class ProductTemplate(models.Model):
                 avail_val_ids.append(attr_val_id)
 
         return avail_val_ids
+
+    @api.multi
+    def find_default_value(self, selectable_value_ids, value_ids):
+        """Based on the current values, which of the available template value ids
+            is the best default value to use.
+
+            :param selectable_value_ids: list of product.attribute.value
+                object already trimmed down as selectable, for one
+                attribute line.
+            :param value_ids: list of attribute value ids already chosen
+
+            :returns: The first matched default id
+
+        """
+        self.ensure_one()
+
+        if not selectable_value_ids:
+            return False
+        # assume all values are from the same attribute line - they should be!
+        default_lines = self.config_default_ids.filtered(
+            lambda l: set(l.value_ids.ids) & set(selectable_value_ids)
+        )
+
+        for default_line in default_lines:
+            if not default_line.domain_id:
+                # No domain - always considered true. Use this.
+                break
+            domains = default_line.mapped('domain_id').compute_domain()
+            if self.validate_domains_against_sels(domains, value_ids):
+                # Domain OK, use this
+                break
+        else:
+            # parsed all lines without a match
+            return False
+        # pick one at random...
+        value_ids = list(set(default_line.value_ids.ids) & set(selectable_value_ids))
+        attribute_line_id = self.attribute_line_ids.filtered(lambda al: value_ids[0] in al.value_ids.ids)
+        if attribute_line_id.multi:
+            return [[6, False, value_ids]]
+        else:
+            return value_ids[0]
 
     @api.multi
     def validate_configuration(self, value_ids, custom_vals=None, final=True):
