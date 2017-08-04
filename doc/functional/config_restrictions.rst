@@ -2,7 +2,7 @@
 Configuration restrictions
 **************************
 
-Often times a product does not support all possible combinations and values must be restricted depending on the selection of others. The main purpose of the **Configuration Restrictions** table is to facilitate an error free final configuration. We have previosuly set all the possible options on the product in the attributes section, now we must add configuration restrictions to prevent incompatible builds.
+Often times a product does not support all possible combinations and values must be restricted depending on the selection of others. The main purpose of the **Configuration Restrictions** table is to facilitate an error free final configuration. We have previously set all the possible options on the product in the attributes section, now we must add configuration restrictions to prevent incompatible builds.
 
 We will illustrate the concept and process by using our car demo product. Our objective is to create a rule for the *Engine* so when a user selects the fuel type as *Gasoline* or *Diesel* all incompatible engine models are eliminated from the options list.
 
