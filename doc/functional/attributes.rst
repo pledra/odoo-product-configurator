@@ -14,7 +14,7 @@ Attributes in the Product Configurator have been enhanced a bit. Navigating to *
 Custom values
 =============
 
-After adding the attribute to a configurable template and clicking the Custom boolean field both the frotend and backend configurator will check the custom field type. Depending on field type set you can have more options and different behavior in the configuration interfaces.
+After adding the attribute to a configurable template and clicking the Custom boolean field both the frontend and backend configurator will check the custom field type. Depending on field type set you can have more options and different behavior in the configuration interfaces.
 
 **Integer** and **Float** values will permit a minimum and maximum value accepted for client-side and server-side validation
 
