@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2012 - TODAY, Ursa Information Systems
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from odoo import api, models, _
 from odoo.exceptions import ValidationError
-from odoo import models, fields, api, tools, _
 
 
 class ProductTemplate(models.Model):
