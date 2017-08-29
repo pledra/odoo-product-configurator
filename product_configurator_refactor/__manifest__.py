@@ -22,5 +22,5 @@
         "views/product_attribute_views.xml",
         "views/product_view.xml",
     ],
-    "application": True,
+    "application": False,
 }

@@ -12,7 +12,8 @@
                         <group>
                             <field name="attribute_line_id" invisible="1"/>
                             <field name="related_attribute_id" readonly="1"/>
-                            <field name="attrib_value_id" domain="[('attribute_id','=',related_attribute_id)]"/>
+                            <field name="attrib_value_id"
+                                   domain="[('attribute_id','=',related_attribute_id)]"/>
                         </group>
                         <group>
                             <field name="is_default"/>

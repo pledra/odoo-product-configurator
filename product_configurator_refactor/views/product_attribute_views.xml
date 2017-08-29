@@ -8,9 +8,9 @@
         <field name="mode">primary</field>
         <field name="priority" eval="8"/>
         <field name="arch" type="xml">
-	        <field name="value_ids" position="before">
-	            <field name="value_idss"/>
-	        </field>
+            <field name="value_ids" position="before">
+                <field name="value_idss"/>
+            </field>
         </field>
     </record>
 
