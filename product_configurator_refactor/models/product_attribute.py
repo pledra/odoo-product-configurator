@@ -24,7 +24,6 @@ class ProductAttributeLine(models.Model):
                                   compute='_is_default_value',
                                   string="Default Value", store=True)
 
-    @api.one
     @api.depends('value_idss.is_default')
     def _is_default_value(self):
         default_lines = [default for default in
@@ -39,3 +38,8 @@ class ProductAttributeLine(models.Model):
                     "Please select one, first selected option will be valid!"))
         else:
             self.default_val = False
+            
+    @api.multi
+    @api.constrains('value_ids', 'default_val')
+    def _check_default_values(self):
+        return True

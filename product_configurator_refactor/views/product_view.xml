@@ -53,7 +53,8 @@
                                     <field name="related_attribute_id"
                                            invisible="1"/>
                                     <field name="attrib_value_id"
-                                           domain="[('attribute_id','=',related_attribute_id)]"/>
+                                           domain="[('attribute_id','=',related_attribute_id)]"
+                                           context="{'default_attribute_id': related_attribute_id}"/>
                                     <field name="is_default"/>
                                 </tree>
                             </field>
