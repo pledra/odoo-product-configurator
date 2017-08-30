@@ -20,19 +20,22 @@ class ProductAttributeLine(models.Model):
     value_ids = fields.Many2many(compute='_get_attribute_values',
                                  comodel_name='product.attribute.value',
                                  string='Attribute Values')
-    default_val = fields.Many2one('product.attribute.value',compute='_is_default_value',
-                                     string="Default Value", store=True)
+    default_val = fields.Many2one('product.attribute.value',
+                                  compute='_is_default_value',
+                                  string="Default Value", store=True)
 
     @api.one
     @api.depends('value_idss.is_default')
     def _is_default_value(self):
-        default_lines = [default for default in self.value_idss.mapped('is_default') if default]
+        default_lines = [default for default in
+                         self.value_idss.mapped('is_default') if default]
         if default_lines:
-            if len(default_lines)==1:
+            if len(default_lines) == 1:
                 for value in self.value_idss:
                     if value.is_default:
                         self.default_val = value.attrib_value_id
             else:
-                raise ValidationError(_("Please select one, first selected option will be valid!"))
+                raise ValidationError(_(
+                    "Please select one, first selected option will be valid!"))
         else:
             self.default_val = False
