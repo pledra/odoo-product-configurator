@@ -24,7 +24,6 @@ class ProductAttributeLine(models.Model):
                                   compute='_is_default_value',
                                   string="Default Value", store=True)
 
-    @api.one
     @api.depends('value_idss.is_default')
     def _is_default_value(self):
         default_lines = [default for default in
