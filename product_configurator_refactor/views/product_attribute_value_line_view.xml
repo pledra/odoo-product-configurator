@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Product Attribute Value Line -->
 
+    <!-- Product Attribute Value Line -->
     <record id="product_attribute_value_line_form_view" model="ir.ui.view">
         <field name="name">product.attribute.value.line.form</field>
         <field name="model">product.attribute.value.line</field>
@@ -37,4 +37,5 @@
             </form>
         </field>
     </record>
+
 </odoo>

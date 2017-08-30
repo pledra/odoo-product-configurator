@@ -6,7 +6,9 @@
 Product Configurator Refactor
 =============================
 
-This module refactors product configurator module.
+This module refactors the product configurator module to add the
+product.attribute.value.line object to store additional fields specific to the
+product-attribute-value.
 
 Usage
 =====
