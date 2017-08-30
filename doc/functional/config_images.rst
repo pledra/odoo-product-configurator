@@ -22,7 +22,7 @@ Looking at the **Configuration Images** we notice 3 columns
     :alt: alternate text
 
 
-In our example this is necesary for creating diffrent appearances of the car when the user wants to select a diffrent pair of rims or another color. What the Product configurator does here is that it will switch betwen images in the interface. We use two separate images of the same car but in the second picture the rims are diffrent thus creating a shifting effect.
+In our example this is necessary for creating different appearances of the car when the user wants to select a different pair of rims or another color. What the Product configurator does here is that it will switch between images in the interface. We use two separate images of the same car but in the second picture the rims are different thus creating a shifting effect.
 
 .. note::
     While this mechanism is fine for simple builds it is highly impractical for complex products with many images. An update is already in the roadmap to provide placement of static images on the canvas with different z-index instead of providing separate images. Also 3D models and animations are planned as well

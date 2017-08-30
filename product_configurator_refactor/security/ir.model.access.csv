@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+product_configurator_refactor,Attribute Value Line,model_product_attribute_value_line,product_configurator.group_product_configurator,1,1,1,1

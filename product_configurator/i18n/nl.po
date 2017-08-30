@@ -1,0 +1,1020 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_configurator
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-11-26 10:24+0000\n"
+"PO-Revision-Date: 2017-07-20 14:52+0100\n"
+"Last-Translator: Odoo Experts <erwin@odooexperts.nl>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: nl\n"
+"X-Generator: Poedit 1.7.1\n"
+
+#. module: product_configurator
+#: model:product.template,name:product_configurator.bmw_2_series
+msgid "2 Series"
+msgstr "2 Series"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_218d
+msgid "218d"
+msgstr "218d"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_218d_coupe
+#: model:product.template,name:product_configurator.product_engine_218d_coupe_product_template
+msgid "218d Coupé"
+msgstr "218d Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_218i
+msgid "218i"
+msgstr "218i"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_218i_coupe
+#: model:product.template,name:product_configurator.product_engine_218i_coupe_product_template
+msgid "218i Coupé"
+msgstr "218i Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_220d
+msgid "220d"
+msgstr "220d"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_220d_coupe
+#: model:product.template,name:product_configurator.product_engine_220d_coupe_product_template
+msgid "220d Coupé"
+msgstr "220d Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_220d_xdrive
+msgid "220d xDrive"
+msgstr "220d xDrive"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_220d_xdrive_coupe
+#: model:product.template,name:product_configurator.product_engine_220d_xdrive_coupe_product_template
+msgid "220d xDrive Coupé"
+msgstr "220d xDrive Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_220i
+msgid "220i"
+msgstr "220i"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_220i_coupe
+#: model:product.template,name:product_configurator.product_engine_220i_coupe_product_template
+msgid "220i Coupé"
+msgstr "220i Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_225d
+msgid "225d"
+msgstr "225d"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_225d_coupe
+#: model:product.template,name:product_configurator.product_engine_225d_coupe_product_template
+msgid "225d Coupé"
+msgstr "225d Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_228i
+msgid "228i"
+msgstr "228i"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_228i_coupe
+#: model:product.template,name:product_configurator.product_engine_228i_coupe_product_template
+msgid "228i Coupé"
+msgstr "228i Coupé"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_active
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_active
+msgid "Active"
+msgstr "Actief"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_val_custom
+msgid "Allow custom value for this attribute?"
+msgstr "Sta specifieke waarde toe voor dit kenmerk?"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_line_custom
+msgid "Allow custom values for this attribute?"
+msgstr "Sta specifieke waardes toe voor dit kenmerk?"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_line_multi
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_multi
+msgid "Allow selection of multiple values for this attribute?"
+msgstr "Sta het kiezen van meerdere waardes toe voor dit kenmerk?"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_armrest
+#: model:product.product,name:product_configurator.product_2_series_armrest
+#: model:product.template,name:product_configurator.product_2_series_armrest_product_template
+msgid "Armrest"
+msgstr "Armsteun"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Attachment"
+msgstr "Bijlage"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_attachment_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_attachment_ids
+msgid "Attachments"
+msgstr "Bijlages"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_attribute_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_attribute_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_attribute_id
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_custom
+msgid "Attribute"
+msgstr "Kenmerk"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_line_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_line_ids
+msgid "Attribute Dependencies"
+msgstr "Kenmerk afhankelijkheden"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_attribute_line_id
+msgid "Attribute Line"
+msgstr "Kenmerk regel"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_attribute_line_ids
+msgid "Attribute Lines"
+msgstr "Kenmerk regels"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
+msgid "Attribute Name"
+msgstr "Kenmerk naam"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Attribute Value Dependencies"
+msgstr "Kenmerk waarde afhankelijkheden"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_attr_line_val_ids
+msgid "Attribute Values"
+msgstr "Kenmerk waardes"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:505
+#, python-format
+msgid "Attribute custom type is binary, attachments are the only accepted values with this custom field type"
+msgstr "Het specifieke kenmerk is van het type binair. Bijlagen zijn de enige geaccepteerde waardes voor dit specifieke type veld"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:510
+#, python-format
+msgid "Attribute custom type must be 'binary' for saving attachments to custom value"
+msgstr "Specifieke kenmerk type moet van het type 'binair' zijn om bijlages te kunnen opslaan"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_steptronic
+msgid "Automatic (Steptronic)"
+msgstr "Automaat (Steptronic)"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_steptronic_sport
+msgid "Automatic Sport (Steptronic)"
+msgstr "Automaat Sport (Steptronic)"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_2_series_transmission_steptronic
+#: model:product.template,name:product_configurator.product_2_series_transmission_steptronic_product_template
+msgid "Automatic Transmission Steptronic"
+msgstr "Automaat Steptronic"
+
+#. module: product_configurator
+#: model:product.category,name:product_configurator.product_category_bmw
+msgid "BMW"
+msgstr "BMW"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_black
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tapistry_black
+msgid "Black"
+msgstr "Zwart"
+
+#. module: product_configurator
+#: model:product.config.step,name:product_configurator.config_step_body
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_body
+msgid "Body"
+msgstr "Carrosserie"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_value_active
+msgid "By unchecking the active field you can disable a attribute value without deleting it"
+msgstr "Door het actief veld uit te vinken kan je een kenmerkwaarde inactief maken zonder deze te verwijderen"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_active
+msgid "By unchecking the active field you can disable a attribute without deleting it"
+msgstr "Door het actief veld uit te vinken kan je een kenmerk inactief maken zonder deze te verwijderen"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_ok
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_ok
+msgid "Can be Configured"
+msgstr "Kan worden geconfigureerd"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:268
+#, python-format
+msgid "Cannot have a configuration step defined twice."
+msgstr "Het is niet mogelijk een stap twee keer instellen."
+
+#. module: product_configurator
+#: sql_constraint:product.attribute.value.custom:0
+msgid "Cannot have two custom values for the same attribute"
+msgstr "Het is niet mogelijk twee specifieke waardes in te stellen."
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Char"
+msgstr "Karakter"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+#: model:product.attribute,name:product_configurator.product_attribute_color
+msgid "Color"
+msgstr "Kleur"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_condition
+msgid "Condition"
+msgstr "Conditie"
+
+#. module: product_configurator
+#: model:ir.ui.menu,name:product_configurator.menu_product_configurable
+msgid "Configurable Products"
+msgstr "Configureerbaar product"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_product_tmpl_id
+msgid "Configurable Template"
+msgstr "Configureerbaar sjabloon"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_configurable_template_action
+#: model:ir.ui.menu,name:product_configurator.menu_product_configurable_template_action
+msgid "Configurable Templates"
+msgstr "Configureerbare sjablonen"
+
+#. module: product_configurator
+#: model:ir.ui.menu,name:product_configurator.menu_product_configurable_variants_action
+msgid "Configurable Variants"
+msgstr "Configureerbare varianten"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_value_ids
+msgid "Configuration"
+msgstr "Configutatie"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_image_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_image_ids
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configuration Images"
+msgstr "Configuratie afbeeldingen"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_step_line_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_step_line_ids
+msgid "Configuration Lines"
+msgstr "Configuratie regels"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_config_domain_action
+#: model:ir.ui.menu,name:product_configurator.menu_product_config_domain_action
+#: model:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configuration Restrictions"
+msgstr "Configuratie beperkingen"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_config_session
+#: model:ir.ui.menu,name:product_configurator.menu_product_config_session
+#: model:ir.ui.view,arch_db:product_configurator.product_config_session_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_config_session_tree_view
+msgid "Configuration Sessions"
+msgstr "Configuratie sessies"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_config_step_id
+#: model:ir.ui.view,arch_db:product_configurator.config_step_form_view
+#: model:ir.ui.view,arch_db:product_configurator.config_step_tree_view
+msgid "Configuration Step"
+msgstr "Configuratie stap"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_config_steps_action
+#: model:ir.ui.menu,name:product_configurator.menu_product_config_steps_action
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configuration Steps"
+msgstr "Configuratie stappen"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_custom
+msgid "Configuration Values"
+msgstr "Configuratie waardes"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:486
+#, python-format
+msgid "Configuration cannot have the same value inserted twice"
+msgstr "Het is niet mogelijk om twee keer dezelfde waarde in te stellen"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configurator"
+msgstr "Configurator"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_configurable_variant_action
+msgid "Configured Variants"
+msgstr "Configureerbare varianten"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tapistry_coral_red_black
+msgid "Coral Red/Black"
+msgstr "Koraal rood/zwart"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_3
+msgid "Coupé Black"
+msgstr "Coupé zwart"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_9
+msgid "Coupé Black Rims 384"
+msgstr "Coupé zwart velgen 384"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_10
+msgid "Coupé Black Rims 387"
+msgstr "Coupé zwart velgen 387"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_1
+msgid "Coupé Red"
+msgstr "Coupé rood"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_5
+msgid "Coupé Red Rims 384"
+msgstr "Coupé rood velgen 384"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_6
+msgid "Coupé Red Rims 387"
+msgstr "Coupé rood velgen 387"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_2
+msgid "Coupé Silver"
+msgstr "Coupé zilver"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_7
+msgid "Coupé Silver Rims 384"
+msgstr "Coupé zilver velgen 384"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_8
+msgid "Coupé Silver Rims 387"
+msgstr "Coupé zilver velgen 387"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_create_uid
+msgid "Created by"
+msgstr "Aangemaakt door"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_create_date
+msgid "Created on"
+msgstr "Aangemaakt op"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_custom
+#: model:product.attribute,name:product_configurator.custom_attribute
+#: model:product.attribute.value,name:product_configurator.custom_attribute_value
+msgid "Custom"
+msgstr "Specifiek"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_val_custom
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_value
+msgid "Custom Value"
+msgstr "Specifieke waarde"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_value_custom_ids
+#: model:ir.model.fields,field_description:product_configurator.field_sale_order_line_custom_value_ids
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_config_session_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_form_view_custom_vals_inherit
+msgid "Custom Values"
+msgstr "Specifieke waardes"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_config_session_custom_value_value
+msgid "Custom value held as string"
+msgstr "Specifieke waarde opgeslagen als string"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Date"
+msgstr "Datum"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "DateTime"
+msgstr "Datum/tijd"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_description
+msgid "Description"
+msgstr "Omschrijving"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_required
+msgid "Determines the required value of this attribute though it can be change on the template level"
+msgstr "Bepaald de verplichte waarde van dit kenmerk, maar kan worden gewijzigd op productsjabloon niveau"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_diesel
+msgid "Diesel"
+msgstr "Diesel"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_display_name
+msgid "Display Name"
+msgstr "Weergave naam"
+
+#. module: product_configurator
+#: selection:product.config.session,state:0
+msgid "Done"
+msgstr "Gereed"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_rims_384
+msgid "Double-spoke 18\""
+msgstr "Dubbele-spaak 18\""
+
+#. module: product_configurator
+#: selection:product.config.session,state:0
+msgid "Draft"
+msgstr "Concept"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_engine
+#: model:product.config.step,name:product_configurator.config_step_engine
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_engine
+msgid "Engine"
+msgstr "Moter"
+
+#. module: product_configurator
+#: model:product.config.step,name:product_configurator.config_step_extras
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_extras
+msgid "Extras"
+msgstr "Extras"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_custom_type
+msgid "Field Type"
+msgstr "Veld type"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Float"
+msgstr "Float"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_fuel
+msgid "Fuel"
+msgstr "Brandstof"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_gasoline
+msgid "Gasoline"
+msgstr "Benzine"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_id
+msgid "ID"
+msgstr "ID"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_image
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_image
+msgid "Image"
+msgstr "Afbeelding"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_implied_ids
+#: model:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
+msgid "Inherited"
+msgstr "Overerft"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Integer"
+msgstr "Geheel getal"
+
+#. module: product_configurator
+#: model:product.config.step,name:product_configurator.config_step_interior
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_interior
+msgid "Interior"
+msgstr "Interieur"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product.py:288
+#: code:addons/product_configurator/models/product_config.py:434
+#, python-format
+msgid "Invalid Configuration"
+msgstr "Ongeldige instellingen"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_account_invoice_line
+msgid "Invoice Line"
+msgstr "Factuurregel"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_line_required
+msgid "Is this attribute required?"
+msgstr "Is dit kenmerk verplicht?"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line___last_update
+msgid "Last Modified on"
+msgstr "Laatst bijgewerkt op"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_write_uid
+msgid "Last Updated by"
+msgstr "Laatst bijgewerkt doo"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_write_date
+msgid "Last Updated on"
+msgstr "Laatst bijgewerkt op"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_model_line
+#: model:product.config.step,name:product_configurator.config_step_lines
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_lines
+msgid "Lines"
+msgstr "Regels"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_luxury_line
+#: model:product.product,name:product_configurator.product_bmw_luxury_line
+#: model:product.template,name:product_configurator.product_bmw_luxury_line_product_template
+msgid "Luxury Line"
+msgstr "Luxury Line"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_m235i
+msgid "M235i"
+msgstr "M235i"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_m235i_coupe
+#: model:product.template,name:product_configurator.product_engine_m235i_coupe_product_template
+msgid "M235i Coupé"
+msgstr "M235i Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_m235i_xdrive
+msgid "M235i xDrive"
+msgstr "M235i xDrive"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_m2351_xdrive_coupe
+#: model:product.template,name:product_configurator.product_engine_m2351_xdrive_coupe_product_template
+msgid "M235i xDrive Coupe"
+msgstr "M235i xDrive Coupe"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_max_val
+msgid "Max Value"
+msgstr "Max waarde"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_min_val
+msgid "Min Value"
+msgstr "Min waarde"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_max_val
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_min_val
+msgid "Minimum value allowed"
+msgstr "Minimale toegestane waarde"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_advantage
+#: model:product.product,name:product_configurator.product_bmw_model_advantage
+#: model:product.template,name:product_configurator.product_bmw_model_advantage_product_template
+msgid "Model Advantage"
+msgstr "Model Advantage"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_luxury_line
+#: model:product.product,name:product_configurator.product_bmw_model_luxury_line
+#: model:product.template,name:product_configurator.product_bmw_model_luxury_line_product_template
+msgid "Model Luxury Line"
+msgstr "Model Luxury Line"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_m_sport
+#: model:product.product,name:product_configurator.product_bmw_model_m_sport
+#: model:product.template,name:product_configurator.product_bmw_model_m_sport_product_template
+msgid "Model M Sport"
+msgstr "Model M Sport"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_sport_line
+#: model:product.product,name:product_configurator.product_bmw_model_sport_line
+#: model:product.template,name:product_configurator.product_bmw_model_sport_line_product_template
+msgid "Model Sport Line"
+msgstr "Model Sport Line"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_multi
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_multi
+msgid "Multi"
+msgstr "Meerdere"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_name
+msgid "Name"
+msgstr "Naam"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_operator
+msgid "Operators"
+msgstr "Operatoren"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_options
+msgid "Options"
+msgstr "Opties"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tapistry_oyster_black
+msgid "Oyster/Black"
+msgstr "Oester/Zwart"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_price
+msgid "Price"
+msgstr "Prijs"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_product
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_product_tmpl_id
+msgid "Product"
+msgstr "Product"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute
+msgid "Product Attribute"
+msgstr "Product kenmerk"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_form_view
+msgid "Product Attribute Values"
+msgstr "Product kenmerk waardes"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
+msgid "Product Attributes"
+msgstr "product kenmerken"
+
+#. module: product_configurator
+#: model:ir.module.category,name:product_configurator.product_config_category
+msgid "Product Configurator"
+msgstr "Product configurator"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_product_id
+msgid "Product ID"
+msgstr "Product ID"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_template
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_product_tmpl_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_product_tmpl_id
+msgid "Product Template"
+msgstr "Product sjabloon"
+
+#. module: product_configurator
+#: model:res.groups,name:product_configurator.group_product_configurator
+msgid "Products"
+msgstr "Producten"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_red
+msgid "Red"
+msgstr "Rood"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_product_id
+msgid "Related Product"
+msgstr "Gekoppeld product"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_required
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_required
+msgid "Required"
+msgstr "Verplicht"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_domain_line_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_domain_id
+msgid "Restrictions"
+msgstr "Beperkingen"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_rims
+msgid "Rims"
+msgstr "Velgen"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_domain_id
+msgid "Rule"
+msgstr "Regel"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
+msgid "Rules"
+msgstr "Regels"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Verkooporderregel"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_search_ok
+msgid "Searchable"
+msgstr "Doorzoekbaar"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_sequence
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_sequence
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_sequence
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_sequence
+msgid "Sequence"
+msgstr "Reeks"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_cfg_session_id
+msgid "Session"
+msgstr "Sessie"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_silver
+msgid "Silver"
+msgstr "Zilver"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_paint_silver
+#: model:product.template,name:product_configurator.product_paint_silver_product_template
+msgid "Silver Paint"
+msgstr "Zilver verf"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_smoker_package
+#: model:product.product,name:product_configurator.product_2_series_smoker_package
+#: model:product.template,name:product_configurator.product_2_series_smoker_package_product_template
+msgid "Smoker Package"
+msgstr "Rokerspakket"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_2_series_transmission_steptronic_sport
+#: model:product.template,name:product_configurator.product_2_series_transmission_steptronic_sport_product_template
+msgid "Sport Automatic Transmission Steptronic"
+msgstr "Sport Automaat Steptronic"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_sport_line
+#: model:product.product,name:product_configurator.product_bmw_sport_line
+#: model:product.template,name:product_configurator.product_bmw_sport_line_product_template
+msgid "Sport Line"
+msgstr "Sport line"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_state
+msgid "State"
+msgstr "Status"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_stock_move
+msgid "Stock Move"
+msgstr "Voorraadmutatie"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_sunroof
+#: model:product.product,name:product_configurator.product_2_series_sunroof
+#: model:product.template,name:product_configurator.product_2_series_sunroof_product_template
+msgid "Sunroof"
+msgstr "Zonnedak"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_tapistry
+msgid "Tapistry"
+msgstr "Tapistry"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Textarea"
+msgstr "Tekstveld"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_custom_type
+msgid "The type of the custom field generated in the frontend"
+msgstr "Het type van het specifieke veld wat wordt gegenereerd op de website"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tow_hook
+msgid "Tow hook"
+msgstr "Trekhaak"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_2_series_towhook
+#: model:product.template,name:product_configurator.product_2_series_towhook_product_template
+msgid "Towhook"
+msgstr "Trekhaak"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_trans_implied_ids
+msgid "Transitively inherits"
+msgstr "Transitively inherits"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_transmission
+msgid "Transmission"
+msgstr "Transmissie"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_uom_id
+msgid "Unit of Measure"
+msgstr "Maateenheid"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_user_id
+msgid "User"
+msgstr "Gebruiker"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_rims_378
+msgid "V-spoke 16\""
+msgstr "V-spaak16\""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_rims_387
+msgid "V-spoke 18\""
+msgstr "V-spaak 18\""
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
+msgid "Validation"
+msgstr "Validatie"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_value
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_form_view
+msgid "Value"
+msgstr "Waarde"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_value_ids
+msgid "Value ids"
+msgstr "Waarde ids"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_value_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_value_ids
+msgid "Values"
+msgstr "Waardes"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:213
+#, python-format
+msgid "Values entered for line '%s' generate a incompatible configuration"
+msgstr "Waardes ingevoerd voor de regel '%s' genereren een ongeldige configuratie"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_search_ok
+msgid "When checking for variants with the same configuration, do we include this field in the search?"
+msgstr "Bij het controleren op varianten met dezelfde configuratie, dienen we ook dit veld mee te nemen in de zoekactie?"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute_line
+msgid "product.attribute.line"
+msgstr "product.attribute.line"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute_value
+msgid "product.attribute.value"
+msgstr "product.attribute.value"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute_value_custom
+msgid "product.attribute.value.custom"
+msgstr "product.attribute.value.custom"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_domain
+msgid "product.config.domain"
+msgstr "product.config.domain"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_domain_line
+msgid "product.config.domain.line"
+msgstr "product.config.domain.line"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_image
+msgid "product.config.image"
+msgstr "product.config.image"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_line
+msgid "product.config.line"
+msgstr "product.config.line"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_session
+msgid "product.config.session"
+msgstr "product.config.session"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_session_custom_value
+msgid "product.config.session.custom.value"
+msgstr "product.config.session.custom.value"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_step
+msgid "product.config.step"
+msgstr "product.config.step"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_step_line
+msgid "product.config.step.line"
+msgstr "product.config.step.line"
