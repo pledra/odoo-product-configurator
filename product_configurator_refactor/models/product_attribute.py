@@ -39,3 +39,8 @@ class ProductAttributeLine(models.Model):
                     "Please select one, first selected option will be valid!"))
         else:
             self.default_val = False
+            
+    @api.multi
+    @api.constrains('value_ids', 'default_val')
+    def _check_default_values(self):
+        return True
