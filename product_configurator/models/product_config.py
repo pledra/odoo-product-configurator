@@ -272,7 +272,7 @@ class ProductConfigSession(models.Model):
     _name = 'product.config.session'
 
     @api.multi
-    @api.depends('value_ids')
+    @api.depends('value_ids', 'custom_value_ids', 'custom_value_ids.value')
     def _get_cfg_price(self):
         for session in self:
             custom_vals = session._get_custom_vals_dict()
