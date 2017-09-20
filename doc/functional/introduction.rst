@@ -11,9 +11,9 @@ Introduction
 **What is the Product Configurator?**
 =====================================
 
-The Product Configurator is a versatile tool that is addresed to bussineses around the world that want to offer custom made products.
+The Product Configurator is a versatile tool that is addressed to businesses around the world that want to offer custom made products.
 
-Combining the simple use of Odoo with the Product Configurator we managed to achive a powerful tool that manages to adapt to every bussines type.
+Combining the simple use of Odoo with the Product Configurator we managed to achive a powerful tool that manages to adapt to every business type.
 
 .. Visual customization is one of the key points of our product. A modular approach using themes and building blocks ensures a visual display of the product you configure.
 
