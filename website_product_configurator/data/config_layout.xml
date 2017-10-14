@@ -182,7 +182,7 @@
                             <strong t-field="value.name"/>
                           </div>
 
-                          <span t-field="value.product_id.sudo().lst_price"
+                          <span t-if="value.product_id.sudo().lst_price" t-field="value.product_id.sudo().lst_price"
                                 t-options='{
                                 "widget": "monetary",
                                 "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"}'/>
