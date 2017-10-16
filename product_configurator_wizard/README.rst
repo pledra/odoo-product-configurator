@@ -1,6 +1,6 @@
 #Odoo Product Configurator Wizard
 
-This module has all the mechanics to support product configuration wizard functionality. 
+This module has all the mechanics to support product configuration wizard functionality.
 
 Usage
 =====
