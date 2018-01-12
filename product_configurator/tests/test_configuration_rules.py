@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from openerp.tests.common import TransactionCase
+from odoo.tests.common import TransactionCase
 
 
 class ConfigurationRules(TransactionCase):
@@ -13,7 +13,7 @@ class ConfigurationRules(TransactionCase):
         self.attr_vals = self.cfg_tmpl.attribute_line_ids.mapped('value_ids')
 
         self.attr_val_ext_ids = {
-            v: k for k, v in attribute_vals.get_external_id().iteritems()
+            v: k for k, v in attribute_vals.get_external_id().items()
         }
 
     def get_attr_val_ids(self, ext_ids):

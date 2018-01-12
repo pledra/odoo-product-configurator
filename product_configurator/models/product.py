@@ -2,13 +2,13 @@
 
 from lxml import etree
 
-from openerp.tools.misc import formatLang
-from openerp.exceptions import ValidationError
-from openerp import models, fields, api, tools, _
-from openerp.addons import decimal_precision as dp
+from odoo.tools.misc import formatLang
+from odoo.exceptions import ValidationError
+from odoo import models, fields, api, tools, _
+from odoo.addons import decimal_precision as dp
 from mako.template import Template
 from mako.runtime import Context
-from StringIO import StringIO
+from io import StringIO
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -45,6 +45,7 @@ class ProductTemplate(models.Model):
     @api.multi
     @api.constrains('attribute_line_ids')
     def _check_default_values(self):
+        print("-----------_check_default_values----")
         """Validate default values set on the product template"""
         default_val_ids = self.attribute_line_ids.filtered(
             lambda l: l.default_val).mapped('default_val').ids
@@ -58,6 +59,7 @@ class ProductTemplate(models.Model):
     @api.multi
     @api.constrains('config_line_ids')
     def _check_default_value_domains(self):
+        print("----------- _check_default_value_domains ----")
         try:
             self._check_default_values()
         except ValidationError:
@@ -264,7 +266,7 @@ class ProductTemplate(models.Model):
             ('custom_type', 'not in', attr_obj._get_nosearch_fields())
         ])
 
-        for attr_id, value in custom_values.iteritems():
+        for attr_id, value in custom_values.items():
             if attr_id not in attr_search.ids:
                 domain.append(
                     ('value_custom_ids.attribute_id', '!=', int(attr_id)))
@@ -339,7 +341,7 @@ class ProductTemplate(models.Model):
 
         custom_lines = []
 
-        for key, val in custom_values.iteritems():
+        for key, val in custom_values.items():
             custom_vals = {'attribute_id': key}
             # TODO: Is this extra check neccesairy as we already make
             # the check in validate_configuration?
@@ -480,7 +482,7 @@ class ProductTemplate(models.Model):
 
         :returns: list of available attribute values
         """
-
+        print(" ------- values_available ------- ")
         avail_val_ids = []
         for attr_val_id in attr_val_ids:
 
@@ -492,7 +494,7 @@ class ProductTemplate(models.Model):
             avail = self.validate_domains_against_sels(domains, sel_val_ids)
             if avail:
                 avail_val_ids.append(attr_val_id)
-
+        print(" -------- avail_val_ids----- ", avail_val_ids)
         return avail_val_ids
 
     @api.multi
@@ -553,6 +555,7 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def create_variant_ids(self):
+        print("-------- create_variant_ids -------- ")
         """ Prevent configurable products from creating variants as these serve
             only as a template for the product configurator"""
         templates = self.filtered(lambda t: not t.config_ok)
@@ -578,6 +581,7 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def configure_product(self):
+        print("----------test-------");
         """ Return action for new product.configurator wizard"""
         return {
             'type': 'ir.actions.act_window',
@@ -597,6 +601,7 @@ class ProductProduct(models.Model):
     _rec_name = 'config_name'
 
     def _get_conversions_dict(self):
+        print("-------- _get_conversions_dict ")
         conversions = {
             'float': float,
             'int': int
@@ -631,43 +636,42 @@ class ProductProduct(models.Model):
                       "(identical attribute values)")
                 )
 
-    @api.multi
-    def _get_price_extra(self):
+    @api.depends('attribute_value_ids.price_ids.price_extra', 'attribute_value_ids.price_ids.product_tmpl_id')
+    def _compute_product_price_extra(self):
         """Compute price of configurable products as sum
         of products related to attribute values picked"""
-        products = self.filtered(lambda x: not x.config_ok)
-        configurable_products = self - products
-        if products:
-            prices = super(ProductProduct, self)._get_price_extra(
-                'price_extra', [])
-            for product in products:
-                product.price_extra = prices[product.id]
-
-        conversions = self._get_conversions_dict()
-        for product in configurable_products:
-            lst_price = product.product_tmpl_id.lst_price
-            value_ids = product.attribute_value_ids.ids
-            # TODO: Merge custom values from products with cfg session
-            # and use same method to retrieve parsed custom val dict
-            custom_vals = {}
-            for val in product.value_custom_ids:
-                custom_type = val.attribute_id.custom_type
-                if custom_type in conversions:
-                    try:
-                        custom_vals[val.attribute_id.id] = conversions[
-                            custom_type](val.value)
-                    except:
-                        raise ValidationError(
-                            _("Could not convert custom value '%s' to '%s' on "
-                              "product variant: '%s'" % (val.value,
-                                                         custom_type,
-                                                         product.display_name))
-                        )
-                else:
-                    custom_vals[val.attribute_id.id] = val.value
-            prices = product.product_tmpl_id.get_cfg_price(
-                value_ids, custom_vals)
-            product.price_extra = prices['total'] - prices['taxes'] - lst_price
+        for product in self:
+            if not product.config_ok:
+                price_extra = 0.0
+                for attribute_price in product.mapped('attribute_value_ids.price_ids'):
+                    if attribute_price.product_tmpl_id == product.product_tmpl_id:
+                        price_extra += attribute_price.price_extra
+                product.price_extra = price_extra
+            if product.config_ok:
+                conversions = product._get_conversions_dict()
+                lst_price = product.product_tmpl_id.lst_price
+                value_ids = product.attribute_value_ids.ids
+                # TODO: Merge custom values from products with cfg session
+                # and use same method to retrieve parsed custom val dict
+                custom_vals = {}
+                for val in product.value_custom_ids:
+                    custom_type = val.attribute_id.custom_type
+                    if custom_type in conversions:
+                        try:
+                            custom_vals[val.attribute_id.id] = conversions[
+                                custom_type](val.value)
+                        except:
+                            raise ValidationError(
+                                _("Could not convert custom value '%s' to '%s' on "
+                                  "product variant: '%s'" % (val.value,
+                                                             custom_type,
+                                                             product.display_name))
+                            )
+                    else:
+                        custom_vals[val.attribute_id.id] = val.value
+                prices = product.product_tmpl_id.get_cfg_price(
+                    value_ids, custom_vals)
+                product.price_extra = prices['total'] - prices['taxes'] - lst_price
 
     @api.model
     def _get_config_name(self):
@@ -708,7 +712,7 @@ class ProductProduct(models.Model):
         readonly=True
     )
     price_extra = fields.Float(
-        compute='_get_price_extra',
+        compute='_compute_product_price_extra',
         string='Variant Extra Price',
         help="This is the sum of the extra price of all attributes",
         digits_compute=dp.get_precision('Product Price')
@@ -748,6 +752,7 @@ class ProductProduct(models.Model):
                                                                  view_id)
                 res['arch'] = xarch
                 res['fields'] = xfields
+        print(" ------- rrr new field view get ------")
         return res
 
     @api.multi
@@ -762,6 +767,7 @@ class ProductProduct(models.Model):
     def _compute_name(self):
         """ Compute the name of the configurable products and use template
             name for others"""
+        print("-----------name compute ------- ", self)
         for product in self:
             if product.config_ok:
                 product.config_name = product._get_config_name()
