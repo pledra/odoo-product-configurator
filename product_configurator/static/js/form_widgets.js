@@ -1,64 +1,81 @@
 /* Add one more option to boolean_button form widget (displayed in the product.template form view) */
-
 odoo.define('product_configurator.FormView', function (require) {
-  "use strict";
-
+"use strict";
+  console.log(" ------- inside define -------");
   var core = require('web.core');
-  var ListView = require('web.ListView');
-  var FormView = require('web.FormView');
+  var ListView = require('web.ListController');
+  var FormView = require('web.FormController');
+  var AbstractField = require('web.AbstractField');
+  var registry = require('web.field_registry');
+  var basic_fields = require('web.basic_fields');
   var _t = core._t;
 
-  var FieldBooleanButton = core.form_widget_registry.map['boolean_button'].extend({
-      init: function() {
-          this._super.apply(this, arguments);
-          switch (this.options["terminology"]) {
-              case "config":
-                  this.string_true = _t("Configurable");
-                  this.hover_true = _t("Deactivate");
-                  this.string_false = _t("Standard");
-                  this.hover_false = _t("Activate");
-                  break;
-          }
+  var FieldBooleanButton = basic_fields.FieldBooleanButton.extend({
+      _render: function() {
+        this._super.apply(this, arguments);
+        switch (this.nodeOptions.terminology) {
+            case "config":
+                this.$el.empty();
+                this.text = this.value ? _t("Configurable") : _t("Deactivate");
+                this.hover = this.value ? _t("Standard") : _t("Activate");
+                var val_color = this.value ? 'text-success' : 'text-danger';
+                var hover_color = this.value ? 'text-danger' : 'text-success';
+                var $val = $('<span>').addClass('o_stat_text o_not_hover ' + val_color).text(this.text);
+                var $hover = $('<span>').addClass('o_stat_text o_hover ' + hover_color).text(this.hover);
+                this.$el.append($val).append($hover);
+                break;
+        }
       },
-  });
+    });
 
   ListView.include({
-    render_buttons: function() {
+    renderButtons: function() {
+      console.log("----------  render ListView ----- ");
       var self = this;
       this._super.apply(this, arguments); // Sets this.$buttons
-      if(self.model == 'product.product' && self.dataset.context.custom_create_variant) {
+      if(self.modelName == 'product.product' && self.initialState.context.custom_create_variant) {
         this.$buttons.find('.o_list_button_add').css('display', 'none')
         this.$buttons.find('.o_list_button_add_custom').css('display', 'inline')
         this.$buttons.on('click', '.o_list_button_add_custom', function(ev) {
           ev.preventDefault();
-          self.rpc("/web/action/load", {action_id: "product_configurator.action_wizard_product_configurator" }).done(function(result) {
-            self.do_action(result);
+          return self.do_action({
+            name: 'Product Configurator',
+            res_model: 'product.configurator',
+            views: [[false, 'form']],
+            type: 'ir.actions.act_window',
+            view_type: 'form',
+            view_mode: 'form',
+            target: 'new'
           });
           return false;
         });
       }
     },
   });
-
   FormView.include({
-    render_buttons: function($node){
+    renderButtons: function ($node) {
       var self = this;
       this._super.apply(this, arguments); // Sets this.$buttons
-      if(self.model == 'product.product' && self.dataset.context.custom_create_variant) {
+      if(self.modelName == 'product.product' && self.initialState.context.custom_create_variant) {
+        console.log("----------  render FormView ----- ");
         this.$buttons.find('.o_form_button_create').css('display', 'none')
         this.$buttons.find('.oe_form_button_create').css('display', 'none')
         this.$buttons.find('.o_form_button_create_custom').css('display', 'inline')
         this.$buttons.on('click', '.o_form_button_create_custom', function(ev) {
-          ev.preventDefault();
-          self.rpc("/web/action/load", {action_id: "product_configurator.action_wizard_product_configurator" }).done(function(result) {
-            self.do_action(result);
+        ev.preventDefault();
+          return self.do_action({
+            name: 'Product Configurator',
+            res_model: 'product.configurator',
+            views: [[false, 'form']],
+            type: 'ir.actions.act_window',
+            view_type: 'form',
+            view_mode: 'form',
+            target: 'new'
           });
-          return false;
         });
       }
     },
+  });
+  registry.add('boolean_button', FieldBooleanButton);
 });
 
-core.form_widget_registry.add('boolean_button', FieldBooleanButton);
-
-});

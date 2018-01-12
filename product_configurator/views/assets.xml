@@ -1,12 +1,11 @@
-<openerp>
-<data>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
 
-    <template id="assets_backend" name="Product Configurator" inherit_id="web.assets_backend">
+    <template id="assets_backend" name="account assets" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
-            <script type="text/javascript" src="/product_configurator/static/js/form_widgets.js"/>
             <link href="/product_configurator/static/css/style.css" rel="stylesheet"/>
+            <script type="text/javascript" src="/product_configurator/static/js/form_widgets.js"/>
         </xpath>
     </template>
 
-</data>
-</openerp>
+</odoo>
