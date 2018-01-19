@@ -1,0 +1,53 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_configurator_name
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-05-30 19:52+0000\n"
+"PO-Revision-Date: 2017-05-30 15:57-0400\n"
+"Last-Translator: Stéphane Le Cornec <slc@microcom.ca>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: fr_CA\n"
+"X-Generator: Poedit 1.8.7\n"
+
+#. module: product_configurator_name
+#: model:ir.model.fields,field_description:product_configurator_name.field_product_product_name_override
+msgid "Custom Name"
+msgstr "Nom personnalisé"
+
+#. module: product_configurator_name
+#: model:ir.model.fields,field_description:product_configurator_name.field_product_attribute_line_display_mode
+msgid "Display mode"
+msgstr "Mode d’affichage"
+
+#. module: product_configurator_name
+#: selection:product.attribute.line,display_mode:0
+msgid "Hide"
+msgstr "Masquer"
+
+#. module: product_configurator_name
+#: model:ir.model,name:product_configurator_name.model_product_product
+msgid "Product"
+msgstr "Produit"
+
+#. module: product_configurator_name
+#: selection:product.attribute.line,display_mode:0
+msgid "Value Only"
+msgstr "Valeur seule"
+
+#. module: product_configurator_name
+#: selection:product.attribute.line,display_mode:0
+msgid "With Label"
+msgstr "Avec étiquette"
+
+#. module: product_configurator_name
+#: model:ir.model,name:product_configurator_name.model_product_attribute_line
+msgid "product.attribute.line"
+msgstr "product.attribute.line"

@@ -13,5 +13,5 @@ class Website(models.Model):
         domain = super(Website, self).sale_product_domain()
         ext_id = 'website_product_configurator.layout_config_products_show'
         if not self.env.ref(ext_id).active:
-            domain.append(('config_ok', '=', False))
+            domain.extend(['|', ('reuse_variant', '=', True), ('config_ok', '=', False)])
         return domain
