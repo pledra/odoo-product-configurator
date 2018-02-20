@@ -420,12 +420,8 @@ class ProductConfigSession(models.Model):
             lambda x: x.attribute_id.id in custom_val_dict.keys()).unlink()
 
         if custom_val_dict:
-            #for key, value in custom_val_dict.iteritems():
-
-            val_list = type(list(custom_val_dict.keys()))
-
             binary_field_ids = self.env['product.attribute'].search([
-                ('id', 'in', val_list(custom_val_dict.keys())),
+                ('id', 'in', custom_val_dict.keys()),
                 ('custom_type', '=', 'binary')
             ]).ids
         for attr_id, vals in custom_val_dict.items():
