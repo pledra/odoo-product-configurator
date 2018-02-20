@@ -2,13 +2,13 @@
 
 from lxml import etree
 
-from openerp.tools.misc import formatLang
-from openerp.exceptions import ValidationError
-from openerp import models, fields, api, tools, _
-from openerp.addons import decimal_precision as dp
+from odoo.tools.misc import formatLang
+from odoo.exceptions import ValidationError
+from odoo import models, fields, api, tools, _
+from odoo.addons import decimal_precision as dp
 from mako.template import Template
 from mako.runtime import Context
-from StringIO import StringIO
+from io import StringIO
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -264,7 +264,7 @@ class ProductTemplate(models.Model):
             ('custom_type', 'not in', attr_obj._get_nosearch_fields())
         ])
 
-        for attr_id, value in custom_values.iteritems():
+        for attr_id, value in custom_values.items():
             if attr_id not in attr_search.ids:
                 domain.append(
                     ('value_custom_ids.attribute_id', '!=', int(attr_id)))
@@ -339,7 +339,7 @@ class ProductTemplate(models.Model):
 
         custom_lines = []
 
-        for key, val in custom_values.iteritems():
+        for key, val in custom_values.items():
             custom_vals = {'attribute_id': key}
             # TODO: Is this extra check neccesairy as we already make
             # the check in validate_configuration?
@@ -480,7 +480,6 @@ class ProductTemplate(models.Model):
 
         :returns: list of available attribute values
         """
-
         avail_val_ids = []
         for attr_val_id in attr_val_ids:
 
@@ -492,7 +491,6 @@ class ProductTemplate(models.Model):
             avail = self.validate_domains_against_sels(domains, sel_val_ids)
             if avail:
                 avail_val_ids.append(attr_val_id)
-
         return avail_val_ids
 
     @api.multi
@@ -631,10 +629,11 @@ class ProductProduct(models.Model):
                       "(identical attribute values)")
                 )
 
-    @api.multi
-    def _get_price_extra(self):
-        """Compute price of configurable products as sum
-        of products related to attribute values picked"""
+    @api.depends('attribute_value_ids.price_ids.price_extra',
+                 'attribute_value_ids.price_ids.product_tmpl_id')
+    def _compute_product_price_extra(self):
+        """Compute price of configurable products as sum of products related
+        to attribute values picked"""
         products = self.filtered(lambda x: not x.config_ok)
         configurable_products = self - products
         if products:
@@ -708,7 +707,7 @@ class ProductProduct(models.Model):
         readonly=True
     )
     price_extra = fields.Float(
-        compute='_get_price_extra',
+        compute='_compute_product_price_extra',
         string='Variant Extra Price',
         help="This is the sum of the extra price of all attributes",
         digits_compute=dp.get_precision('Product Price')

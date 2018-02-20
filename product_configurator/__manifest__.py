@@ -7,7 +7,7 @@
     'author': 'Pledra',
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',
-    'depends': ['account'],
+    'depends': ['account', ],
     "data": [
         'data/menu_configurable_product.xml',
         'data/product_attribute.xml',

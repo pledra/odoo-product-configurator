@@ -12,6 +12,6 @@
         'website_product_configurator',
     ],
     'data': ['templates.xml'],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from openerp import models, fields, api, _
-from openerp.exceptions import Warning, ValidationError
+from odoo import models, fields, api, _
+from odoo.exceptions import Warning, ValidationError
 from ast import literal_eval
 
 
@@ -398,7 +398,7 @@ class ProductConfigSession(models.Model):
         update_vals = {}
 
         value_ids = self.value_ids.ids
-        for attr_id, vals in attr_val_dict.iteritems():
+        for attr_id, vals in attr_val_dict.items():
             attr_val_ids = self.value_ids.filtered(
                 lambda x: x.attribute_id.id == int(attr_id)).ids
             # Remove all values for this attribute and add vals from dict
@@ -424,7 +424,7 @@ class ProductConfigSession(models.Model):
                 ('id', 'in', custom_val_dict.keys()),
                 ('custom_type', '=', 'binary')
             ]).ids
-        for attr_id, vals in custom_val_dict.iteritems():
+        for attr_id, vals in custom_val_dict.items():
             if not vals:
                 continue
 
@@ -443,7 +443,6 @@ class ProductConfigSession(models.Model):
                 custom_vals.update({'value': vals})
 
             update_vals['custom_value_ids'].append((0, 0, custom_vals))
-
         self.write(update_vals)
 
     @api.multi

@@ -2,11 +2,11 @@
 
 from lxml import etree
 
-from openerp.osv import orm
-from openerp.addons.base.ir.ir_model import _get_fields_type
+from odoo.osv import orm
+from odoo.addons.base.ir.ir_model import FIELD_TYPES
 
-from openerp import models, fields, api, _
-from openerp.exceptions import Warning, ValidationError
+from odoo import models, fields, api, _
+from odoo.exceptions import Warning, ValidationError
 
 
 class FreeSelection(fields.Selection):
@@ -35,6 +35,7 @@ class ProductConfigurator(models.TransientModel):
         prefix from the _prefixes property
             :param fields: list or dict of the form [fn1, fn2] / {fn1: val}
         """
+
         prefixes = self._prefixes.values()
 
         field_type = type(fields)
@@ -57,6 +58,7 @@ class ProductConfigurator(models.TransientModel):
     @api.depends('product_tmpl_id', 'value_ids', 'custom_value_ids')
     def _compute_cfg_image(self):
         # TODO: Update when allowing custom values to influence image
+
         product_tmpl = self.product_tmpl_id.with_context(bin_size=False)
         img_obj = product_tmpl.get_config_image_obj(self.value_ids.ids)
         self.product_img = img_obj.image
@@ -68,6 +70,7 @@ class ProductConfigurator(models.TransientModel):
         """Get the states of the wizard using standard values and optional
         configuration steps set on the product.template via
         config_step_line_ids"""
+
 
         steps = [('select', "Select Template")]
 
@@ -92,9 +95,12 @@ class ProductConfigurator(models.TransientModel):
 
     @api.onchange('product_tmpl_id')
     def onchange_product_tmpl(self):
+
         template = self.product_tmpl_id
+
         self.config_step_ids = template.config_step_line_ids.mapped(
             'config_step_id')
+
         if self.value_ids:
             # TODO: Add confirmation button an delete cfg session
             raise Warning(
@@ -112,6 +118,7 @@ class ProductConfigurator(models.TransientModel):
 
         :returns: a dictionary of domains returned by onchance method
         """
+
         field_prefix = self._prefixes.get('field_prefix')
 
         domains = {}
@@ -147,11 +154,11 @@ class ProductConfigurator(models.TransientModel):
 
         :returns vals: Dictionary passed to {'value': vals} by onchange method
         """
+
         vals = {}
 
-        dynamic_fields = {k: v for k, v in dynamic_fields.iteritems() if v}
-
-        for k, v in dynamic_fields.iteritems():
+        dynamic_fields = {k: v for k, v in dynamic_fields.items() if v}
+        for k, v in dynamic_fields.items():
             if not v:
                 continue
             available_val_ids = domains[k][0][2]
@@ -175,6 +182,7 @@ class ProductConfigurator(models.TransientModel):
         """ Override the onchange wrapper to return domains to dynamic
         fields as onchange isn't triggered for non-db fields
         """
+
         field_type = type(field_name)
 
         field_prefix = self._prefixes.get('field_prefix')
@@ -197,12 +205,13 @@ class ProductConfigurator(models.TransientModel):
             cfg_step = self.env['product.config.step.line']
 
         dynamic_fields = {
-            k: v for k, v in values.iteritems() if k.startswith(field_prefix)
+            k: v for k, v in values.items() if k.startswith(field_prefix)
         }
-
         # Get the unstored values from the client view
-        for k, v in dynamic_fields.iteritems():
+        for k, v in dynamic_fields.items():
             attr_id = int(k.split(field_prefix)[1])
+            # if isinstance(v, list):
+            #    dynamic_fields[k] = v[0][2]
             line_attributes = cfg_step.attribute_line_ids.mapped(
                 'attribute_id')
             if not cfg_step or attr_id in line_attributes.ids:
@@ -269,6 +278,7 @@ class ProductConfigurator(models.TransientModel):
 
     @api.model
     def get_field_default_attrs(self):
+
         return {
             'company_dependent': False,
             'depends': (),
@@ -285,12 +295,12 @@ class ProductConfigurator(models.TransientModel):
     def fields_get(self, allfields=None, write_access=True, attributes=None):
         """ Artificially inject fields which are dynamically created using the
         attribute_ids on the product.template as reference"""
+
         field_prefix = self._prefixes.get('field_prefix')
         custom_field_prefix = self._prefixes.get('custom_field_prefix')
 
         res = super(ProductConfigurator, self).fields_get(
             allfields=allfields,
-            write_access=write_access,
             attributes=attributes
         )
 
@@ -349,8 +359,7 @@ class ProductConfigurator(models.TransientModel):
                 field_type = 'char'
 
                 if attribute.custom_type:
-                    field_types = _get_fields_type(
-                        self._cr, self._uid, self._context)
+                    field_types = FIELD_TYPES
                     custom_type = line.attribute_id.custom_type
                     # TODO: Rename int to integer in values
                     if custom_type == 'int':
@@ -376,7 +385,6 @@ class ProductConfigurator(models.TransientModel):
                 relation='product.attribute.value',
                 sequence=line.sequence,
             )
-
         return res
 
     @api.model
@@ -384,6 +392,7 @@ class ProductConfigurator(models.TransientModel):
                         toolbar=False, submenu=False):
         """ Generate view dynamically using attributes stored on the
         product.template"""
+
         field_prefix = self._prefixes.get('field_prefix')
         custom_field_prefix = self._prefixes.get('custom_field_prefix')
 
@@ -406,7 +415,7 @@ class ProductConfigurator(models.TransientModel):
         fields = self.fields_get()
 
         dynamic_fields = {
-            k: v for k, v in fields.iteritems() if k.startswith(
+            k: v for k, v in fields.items() if k.startswith(
                 field_prefix) or k.startswith(custom_field_prefix)
         }
         res['fields'].update(dynamic_fields)
@@ -422,6 +431,7 @@ class ProductConfigurator(models.TransientModel):
         """ Create the configuration view using the dynamically generated
             fields in fields_get()
         """
+
         field_prefix = self._prefixes.get('field_prefix')
         custom_field_prefix = self._prefixes.get('custom_field_prefix')
 
@@ -513,7 +523,7 @@ class ProductConfigurator(models.TransientModel):
                         val_ids = val_ids - domain_line.value_ids
                         attr_depends[attr_field] |= set(val_ids.ids)
 
-                for dependee_field, val_ids in attr_depends.iteritems():
+                for dependee_field, val_ids in attr_depends.items():
                     if not val_ids:
                         continue
                     attrs['readonly'].append(
@@ -542,7 +552,6 @@ class ProductConfigurator(models.TransientModel):
             field_type = dynamic_fields[field_name].get('type')
             if field_type == 'many2many':
                 node.attrib['widget'] = 'many2many_tags'
-
             # Apply the modifiers (attrs) on the newly inserted field in the
             # arch and add it to the view
             orm.setup_modifiers(node)
@@ -576,13 +585,13 @@ class ProductConfigurator(models.TransientModel):
                 )
                 orm.setup_modifiers(node)
                 xml_dynamic_form.append(node)
-
         return xml_view
 
     @api.model
     def create(self, vals):
         """Sets the configuration values of the product_id if given (if any).
         This is used in reconfiguration of a existing variant"""
+
         if 'product_id' in vals:
             product = self.env['product.product'].browse(vals['product_id'])
             vals.update({
@@ -614,6 +623,7 @@ class ProductConfigurator(models.TransientModel):
     def read(self, fields=None, load='_classic_read'):
         """Remove dynamic fields from the fields list and update the
         returned values with the dynamic data stored in value_ids"""
+
         field_prefix = self._prefixes.get('field_prefix')
         custom_field_prefix = self._prefixes.get('custom_field_prefix')
 
@@ -684,6 +694,7 @@ class ProductConfigurator(models.TransientModel):
             vals['config_step'] = self.state
 
         # Get current database value_ids (current configuration)
+
         field_prefix = self._prefixes.get('field_prefix')
         custom_field_prefix = self._prefixes.get('custom_field_prefix')
 
@@ -750,6 +761,7 @@ class ProductConfigurator(models.TransientModel):
     @api.multi
     def unlink(self):
         """Remove parent configuration session along with wizard"""
+
         self.mapped('config_session_id').unlink()
         return super(ProductConfigurator, self).unlink()
 
@@ -777,7 +789,6 @@ class ProductConfigurator(models.TransientModel):
         More importantly it sets metadata on the context
         variable so the fields_get and fields_view_get methods can generate the
         appropriate dynamic content"""
-
         wizard_action = {
             'type': 'ir.actions.act_window',
             'res_model': self._name,
@@ -790,7 +801,6 @@ class ProductConfigurator(models.TransientModel):
             'target': 'new',
             'res_id': self.id,
         }
-
         if not self.product_tmpl_id:
             return wizard_action
 
@@ -811,14 +821,12 @@ class ProductConfigurator(models.TransientModel):
 
         adjacent_steps = self.product_tmpl_id.get_adjacent_steps(
             self.value_ids.ids, active_step.id)
-
         next_step = adjacent_steps.get('next_step')
 
         if next_step:
             self.state = next_step.id
         else:
             return self.action_config_done()
-
         return wizard_action
 
     @api.multi
@@ -826,6 +834,7 @@ class ProductConfigurator(models.TransientModel):
         """Proceeds to the next step of the configuration process. This usually
     implies the next configuration step (if any) defined via the
     config_step_line_ids on the product.template."""
+
 
         wizard_action = {
             'type': 'ir.actions.act_window',
@@ -868,6 +877,7 @@ class ProductConfigurator(models.TransientModel):
     def action_reset(self):
         """Delete wizard and configuration session then create
         a new wizard+session and return an action for the new wizard object"""
+
         ctx = dict(self._context)
         try:
             session = self.config_session_id

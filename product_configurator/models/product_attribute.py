@@ -2,8 +2,8 @@
 
 from ast import literal_eval
 
-from openerp import models, fields, api, _
-from openerp.exceptions import ValidationError
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 # TODO: Implement a default attribute value field/method to load up on wizard
 
