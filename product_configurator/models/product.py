@@ -629,42 +629,44 @@ class ProductProduct(models.Model):
                       "(identical attribute values)")
                 )
 
-    @api.depends('attribute_value_ids.price_ids.price_extra', 'attribute_value_ids.price_ids.product_tmpl_id')
+    @api.depends('attribute_value_ids.price_ids.price_extra',
+                 'attribute_value_ids.price_ids.product_tmpl_id')
     def _compute_product_price_extra(self):
-        """Compute price of configurable products as sum
-        of products related to attribute values picked"""
-        for product in self:
-            if not product.config_ok:
-                price_extra = 0.0
-                for attribute_price in product.mapped('attribute_value_ids.price_ids'):
-                    if attribute_price.product_tmpl_id == product.product_tmpl_id:
-                        price_extra += attribute_price.price_extra
-                product.price_extra = price_extra
-            if product.config_ok:
-                conversions = product._get_conversions_dict()
-                lst_price = product.product_tmpl_id.lst_price
-                value_ids = product.attribute_value_ids.ids
-                # TODO: Merge custom values from products with cfg session
-                # and use same method to retrieve parsed custom val dict
-                custom_vals = {}
-                for val in product.value_custom_ids:
-                    custom_type = val.attribute_id.custom_type
-                    if custom_type in conversions:
-                        try:
-                            custom_vals[val.attribute_id.id] = conversions[
-                                custom_type](val.value)
-                        except:
-                            raise ValidationError(
-                                _("Could not convert custom value '%s' to '%s' on "
-                                  "product variant: '%s'" % (val.value,
-                                                             custom_type,
-                                                             product.display_name))
-                            )
-                    else:
-                        custom_vals[val.attribute_id.id] = val.value
-                prices = product.product_tmpl_id.get_cfg_price(
-                    value_ids, custom_vals)
-                product.price_extra = prices['total'] - prices['taxes'] - lst_price
+        """Compute price of configurable products as sum of products related
+        to attribute values picked"""
+        products = self.filtered(lambda x: not x.config_ok)
+        configurable_products = self - products
+        if products:
+            prices = super(ProductProduct, self)._get_price_extra(
+                'price_extra', [])
+            for product in products:
+                product.price_extra = prices[product.id]
+
+        conversions = self._get_conversions_dict()
+        for product in configurable_products:
+            lst_price = product.product_tmpl_id.lst_price
+            value_ids = product.attribute_value_ids.ids
+            # TODO: Merge custom values from products with cfg session
+            # and use same method to retrieve parsed custom val dict
+            custom_vals = {}
+            for val in product.value_custom_ids:
+                custom_type = val.attribute_id.custom_type
+                if custom_type in conversions:
+                    try:
+                        custom_vals[val.attribute_id.id] = conversions[
+                            custom_type](val.value)
+                    except:
+                        raise ValidationError(
+                            _("Could not convert custom value '%s' to '%s' on "
+                              "product variant: '%s'" % (val.value,
+                                                         custom_type,
+                                                         product.display_name))
+                        )
+                else:
+                    custom_vals[val.attribute_id.id] = val.value
+            prices = product.product_tmpl_id.get_cfg_price(
+                value_ids, custom_vals)
+            product.price_extra = prices['total'] - prices['taxes'] - lst_price
 
     @api.model
     def _get_config_name(self):
