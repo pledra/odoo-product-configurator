@@ -1,7 +1,6 @@
 /* Add one more option to boolean_button form widget (displayed in the product.template form view) */
 odoo.define('product_configurator.FormView', function (require) {
 "use strict";
-  console.log(" ------- inside define -------");
   var core = require('web.core');
   var ListView = require('web.ListController');
   var FormView = require('web.FormController');
@@ -30,7 +29,6 @@ odoo.define('product_configurator.FormView', function (require) {
 
   ListView.include({
     renderButtons: function() {
-      console.log("----------  render ListView ----- ");
       var self = this;
       this._super.apply(this, arguments); // Sets this.$buttons
       if(self.modelName == 'product.product' && self.initialState.context.custom_create_variant) {
@@ -57,7 +55,6 @@ odoo.define('product_configurator.FormView', function (require) {
       var self = this;
       this._super.apply(this, arguments); // Sets this.$buttons
       if(self.modelName == 'product.product' && self.initialState.context.custom_create_variant) {
-        console.log("----------  render FormView ----- ");
         this.$buttons.find('.o_form_button_create').css('display', 'none')
         this.$buttons.find('.oe_form_button_create').css('display', 'none')
         this.$buttons.find('.o_form_button_create_custom').css('display', 'inline')
