@@ -45,7 +45,6 @@ class ProductTemplate(models.Model):
     @api.multi
     @api.constrains('attribute_line_ids')
     def _check_default_values(self):
-        print("-----------_check_default_values----")
         """Validate default values set on the product template"""
         default_val_ids = self.attribute_line_ids.filtered(
             lambda l: l.default_val).mapped('default_val').ids
@@ -59,7 +58,6 @@ class ProductTemplate(models.Model):
     @api.multi
     @api.constrains('config_line_ids')
     def _check_default_value_domains(self):
-        print("----------- _check_default_value_domains ----")
         try:
             self._check_default_values()
         except ValidationError:
@@ -128,7 +126,6 @@ class ProductTemplate(models.Model):
 
         open_step_lines = self.get_open_step_lines(value_ids)
 
-        print ("============open_step_lines===========", open_step_lines)
         if not active_cfg_step_line:
             return {'next_step': open_step_lines[0]}
 
@@ -483,7 +480,6 @@ class ProductTemplate(models.Model):
 
         :returns: list of available attribute values
         """
-        print(" ------- values_available ------- ")
         avail_val_ids = []
         for attr_val_id in attr_val_ids:
 
@@ -495,7 +491,6 @@ class ProductTemplate(models.Model):
             avail = self.validate_domains_against_sels(domains, sel_val_ids)
             if avail:
                 avail_val_ids.append(attr_val_id)
-        print(" -------- avail_val_ids----- ", avail_val_ids)
         return avail_val_ids
 
     @api.multi
@@ -556,7 +551,6 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def create_variant_ids(self):
-        print("-------- create_variant_ids -------- ")
         """ Prevent configurable products from creating variants as these serve
             only as a template for the product configurator"""
         templates = self.filtered(lambda t: not t.config_ok)
@@ -582,7 +576,6 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def configure_product(self):
-        print("----------test-------");
         """ Return action for new product.configurator wizard"""
         return {
             'type': 'ir.actions.act_window',
@@ -602,7 +595,6 @@ class ProductProduct(models.Model):
     _rec_name = 'config_name'
 
     def _get_conversions_dict(self):
-        print("-------- _get_conversions_dict ")
         conversions = {
             'float': float,
             'int': int
@@ -753,7 +745,6 @@ class ProductProduct(models.Model):
                                                                  view_id)
                 res['arch'] = xarch
                 res['fields'] = xfields
-        print(" ------- rrr new field view get ------")
         return res
 
     @api.multi
@@ -768,7 +759,6 @@ class ProductProduct(models.Model):
     def _compute_name(self):
         """ Compute the name of the configurable products and use template
             name for others"""
-        print("-----------name compute ------- ", self)
         for product in self:
             if product.config_ok:
                 product.config_name = product._get_config_name()
