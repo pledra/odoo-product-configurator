@@ -391,7 +391,6 @@ class ProductConfigSession(models.Model):
         }
 
         """
-        print("------- update_config ------", attr_val_dict, custom_val_dict);
         if attr_val_dict is None:
             attr_val_dict = {}
         if custom_val_dict is None:
@@ -408,16 +407,13 @@ class ProductConfigSession(models.Model):
                 continue
             if isinstance(vals, list):
                 value_ids += vals
-                print("---------list ins-----------", value_ids, vals)
             elif isinstance(vals, int):
                 value_ids.append(vals)
-                print("============value_ids=-=========", value_ids, vals)
 
         if value_ids != self.value_ids.ids:
             update_vals.update({
                 'value_ids': [(6, 0, value_ids)]
             })
-            print("-============update vals=====", update_vals)
 
         # Remove all custom values included in the custom_vals dict
         self.custom_value_ids.filtered(
@@ -425,7 +421,6 @@ class ProductConfigSession(models.Model):
 
         if custom_val_dict:
             #for key, value in custom_val_dict.iteritems():
-            #    print(key, value)
 
             val_list = type(list(custom_val_dict.keys()))
 
@@ -433,34 +428,25 @@ class ProductConfigSession(models.Model):
                 ('id', 'in', val_list(custom_val_dict.keys())),
                 ('custom_type', '=', 'binary')
             ]).ids
-            print("-------binary----", binary_field_ids)
         for attr_id, vals in custom_val_dict.items():
-            print("--------------vals-------------", attr_id, vals)
             if not vals:
-                print("----------cont-------")
                 continue
 
             if 'custom_value_ids' not in update_vals:
                 update_vals['custom_value_ids'] = []
 
             custom_vals = {'attribute_id': attr_id}
-            print("------cust======", custom_vals)
 
             if attr_id in binary_field_ids:
-                print("-=======attrid=======", attr_id)
                 attachments = [(0, 0, {
                     'name': val.get('name'),
                     'datas': val.get('datas')
                 }) for val in vals]
-                print("------attch------", attachments)
                 custom_vals.update({'attachment_ids': attachments})
-                print("----cstvals------", custom_vals)
             else:
                 custom_vals.update({'value': vals})
-                print("---------cstva;1=======", custom_vals)
 
             update_vals['custom_value_ids'].append((0, 0, custom_vals))
-        print("---------update_vals-----update_vals--------", update_vals)
         self.write(update_vals)
 
     @api.multi

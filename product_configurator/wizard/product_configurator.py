@@ -158,9 +158,7 @@ class ProductConfigurator(models.TransientModel):
         vals = {}
 
         dynamic_fields = {k: v for k, v in dynamic_fields.items() if v}
-        print("----domains------", domains);
         for k, v in dynamic_fields.items():
-            print("---------k------", k, v)
             if not v:
                 continue
             available_val_ids = domains[k][0][2]
@@ -211,11 +209,9 @@ class ProductConfigurator(models.TransientModel):
         }
         # Get the unstored values from the client view
         for k, v in dynamic_fields.items():
-            print("===========k----v======", k, v)
             attr_id = int(k.split(field_prefix)[1])
-            #if isinstance(v, list):
+            # if isinstance(v, list):
             #    dynamic_fields[k] = v[0][2]
-            #    print("----------0---------k=====", dynamic_fields[k])
             line_attributes = cfg_step.attribute_line_ids.mapped(
                 'attribute_id')
             if not cfg_step or attr_id in line_attributes.ids:
@@ -428,7 +424,6 @@ class ProductConfigurator(models.TransientModel):
 
         # Update result dict from super with modified view
         res.update({'arch': etree.tostring(mod_view)})
-        print("--------field view get res ------")
         return res
 
     @api.model
@@ -636,20 +631,16 @@ class ProductConfigurator(models.TransientModel):
         custom_attr_vals = [
             f for f in fields if f.startswith(custom_field_prefix)
         ]
-        print("----------cst-------", custom_attr_vals)
 
         dynamic_fields = attr_vals + custom_attr_vals
         fields = self._remove_dynamic_fields(fields)
-        print("-------dy--------", dynamic_fields, fields)
 
         custom_ext_id = 'product_configurator.custom_attribute_value'
         custom_val = self.env.ref(custom_ext_id)
-        print("=======cval=======", custom_ext_id, custom_val)
         dynamic_vals = {}
 
         res = super(ProductConfigurator, self).read(fields=fields, load=load)
 
-        print ("============res========", res)
         if not dynamic_fields:
             return res
 
@@ -663,7 +654,6 @@ class ProductConfigurator(models.TransientModel):
             custom_field_name = custom_field_prefix + str(attr_id)
             custom_vals = self.custom_value_ids.filtered(
                 lambda x: x.attribute_id.id == attr_id)
-            print("=========cs vals=======", custom_field_name, custom_vals)
             vals = attr_line.value_ids.filtered(
                 lambda v: v in self.value_ids)
 
@@ -682,18 +672,14 @@ class ProductConfigurator(models.TransientModel):
                     dynamic_vals.update({
                         custom_field_name: custom_vals.eval()
                     })
-                print("------dy val;---------", dynamic_vals)
             elif attr_line.multi:
                 dynamic_vals = {field_name: [[6, 0, vals.ids]]}
-                print("-========dv---------", dynamic_vals)
             else:
                 try:
                     vals.ensure_one()
                     dynamic_vals = {field_name: vals.id}
-                    print("========dv val========", dynamic_vals)
                 except:
                     continue
-            print("----------dynam----val=======", dynamic_vals)
             res[0].update(dynamic_vals)
 
         return res
@@ -787,12 +773,10 @@ class ProductConfigurator(models.TransientModel):
 
         try:
             cfg_step_line_id = int(self.state)
-            print("---------cgf----", cfg_step_line_id)
         except:
             cfg_step_line_id = None
 
         if cfg_step_line_id:
-            print("------cfg step---", cfg_step_line_obj.browse(cfg_step_line_id))
             return cfg_step_line_obj.browse(cfg_step_line_id)
         return cfg_step_line_obj
 
@@ -843,7 +827,6 @@ class ProductConfigurator(models.TransientModel):
             self.state = next_step.id
         else:
             return self.action_config_done()
-        print ("-----wizard action---", wizard_action)
         return wizard_action
 
     @api.multi
