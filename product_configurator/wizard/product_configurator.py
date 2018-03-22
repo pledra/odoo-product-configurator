@@ -803,6 +803,7 @@ class ProductConfigurator(models.TransientModel):
             'context': dict(
                 self.env.context,
                 wizard_id=self.id,
+                view_cache=False,
             ),
             'target': 'new',
             'res_id': self.id,
@@ -849,6 +850,7 @@ class ProductConfigurator(models.TransientModel):
             'context': dict(
                 self.env.context,
                 wizard_id=self.id,
+                view_cache=False,
             ),
             'target': 'new',
             'res_id': self.id,

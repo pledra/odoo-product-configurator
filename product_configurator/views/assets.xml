@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="assets_backend" name="account assets" inherit_id="web.assets_backend">
+    <template id="assets_backend" name="Product Configurator Assets" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
             <link href="/product_configurator/static/css/style.css" rel="stylesheet"/>
             <script type="text/javascript" src="/product_configurator/static/js/form_widgets.js"/>
+            <script type="text/javascript" src="/product_configurator/static/js/data_manager.js"/>
         </xpath>
     </template>
 
