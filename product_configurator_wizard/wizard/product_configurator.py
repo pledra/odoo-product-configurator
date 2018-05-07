@@ -236,6 +236,11 @@ class ProductConfigurator(models.TransientModel):
     )
 
     @api.model
+    def _get_field_types(self):
+        # retrieve the possible field types from the field classes' metaclass
+        return sorted((key, key) for key in fields.MetaField.by_type)
+
+    @api.model
     def fields_get(self, allfields=None, attributes=None):
         """ Artificially inject fields which are dynamically created using the
         attribute_ids on the product.template as reference"""
@@ -307,7 +312,7 @@ class ProductConfigurator(models.TransientModel):
 
                 # Set default field type
                 field_type = 'char'
-                field_types = self.env['ir.model.fields']._get_field_types()
+                field_types = self._get_field_types()
 
                 if attribute.custom_type:
                     custom_type = line.attribute_id.custom_type
@@ -587,6 +592,7 @@ class ProductConfigurator(models.TransientModel):
                 lambda v: v in self.value_ids)
 
             default_vals[field_name] = False
+            default_vals[custom_field_name] = False
             res[0].update(default_vals)
             if not attr_line.custom and not vals:
                 continue
