@@ -632,13 +632,10 @@ class ProductProduct(models.Model):
     def _compute_product_price_extra(self):
         """Compute price of configurable products as sum of products related
         to attribute values picked"""
-        products = self.filtered(lambda x: not x.config_ok)
-        configurable_products = self - products
-        if products:
-            prices = super(ProductProduct, self)._get_price_extra(
-                'price_extra', [])
-            for product in products:
-                product.price_extra = prices[product.id]
+        standard_products = self.filtered(lambda x: not x.config_ok)
+        configurable_products = self - standard_products
+        if standard_products:
+            prices = super(ProductProduct, self)._compute_product_price_extra()
 
         conversions = self._get_conversions_dict()
         for product in configurable_products:
