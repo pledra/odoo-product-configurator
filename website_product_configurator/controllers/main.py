@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import json
 import base64
 from werkzeug import secure_filename
