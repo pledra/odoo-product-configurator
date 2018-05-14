@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from mako.runtime import Context
 from openerp import api, fields, models
 

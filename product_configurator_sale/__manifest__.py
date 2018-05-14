@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 {
     'name': 'Product Configurator Sale',
-    'version': '9.0.1.0.0',
+    'version': '11.0.1.0.0',
     'category': 'Generic Modules/Sale',
     'summary': 'Product configuration interface modules for Sale',
     'author': 'Pledra',
@@ -16,5 +15,6 @@
     'images': [],
     'test': [],
     'installable': True,
+    'application': True,
     'auto_install': False,
 }

@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 {
     'name': "Website Product Configurator",
-    'version': '9.0.1.0.0',
+    'version': '11.0.1.0.0',
     'summary': """Configure products in e-shop""",
     'author': "Pledra",
     'license': 'AGPL-3',

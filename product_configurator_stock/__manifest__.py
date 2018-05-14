@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 {
     'name': 'Product Configurator for Stock',
-    'version': '9.0.1.0.0',
+    'version': '11.0.1.0.0',
     'category': 'Generic Modules/Stock',
     'summary': 'Product configuration interface module for Stock',
     'author': 'Pledra',
@@ -19,5 +18,6 @@
     'images': [],
     'test': [],
     'installable': True,
+    'application': True,
     'auto_install': False,
 }

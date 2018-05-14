@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 {
     'name': 'Website Configurator Manufacturing',
-    'version': '9.0.1.0.0',
+    'version': '11.0.1.0.0',
     'category': 'Website',
     'summary': 'Website integration of MRP',
     'author': 'Pledra',
@@ -12,6 +11,7 @@
         'website_product_configurator',
     ],
     'data': ['templates.xml'],
+    'application': True,
     'installable': False,
     'auto_install': False,
 }

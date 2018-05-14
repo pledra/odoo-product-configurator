@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from openerp.http import request
 
 from openerp.addons.website_product_configurator.controllers.main import (
