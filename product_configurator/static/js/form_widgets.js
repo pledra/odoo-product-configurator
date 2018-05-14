@@ -72,7 +72,14 @@ odoo.define('product_configurator.FormView', function (require) {
         });
       }
     },
+    _onButtonClicked: function (event) {
+        var attrs = event.data.attrs
+        if (attrs.special === 'no_save') {
+          this.canBeSaved = function() {return true;}
+          event.data.attrs.special = false;
+        }
+        this._super(event);
+    },
   });
   registry.add('boolean_button', FieldBooleanButton);
 });
-
