@@ -37,7 +37,7 @@
                     </group>
                 </sheet>
                 <footer>
-                    <field name="value_ids" invisible="1"/>
+                    <field name="value_ids" readonly="1" invisible="1"/>
                     <button type="object" name="action_previous_step" attrs="{'invisible': [('state','=','select')]}" string="Back" special="no_save"/>
                     <button type="object" name="action_next_step" class="oe_highlight" string="Next"/>
                 </footer>
