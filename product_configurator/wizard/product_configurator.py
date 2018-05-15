@@ -69,7 +69,6 @@ class ProductConfigurator(models.TransientModel):
         configuration steps set on the product.template via
         config_step_line_ids"""
 
-
         steps = [('select', "Select Template")]
 
         # Get the wizard id from context set via action_next_step method
@@ -637,7 +636,6 @@ class ProductConfigurator(models.TransientModel):
         custom_val = self.env.ref(custom_ext_id)
         dynamic_vals = {}
 
-        default_vals = {}
         res = super(ProductConfigurator, self).read(fields=fields, load=load)
 
         if not dynamic_fields:
@@ -651,40 +649,45 @@ class ProductConfigurator(models.TransientModel):
                 continue
 
             custom_field_name = custom_field_prefix + str(attr_id)
-            custom_vals = self.custom_value_ids.filtered(
-                lambda x: x.attribute_id.id == attr_id)
-            vals = attr_line.value_ids.filtered(
-                lambda v: v in self.value_ids)
 
-            default_vals[field_name] = False
-            default_vals[custom_field_name] = False
-            res[0].update(default_vals)
+            # Handle default values for dynamic fields on Odoo frontend
+            res[0].update({
+                field_name: False,
+                custom_field_name: False
+            })
+
+            custom_vals = self.custom_value_ids.filtered(
+                lambda x: x.attribute_id.id == attr_id).with_context({
+                    'show_attribute': False
+                })
+            vals = attr_line.value_ids.filtered(
+                lambda v: v in self.value_ids).with_context({
+                    'show_attribute': False
+                })
 
             if not attr_line.custom and not vals:
                 continue
 
             if attr_line.custom and custom_vals:
+                custom_field_val = custom_val.id
+                if load == '_classic_read':
+                    custom_field_val = custom_val.name_get()[0]
                 dynamic_vals.update({
-                    field_name: custom_val.id,
+                    field_name: custom_field_val,
+                    custom_field_name: custom_vals.eval()
                 })
-                if attr_line.attribute_id.custom_type == 'binary':
-                    dynamic_vals.update({
-                        custom_field_name: custom_vals.eval()
-                    })
-                else:
-                    dynamic_vals.update({
-                        custom_field_name: custom_vals.eval()
-                    })
             elif attr_line.multi:
                 dynamic_vals = {field_name: [[6, 0, vals.ids]]}
             else:
                 try:
                     vals.ensure_one()
-                    dynamic_vals = {field_name: vals.id}
+                    field_value = vals.id
+                    if load == '_classic_read':
+                        field_value = vals.name_get()[0]
+                    dynamic_vals = {field_name: field_value}
                 except:
                     continue
             res[0].update(dynamic_vals)
-
         return res
 
     @api.multi
@@ -837,7 +840,6 @@ class ProductConfigurator(models.TransientModel):
         """Proceeds to the next step of the configuration process. This usually
     implies the next configuration step (if any) defined via the
     config_step_line_ids on the product.template."""
-
 
         wizard_action = {
             'type': 'ir.actions.act_window',
