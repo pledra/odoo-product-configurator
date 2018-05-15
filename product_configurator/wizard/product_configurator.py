@@ -677,7 +677,7 @@ class ProductConfigurator(models.TransientModel):
                     custom_field_name: custom_vals.eval()
                 })
             elif attr_line.multi:
-                dynamic_vals = {field_name: [[6, 0, vals.ids]]}
+                dynamic_vals = {field_name: vals.ids}
             else:
                 try:
                     vals.ensure_one()
