@@ -9,11 +9,11 @@ Manager.include({
      * heavy reliance on the fields_view_get method to generate and update
      * dynamic content.
      */
-    load_views: function (dataset, views_descr, options) {
-        if (dataset.context['view_cache'] == false) {
+    load_views: function (params, options) {
+        if (params.context.eval()['view_cache'] == false) {
             this.invalidate();
         }
-        return this._super(dataset, views_descr, options);
+        return this._super(params, options);
     }
 });
 
