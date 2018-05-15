@@ -76,7 +76,9 @@ odoo.define('product_configurator.FormView', function (require) {
         var attrs = event.data.attrs
         if (attrs.special === 'no_save') {
           this.canBeSaved = function() {return true;}
-          event.data.attrs.special = false;
+          var event_no_save = $.extend( true, {}, event );
+          event_no_save.data.attrs.special = false;
+          return this._super(event_no_save);
         }
         this._super(event);
     },
