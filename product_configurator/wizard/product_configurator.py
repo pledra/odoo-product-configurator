@@ -61,6 +61,16 @@ class ProductConfigurator(models.TransientModel):
         img_obj = product_tmpl.get_config_image_obj(self.value_ids.ids)
         self.product_img = img_obj.image
 
+    @api.multi
+    @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids')
+    def _compute_attr_lines(self):
+        """Use compute method instead of related due to increased flexibility
+        and strange behavior when attempting to have a related field point
+        to computed values"""
+        for configurator in self:
+            attribute_lines = configurator.product_tmpl_id.attribute_line_ids
+            configurator.attribute_line_ids = attribute_lines
+
     # TODO: We could use a m2o instead of a monkeypatched select field but
     # adding new steps should be trivial via custom development
     @api.multi
@@ -243,7 +253,7 @@ class ProductConfigurator(models.TransientModel):
     )
     attribute_line_ids = fields.One2many(
         comodel_name='product.attribute.line',
-        related='product_tmpl_id.attribute_line_ids',
+        compute='_compute_attr_lines',
         string="Attributes",
         readonly=True,
         store=False
