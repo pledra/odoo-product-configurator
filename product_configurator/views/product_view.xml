@@ -39,7 +39,7 @@
             <!-- TODO: Implement a method to hide this field for non-configurable product templates -->
             <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='value_ids']" position="after">
                 <field name="default_val"
-                    domain="[('id', 'in', value_ids and value_ids[0][2])]"
+                    domain="[('id', 'in', value_ids)]"
                     context="{'show_attribute': False}"
                     options="{'no_create': True, 'no_create_edit': True}"
                     invisible="not context.get('default_config_ok', False)"/>
@@ -71,7 +71,7 @@
                         <field name="value_ids"
                                widget="many2many_tags"
                                attrs="{'readonly': [('attribute_line_id','=',False)]}"
-                               domain="[('id','in',attr_line_val_ids[0][2])]"
+                               domain="[('id','in',attr_line_val_ids)]"
                                options="{'no_create': True, 'no_create_edit': True}"
                                context="{'show_attribute': False}"/>
                         <field name="domain_id"/>
