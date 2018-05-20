@@ -1,0 +1,1 @@
+enterprise git@github.com-enterprise:odoo/enterprise.git
