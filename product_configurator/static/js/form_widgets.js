@@ -15,8 +15,8 @@ odoo.define('product_configurator.FormView', function (require) {
         switch (this.nodeOptions.terminology) {
             case "config":
                 this.$el.empty();
-                this.text = this.value ? _t("Configurable") : _t("Deactivate");
-                this.hover = this.value ? _t("Standard") : _t("Activate");
+                this.text = this.value ? _t("Configurable") : _t("Standard");
+                this.hover = this.value ? _t("Standard") : _t("Configurable");
                 var val_color = this.value ? 'text-success' : 'text-danger';
                 var hover_color = this.value ? 'text-danger' : 'text-success';
                 var $val = $('<span>').addClass('o_stat_text o_not_hover ' + val_color).text(this.text);

@@ -200,7 +200,7 @@ class ProductConfigurator(models.TransientModel):
         # are needed
         # Recall method to get the new sub-attribute fields
         dynamic_fields = {
-            k: v for k, v in fields.iteritems() if k.startswith(
+            k: v for k, v in fields.items() if k.startswith(
                 subattr_prefix) or
             k.startswith(subattr_qty_prefix) or
             k.startswith(attr_qty_prefix)
@@ -505,11 +505,11 @@ class ProductConfigurator(models.TransientModel):
         res = super(ProductConfigurator, self).write(vals=vals)
 
         attr_val_variant_qty_fields = {
-            k: v for k, v in vals.iteritems()
+            k: v for k, v in vals.items()
             if k.startswith(attr_qty_prefix)
         }
 
-        for qty_field, qty in attr_val_variant_qty_fields.iteritems():
+        for qty_field, qty in attr_val_variant_qty_fields.items():
             if not qty:
                 continue
             attr_id = int(qty_field.replace(attr_qty_prefix, ''))
@@ -536,7 +536,7 @@ class ProductConfigurator(models.TransientModel):
             vals.get(qty_field)
 
         subproduct_value_ids = [
-            v for k, v in vals.iteritems() if k.startswith(subattr_prefix)
+            v for k, v in vals.items() if k.startswith(subattr_prefix)
         ]
 
         if not subproduct_value_ids:

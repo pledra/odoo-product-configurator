@@ -41,7 +41,7 @@ class ProductConfiguratorPurchase(models.TransientModel):
             onchange_updates = order_line_obj.onchange(
                 line_vals, ['product_id'], specs)
             onchange_vals = onchange_updates.get('value', {})
-            for name, val in onchange_vals.iteritems():
+            for name, val in onchange_vals.items():
                 if isinstance(val, tuple):
                     onchange_vals[name] = val[0]
             vals.update(onchange_vals)
@@ -54,7 +54,7 @@ class ProductConfiguratorPurchase(models.TransientModel):
         order_line.onchange_product_id()
 
         line_vals = {}
-        for field, model in order_line._fields.iteritems():
+        for field, model in order_line._fields.items():
             line_vals[field] = model.convert_to_write(order_line[field])
 
         line_vals.update(self._extra_line_values(variant))
