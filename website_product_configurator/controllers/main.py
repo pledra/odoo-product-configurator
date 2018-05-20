@@ -80,12 +80,12 @@ class WebsiteProductConfig(http.Controller):
 
         parsed_attr_vals_dict = {
             int(k.split(self.attr_field_prefix)[1]): v
-            for k, v in parsed_vals['cfg_vals'].iteritems()
+            for k, v in parsed_vals['cfg_vals'].items()
         }
 
         parsed_custom_vals_dict = {
             int(k.split(self.custom_attr_field_prefix)[1]): v
-            for k, v in parsed_vals['custom_vals'].iteritems()
+            for k, v in parsed_vals['custom_vals'].items()
         }
 
         attr_vals_dict.update(parsed_vals['cfg_vals'])
@@ -286,12 +286,12 @@ class WebsiteProductConfig(http.Controller):
 
         vals_dict = {
             int(field_name.split(self.attr_field_prefix)[1]): val
-            for field_name, val in parsed_vals['cfg_vals'].iteritems()
+            for field_name, val in parsed_vals['cfg_vals'].items()
         }
 
         custom_vals_dict = {
             int(field_name.split(self.custom_attr_field_prefix)[1]): val
-            for field_name, val in parsed_vals['custom_vals'].iteritems()
+            for field_name, val in parsed_vals['custom_vals'].items()
         }
 
         binary_custom_vals = cfg_session.custom_value_ids.filtered(
