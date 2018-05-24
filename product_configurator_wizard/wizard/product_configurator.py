@@ -121,9 +121,9 @@ class ProductConfigurator(models.TransientModel):
         """
         vals = {}
 
-        dynamic_fields = {k: v for k, v in dynamic_fields.iteritems() if v}
+        dynamic_fields = {k: v for k, v in dynamic_fields.items() if v}
 
-        for k, v in dynamic_fields.iteritems():
+        for k, v in dynamic_fields.items():
             if not v:
                 continue
             available_val_ids = domains[k][0][2]
@@ -167,12 +167,12 @@ class ProductConfigurator(models.TransientModel):
             cfg_step = self.env['product.config.step.line']
 
         dynamic_fields = {
-            k: v for k, v in values.iteritems() if k.startswith(
+            k: v for k, v in values.items() if k.startswith(
                 self.field_prefix)
         }
 
         # Get the unstored values from the client view
-        for k, v in dynamic_fields.iteritems():
+        for k, v in dynamic_fields.items():
             attr_id = int(k.split(self.field_prefix)[1])
             line_attributes = cfg_step.attribute_line_ids.mapped(
                 'attribute_id')
@@ -234,6 +234,11 @@ class ProductConfigurator(models.TransientModel):
         comodel_name='sale.order.line',
         readonly=True,
     )
+
+    @api.model
+    def _get_field_types(self):
+        # retrieve the possible field types from the field classes' metaclass
+        return sorted((key, key) for key in fields.MetaField.by_type)
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -307,7 +312,7 @@ class ProductConfigurator(models.TransientModel):
 
                 # Set default field type
                 field_type = 'char'
-                field_types = self.env['ir.model.fields']._get_field_types()
+                field_types = self._get_field_types()
 
                 if attribute.custom_type:
                     custom_type = line.attribute_id.custom_type
@@ -358,7 +363,7 @@ class ProductConfigurator(models.TransientModel):
         # Get updated fields including the dynamic ones
         fields = self.fields_get()
         dynamic_fields = {
-            k: v for k, v in fields.iteritems() if k.startswith(
+            k: v for k, v in fields.items() if k.startswith(
                 self.field_prefix) or k.startswith(self.custom_field_prefix)
         }
 
@@ -463,7 +468,7 @@ class ProductConfigurator(models.TransientModel):
                         val_ids = val_ids - domain_line.value_ids
                         attr_depends[attr_field] |= set(val_ids.ids)
 
-                for dependee_field, val_ids in attr_depends.iteritems():
+                for dependee_field, val_ids in attr_depends.items():
                     if not val_ids:
                         continue
                     attrs['readonly'].append(
@@ -567,7 +572,7 @@ class ProductConfigurator(models.TransientModel):
         custom_ext_id = 'product_configurator.custom_attribute_value'
         custom_val = self.env.ref(custom_ext_id)
         dynamic_vals = {}
-
+        default_vals = {}
         res = super(ProductConfigurator, self).read(fields=fields, load=load)
 
         if not dynamic_fields:
@@ -586,6 +591,9 @@ class ProductConfigurator(models.TransientModel):
             vals = attr_line.value_ids.filtered(
                 lambda v: v in self.value_ids)
 
+            default_vals[field_name] = False
+            default_vals[custom_field_name] = False
+            res[0].update(default_vals)
             if not attr_line.custom and not vals:
                 continue
 
@@ -610,6 +618,7 @@ class ProductConfigurator(models.TransientModel):
                 except:
                     continue
             res[0].update(dynamic_vals)
+
         return res
 
     @api.multi

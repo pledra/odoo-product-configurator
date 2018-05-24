@@ -393,7 +393,7 @@ class ProductConfigSession(models.Model):
         update_vals = {}
 
         value_ids = self.value_ids.ids
-        for attr_id, vals in attr_val_dict.iteritems():
+        for attr_id, vals in attr_val_dict.items():
             attr_val_ids = self.value_ids.filtered(
                 lambda x: x.attribute_id.id == int(attr_id)).ids
             # Remove all values for this attribute and add vals from dict
@@ -412,14 +412,14 @@ class ProductConfigSession(models.Model):
 
         # Remove all custom values included in the custom_vals dict
         self.custom_value_ids.filtered(
-            lambda x: x.attribute_id.id in custom_val_dict.keys()).unlink()
+            lambda x: x.attribute_id.id in list(custom_val_dict.keys())).unlink()
 
         if custom_val_dict:
             binary_field_ids = self.env['product.attribute'].search([
-                ('id', 'in', custom_val_dict.keys()),
+                ('id', 'in', list(custom_val_dict.keys())),
                 ('custom_type', '=', 'binary')
             ]).ids
-        for attr_id, vals in custom_val_dict.iteritems():
+        for attr_id, vals in custom_val_dict.items():
             if not vals:
                 continue
 
