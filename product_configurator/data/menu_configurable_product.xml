@@ -44,6 +44,20 @@
         <field name="view_type">form</field>
     </record>
 
+    <record id="action_general_configuration" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'general_settings'}</field>
+    </record>
+
+    <menuitem id="menu_action_general_configuration"
+              action="action_general_configuration"
+              name="Settings"
+              parent="menu_product_configurable_settings" sequence="20"/>
+
     <menuitem id="menu_product_config_steps_action"
               action="product_config_steps_action"
               name="Configuration Steps"
