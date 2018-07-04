@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- Configuration Subproduct Lines -->
+
+    <record id="config_subproduct_line_form_view" model="ir.ui.view">
+        <field name="name">product.configurator.config.subproduct.line.form</field>
+        <field name="model">product.config.subproduct.line</field>
+        <field name="arch" type="xml">
+            <form string="Configuration Subproduct Line">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="product_tmpl_id"/>
+                            <field name="subproduct_id"/>
+                        </group>
+                        <group>
+                            <!-- <field name="quantity"/> -->
+                            <field name="required"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="config_subproduct_line_tree_view" model="ir.ui.view">
+        <field name="name">product.configurator.config.subproduct.line.tree</field>
+        <field name="model">product.config.subproduct.line</field>
+        <field name="arch" type="xml">
+            <tree string="Configuration Subproduct Line">
+                <field name="product_tmpl_id"/>
+                <field name="subproduct_id"/>
+                <!-- <field name="quantity"/> -->
+                <field name="required"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="product_config_session_form_view" model="ir.ui.view">
+        <field name="name">product.subconfig.session.form</field>
+        <field name="model">product.config.session</field>
+        <field name="inherit_id" ref="product_configurator.product_config_session_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="child_ids" string="Subsessions">
+                    <field name="child_ids">
+                        <tree>
+                            <field name="product_tmpl_id"/>
+                            <field name="value_ids"/>
+                            <field name="custom_value_ids"/>
+                            <field name="price"/>
+                            <field name="state"/>
+                            <!-- <field name="quantity"/> -->
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+<!--             <xpath expr="//field[@name='price']" position="after">
+    <field name="quantity"/>
+</xpath> -->
+        </field>
+    </record>
+
+</odoo>
