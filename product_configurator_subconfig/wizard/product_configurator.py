@@ -39,7 +39,11 @@ class ProductConfigurator(models.TransientModel):
             return res
 
         # Maybe we store the subproduct instead of searching for it?
+<<<<<<< HEAD
         active_step = self.config_session_id.get_active_step()
+=======
+        active_step = self.get_active_step()
+>>>>>>> e91b6e9... [WIP] Transfering subconfiguration functionality from MRP to separate module
         subproduct = active_step.config_subproduct_line_id.subproduct_id
 
         if not subproduct:
