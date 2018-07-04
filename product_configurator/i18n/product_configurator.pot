@@ -173,6 +173,7 @@ msgstr ""
 
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_line_attr_line_val_ids
+#: model:ir.ui.menu,name:product_configurator.menu_variants_action_configuration
 msgid "Attribute Values"
 msgstr ""
 
@@ -1073,6 +1074,7 @@ msgstr ""
 
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_configurator_attribute_line_ids
+#: model:ir.ui.menu,name:product_configurator.menu_attribute_action_configuration
 msgid "Attributes"
 msgstr ""
 

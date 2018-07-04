@@ -21,9 +21,9 @@
                 <attribute name="editable"/>
             </xpath>
 
-            <xpath expr="//field[@name='name']" position="before">
+            <!--xpath expr="//field[@name='name']" position="before">
                 <field name="sequence" widget="handle"/>
-            </xpath>
+            </xpath-->
 
             <xpath expr="//field[@name='name']" position="after">
                 <!-- <field name="type" /> -->

@@ -153,5 +153,18 @@
         </field>
     </record>
 
+    <menuitem
+        id="menu_attribute_action_configuration"
+        action="product.attribute_action"
+        parent="menu_product_configurable_settings"
+        sequence="1"
+        groups="product.group_product_variant"/>
+
+    <menuitem
+        id="menu_variants_action_configuration"
+        action="product.variants_action"
+        parent="menu_product_configurable_settings"
+        sequence="2"
+        groups="product.group_product_variant"/>
 </data>
 </odoo>
