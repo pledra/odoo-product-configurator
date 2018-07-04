@@ -82,6 +82,7 @@ class ProductConfigurator(models.TransientModel):
             )
         return xml_view
 
+<<<<<<< a73b885c11b3a45a954e7287247998e56e89509e
     @api.model
     def add_dynamic_fields(self, res, dynamic_fields, wiz):
         subattr_prefix = self._prefixes.get('subattr_prefix')

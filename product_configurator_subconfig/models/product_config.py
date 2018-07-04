@@ -41,6 +41,7 @@ class ProductConfigSession(models.Model):
 
         return substeps
 
+<<<<<<< HEAD
     @api.model
     def get_open_step_lines(self, value_ids=None):
         """
@@ -124,6 +125,8 @@ class ProductConfigSession(models.Model):
 
         return steps
 
+=======
+>>>>>>> e91b6e9... [WIP] Transfering subconfiguration functionality from MRP to separate module
 
 class ProductConfigSubproductLine(models.Model):
     _name = 'product.config.subproduct.line'
