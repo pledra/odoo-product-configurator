@@ -745,7 +745,7 @@ class WebsiteProductConfig(http.Controller):
             'cfg_session': cfg_session,
             'keep': keep,
         }
-        return request.website.render(
+        return request.render(
             "website_product_configurator.cfg_session", values)
         # TODO: If template not found redirect to product_configurator page
 
