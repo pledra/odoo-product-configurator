@@ -358,7 +358,7 @@
                     </div>
 
                     <div class="mt8">
-                      <div class="input-group oe_website_spinner">
+                      <div class="input-group oe_website_spinner css_quantity">
                           <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json">
                               <i class="fa fa-minus"></i>
                           </a>
