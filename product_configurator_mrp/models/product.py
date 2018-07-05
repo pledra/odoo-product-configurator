@@ -141,7 +141,7 @@ class ProductTemplate(models.Model):
 
         bom_obj = self.env['mrp.bom']
 
-        bom = bom_obj.browse(bom_obj._bom_find(product_id=variant.id))
+        bom = bom_obj.browse(bom_obj._bom_find(product=variant))
 
         if not bom:
             bom_line_vals = session.get_bom_line_vals()
