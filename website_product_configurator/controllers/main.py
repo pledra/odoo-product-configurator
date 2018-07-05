@@ -2,10 +2,10 @@ import json
 import base64
 from werkzeug import secure_filename
 
-from openerp import http
-from openerp.http import request
-from openerp.addons.website.models.website import slug
-from openerp.addons.website_sale.controllers import main
+from odoo import http
+from odoo.http import request
+from odoo.addons.http_routing.models.ir_http import slug
+from odoo.addons.website_sale.controllers import main
 
 
 def get_pricelist():
@@ -205,7 +205,7 @@ class WebsiteProductConfig(http.Controller):
 
         values = {
             'templates': templates,
-            'bins': main.table_compute().process(templates),
+            'bins': main.TableCompute().process(templates),
             'styles': styles,
             'keep': keep,
             'rows': main.PPR,
@@ -757,7 +757,7 @@ class WebsiteProductConfig(http.Controller):
         return request.redirect("/shop/cart")
 
 
-class WebsiteSale(main.website_sale):
+class WebsiteSale(main.WebsiteSale):
 
     @http.route()
     def product(self, product, category='', search='', **kwargs):
