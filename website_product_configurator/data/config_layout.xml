@@ -186,7 +186,7 @@
                           <span t-field="value.product_id.sudo().lst_price"
                                 t-field-options='{
                                   "widget": "monetary",
-                                  "display_currency": "user_id.partner_id.property_product_pricelist.currency_id"
+                                  "display_currency": user_id.partner_id.property_product_pricelist.currency_id
                                 }'/>
                     </div>
                   </div>
