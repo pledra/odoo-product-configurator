@@ -154,49 +154,49 @@
     </template>
 
     <template id="config_form_radio" primary="True" inherit_id="config_form_base" name="Radio-Thumbnail">
-    <xpath expr="." position="inside">
-      <form id="product_config_form" class="form-horizontal" method="post">
-        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-        <t t-set="lines" t-value="cfg_vars.get('cfg_step_lines') or cfg_vars.get('attr_lines')"/>
-        <t t-foreach="lines" t-as="line">
-          <div class="form-group">
-            <label style="text-align: left" class="control-label col-xs-12" t-att-for="line.attribute_id.id">
-              <t t-esc="line.attribute_id.name"/>
-            </label>
-            <div class="mt8 col-xs-12" role="group">
-                <t t-foreach="line.value_ids" t-as="value">
-                  <t t-set="checked" t-value="value in cfg_vars['cfg_session'].value_ids"/>
-                  <div t-att-class="'input-group cfg_tiles mt16 col-xs-4 pull-left' + (' hidden' if not product_tmpl.values_available([value.id], cfg_vars['cfg_session'].value_ids.ids) else '')">
-                    <label t-att-class="'btn btn-default' + (' active' if checked else '')">
-                      <input t-att-type="'checkbox' if line.multi else 'radio'"
-                             t-att-name="cfg_vars['attr_field_prefix'] + str(line.attribute_id.id)"
-                             t-att-value="value.id"
-                             t-att-checked="checked"
-                             t-att-class="'cfg_input ' + ' '.join(get_attr_classes(line))">
-                      </input>
-                    </label>
-                    <div class="form-control col-xs-12" style="height: auto;">
-                        <img class="img-rounded img-responsive img-center mt8" t-att-src="('data:image/*;base64,' + value.product_id.sudo().image) if value.product_id.sudo().image else '/web/static/src/img/placeholder.png'"/>
-                          <!-- TODO use currency from pricelist -->
-                          <!-- TODO have tiles be the same height without forcing height -->
-                          <div class="mt8">
-                            <strong t-field="value.name"/>
-                          </div>
+      <xpath expr="." position="inside">
+        <form id="product_config_form" class="form-horizontal" method="post">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <t t-set="lines" t-value="cfg_vars.get('cfg_step_lines') or cfg_vars.get('attr_lines')"/>
+          <t t-foreach="lines" t-as="line">
+            <div class="form-group">
+              <label style="text-align: left" class="control-label col-xs-12" t-att-for="line.attribute_id.id">
+                <t t-esc="line.attribute_id.name"/>
+              </label>
+              <div class="mt8 col-xs-12" role="group">
+                  <t t-foreach="line.value_ids" t-as="value">
+                    <t t-set="checked" t-value="value in cfg_vars['cfg_session'].value_ids"/>
+                    <div t-att-class="'input-group cfg_tiles mt16 col-xs-4 pull-left' + (' hidden' if not product_tmpl.values_available([value.id], cfg_vars['cfg_session'].value_ids.ids) else '')">
+                      <label t-att-class="'btn btn-default' + (' active' if checked else '')">
+                        <input t-att-type="'checkbox' if line.multi else 'radio'"
+                               t-att-name="cfg_vars['attr_field_prefix'] + str(line.attribute_id.id)"
+                               t-att-value="value.id"
+                               t-att-checked="checked"
+                               t-att-class="'cfg_input ' + ' '.join(get_attr_classes(line))">
+                        </input>
+                      </label>
+                      <div class="form-control col-xs-12" style="height: auto;">
+                          <img class="img-rounded img-responsive img-center mt8" t-att-src="('data:image/*;base64,%s' % to_text(value.product_id.sudo().image)) if value.product_id.sudo().image else '/web/static/src/img/placeholder.png'"/>
+                            <!-- TODO use currency from pricelist -->
+                            <!-- TODO have tiles be the same height without forcing height -->
+                            <div class="mt8">
+                              <strong t-field="value.name"/>
+                            </div>
 
-                          <span t-field="value.product_id.sudo().lst_price"
-                                t-field-options='{
-                                  "widget": "monetary",
-                                  "display_currency": user_id.partner_id.property_product_pricelist.currency_id
-                                }'/>
+                            <span t-field="value.product_id.sudo().lst_price"
+                                  t-field-options='{
+                                    "widget": "monetary",
+                                    "display_currency": user_id.partner_id.property_product_pricelist.currency_id
+                                  }'/>
+                      </div>
                     </div>
-                  </div>
-                </t>
+                  </t>
+              </div>
             </div>
-          </div>
-        </t>
-        <t t-call="website_product_configurator.config_default_footer"/>
-      </form>
-    </xpath>
+          </t>
+          <t t-call="website_product_configurator.config_default_footer"/>
+        </form>
+      </xpath>
     </template>
 
 </data>
