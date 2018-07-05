@@ -567,7 +567,7 @@ class ProductTemplate(models.Model):
         res = super(ProductTemplate, self).unlink()
         return res
 
-    @api.model
+    @api.multi
     def copy(self, default=None):
         res = super(ProductTemplate, self).copy(default=default)
         return res
