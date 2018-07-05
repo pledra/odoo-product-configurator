@@ -705,7 +705,7 @@ class ProductProduct(models.Model):
         compute='_compute_product_price_extra',
         string='Variant Extra Price',
         help="This is the sum of the extra price of all attributes",
-        digits_compute=dp.get_precision('Product Price')
+        digits=dp.get_precision('Product Price')
     )
 
     @api.multi
