@@ -12,6 +12,6 @@
     ],
     'data': ['templates.xml'],
     'application': True,
-    'installable': False,
+    'installable': True,
     'auto_install': False,
 }
