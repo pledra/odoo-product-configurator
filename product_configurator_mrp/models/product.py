@@ -132,7 +132,7 @@ class ProductTemplate(models.Model):
         """Add bill of matrials to the configured variant."""
         if not session:
             session = self.env['product.config.session'].search_session(
-                product_tmpl_id=self.id)
+                product_tmpl_id=self.id)[:1]
 
         self = self.with_context(config_session_id=session.id)
 
@@ -140,9 +140,7 @@ class ProductTemplate(models.Model):
             value_ids, custom_values=custom_values)
 
         bom_obj = self.env['mrp.bom']
-
         bom = bom_obj.browse(bom_obj._bom_find(product=variant))
-
         if not bom:
             bom_line_vals = session.get_bom_line_vals()
             if bom_line_vals:
