@@ -435,7 +435,7 @@ class ProductConfigurator(models.TransientModel):
                 open_steps = self.product_tmpl_id.get_open_step_lines(
                     value_ids=self.value_ids.ids
                 )
-                self.state = open_steps[0].id
+                self.state = open_steps[:1].id
                 return res
 
             # If configuration is valid set session to done and navigate up
