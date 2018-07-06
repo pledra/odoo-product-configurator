@@ -533,7 +533,7 @@ class WebsiteProductConfig(http.Controller):
 
             cfg_session = cfg_session_obj.sudo().create(vals)
 
-        return cfg_session
+        return cfg_session[:1]
 
     def get_config_image(self, product_tmpl, value_ids, size=None):
         """
