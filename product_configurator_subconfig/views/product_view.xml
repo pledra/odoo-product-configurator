@@ -33,6 +33,10 @@
             <xpath expr="//field[@name='config_step_line_ids']//field[@name='config_step_id']" position="after">
                 <field name="config_subproduct_line_id" options="{'no_create': True, 'no_create_edit': True}"/>
             </xpath>
+
+            <xpath expr="//field[@name='config_step_line_ids']//field[@name='attribute_line_ids']" position="attributes">
+                <attribute name="attrs">{'readonly': [('config_subproduct_line_id', '!=', False)]}</attribute>
+            </xpath>
         </field>
     </record>
 

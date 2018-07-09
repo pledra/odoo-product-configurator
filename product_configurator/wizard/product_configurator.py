@@ -88,8 +88,7 @@ class ProductConfigurator(models.TransientModel):
         if not wiz:
             return steps
 
-        open_lines = wiz.product_tmpl_id.get_open_step_lines(
-            wiz.value_ids.ids)
+        open_lines = wiz.config_session_id.get_open_step_lines()
 
         if open_lines:
             open_steps = open_lines.mapped(
@@ -781,21 +780,6 @@ class ProductConfigurator(models.TransientModel):
         self.mapped('config_session_id').unlink()
         return super(ProductConfigurator, self).unlink()
 
-    @api.model
-    def get_active_step(self):
-        """Attempt to return product.config.step.line object that has the id
-        of the wizard state stored as string"""
-        cfg_step_line_obj = self.env['product.config.step.line']
-
-        try:
-            cfg_step_line_id = int(self.state)
-        except:
-            cfg_step_line_id = None
-
-        if cfg_step_line_id:
-            return cfg_step_line_obj.browse(cfg_step_line_id)
-        return cfg_step_line_obj
-
     @api.multi
     def action_next_step(self):
         """Proceeds to the next step of the configuration process. This usually
@@ -834,10 +818,8 @@ class ProductConfigurator(models.TransientModel):
                 self.state = 'configure'
                 return wizard_action
 
-        active_step = self.get_active_step()
+        adjacent_steps = self.config_session_id.get_adjacent_steps()
 
-        adjacent_steps = self.product_tmpl_id.get_adjacent_steps(
-            self.value_ids.ids, active_step.id)
         next_step = adjacent_steps.get('next_step')
 
         if next_step:
@@ -878,8 +860,9 @@ class ProductConfigurator(models.TransientModel):
         except:
             active_cfg_line_id = None
 
-        adjacent_steps = self.product_tmpl_id.get_adjacent_steps(
-            self.value_ids.ids, active_cfg_line_id)
+        adjacent_steps = self.config_session_id.get_adjacent_steps(
+            active_step_line_id=active_cfg_line_id
+        )
 
         previous_step = adjacent_steps.get('previous_step')
 

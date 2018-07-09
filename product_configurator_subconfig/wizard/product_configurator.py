@@ -39,7 +39,7 @@ class ProductConfigurator(models.TransientModel):
             return res
 
         # Maybe we store the subproduct instead of searching for it?
-        active_step = self.get_active_step()
+        active_step = self.config_session_id.get_active_step()
         subproduct = active_step.config_subproduct_line_id.subproduct_id
 
         if not subproduct:
@@ -132,7 +132,7 @@ class ProductConfigurator(models.TransientModel):
         if not product_tmpl:
             return res
 
-        active_step = wiz.get_active_step()
+        active_step = wiz.config_session_id.get_active_step()
         subproduct_line = active_step.config_subproduct_line_id
         default_attrs = self.get_field_default_attrs()
 
@@ -178,7 +178,7 @@ class ProductConfigurator(models.TransientModel):
         xml_view = super(ProductConfigurator, self).add_dynamic_fields(
             res=res, dynamic_fields=dynamic_fields, wiz=wiz)
 
-        active_step = wiz.get_active_step()
+        active_step = wiz.config_session_id.get_active_step()
 
         cfg_steps = wiz.product_tmpl_id.config_step_line_ids
         # Continue only if product.template has substeps defined
@@ -297,9 +297,9 @@ class ProductConfigurator(models.TransientModel):
     def action_previous_step(self):
         """When a subproduct is loaded switch wizard to new config session"""
         res = super(ProductConfigurator, self).action_previous_step()
-        active_step = self.get_active_step()
-        adjacent_steps = self.product_tmpl_id.get_adjacent_steps(
-            self.value_ids.ids, active_step.id
+        active_step = self.config_session_id.get_active_step()
+        adjacent_steps = self.config_session_id.get_adjacent_steps(
+            active_step_line_id=active_step.id
         )
         prev_step = adjacent_steps.get('prev_step')
         parent_session = self.config_session_id.parent_id
@@ -316,7 +316,6 @@ class ProductConfigurator(models.TransientModel):
     def action_next_step(self):
         """Override parent method to support subconfiguration navigation"""
         res = super(ProductConfigurator, self).action_next_step()
-        import pdb;pdb.set_trace()
         # Here the state has been changed and we are already on the next step
 
         # TODO: Find a better way to detect if wizard has been set to done
@@ -326,7 +325,7 @@ class ProductConfigurator(models.TransientModel):
         cfg_session_obj = self.env['product.config.session']
         cfg_step_line_obj = self.env['product.config.step.line']
 
-        active_step = self.get_active_step()
+        active_step = self.config_session_id.get_active_step()
         parent_product_tmpl = self.parent_id.product_tmpl_id
 
         subproduct_line = active_step.config_subproduct_line_id
@@ -340,7 +339,7 @@ class ProductConfigurator(models.TransientModel):
             valid = self.product_tmpl_id.validate_configuration(
                 self.value_ids.ids, custom_vals=custom_vals)
             if not valid:
-                open_steps = self.product_tmpl_id.get_open_step_lines(
+                open_steps = self.config_session_id.get_open_step_lines(
                     value_ids=self.value_ids.ids
                 )
                 self.state = open_steps[0].id
@@ -384,7 +383,7 @@ class ProductConfigurator(models.TransientModel):
             except:
                 pass
         if not session_step:
-            open_steps = subproduct.get_open_step_lines(session.value_ids.ids)
+            open_steps = session.get_open_step_lines(session.value_ids.ids)
             if open_steps:
                 session_step = open_steps[0]
 
