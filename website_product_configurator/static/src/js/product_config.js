@@ -1,6 +1,8 @@
 odoo.define('website_product_configurator.website_form', function (require) {
 "use strict";
 
+    require('web.dom_ready');
+
     var ajax = require('web.ajax');
     var core = require('web.core');
     var base = require('web_editor.base');
