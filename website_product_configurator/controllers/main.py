@@ -2,10 +2,10 @@ import json
 import base64
 from werkzeug import secure_filename
 
-from openerp import http
-from openerp.http import request
-from openerp.addons.website.models.website import slug
-from openerp.addons.website_sale.controllers import main
+from odoo import http
+from odoo.http import request
+from odoo.addons.http_routing.models.ir_http import slug
+from odoo.addons.website_sale.controllers import main
 
 
 def get_pricelist():
@@ -204,7 +204,7 @@ class WebsiteProductConfig(http.Controller):
 
         values = {
             'templates': templates,
-            'bins': main.table_compute().process(templates),
+            'bins': main.TableCompute().process(templates),
             'styles': styles,
             'keep': keep,
             'rows': main.PPR,
@@ -531,7 +531,7 @@ class WebsiteProductConfig(http.Controller):
 
             cfg_session = cfg_session_obj.sudo().create(vals)
 
-        return cfg_session
+        return cfg_session[:1]
 
     def get_config_image(self, product_tmpl, value_ids, size=None):
         """
@@ -743,7 +743,7 @@ class WebsiteProductConfig(http.Controller):
             'cfg_session': cfg_session,
             'keep': keep,
         }
-        return request.website.render(
+        return request.render(
             "website_product_configurator.cfg_session", values)
         # TODO: If template not found redirect to product_configurator page
 
@@ -755,7 +755,7 @@ class WebsiteProductConfig(http.Controller):
         return request.redirect("/shop/cart")
 
 
-class WebsiteSale(main.website_sale):
+class WebsiteSale(main.WebsiteSale):
 
     @http.route()
     def product(self, product, category='', search='', **kwargs):

@@ -11,6 +11,8 @@ class ProductAttribute(models.Model):
 
     @api.multi
     def copy(self, default=None):
+        if not default:
+            default = {}
         for attr in self:
             default.update({'name': attr.name + " (copy)"})
             attr = super(ProductAttribute, attr).copy(default)

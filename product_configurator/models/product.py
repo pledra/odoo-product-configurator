@@ -567,7 +567,7 @@ class ProductTemplate(models.Model):
         res = super(ProductTemplate, self).unlink()
         return res
 
-    @api.model
+    @api.multi
     def copy(self, default=None):
         res = super(ProductTemplate, self).copy(default=default)
         return res
@@ -705,7 +705,7 @@ class ProductProduct(models.Model):
         compute='_compute_product_price_extra',
         string='Variant Extra Price',
         help="This is the sum of the extra price of all attributes",
-        digits_compute=dp.get_precision('Product Price')
+        digits=dp.get_precision('Product Price')
     )
 
     @api.multi
