@@ -14,13 +14,6 @@
                 Create
             </button>
         </t>
-        <t t-jquery="button.oe_form_button_create" t-operation="after">
-            <button t-if="widget.is_action_enabled('create')" style="display:none"
-                type="button" class="o_form_button_create_custom btn btn-default btn-sm"
-                >
-                Create
-            </button>
-        </t>
     </t>
 
 </templates>
