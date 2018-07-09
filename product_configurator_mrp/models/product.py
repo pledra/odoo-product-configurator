@@ -58,7 +58,7 @@ class ProductProduct(models.Model):
     def _get_mako_context(self, buf):
         res = super(ProductProduct, self)._get_mako_context(buf=buf)
         bom_obj = self.env['mrp.bom']
-        bom = bom_obj.browse(bom_obj._bom_find(product_id=self.id))
+        bom = bom_obj.browse(bom_obj._bom_find(product=self))
         cfg_parts = self.get_mako_cfg_parts(bom)
 
         ctx_vars = res.kwargs
@@ -112,7 +112,7 @@ class ProductTemplate(models.Model):
         bom_line_vals = session.get_bom_line_vals()
 
         for variant in variants:
-            bom = bom_obj.browse(bom_obj._bom_find(product_id=variant.id))
+            bom = bom_obj.browse(bom_obj._bom_find(product=variant))
             if not bom or len(bom.bom_line_ids) != len(bom_line_vals):
                 variants -= variant
                 continue
