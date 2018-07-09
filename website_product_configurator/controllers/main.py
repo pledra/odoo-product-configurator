@@ -176,8 +176,9 @@ class WebsiteProductConfig(http.Controller):
 
         cfg_step_lines = active_step.attribute_line_ids
 
-        adjacent_steps = product_tmpl.get_adjacent_steps(
-            cfg_session.value_ids.ids, active_step_line_id=active_step.id)
+        adjacent_steps = cfg_session.get_adjacent_steps(
+            active_step_line_id=active_step.id
+        )
 
         vals.update({
             'config_steps': config_steps,
@@ -464,7 +465,9 @@ class WebsiteProductConfig(http.Controller):
                 except:
                     next_step = None
 
-        open_steps = product_tmpl.get_open_step_lines(value_ids)
+        cfg_session = self.get_cfg_session(product_tmpl, force_create=True)
+
+        open_steps = cfg_session.get_open_step_lines(value_ids)
 
         if post:
             if next_step:
@@ -494,7 +497,6 @@ class WebsiteProductConfig(http.Controller):
 
     def product_redirect(self, cfg_session):
         return request.redirect('/configurator/config/%s' % slug(cfg_session))
-
 
     # TODO: Remove and use create_get_session instead
 

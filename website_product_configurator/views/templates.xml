@@ -162,7 +162,7 @@
 <template id="config_steps" name="Configuraton Steps">
   <ul class="wizard pull-right">
     <t t-foreach="cfg_vars.get('config_steps', [])" t-as="step">
-      <t t-set="open_steps" t-value="product_tmpl.get_open_step_lines(cfg_val_ids.ids)"/>
+      <t t-set="open_steps" t-value="cfg_session.get_open_step_lines(cfg_val_ids.ids)"/>
       <li t-att-class="'text-primary' if cfg_vars.get('active_step') == step else 'text-muted'">
         <t t-if="step in open_steps">
           <a t-att-href="'/configurator/%s/%s' % (slug(product_tmpl), slug(step))" class="text-success">

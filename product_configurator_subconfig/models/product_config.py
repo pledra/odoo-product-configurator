@@ -41,6 +41,89 @@ class ProductConfigSession(models.Model):
 
         return substeps
 
+    @api.model
+    def get_open_step_lines(self, value_ids=None):
+        """
+        Include config lines with subproducts inside open steps.
+        By default they are ignored because they contain no attribute lines.
+
+        :param value_ids: list of value.ids representing the
+                          current configuration
+        :returns: recordset of accesible configuration steps
+        """
+        res = super(ProductConfigSession, self).get_open_step_lines(
+            value_ids=value_ids
+        )
+        subproduct_steps = self.product_tmpl_id.config_step_line_ids.filtered(
+            lambda x: x.config_subproduct_line_id)
+        open_step_lines = res | subproduct_steps
+        return open_step_lines.sorted()
+
+    @api.model
+    def get_adjacent_steps(self, value_ids=None, active_step_line_id=None):
+        """Load steps from subconfigurable products if any"""
+        steps = super(ProductConfigSession, self).get_adjacent_steps(
+            value_ids=value_ids, active_step_line_id=active_step_line_id
+        )
+        # At this point the parent method has run and changed the wizard to the
+        # next step
+        if not steps:
+            return steps
+
+        import pdb;pdb.set_trace()
+
+        cfg_step_line_obj = self.env['product.config.step.line']
+
+        # TODO: Move step related methods to sesssion object
+
+        # Todo find a better way to identify the model than through context
+
+        next_step = steps.get('next_step') or cfg_step_line_obj
+        prev_step = steps.get('prev_step') or cfg_step_line_obj
+
+        parent_session = self.parent_id
+        parent_draft_session = parent_session
+
+        # If we have reached the end of a subsession configuration
+        if not next_step and parent_session:
+
+            # Get the first parent / grandparent in draft state
+            while parent_draft_session.state != 'draft':
+                parent_draft_session = parent_draft_session.parent_id
+
+            # Get all the open steps
+            open_steps = parent_draft_session.get_open_step_lines()
+
+            # Get the actual config step corresponding to the id stored
+            try:
+                step_id = int(parent_draft_session.config_step)
+                active_step = open_steps.filtered(lambda l: l.id == step_id)
+            except:
+                active_step = cfg_step_line_obj
+
+            if active_step:
+                index = [l for l in open_steps.sorted()].index(active_step)
+                try:
+                    steps['next_step'] = open_steps[index + 1]
+                except:
+                    steps['next_step'] = next_step
+
+        if not prev_step or prev_step == 'select' and parent_session:
+            # TODO: Make this step recursive so it checks all the parents
+            open_steps = parent_session.get_open_step_lines()
+            # TODO: This will fail with more steps that have the same subprod
+            subproduct_step = open_steps.filtered(
+                lambda l: l.config_subproduct_line_id.subproduct_id == self
+            )
+            if subproduct_step:
+                index = [l for l in open_steps.sorted()].index(subproduct_step)
+                try:
+                    steps['prev_step'] = open_steps[index - 1]
+                except:
+                    steps['prev_step'] = prev_step
+
+        return steps
+
 
 class ProductConfigSubproductLine(models.Model):
     _name = 'product.config.subproduct.line'
@@ -81,6 +164,12 @@ class ProductConfigSubproductLine(models.Model):
 
 class ProductConfigStepLine(models.Model):
     _inherit = 'product.config.step.line'
+
+    @api.multi
+    @api.onchange('config_subproduct_line_id')
+    def onchange_subproduct_line(self):
+        for line in self.filtered(lambda x: x.config_subproduct_line_id):
+            line.attribue_line_ids = None
 
     config_subproduct_line_id = fields.Many2one(
         comodel_name='product.config.subproduct.line',

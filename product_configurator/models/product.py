@@ -81,65 +81,6 @@ class ProductTemplate(models.Model):
                 flat_val_ids.add(val)
         return list(flat_val_ids)
 
-    def get_open_step_lines(self, value_ids):
-        """
-        Returns a recordset of configuration step lines open for access given
-        the configuration passed through value_ids
-
-        e.g: Field A and B from configuration step 2 depend on Field C
-        from configuration step 1. Since fields A and B require action from
-        the previous step, configuration step 2 is deemed closed and redirect
-        is made for configuration step 1.
-
-        :param value_ids: list of value.ids representing the
-                          current configuration
-        :returns: recordset of accesible configuration steps
-        """
-
-        open_step_lines = self.env['product.config.step.line']
-
-        for cfg_line in self.config_step_line_ids:
-            for attr_line in cfg_line.attribute_line_ids:
-                available_vals = self.values_available(attr_line.value_ids.ids,
-                                                       value_ids)
-                # TODO: Refactor when adding restriction to custom values
-                if available_vals or attr_line.custom:
-                    open_step_lines |= cfg_line
-                    break
-
-        return open_step_lines.sorted()
-
-    def get_adjacent_steps(self, value_ids, active_step_line_id=None):
-        """Returns the previous and next steps given the configuration passed
-        via value_ids and the active step line passed via cfg_step_line_id."""
-
-        # If there is no open step return empty dictionary
-        config_step_lines = self.config_step_line_ids
-
-        if not config_step_lines:
-            return {}
-
-        active_cfg_step_line = config_step_lines.filtered(
-            lambda l: l.id == active_step_line_id)
-
-        open_step_lines = self.get_open_step_lines(value_ids)
-
-        if not active_cfg_step_line:
-            return {'next_step': open_step_lines[0]}
-
-        nr_steps = len(open_step_lines)
-
-        adjacent_steps = {}
-
-        for i, cfg_step in enumerate(open_step_lines):
-            if cfg_step == active_cfg_step_line:
-                adjacent_steps.update({
-                    'next_step':
-                        None if i + 1 == nr_steps else open_step_lines[i + 1],
-                    'previous_step': None if i == 0 else open_step_lines[i - 1]
-                })
-        return adjacent_steps
-
     def formatPrices(self, prices=None, dp='Product Price'):
         if prices is None:
             prices = {}
