@@ -41,7 +41,6 @@ class ProductConfigSession(models.Model):
 
         return substeps
 
-<<<<<<< HEAD
     @api.model
     def get_open_step_lines(self, value_ids=None):
         """
@@ -68,10 +67,11 @@ class ProductConfigSession(models.Model):
         )
         # At this point the parent method has run and changed the wizard to the
         # next step
-        if not steps:
-            return steps
 
-        import pdb;pdb.set_trace()
+        parent_session = self.parent_id
+
+        if not parent_session or not steps:
+            return steps
 
         cfg_step_line_obj = self.env['product.config.step.line']
 
@@ -82,12 +82,12 @@ class ProductConfigSession(models.Model):
         next_step = steps.get('next_step') or cfg_step_line_obj
         prev_step = steps.get('prev_step') or cfg_step_line_obj
 
-        parent_session = self.parent_id
-        parent_draft_session = parent_session
+        parent_draft_session = parent_session.filtered(
+            lambda x: x.state == 'draft'
+        )
 
         # If we have reached the end of a subsession configuration
-        if not next_step and parent_session:
-
+        if not next_step:
             # Get the first parent / grandparent in draft state
             while parent_draft_session.state != 'draft':
                 parent_draft_session = parent_draft_session.parent_id
@@ -109,7 +109,7 @@ class ProductConfigSession(models.Model):
                 except:
                     steps['next_step'] = next_step
 
-        if not prev_step or prev_step == 'select' and parent_session:
+        if not prev_step or prev_step == 'select':
             # TODO: Make this step recursive so it checks all the parents
             open_steps = parent_session.get_open_step_lines()
             # TODO: This will fail with more steps that have the same subprod
@@ -124,9 +124,6 @@ class ProductConfigSession(models.Model):
                     steps['prev_step'] = prev_step
 
         return steps
-
-=======
->>>>>>> e91b6e9... [WIP] Transfering subconfiguration functionality from MRP to separate module
 
 class ProductConfigSubproductLine(models.Model):
     _name = 'product.config.subproduct.line'

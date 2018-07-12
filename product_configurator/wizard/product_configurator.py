@@ -57,8 +57,8 @@ class ProductConfigurator(models.TransientModel):
     def _compute_cfg_image(self):
         # TODO: Update when allowing custom values to influence image
 
-        product_tmpl = self.product_tmpl_id.with_context(bin_size=False)
-        img_obj = product_tmpl.get_config_image_obj(self.value_ids.ids)
+        cfg_sessions = self.config_session_id.with_context(bin_size=False)
+        img_obj = cfg_sessions.get_config_image_obj()
         self.product_img = img_obj.image
 
     @api.multi
@@ -137,7 +137,7 @@ class ProductConfigurator(models.TransientModel):
             vals = values[field_name]
 
             # get available values
-            avail_ids = self.product_tmpl_id.values_available(
+            avail_ids = self.config_session_id.values_available(
                 line.value_ids.ids, cfg_val_ids)
             domains[field_name] = [('id', 'in', avail_ids)]
 
@@ -162,21 +162,22 @@ class ProductConfigurator(models.TransientModel):
         """
 
         vals = {}
-
         dynamic_fields = {k: v for k, v in dynamic_fields.items() if v}
         for k, v in dynamic_fields.items():
             if not v:
                 continue
             available_val_ids = domains[k][0][2]
             if isinstance(v, list):
-                value_ids = list(set(v[0][2]) & set(available_val_ids))
+                if any(type(el) != int for el in v):
+                    v = v[0][2]
+                value_ids = list(set(v) & set(available_val_ids))
                 dynamic_fields.update({k: value_ids})
                 vals[k] = [[6, 0, value_ids]]
             elif v not in available_val_ids:
                 dynamic_fields.update({k: None})
                 vals[k] = None
 
-        product_img = self.product_tmpl_id.get_config_image_obj(
+        product_img = self.config_session_id.get_config_image_obj(
             dynamic_fields.values())
 
         vals.update(product_img=product_img.image)
@@ -213,6 +214,7 @@ class ProductConfigurator(models.TransientModel):
         dynamic_fields = {
             k: v for k, v in values.items() if k.startswith(field_prefix)
         }
+
         # Get the unstored values from the client view
         for k, v in dynamic_fields.items():
             attr_id = int(k.split(field_prefix)[1])
@@ -351,8 +353,7 @@ class ProductConfigurator(models.TransientModel):
             attribute = line.attribute_id
             value_ids = line.value_ids.ids
 
-            value_ids = wiz.product_tmpl_id.values_available(
-                value_ids, wiz.value_ids.ids)
+            value_ids = wiz.config_session_id.values_available(value_ids)
 
             # If attribute lines allows custom values add the
             # generic "Custom" attribute.value to the list of options
@@ -819,7 +820,6 @@ class ProductConfigurator(models.TransientModel):
                 return wizard_action
 
         adjacent_steps = self.config_session_id.get_adjacent_steps()
-
         next_step = adjacent_steps.get('next_step')
 
         if next_step:
@@ -909,10 +909,9 @@ class ProductConfigurator(models.TransientModel):
         # In the meantime, at least make sure that a validation
         # error legitimately raised in a nested routine
         # is passed through.
-        custom_vals = self.config_session_id._get_custom_vals_dict()
+        import pdb;pdb.set_trace()
         try:
-            variant = self.product_tmpl_id.create_get_variant(
-                self.value_ids.ids, custom_vals)
+            variant = self.config_session_id.create_get_variant()
         except ValidationError:
             raise
         except:
@@ -920,7 +919,7 @@ class ProductConfigurator(models.TransientModel):
                 _('Invalid configuration! Please check all '
                   'required steps and fields.')
             )
-        return {
+        action = {
             'type': 'ir.actions.act_window',
             'res_model': 'product.product',
             'name': "Product Variant",
@@ -931,6 +930,7 @@ class ProductConfigurator(models.TransientModel):
             ),
             'res_id': variant.id,
         }
+        return action
 
 
 class ProductConfiguratorCustomValue(models.TransientModel):

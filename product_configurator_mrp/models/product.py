@@ -76,9 +76,9 @@ class ProductTemplate(models.Model):
     )
 
     @api.multi
-    def search_variant(self, value_ids, custom_values=None):
+    def search_variant(self, value_ids, custom_vals=None):
         variants = super(ProductTemplate, self).search_variant(
-            value_ids, custom_values=custom_values
+            value_ids, custom_vals=custom_vals
         )
 
         cfg_session_id = self._context.get('config_session_id')
@@ -116,7 +116,7 @@ class ProductTemplate(models.Model):
         return variants[:1]
 
     @api.multi
-    def create_get_variant(self, value_ids, custom_values=None, session=None):
+    def create_get_variant(self, value_ids, custom_vals=None, session=None):
         """Add bill of matrials to the configured variant."""
         if not session:
             session = self.env['product.config.session'].search_session(
@@ -125,7 +125,7 @@ class ProductTemplate(models.Model):
         self = self.with_context(config_session_id=session.id)
 
         variant = super(ProductTemplate, self).create_get_variant(
-            value_ids, custom_values=custom_values)
+            value_ids, custom_vals=custom_vals)
 
         bom_obj = self.env['mrp.bom']
         bom = bom_obj.browse(bom_obj._bom_find(product=variant))

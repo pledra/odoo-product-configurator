@@ -30,30 +30,49 @@ class ProductConfigSession(models.Model):
     )
 
     # @api.model
-    # def get_bom_line_vals(self):
-    #     """Returns a list of bom values representing the subsessions"""
-    #     line_vals = []
-
-    #     for subsession in self.child_ids:
-    #         if subsession.product_tmpl_id.config_ok:
-    #             custom_vals = subsession._get_custom_vals_dict()
-    #             subvariant = subsession.product_tmpl_id.create_get_variant(
-    #                 subsession.value_ids.ids,
-    #                 custom_values=custom_vals,
-    #                 session=subsession
+    # def add_dynamic_fields(self, res, dynamic_fields, wiz):
+    #     subattr_qty_prefix = self._prefixes.get('subattr_qty_prefix')
+    # qty_field = subattr_qty_prefix + str(subproduct.id)
+    #         if qty_field in fields:
+    #             node = etree.Element(
+    #                 "field",
+    #                 name=qty_field,
+    #                 on_change=onchange_str % field_name,
+    #                 required='True'
     #             )
+    #             orm.setup_modifiers(node)
+    #             subproduct_config_group.append(node)
+
+    # @api.multi
+    # def write(self, vals):
+    #     field_prefix = self._prefixes.get('field_prefix')
+    #     attr_qty_prefix = self._prefixes.get('attr_qty_prefix')
+    #             attr_val_variant_qty_fields = {
+    #         k: v for k, v in vals.items()
+    #         if k.startswith(attr_qty_prefix)
+    #     }
+
+    #     for qty_field, qty in attr_val_variant_qty_fields.items():
+    #         if not qty:
+    #             continue
+    #         attr_id = int(qty_field.replace(attr_qty_prefix, ''))
+    #         value_id = vals.get(field_prefix + str(attr_id))
+    #         if value_id:
+    #             attr_val = self.env['product.attribute.value'].browse(value_id)
     #         else:
-    #             val_ids = subsession.value_ids.ids
-    #             domain = [
-    #                 ('product_tmpl_id', '=', subsession.product_tmpl_id.id)
-    #             ]
-    #             domain += [
-    #                 ('attribute_value_ids', '=', vid) for vid in val_ids
-    #             ]
-    #             subvariant = self.env['product.product'].search(domain)[:1]
-    #         if subvariant:
-    #             line_vals.append((0, 0, {
-    #                 'product_id': subvariant.id,
-    #                 'product_qty': subsession.quantity
-    #             }))
-    #     return line_vals
+    #             attr_val = self.value_ids.filtered(
+    #                 lambda v: v.attribute_id.id == attr_id)
+
+    #         subtmpls = self.child_ids.mapped('product_tmpl_id')
+    #         product = attr_val[0].product_id
+    #         product_tmpl = product.product_tmpl_id
+
+    #         if len(attr_val) == 1 and product and product_tmpl not in subtmpls:
+    #             self.env['product.config.session'].create({
+    #                 'parent_id': self.config_session_id.id,
+    #                 'product_tmpl_id': attr_val.product_id.product_tmpl_id.id,
+    #                 'value_ids': attr_val.product_id.attribute_value_ids.ids,
+    #                 'state': 'done',
+    #                 'user_id': self.env.uid,
+    #             })
+    #         vals.get(qty_field)
