@@ -5,6 +5,8 @@ class ConfigurationRules(TransactionCase):
 
     def setUp(self):
         super(ConfigurationRules, self).setUp()
+
+        self.cfg_session = self.env['product.config.session']
         self.cfg_tmpl = self.env.ref('product_configurator.bmw_2_series')
 
         attribute_vals = self.cfg_tmpl.attribute_line_ids.mapped('value_ids')
@@ -41,7 +43,7 @@ class ConfigurationRules(TransactionCase):
         ]
 
         attr_val_ids = self.get_attr_val_ids(conf)
-        validation = self.cfg_tmpl.validate_configuration(attr_val_ids)
+        validation = self.cfg_session.validate_configuration(attr_val_ids)
         self.assertTrue(validation, "Valid configuration failed validation")
 
     def test_invalid_configuration(self):
@@ -52,7 +54,7 @@ class ConfigurationRules(TransactionCase):
         ]
 
         attr_val_ids = self.get_attr_val_ids(conf)
-        validation = self.cfg_tmpl.validate_configuration(attr_val_ids)
+        validation = self.cfg_session.validate_configuration(attr_val_ids)
         self.assertFalse(validation, "Incompatible values (Diesel Fuel -> "
                          "Gasoline Engine) configuration passed validation")
 
@@ -63,7 +65,7 @@ class ConfigurationRules(TransactionCase):
         ]
 
         attr_val_ids = self.get_attr_val_ids(conf)
-        validation = self.cfg_tmpl.validate_configuration(attr_val_ids)
+        validation = self.cfg_session.validate_configuration(attr_val_ids)
         self.assertFalse(validation, "Configuration with missing required "
                          "values passed validation")
 
@@ -75,7 +77,7 @@ class ConfigurationRules(TransactionCase):
         ]
 
         attr_val_ids = self.get_attr_val_ids(conf)
-        validation = self.cfg_tmpl.validate_configuration(attr_val_ids)
+        validation = self.cfg_session.validate_configuration(attr_val_ids)
         self.assertFalse(validation, "Configuration with multiple values for "
                          "attribute color passed validation")
 
@@ -94,7 +96,7 @@ class ConfigurationRules(TransactionCase):
         }
 
         attr_val_ids = self.get_attr_val_ids(conf)
-        validation = self.cfg_tmpl.validate_configuration(
+        validation = self.cfg_session.validate_configuration(
             attr_val_ids, custom_vals)
 
         self.assertFalse(validation, "Custom value accepted for fixed "

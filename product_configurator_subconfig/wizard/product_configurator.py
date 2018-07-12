@@ -39,11 +39,7 @@ class ProductConfigurator(models.TransientModel):
             return res
 
         # Maybe we store the subproduct instead of searching for it?
-<<<<<<< HEAD
         active_step = self.config_session_id.get_active_step()
-=======
-        active_step = self.get_active_step()
->>>>>>> e91b6e9... [WIP] Transfering subconfiguration functionality from MRP to separate module
         subproduct = active_step.config_subproduct_line_id.subproduct_id
 
         if not subproduct:
@@ -321,7 +317,6 @@ class ProductConfigurator(models.TransientModel):
         """Override parent method to support subconfiguration navigation"""
         res = super(ProductConfigurator, self).action_next_step()
         # Here the state has been changed and we are already on the next step
-
         # TODO: Find a better way to detect if wizard has been set to done
         if not res or not self.exists():
             return res
@@ -329,7 +324,10 @@ class ProductConfigurator(models.TransientModel):
         cfg_session_obj = self.env['product.config.session']
         cfg_step_line_obj = self.env['product.config.step.line']
 
-        active_step = self.config_session_id.get_active_step()
+        # Active step is set on the wizard so we browse that instead of session
+        active_step = self.env['product.config.step.line'].browse(
+            int(self.state)
+        )
         parent_product_tmpl = self.parent_id.product_tmpl_id
 
         subproduct_line = active_step.config_subproduct_line_id
@@ -339,10 +337,8 @@ class ProductConfigurator(models.TransientModel):
         # wizard towards the parent session to reflect the active configuration
         # This happens at the end of a subconfiguration process only
         if active_step.product_tmpl_id != self.product_tmpl_id:
-            custom_vals = self.config_session_id._get_custom_vals_dict()
-            valid = self.product_tmpl_id.validate_configuration(
-                self.value_ids.ids, custom_vals=custom_vals)
-            if not valid:
+            valid_conf = self.config_session_id.validate_configuration()
+            if not valid_conf:
                 open_steps = self.config_session_id.get_open_step_lines(
                     value_ids=self.value_ids.ids
                 )
@@ -356,6 +352,8 @@ class ProductConfigurator(models.TransientModel):
                 'product_tmpl_id': parent_product_tmpl.id,
             })
             return res
+
+        self.config_step = self.state
 
         if not subproduct or not subproduct.config_ok:
             return res
