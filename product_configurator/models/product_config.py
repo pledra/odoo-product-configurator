@@ -1,6 +1,8 @@
+from ast import literal_eval
+
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import Warning, ValidationError
-from ast import literal_eval
+from odoo.tools.misc import formatLang
 
 
 class ProductConfigDomain(models.Model):
@@ -486,13 +488,12 @@ class ProductConfigSession(models.Model):
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
 
-        sessions = self.search_session(product_tmpl_id=self.id)
-
         valid = self.validate_configuration()
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
 
-        duplicates = self.search_variant(value_ids, custom_vals=custom_vals)
+        duplicates = self.search_variant(
+            value_ids=value_ids, custom_vals=custom_vals)
 
         # At the moment, I don't have enough confidence with my understanding
         # of binary attributes, so will leave these as not matching...
@@ -505,17 +506,15 @@ class ProductConfigSession(models.Model):
                 duplicates = False
 
         if duplicates:
-            if sessions:
-                sessions[0].action_confirm()
-            return duplicates[0]
+            self.action_confirm()
+            return duplicates[:1]
 
         vals = self.get_variant_vals(value_ids, custom_vals)
         variant = self.env['product.product'].create(vals)
 
         # TODO: Find a better way to locate the session (could be subsession)
 
-        if sessions:
-            sessions[0].action_confirm()
+        self.action_confirm()
 
         return variant
 
@@ -767,7 +766,7 @@ class ProductConfigSession(models.Model):
             value_ids = self.value_ids.ids
 
         if not active_step_line_id:
-            active_step_line = self.get_active_step()
+            active_step_line_id = self.get_active_step().id
 
         config_step_lines = self.product_tmpl_id.config_step_line_ids
 
@@ -775,7 +774,7 @@ class ProductConfigSession(models.Model):
             return {}
 
         active_cfg_step_line = config_step_lines.filtered(
-            lambda l: l.id == active_step_line.id)
+            lambda l: l.id == active_step_line_id)
 
         open_step_lines = self.get_open_step_lines(value_ids)
 
@@ -796,8 +795,9 @@ class ProductConfigSession(models.Model):
         return adjacent_steps
 
     @api.model
-    def get_variant_search_domain(self, value_ids=None, custom_vals=None):
-        """Method called by search_variant used to searc duplicates in the
+    def get_variant_search_domain(
+            self, product_tmpl_id=None, value_ids=None, custom_vals=None):
+        """Method called by search_variant used to search duplicates in the
         database"""
 
         if not custom_vals:
@@ -809,7 +809,7 @@ class ProductConfigSession(models.Model):
         attr_obj = self.env['product.attribute']
 
         domain = [
-            ('product_tmpl_id', '=', self.id),
+            ('product_tmpl_id', '=', product_tmpl_id),
             ('config_ok', '=', True)
         ]
 
@@ -961,7 +961,8 @@ class ProductConfigSession(models.Model):
         return True
 
     @api.model
-    def search_variant(self, value_ids=None, custom_vals=None):
+    def search_variant(
+            self, value_ids=None, custom_vals=None, product_tmpl_id=None):
         """ Searches product.variants with given value_ids and custom values
             given in the custom_vals dict
 
@@ -970,14 +971,26 @@ class ProductConfigSession(models.Model):
 
             :returns: product.product recordset of products matching domain
         """
-
         if not value_ids:
             value_ids = self.value_ids.ids
 
-        if custom_vals is None:
+        if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
 
-        domain = self.get_variant_search_domain(value_ids, custom_vals)
+        if not product_tmpl_id:
+            session_template = self.product_tmpl_id
+            if not session_template:
+                raise ValidationError(_(
+                    'Cannot conduct search on an empty config session without '
+                    'product_tmpl_id kwarg')
+                )
+            product_tmpl_id = self.product_tmpl_id.id
+
+        domain = self.get_variant_search_domain(
+            product_tmpl_id=product_tmpl_id,
+            value_ids=value_ids,
+            custom_vals=custom_vals
+        )
 
         products = self.env['product.product'].search(domain)
 
@@ -1073,7 +1086,6 @@ class ProductConfigSession(models.Model):
                 custom_vals.update({'value': val})
             custom_lines.append((0, 0, custom_vals))
         return custom_lines
-
 
 
 class ProductConfigSessionCustomValue(models.Model):
