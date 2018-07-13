@@ -622,7 +622,6 @@ class ProductConfigurator(models.TransientModel):
         vals.update({
             'user_id': self.env.uid,
             'config_session_id': session.id,
-            'state': session.config_step or vals.get('state')
         })
         return super(ProductConfigurator, self).create(vals)
 
@@ -705,12 +704,7 @@ class ProductConfigurator(models.TransientModel):
         """Prevent database storage of dynamic fields and instead write values
         to database persistent value_ids field"""
 
-        if 'config_step' not in vals:
-            # Save configuration step to related session
-            vals['config_step'] = self.state
-
         # Get current database value_ids (current configuration)
-
         field_prefix = self._prefixes.get('field_prefix')
         custom_field_prefix = self._prefixes.get('custom_field_prefix')
 
@@ -803,6 +797,7 @@ class ProductConfigurator(models.TransientModel):
             'target': 'new',
             'res_id': self.id,
         }
+
         if not self.product_tmpl_id:
             return wizard_action
 
@@ -822,8 +817,16 @@ class ProductConfigurator(models.TransientModel):
         adjacent_steps = self.config_session_id.get_adjacent_steps()
         next_step = adjacent_steps.get('next_step')
 
+        session_config_step = self.config_session_id.config_step
+
+        if session_config_step and self.state != session_config_step:
+            next_step = self.config_session_id.config_step
+        else:
+            next_step = str(next_step.id) if next_step else None
+
         if next_step:
-            self.state = next_step.id
+            self.state = next_step
+            self.config_session_id.config_step = next_step
         else:
             return self.action_config_done()
         return wizard_action
@@ -871,6 +874,8 @@ class ProductConfigurator(models.TransientModel):
         else:
             self.state = 'select'
 
+        self.config_session_id.config_step = self.state
+
         return wizard_action
 
     @api.multi
@@ -909,7 +914,6 @@ class ProductConfigurator(models.TransientModel):
         # In the meantime, at least make sure that a validation
         # error legitimately raised in a nested routine
         # is passed through.
-        import pdb;pdb.set_trace()
         try:
             variant = self.config_session_id.create_get_variant()
         except ValidationError:

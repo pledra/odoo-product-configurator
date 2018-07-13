@@ -1,6 +1,5 @@
 from lxml import etree
 
-from odoo.tools.misc import formatLang
 from odoo.exceptions import ValidationError
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
@@ -135,16 +134,15 @@ class ProductProduct(models.Model):
         # In theory, they should just work, if they are set to "non search"
         # in custom field def!
         # TODO: Check the logic with binary attributes
-        if self.value_custom_ids.filtered(lambda cv: cv.attachment_ids):
-            pass
-        else:
+        if not self.value_custom_ids.filtered(lambda cv: cv.attachment_ids):
             config_session_obj = self.env['product.config.session']
             custom_vals = {
                 cv.attribute_id.id: cv.value
                 for cv in self.value_custom_ids
             }
             duplicates = config_session_obj.search_variant(
-                self.attribute_value_ids.ids,
+                product_tmpl_id=self.product_tmpl_id.id,
+                value_ids=self.attribute_value_ids.ids,
                 custom_vals=custom_vals
             ).filtered(lambda p: p.id != self.id)
 

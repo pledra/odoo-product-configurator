@@ -125,6 +125,7 @@ class ProductConfigSession(models.Model):
 
         return steps
 
+
 class ProductConfigSubproductLine(models.Model):
     _name = 'product.config.subproduct.line'
     _rec_name = 'subproduct_id'
