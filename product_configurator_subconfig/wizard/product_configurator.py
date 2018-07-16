@@ -352,8 +352,6 @@ class ProductConfigurator(models.TransientModel):
             })
             return res
 
-        self.config_step = self.state
-
         if not subproduct or not subproduct.config_ok:
             return res
 
