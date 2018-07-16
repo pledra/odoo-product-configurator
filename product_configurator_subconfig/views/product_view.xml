@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_template_form_view" model="ir.ui.view">
+        <field name="name">product.configurator.product.template.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product_configurator.product_template_form_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@name='options']" position="inside">
+                <div attrs="{'invisible': [('config_ok', '=', False)]}">
+                    <field name="master_template"/>
+                    <label for="master_template"/>
+                </div>
+            </xpath>
+
+            <!-- Configuration Subproducts -->
+
+            <xpath expr="//field[@name='attribute_line_ids']" position="after">
+                <label for="config_subproduct_ids" invisible="not context.get('default_config_ok', False)"/>
+                <field name="config_subproduct_ids" invisible="not context.get('default_config_ok', False)">
+                    <tree editable="bottom">
+                        <field name="subproduct_id" domain="[('id', '!=', parent.id)]"/>
+                        <!-- <field name="quantity"/> -->
+                        <field name="required"/>
+                        <field name="multi"/>
+                    </tree>
+                </field>
+            </xpath>
+
+            <!-- Configuration Step Lines -->
+
+            <xpath expr="//field[@name='config_step_line_ids']//field[@name='config_step_id']" position="after">
+                <field name="config_subproduct_line_id" options="{'no_create': True, 'no_create_edit': True}"/>
+            </xpath>
+
+            <xpath expr="//field[@name='config_step_line_ids']//field[@name='attribute_line_ids']" position="attributes">
+                <attribute name="attrs">{'readonly': [('config_subproduct_line_id', '!=', False)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
