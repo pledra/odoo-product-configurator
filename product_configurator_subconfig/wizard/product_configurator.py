@@ -12,84 +12,173 @@ class ProductConfigurator(models.TransientModel):
         """Add extra field prefixes to the configurator for subproducts"""
         res = super(ProductConfigurator, self)._prefixes
         res.update({
-            'attr_qty_prefix': '__attribute_qty-',
-            'subattr_qty_prefix': '__subproduct_qty-',
+            'subattr_prefix': '__subproduct_attribute-',
         })
         return res
 
-    @api.model
-    def get_qty_fields(self, product_tmpl):
-        """Add quantity fields for attribute lines that have quantity selection
-        enabled"""
-        res = {}
-        attr_qty_prefix = self._prefixes.get('attr_qty_prefix')
-        qty_attr_lines = product_tmpl.attribute_line_ids.filtered(
-            lambda l: l.quantity and not l.multi)
-        for line in qty_attr_lines:
-            attribute = line.attribute_id
-            default_attrs = self.get_field_default_attrs()
+    @api.multi
+    def get_state_selection(self):
+        """Remove select template step for subconfigurable products"""
+        res = super(ProductConfigurator, self).get_state_selection()
+        if self._context.get('subproduct_config'):
+            res.pop(0)
+        return res
 
-            res[attr_qty_prefix + str(attribute.id)] = dict(
+    @api.multi
+    def onchange(self, values, field_name, field_onchange):
+
+        subattr_prefix = self._prefixes.get('subattr_prefix')
+
+        res = super(ProductConfigurator, self).onchange(
+            values=values, field_name=field_name,
+            field_onchange=field_onchange
+        )
+
+        fld_type = type(field_name)
+        if fld_type == list or not field_name.startswith(subattr_prefix):
+            return res
+
+        # Maybe we store the subproduct instead of searching for it?
+        active_step = self.config_session_id.get_active_step()
+        subproduct = active_step.config_subproduct_line_id.subproduct_id
+
+        if not subproduct:
+            # Raise warning ?
+            return res
+
+        subattr_vals = {
+            k: values[k] for k in values if k.startswith(subattr_prefix)
+        }
+
+        value_ids = [attr_id for attr_id in subattr_vals.values() if attr_id]
+
+        domain = [('product_tmpl_id', '=', subproduct.id)]
+        domain += [
+            ('attribute_value_ids', '=', val_id) for val_id in value_ids
+        ]
+
+        available_variants = self.env['product.product'].search(domain)
+        available_attr_vals = available_variants.mapped('attribute_value_ids')
+
+        res['domain'] = res.get('domain', {})
+        res['value'] = res.get('value', {})
+
+        # Build domain to restrict options to existing variants only
+        for val in available_attr_vals:
+            field_name = subattr_prefix + str(val.attribute_id.id)
+            if field_name not in values:
+                continue
+            if field_name not in res['domain']:
+                res['domain'][field_name] = [('id', 'in', [val.id])]
+            else:
+                res['domain'][field_name][0][2].append(val.id)
+
+        return res
+
+    @api.model
+    def get_subproduct_fields(self, wiz, subproduct_line, default_attrs=None):
+        subattr_prefix = self._prefixes.get('subattr_prefix')
+        if not default_attrs:
+            default_attrs = {}
+        subproduct = subproduct_line.subproduct_id
+        subproduct_attr_lines = subproduct.mapped('attribute_line_ids')
+        res = {}
+        for line in subproduct_attr_lines:
+            attribute = line.attribute_id
+            value_ids = line.value_ids.ids
+            res[subattr_prefix + str(attribute.id)] = dict(
                 default_attrs,
-                type='integer',
-                string='Quantity',
+                type='many2one',
+                domain=[('id', 'in', value_ids)],
+                string=line.attribute_id.name,
+                relation='product.attribute.value',
                 sequence=line.sequence,
             )
         return res
 
-    # @api.model
-    # def fields_view_get(self, view_id=None, view_type='form',
-    #                     toolbar=False, submenu=False):
-    #     subattr_qty_prefix = self._prefixes.get('subattr_qty_prefix')
+    @api.model
+    def get_cfg_subproduct_fields(
+            self, wiz, subproduct_line, default_attrs=None):
+        if not default_attrs:
+            default_attrs = {}
+        substeps = wiz.config_session_id.get_substeps()
+        res = {}
+
+        for step in substeps:
+            res['__substep_%d' % step.id] = dict(
+                default_attrs,
+                type='selection',
+                string=step.config_step_id.name,
+            )
+        return res
+
+    # Add state fields for all subproducts to dynamic field list
+    @api.model
+    def fields_get(self, allfields=None, write_access=True, attributes=None):
+        res = super(ProductConfigurator, self).fields_get(
+            allfields=allfields, write_access=write_access,
+            attributes=attributes
+        )
+
+        wizard_id = self.env.context.get('wizard_id')
+
+        if not wizard_id:
+            return res
+
+        wiz = self.browse(wizard_id)
+
+        # If the product template is not set it is still at the 1st step
+        product_tmpl = wiz.product_tmpl_id
+        if not product_tmpl:
+            return res
+
+        active_step = wiz.config_session_id.get_active_step()
+        subproduct_line = active_step.config_subproduct_line_id
+        default_attrs = self.get_field_default_attrs()
+
+        if not subproduct_line.subproduct_id.config_ok:
+            # If we have a regular subproduct generate fields for searching
+            variant_search_fields = self.get_subproduct_fields(
+                wiz, subproduct_line, default_attrs)
+            res.update(variant_search_fields)
+        return res
 
     @api.model
-    def add_qty_fields(self, wiz, xml_view, fields):
-        """Add quantity fields to view after each dynamic field"""
-        attr_qty_prefix = self._prefixes.get('attr_qty_prefix')
-        field_prefix = self._prefixes.get('field_prefix')
-        qty_fields = [f for f in fields if f.startswith(attr_qty_prefix)]
-        for qty_field in qty_fields:
-            # If the matching attribute field is found in the view add after
-            attr_id = int(qty_field.replace(attr_qty_prefix, ''))
-            dynamic_field_name = field_prefix + str(attr_id)
-            dynamic_field = xml_view.xpath(
-                "//field[@name='%s']" % dynamic_field_name)
-            if not dynamic_field:
-                continue
+    def fields_view_get(self, view_id=None, view_type='form',
+                        toolbar=False, submenu=False):
+        subattr_prefix = self._prefixes.get('subattr_prefix')
 
-            active_step = wiz.get_active_step()
+        res = super(ProductConfigurator, self).fields_view_get(
+            view_id=view_id, view_type=view_type,
+            toolbar=toolbar, submenu=submenu
+        )
+        wizard_id = self.env.context.get('wizard_id')
 
-            available_attr_ids = active_step.attribute_line_ids.mapped(
-                'attribute_id').ids
+        if res.get('type') != 'form' or not wizard_id:
+            return res
 
-            if attr_id not in available_attr_ids:
-                continue
+        fields = self.fields_get()
+        subsessions_field = fields.get('child_ids')
+        subsessions_field.update(views={})
 
-            qty_field = etree.Element(
-                'field',
-                name=qty_field,
-                attrs=str({
-                    'invisible': [
-                        '|',
-                        (dynamic_field_name, '=', False)],
-
-                })
-            )
-            orm.setup_modifiers(qty_field)
-            dynamic_form = dynamic_field[0].getparent()
-            dynamic_form.insert(
-                dynamic_form.index(dynamic_field[0]) + 1, qty_field
-            )
-        return xml_view
+        # TODO: Change the structure in such a way where no extra calls
+        # are needed
+        # Recall method to get the new sub-attribute fields
+        dynamic_fields = {
+            k: v for k, v in fields.items() if k.startswith(subattr_prefix)
+        }
+        res['fields'].update(dynamic_fields)
+        # Send child_ids field to view
+        res['fields'].update(child_ids=subsessions_field)
+        return res
 
     @api.model
     def add_dynamic_fields(self, res, dynamic_fields, wiz):
         subattr_prefix = self._prefixes.get('subattr_prefix')
-        subattr_qty_prefix = self._prefixes.get('subattr_qty_prefix')
         xml_view = super(ProductConfigurator, self).add_dynamic_fields(
             res=res, dynamic_fields=dynamic_fields, wiz=wiz)
 
-        active_step = wiz.get_active_step()
+        active_step = wiz.config_session_id.get_active_step()
 
         cfg_steps = wiz.product_tmpl_id.config_step_line_ids
         # Continue only if product.template has substeps defined
@@ -99,8 +188,6 @@ class ProductConfigurator(models.TransientModel):
         # to have all the fields passed beforehand
         fields = self.fields_get()
         dynamic_form = xml_view.xpath("//group[@name='dynamic_form']")[0]
-
-        xml_view = self.add_qty_fields(wiz, xml_view, fields)
 
         if not subproducts and not wiz.child_ids or not active_step:
             return xml_view
@@ -204,26 +291,15 @@ class ProductConfigurator(models.TransientModel):
                 orm.setup_modifiers(node)
                 subproduct_config_group.append(node)
 
-            qty_field = subattr_qty_prefix + str(subproduct.id)
-            if qty_field in fields:
-                node = etree.Element(
-                    "field",
-                    name=qty_field,
-                    on_change=onchange_str % field_name,
-                    required='True'
-                )
-                orm.setup_modifiers(node)
-                subproduct_config_group.append(node)
-
         return xml_view
 
     @api.multi
     def action_previous_step(self):
         """When a subproduct is loaded switch wizard to new config session"""
         res = super(ProductConfigurator, self).action_previous_step()
-        active_step = self.get_active_step()
-        adjacent_steps = self.product_tmpl_id.get_adjacent_steps(
-            self.value_ids.ids, active_step.id
+        active_step = self.config_session_id.get_active_step()
+        adjacent_steps = self.config_session_id.get_adjacent_steps(
+            active_step_line_id=active_step.id
         )
         prev_step = adjacent_steps.get('prev_step')
         parent_session = self.config_session_id.parent_id
@@ -239,10 +315,8 @@ class ProductConfigurator(models.TransientModel):
     @api.multi
     def action_next_step(self):
         """Override parent method to support subconfiguration navigation"""
-
         res = super(ProductConfigurator, self).action_next_step()
         # Here the state has been changed and we are already on the next step
-
         # TODO: Find a better way to detect if wizard has been set to done
         if not res or not self.exists():
             return res
@@ -250,7 +324,10 @@ class ProductConfigurator(models.TransientModel):
         cfg_session_obj = self.env['product.config.session']
         cfg_step_line_obj = self.env['product.config.step.line']
 
-        active_step = self.get_active_step()
+        # Active step is set on the wizard so we browse that instead of session
+        active_step = self.env['product.config.step.line'].browse(
+            int(self.state)
+        )
         parent_product_tmpl = self.parent_id.product_tmpl_id
 
         subproduct_line = active_step.config_subproduct_line_id
@@ -260,14 +337,12 @@ class ProductConfigurator(models.TransientModel):
         # wizard towards the parent session to reflect the active configuration
         # This happens at the end of a subconfiguration process only
         if active_step.product_tmpl_id != self.product_tmpl_id:
-            custom_vals = self.config_session_id._get_custom_vals_dict()
-            valid = self.product_tmpl_id.validate_configuration(
-                self.value_ids.ids, custom_vals=custom_vals)
-            if not valid:
-                open_steps = self.product_tmpl_id.get_open_step_lines(
+            valid_conf = self.config_session_id.validate_configuration()
+            if not valid_conf:
+                open_steps = self.config_session_id.get_open_step_lines(
                     value_ids=self.value_ids.ids
                 )
-                self.state = open_steps[:1].id
+                self.state = open_steps[0].id
                 return res
 
             # If configuration is valid set session to done and navigate up
@@ -277,6 +352,8 @@ class ProductConfigurator(models.TransientModel):
                 'product_tmpl_id': parent_product_tmpl.id,
             })
             return res
+
+        self.config_step = self.state
 
         if not subproduct or not subproduct.config_ok:
             return res
@@ -308,7 +385,7 @@ class ProductConfigurator(models.TransientModel):
             except:
                 pass
         if not session_step:
-            open_steps = subproduct.get_open_step_lines(session.value_ids.ids)
+            open_steps = session.get_open_step_lines(session.value_ids.ids)
             if open_steps:
                 session_step = open_steps[0]
 
@@ -329,43 +406,12 @@ class ProductConfigurator(models.TransientModel):
 
     @api.multi
     def write(self, vals):
-        attr_qty_prefix = self._prefixes.get('attr_qty_prefix')
-        field_prefix = self._prefixes.get('field_prefix')
+        if not vals:
+            vals = {}
+
         subattr_prefix = self._prefixes.get('subattr_prefix')
-        subattr_qty_prefix = self._prefixes.get('subattr_qty_prefix')
 
         res = super(ProductConfigurator, self).write(vals=vals)
-
-        attr_val_variant_qty_fields = {
-            k: v for k, v in vals.items()
-            if k.startswith(attr_qty_prefix)
-        }
-
-        for qty_field, qty in attr_val_variant_qty_fields.items():
-            if not qty:
-                continue
-            attr_id = int(qty_field.replace(attr_qty_prefix, ''))
-            value_id = vals.get(field_prefix + str(attr_id))
-            if value_id:
-                attr_val = self.env['product.attribute.value'].browse(value_id)
-            else:
-                attr_val = self.value_ids.filtered(
-                    lambda v: v.attribute_id.id == attr_id)
-
-            subtmpls = self.child_ids.mapped('product_tmpl_id')
-            product = attr_val[0].product_id
-            product_tmpl = product.product_tmpl_id
-
-            if len(attr_val) == 1 and product and product_tmpl not in subtmpls:
-                self.env['product.config.session'].create({
-                    'parent_id': self.config_session_id.id,
-                    'product_tmpl_id': attr_val.product_id.product_tmpl_id.id,
-                    'value_ids': attr_val.product_id.attribute_value_ids.ids,
-                    'state': 'done',
-                    'user_id': self.env.uid,
-                    'quantity': qty
-                })
-            vals.get(qty_field)
 
         subproduct_value_ids = [
             v for k, v in vals.items() if k.startswith(subattr_prefix)
@@ -383,7 +429,6 @@ class ProductConfigurator(models.TransientModel):
             return res
 
         product_tmpl_id = subproduct[0].product_tmpl_id.id
-        qty_field = subattr_qty_prefix + str(product_tmpl_id)
 
         product_vals = {
             'user_id': self.env.uid,
@@ -391,7 +436,6 @@ class ProductConfigurator(models.TransientModel):
             'value_ids': [(6, 0, subproduct[0].attribute_value_ids.ids)],
             'state': 'done',
             'product_tmpl_id': product_tmpl_id,
-            'quantity': vals.get(qty_field, 1),
         }
 
         self.env['product.config.session'].create(product_vals)
