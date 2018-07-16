@@ -86,8 +86,6 @@ class ProductAttribute(models.Model):
         string='Unit of Measure'
     )
 
-    image = fields.Binary(string='Image')
-
     # TODO prevent the same attribute from being defined twice on the
     # attribute lines
 
