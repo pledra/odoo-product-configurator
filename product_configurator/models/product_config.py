@@ -312,8 +312,37 @@ class ProductConfigSession(models.Model):
                 custom_vals[val.attribute_id.id] = val.value
         return custom_vals
 
+    @api.multi
+    def _get_config_step_name(self):
+        """Get the config.step.line name using the string stored in config_step
+         field of the session"""
+        cfg_step_line_obj = self.env['product.config.step.line']
+        cfg_session_step_lines = self.mapped('config_step')
+        cfg_step_line_ids = set()
+        for step in cfg_session_step_lines:
+            try:
+                cfg_step_line_ids.add(int(step))
+            except:
+                pass
+        cfg_step_lines = cfg_step_line_obj.browse(cfg_step_line_ids)
+        for session in self:
+            try:
+                config_step = int(session.config_step)
+                config_step_line = cfg_step_lines.filtered(
+                    lambda x: x.id == config_step
+                )
+                session.config_step_name = config_step_line.name
+            except:
+                pass
+            if not session.config_step_name:
+                session.config_step_name = session.config_step
+
     config_step = fields.Char(
-        string='Configuration Step'
+        string='Configuration Step ID'
+    )
+    config_step_name = fields.Char(
+        compute='_get_config_step_name',
+        string="Configuration Step"
     )
     product_tmpl_id = fields.Many2one(
         comodel_name='product.template',
@@ -710,7 +739,7 @@ class ProductConfigSession(models.Model):
     @api.model
     def get_active_step(self):
         """Attempt to return product.config.step.line object that has the id
-        of the wizard state stored as string"""
+        of the config session step stored as string"""
         cfg_step_line_obj = self.env['product.config.step.line']
 
         try:

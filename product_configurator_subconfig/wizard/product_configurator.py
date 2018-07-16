@@ -38,7 +38,6 @@ class ProductConfigurator(models.TransientModel):
         if fld_type == list or not field_name.startswith(subattr_prefix):
             return res
 
-        # Maybe we store the subproduct instead of searching for it?
         active_step = self.config_session_id.get_active_step()
         subproduct = active_step.config_subproduct_line_id.subproduct_id
 
