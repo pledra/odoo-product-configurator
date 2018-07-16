@@ -103,6 +103,10 @@
                 </page>
             </xpath>
 
+            <xpath expr="//field[@name='default_code']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
         </field>
     </record>
 
