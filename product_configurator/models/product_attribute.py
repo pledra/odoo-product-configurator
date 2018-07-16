@@ -85,7 +85,6 @@ class ProductAttribute(models.Model):
         comodel_name='product.uom',
         string='Unit of Measure'
     )
-
     image = fields.Binary(string='Image')
 
     # TODO prevent the same attribute from being defined twice on the
