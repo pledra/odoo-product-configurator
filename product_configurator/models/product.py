@@ -235,7 +235,7 @@ class ProductTemplate(models.Model):
             ('custom_type', 'not in', attr_obj._get_nosearch_fields())
         ])
 
-        for attr_id, value in custom_values.iteritems():
+        for attr_id, value in custom_values.items():
             if attr_id not in attr_search.ids:
                 domain.append(
                     ('value_custom_ids.attribute_id', '!=', int(attr_id)))
@@ -292,7 +292,7 @@ class ProductTemplate(models.Model):
 
         custom_lines = []
 
-        for key, val in custom_values.iteritems():
+        for key, val in custom_values.items():
             custom_vals = {'attribute_id': key}
             # TODO: Is this extra check neccesairy as we already make
             # the check in validate_configuration?
