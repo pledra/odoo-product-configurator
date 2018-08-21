@@ -595,6 +595,7 @@ class ProductConfigurator(models.TransientModel):
             default_vals[custom_field_name] = False
             res[0].update(default_vals)
             if not attr_line.custom and not vals:
+                res[0][field_name] = False
                 continue
 
             if attr_line.custom and custom_vals:
@@ -610,11 +611,11 @@ class ProductConfigurator(models.TransientModel):
                         custom_field_name: custom_vals.eval()
                     })
             elif attr_line.multi:
-                dynamic_vals = {field_name: [[6, 0, vals.ids]]}
+                dynamic_vals = {field_name: vals.ids}
             else:
                 try:
                     vals.ensure_one()
-                    dynamic_vals = {field_name: vals.id}
+                    dynamic_vals = {field_name: [vals.id, vals.name]}
                 except:
                     continue
             res[0].update(dynamic_vals)
