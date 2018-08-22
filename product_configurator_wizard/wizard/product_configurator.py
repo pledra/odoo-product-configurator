@@ -572,7 +572,6 @@ class ProductConfigurator(models.TransientModel):
         custom_ext_id = 'product_configurator.custom_attribute_value'
         custom_val = self.env.ref(custom_ext_id)
         dynamic_vals = {}
-        default_vals = {}
         res = super(ProductConfigurator, self).read(fields=fields, load=load)
 
         if not dynamic_fields:
@@ -591,9 +590,6 @@ class ProductConfigurator(models.TransientModel):
             vals = attr_line.value_ids.filtered(
                 lambda v: v in self.value_ids)
 
-            default_vals[field_name] = False
-            default_vals[custom_field_name] = False
-            res[0].update(default_vals)
             if not attr_line.custom and not vals:
                 res[0][field_name] = False
                 continue
