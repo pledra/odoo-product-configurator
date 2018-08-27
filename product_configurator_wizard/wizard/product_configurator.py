@@ -594,17 +594,23 @@ class ProductConfigurator(models.TransientModel):
                 res[0][field_name] = False
                 continue
 
-            if attr_line.custom and custom_vals:
-                dynamic_vals.update({
-                    field_name: custom_val.id,
-                })
-                if attr_line.attribute_id.custom_type == 'binary':
+            if attr_line.custom:
+                if custom_vals:
                     dynamic_vals.update({
-                        custom_field_name: custom_vals.eval()
+                        field_name: [custom_val.id, custom_val.name],
                     })
+                    if attr_line.attribute_id.custom_type == 'binary':
+                        dynamic_vals.update({
+                            custom_field_name: custom_vals.eval(),
+                        })
+                    else:
+                        dynamic_vals.update({
+                            custom_field_name: custom_vals.eval(),
+                        })
                 else:
                     dynamic_vals.update({
-                        custom_field_name: custom_vals.eval()
+                        field_name: False,
+                        custom_field_name: False,
                     })
             elif attr_line.multi:
                 dynamic_vals = {field_name: vals.ids}
