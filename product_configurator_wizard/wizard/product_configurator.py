@@ -136,7 +136,7 @@ class ProductConfigurator(models.TransientModel):
                 vals[k] = None
 
         product_img = self.product_tmpl_id.get_config_image_obj(
-            dynamic_fields.values())
+            list(dynamic_fields.values()))
 
         vals.update(product_img=product_img.image)
 
