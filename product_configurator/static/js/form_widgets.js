@@ -9,7 +9,8 @@ var _t = core._t;
 var FieldBooleanButton = field_registry.map['boolean_button'].extend({
     init: function() {
         this._super.apply(this, arguments);
-        switch (this.attrs.options["terminology"]) {
+        var terminology = this.attrs.options && this.attrs.options['terminology'];
+        switch (terminology) {
             case "config":
                 this.string_true = _t("Configurable");
                 this.hover_true = _t("Deactivate");
