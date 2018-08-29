@@ -1,0 +1,102 @@
+image: vauxoo/odoo-80-image-shippable-auto
+stages:
+  - test
+  - build
+#  - deploy
+
+variables:
+    PSQL_VERSION: "9.6"
+    VERSION: "11.0"
+    ODOO_REPO: "odoo/odoo"
+    ODOO_BRANCH: "11.0"
+    TRAVIS_BUILD_DIR: "$CI_PROJECT_DIR"
+    TRAVIS_PYTHON_VERSION: "3.5"
+    GIT_DEPTH: "3"
+
+before_script:
+    - eval "$(ssh-agent -s)"
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
+    - ssh-keyscan gitlab.pledra.com >> ~/.ssh/known_hosts
+    - echo "$SSH_CONFIG" > ~/.ssh/config
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add  - > /dev/null
+    - echo "$SSH_ENTERPRISE_PRIVATE_KEY" | tr -d '\r' | ssh-add  - > /dev/null
+    - chmod 600 ~/.ssh/ -R
+#    - echo $GCE_SERVICE_ACCOUNT_JSON > service_account.json
+
+lint:
+  stage: test
+  variables:
+    LINT_CHECK: "1"
+    TESTS: "0"
+  script:
+    - source ${REPO_REQUIREMENTS}/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/activate
+    - source ${REPO_REQUIREMENTS}/virtualenv/nodejs/bin/activate
+    - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
+    - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
+    - travis_install_nightly
+    - travis_run_tests
+    - travis_after_tests_success || true
+  retry: 1
+
+test:
+  stage: test
+  variables:
+    LINT_CHECK: "0"
+    TESTS: "1"
+
+  script:
+    - source ${REPO_REQUIREMENTS}/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/activate
+    - source ${REPO_REQUIREMENTS}/virtualenv/nodejs/bin/activate
+    - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
+    - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
+    - travis_install_nightly
+    - sed -i '/\*__manifest*/a \    */project_task_subtask/*' .coveragerc
+    - travis_run_tests
+    - travis_after_tests_success || true
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+  retry: 1
+
+#build:
+#  image: google/cloud-sdk:alpine
+#  stage: build
+#  script:
+#    - gcloud auth activate-service-account --key-file=service_account.json
+#    - git clone git@gitlab.pledra.com:pledra/simply-solar-docker-base.git -b ${ODOO_BRANCH}-staging simply-solar
+#    - gcloud container builds submit --config simply-solar/cloudbuild.yaml simply-solar --substitutions _CI_PIPELINE_ID=$CI_PIPELINE_ID
+#  only:
+#    - /^.*-staging$/
+#  retry: 1
+
+#deploy_staging:
+#  image: google/cloud-sdk:alpine
+#  stage: deploy
+#  script:
+#    - gcloud auth activate-service-account --key-file=service_account.json
+#    - gcloud components install kubectl
+#    - gcloud container clusters get-credentials $KUBE_CLUSTER --zone $KUBE_ZONE --project $KUBE_PROJECT
+#    - kubectl config set-context $(kubectl config current-context) --namespace=$KUBE_NAMESPACE
+#    - export SERVER_DEPLOYMENT=`kubectl get deployment -l app=odoo-doodba -l type=server -o json --output=jsonpath={.items..metadata.name}`
+#    - kubectl set image deployment/$SERVER_DEPLOYMENT server=us.gcr.io/$KUBE_PROJECT/simply-solar-staging:$CI_PIPELINE_ID
+#    - kubectl rollout status deployment $SERVER_DEPLOYMENT
+#    - echo "Updating all modules"
+#    - export ODOO_SERVER_POD=`kubectl get pods -l app=odoo-doodbe -l type=server -o json --output=jsonpath={.items..metadata.name}`
+#    - kubectl exec -it $ODOO_SERVER_POD -c server odoo -- -d $ODOO_DB -u base -i web_environment_ribbon --no-xmlrpc --stop-after-init
+#  environment:
+#    name: staging
+#    url: https://simplysolar.turnpack.com
+#  only:
+#    - /^.*-staging$/
+#  retry: 1
+
+#deploy_prod:
+#  stage: deploy
+#  script:
+#    - echo "Deploy to production server"
+#  environment:
+#    name: production
+#    url: https://simplysolar.turnpack.com
+#  when: manual
+#  only:
+#    - /^.*-(staging|test)$/
