@@ -26,13 +26,13 @@ class ProductConfigurator(models.TransientModel):
     # depending on complexity and AFK time we must increase the lifespan
     # of this TransientModel life
 
-    @api.multi
     @api.depends('product_tmpl_id', 'value_ids', 'custom_value_ids')
     def _compute_cfg_image(self):
         # TODO: Update when allowing custom values to influence image
-        product_tmpl = self.product_tmpl_id.with_context(bin_size=False)
-        img_obj = product_tmpl.get_config_image_obj(self.value_ids.ids)
-        self.product_img = img_obj.image
+        for r in self:
+            product_tmpl = r.product_tmpl_id.with_context(bin_size=False)
+            img_obj = product_tmpl.get_config_image_obj(r.value_ids.ids)
+            r.product_img = img_obj.image
 
     # TODO: We could use a m2o instead of a monkeypatched select field but
     # adding new steps should be trivial via custom development

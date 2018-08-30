@@ -8,7 +8,6 @@ from ast import literal_eval
 class ProductConfigDomain(models.Model):
     _name = 'product.config.domain'
 
-    @api.multi
     @api.depends('implied_ids')
     def _get_trans_implied(self):
         "Computes the transitive closure of relation implied_ids"
@@ -289,7 +288,6 @@ class ProductConfigStepLine(models.Model):
 class ProductConfigSession(models.Model):
     _name = 'product.config.session'
 
-    @api.multi
     @api.depends('value_ids', 'custom_value_ids', 'custom_value_ids.value')
     def _compute_cfg_price(self):
         for session in self:

@@ -235,7 +235,6 @@ class ProductAttributeValue(models.Model):
 
 class ProductAttributeValueCustom(models.Model):
 
-    @api.multi
     @api.depends('attribute_id', 'attribute_id.uom_id')
     def _compute_val_name(self):
         for attr_val_custom in self:
