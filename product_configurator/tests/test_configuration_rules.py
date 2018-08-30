@@ -1,4 +1,5 @@
 from odoo.tests.common import TransactionCase
+from odoo import SUPERUSER_ID
 
 
 class ConfigurationRules(TransactionCase):
@@ -6,8 +7,11 @@ class ConfigurationRules(TransactionCase):
     def setUp(self):
         super(ConfigurationRules, self).setUp()
 
-        self.cfg_session = self.env['product.config.session']
         self.cfg_tmpl = self.env.ref('product_configurator.bmw_2_series')
+        self.cfg_session = self.env['product.config.session'].create({
+            'product_tmpl_id': self.cfg_tmpl.id,
+            'user_id': SUPERUSER_ID
+        })
 
         attribute_vals = self.cfg_tmpl.attribute_line_ids.mapped('value_ids')
         self.attr_vals = self.cfg_tmpl.attribute_line_ids.mapped('value_ids')
