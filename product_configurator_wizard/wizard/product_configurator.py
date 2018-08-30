@@ -128,9 +128,7 @@ class ProductConfigurator(models.TransientModel):
                 continue
             available_val_ids = domains[k][0][2]
             if isinstance(v, list):
-                # TODO: the douple [0][2] fetch is a bit strange but works
-                # The v is of type: [(6, False, [(6, 0, [id1, id2])])]
-                value_ids = list(set(v[0][2][0][2]) & set(available_val_ids))
+                value_ids = list(set(v[0][2]) & set(available_val_ids))
                 dynamic_fields.update({k: value_ids})
                 vals[k] = [[6, 0, value_ids]]
             elif v not in available_val_ids:
