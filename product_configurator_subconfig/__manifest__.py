@@ -8,6 +8,7 @@
     'website': 'http://www.pledra.com/',
     'depends': ['product_configurator', ],
     "data": [
+        'security/ir.model.access.csv',
         'views/product_config_view.xml',
         'views/product_view.xml',
     ],
