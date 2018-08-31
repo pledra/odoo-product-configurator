@@ -1,3 +1,4 @@
+language: python
 sudo: false
 cache: pip
 
@@ -6,8 +7,9 @@ addons:
     packages:
       - expect-dev  # provides unbuffer utility
       - python-lxml # because pip installation is slow
-
-language: python
+      - python-simplejson
+      - python-serial
+      - python-yaml
 
 python:
   - "3.5"
@@ -15,11 +17,9 @@ python:
 env:
   global:
   - VERSION="11.0" TESTS="0" LINT_CHECK="0" TRANSIFEX="0"
-  - TRANSIFEX_USER='transbot@odoo-community.org'
-  - secure: DFzL1pdDzLCxdKH1jjgSBQio3aKYvtbj/kgZiTAuQnWat0yMBqTXHN477gsj3lUK7ujCtpy/8/oTSVLVA68eVwfXnw6y9esI91Jy+Q2hPndOrpCNgWEysufVPosd208O+tE0BeIGFpDq0FnJuBP1cf/SFfhngKvZ3M7BN0IPOdc=
   matrix:
   - LINT_CHECK="1"
-  - TRANSIFEX="1"
+  - TRANSIFEX="0"
   - TESTS="1" ODOO_REPO="odoo/odoo"
   - TESTS="1" ODOO_REPO="OCA/OCB"
 
