@@ -1,33 +1,110 @@
-from openerp import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class ProductConfigSession(models.Model):
     _inherit = 'product.config.session'
 
-    # Exclude subconfigurable products from standalone configuration
-    product_tmpl_id = fields.Many2one(
-        domain=[
-            ('config_ok', '=', True),
-            ('master_template', '=', True)
+    def _compute_bom_line_vals(self):
+        attr_products = self.value_ids.mapped('product_id')
+
+        line_vals = [
+            (0, 0, {'product_id': product.id}) for product in attr_products
         ]
-    )
-    parent_id = fields.Many2one(
-        comodel_name='product.config.session',
-        readonly=True,
-        ondelete='cascade',
-        string='Parent Session'
-    )
-    child_ids = fields.One2many(
-        comodel_name='product.config.session',
-        inverse_name='parent_id',
-        string='Session Lines',
-        help='Child configuration sessions'
-    )
+
+        return line_vals
+
     quantity = fields.Integer(
         string='Quantity',
         required=True,
         default=1,
     )
+
+    @api.model
+    def search_bom(self, product, bom_line_vals):
+        """Search for a bom on the given variant with the given bom_line_vals
+
+            :param variant: Dictionary with the current {dynamic_field: val}
+            :param bom_line_vals: o2m / m2m odoo write dictionary
+
+            :returns bom: found / created mrp.bom record.
+        """
+
+        
+
+        self.env['mrp.bom'].search([
+            ('product_id', '=', product.id)
+        ])
+
+    @api.model
+    def create_update_bom(self, product):
+        """Search for an existing bom on the variant and set the first
+        sequence or create a new bom if search returns nothing.
+
+            :param product: Dictionary with the current {dynamic_field: val}
+            :param domains: Odoo domains restricting attribute values
+
+            :returns bom: Found / created mrp.bom record.
+        """
+
+        if product.product_tmpl_id != self.product_tmpl_id:
+            raise ValidationError(_(
+                "Cannot create a bom for a variant that does not belong to "
+                "the same template as set on the configuration session")
+            )
+
+        bom_line_vals = self._compute_bom_line_vals()
+        self.search_bom(product, bom_line_vals)
+
+    @api.multi
+    def create_get_variant(self, value_ids=None, custom_vals=None):
+        """Create a new BOM (if needed) for the newly retrieved / created
+        variant"""
+        variant = super(ProductConfigSession, self).create_get_variant(
+            value_ids=value_ids, custom_vals=custom_vals)
+        self.create_update_bom(variant)
+        return variant
+
+    # @api.model
+    # def search_variant(self, value_ids=None, custom_vals=None,
+    #                    product_tmpl_id=None):
+    #     """Enable a lookup for an existing bill of material on the returned
+    #     variant(s) if any."""
+    #     products = super(ProductConfigSession, self).search_variant(
+    #         value_ids=value_ids, custom_vals=custom_vals,
+    #         product_tmpl_id=product_tmpl_id
+    #     )
+
+    #     if products:
+    #         Create or update
+    #         self.create_update_bom(products)
+
+    #     return products
+
+    #     if not self.exists():
+    #         return products
+
+    #     bom_obj = self.env['mrp.bom']
+    #     bom_line_vals = self.get_bom_line_vals()
+
+    #     for product in products:
+    #         # Iterate through the variants and compare the
+    #         # generated BOM with the existing one
+    #         product_bom = bom_obj.browse(bom_obj._bom_find(product=product))
+    #         product_bom_l
+    #         if not product_bom or len(product_bom.bom_line_ids) != len(bom_line_vals):
+    #             variants -= variant
+    #             continue
+    #         for line in bom_line_vals:
+    #             bom_line = bom.bom_line_ids.filtered(
+    #                 lambda b:
+    #                     b.product_id.id == line[2]['product_id'] and
+    #                     b.product_qty == line[2]['product_qty']
+    #             )
+    #             if not bom_line:
+    #                 variants -= variant
+    #                 continue
+    #     return variants
 
     # @api.model
     # def add_dynamic_fields(self, res, dynamic_fields, wiz):
