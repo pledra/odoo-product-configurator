@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- © 2015-17 Alex Comba - Agile Business Group
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html). -->
+     
+<odoo>
+
+    <record id="product_normal_form_view" model="ir.ui.view">
+        <field name="name">product.product.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='description_sale']" position="after">
+                <separator string="Variant description for quotations" colspan="4"/>
+                <field name="variant_description_sale" colspan="4" nolabel="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_variant_easy_edit_view" model="ir.ui.view">
+        <field name="name">product.product.view.form.easy</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group[4]" position="after">
+                <group string="Notes">
+                    <field name="variant_description_sale" string="Sale Description"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>
