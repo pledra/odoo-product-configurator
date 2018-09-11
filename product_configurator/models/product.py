@@ -5,6 +5,7 @@ from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
 from mako.template import Template
 from mako.runtime import Context
+from odoo.tools.safe_eval import safe_eval
 from io import StringIO
 import logging
 
@@ -38,6 +39,17 @@ class ProductTemplate(models.Model):
         string='Variant name',
         help="Generate Name based on Mako Template"
     )
+
+    @api.multi
+    def get_product_attribute_values_action(self):
+        self.ensure_one()
+        action = self.env.ref('product.product_attribute_value_action').read()[0]
+        value_ids = self.attribute_line_ids.mapped('value_ids').ids
+        action['domain'] = [('id', 'in', value_ids)]
+        context = safe_eval(action['context'], {'active_id': self.id})
+        context.update({'active_id': self.id})
+        action['context'] = context
+        return action
 
     @api.multi
     @api.constrains('attribute_line_ids')
@@ -232,6 +244,20 @@ class ProductProduct(models.Model):
         help="This is the sum of the extra price of all attributes",
         digits=dp.get_precision('Product Price')
     )
+
+    @api.multi
+    def get_product_attribute_values_action(self):
+        self.ensure_one()
+        action = self.env.ref('product.product_attribute_value_action').read()[0]
+        value_ids = self.attribute_value_ids.ids
+        action['domain'] = [('id', 'in', value_ids)]
+        context = safe_eval(
+            action['context'],
+            {'active_id': self.product_tmpl_id.id}
+        )
+        context.update({'active_id': self.product_tmpl_id.id})
+        action['context'] = context
+        return action
 
     @api.multi
     def _check_attribute_value_ids(self):
