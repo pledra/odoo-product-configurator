@@ -876,7 +876,7 @@ class ProductConfigurator(models.TransientModel):
             self.state = previous_step.id
         else:
             self.state = 'select'
-        self._clear_values_in_steps(active_cfg_line_id)
+        self._clear_values_in_steps(active_cfg_line)
 
         self.config_session_id.config_step = self.state
 
