@@ -43,7 +43,8 @@ class ProductTemplate(models.Model):
     @api.multi
     def get_product_attribute_values_action(self):
         self.ensure_one()
-        action = self.env.ref('product.product_attribute_value_action').read()[0]
+        action = self.env.ref(
+            'product.product_attribute_value_action').read()[0]
         value_ids = self.attribute_line_ids.mapped('value_ids').ids
         action['domain'] = [('id', 'in', value_ids)]
         context = safe_eval(action['context'], {'active_id': self.id})
@@ -187,7 +188,7 @@ class ProductProduct(models.Model):
                     try:
                         custom_vals[val.attribute_id.id] = conversions[
                             custom_type](val.value)
-                    except:
+                    except Exception:
                         raise ValidationError(
                             _("Could not convert custom value '%s' to '%s' on "
                               "product variant: '%s'" % (val.value,
@@ -221,7 +222,7 @@ class ProductProduct(models.Model):
                 ctx = self._get_mako_context(buf)
                 mytemplate.render_context(ctx)
                 return buf.getvalue()
-            except:
+            except Exception:
                 _logger.error(
                     _("Error while calculating mako product name: %s") %
                     self.display_name)
@@ -248,7 +249,8 @@ class ProductProduct(models.Model):
     @api.multi
     def get_product_attribute_values_action(self):
         self.ensure_one()
-        action = self.env.ref('product.product_attribute_value_action').read()[0]
+        action = self.env.ref(
+            'product.product_attribute_value_action').read()[0]
         value_ids = self.attribute_value_ids.ids
         action['domain'] = [('id', 'in', value_ids)]
         context = safe_eval(

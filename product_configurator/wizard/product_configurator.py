@@ -208,7 +208,7 @@ class ProductConfigurator(models.TransientModel):
             cfg_step_id = int(self.state)
             cfg_step = self.product_tmpl_id.config_step_line_ids.filtered(
                 lambda x: x.id == cfg_step_id)
-        except:
+        except Exception:
             cfg_step = self.env['product.config.step.line']
 
         dynamic_fields = {
@@ -337,7 +337,7 @@ class ProductConfigurator(models.TransientModel):
                 attribute_lines = active_step_line.attribute_line_ids
             else:
                 attribute_lines = wiz.product_tmpl_id.attribute_line_ids
-        except:
+        except Exception:
             # If no configuration steps exist then get all attribute lines
             attribute_lines = wiz.product_tmpl_id.attribute_line_ids
 
@@ -696,7 +696,7 @@ class ProductConfigurator(models.TransientModel):
                     if load == '_classic_read':
                         field_value = vals.name_get()[0]
                     dynamic_vals = {field_name: field_value}
-                except:
+                except Exception:
                     continue
             res[0].update(dynamic_vals)
         return res
@@ -860,13 +860,14 @@ class ProductConfigurator(models.TransientModel):
 
         try:
             cfg_step_line_id = int(self.state)
-            active_cfg_line_id = cfg_step_lines.filtered(
+            active_cfg_line = cfg_step_lines.filtered(
                 lambda x: x.id == cfg_step_line_id)
-        except:
-            active_cfg_line_id = None
+        except Exception:
+            active_cfg_line = None
+        active_cfg_line_id = active_cfg_line and active_cfg_line.id or None
 
         adjacent_steps = self.config_session_id.get_adjacent_steps(
-            active_step_line_id=active_cfg_line_id and active_cfg_line_id.id or None
+            active_step_line_id=active_cfg_line_id
         )
 
         previous_step = adjacent_steps.get('previous_step')
@@ -916,7 +917,7 @@ class ProductConfigurator(models.TransientModel):
                 session = session.parent_id
             ctx.update(default_product_tmpl_id=session.product_tmpl_id.id)
             session.unlink()
-        except:
+        except Exception:
             session = self.env['product.config.step']
 
         action = {
@@ -944,7 +945,7 @@ class ProductConfigurator(models.TransientModel):
             variant = self.config_session_id.create_get_variant()
         except ValidationError:
             raise
-        except:
+        except Exception:
             raise ValidationError(
                 _('Invalid configuration! Please check all '
                   'required steps and fields.')
