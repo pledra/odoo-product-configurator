@@ -2,7 +2,7 @@
 <odoo>
 <data>
 
-   <record id="product_template_form_view" model="ir.ui.view">
+    <record id="product_template_form_view" model="ir.ui.view">
         <field name="name">product.configurator.product.template.form</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
@@ -13,14 +13,20 @@
                     type="object" icon="fa-wrench">
                     <field name="config_ok" widget="boolean_button" options='{"terminology": "config"}'/>
                 </button>
+                <button class="oe_stat_button" name="get_product_attribute_values_action"
+                    attrs="{'invisible': [('attribute_line_ids', '=', [])]}"
+                    groups="product.group_product_variant"
+                    type="object" icon="fa-arrow-up"
+                    string="Variant Prices">
+                </button>
             </div>
             <xpath expr='//header' position="inside">
                 <button name="configure_product"
-                            class="oe_highlight"
-                            type="object"
-                            string="Configure Product"
-                            groups="product_configurator.group_product_configurator"
-                            attrs="{'invisible': [('config_ok', '=', False)]}"/>
+                    class="oe_highlight"
+                    type="object"
+                    string="Configure Product"
+                    groups="product_configurator.group_product_configurator"
+                    attrs="{'invisible': [('config_ok', '=', False)]}"/>
             </xpath>
             <xpath expr="//label[@for='purchase_ok' or @for='sale_ok']" position="after">
                 <div class="oe_left" name="options" groups="base.group_user">
@@ -123,6 +129,66 @@
         </field>
     </record>
 
+    <record id="product_template_form_view_inherite" model="ir.ui.view">
+        <field name="name">product.template.common.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='%(product.product_attribute_value_action)d']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="template_view_tree_configurable" model="ir.ui.view">
+        <field name="name">product.template.product.tree</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <tree string="Product">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="list_price"/>
+                <field name="standard_price"/>
+                <field name="categ_id"/>
+                <field name="type"/>
+                <field name="uom_id" options="{'no_open': True, 'no_create': True}" groups="product.group_uom"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window.view" id="action_template_view_kanban_configurable">
+        <field name="act_window_id" ref="product_configurable_template_action"/>
+        <field name="sequence" eval="10"/>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="product.product_template_kanban_view"/>
+    </record>
+
+     <record model="ir.actions.act_window.view" id="action_template_view_tree_configurable">
+        <field name="act_window_id" ref="product_configurable_template_action"/>
+        <field name="sequence" eval="20"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="template_view_tree_configurable"/>
+    </record>
+
+    <record id="product_template_kanban_view_inherited" model="ir.ui.view">
+        <field name="name">Product.template.product.kanban</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="inside">
+                <field name="config_ok"/>
+            </xpath>
+            <xpath expr="//div/div[2]" position="before">
+                <div class="pull-right" groups="product_configurator.group_product_configurator" attrs="{'invisible': [('config_ok', '=', False)]}">
+                    <a name="configure_product" type="object">
+                        <i class="fa fa-wrench"></i>
+                    </a>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
     <record id="product_form_view_custom_vals_inherit" model="ir.ui.view">
         <field name="name">product.configurator.form.view.custom.vals</field>
         <field name="model">product.product</field>
@@ -132,6 +198,20 @@
                 <page string="Custom Values">
                     <field name="value_custom_ids"/>
                 </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_normal_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.product.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr='//header' position="inside">
+                <button string="Variant Prices" type="object"
+                    name="get_product_attribute_values_action"
+                    attrs="{'invisible': [('attribute_value_ids', '=', False)]}"
+                    groups="product.group_product_variant"/>
             </xpath>
         </field>
     </record>
