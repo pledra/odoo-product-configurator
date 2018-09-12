@@ -16,7 +16,7 @@
                 <button class="oe_stat_button" name="get_product_attribute_values_action"
                     attrs="{'invisible': [('attribute_line_ids', '=', [])]}"
                     groups="product.group_product_variant"
-                    type="object" icon="fa-arrow-up"
+                    type="object" icon="fa-money"
                     string="Variant Prices">
                 </button>
             </div>
@@ -151,20 +151,6 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window.view" id="action_template_view_kanban_configurable">
-        <field name="act_window_id" ref="product_configurable_template_action"/>
-        <field name="sequence" eval="10"/>
-        <field name="view_mode">kanban</field>
-        <field name="view_id" ref="product.product_template_kanban_view"/>
-    </record>
-
-     <record model="ir.actions.act_window.view" id="action_template_view_tree_configurable">
-        <field name="act_window_id" ref="product_configurable_template_action"/>
-        <field name="sequence" eval="20"/>
-        <field name="view_mode">tree</field>
-        <field name="view_id" ref="template_view_tree_configurable"/>
-    </record>
-
     <record id="product_template_kanban_view_inherited" model="ir.ui.view">
         <field name="name">Product.template.product.kanban</field>
         <field name="model">product.template</field>
@@ -201,14 +187,14 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr='//header' position="inside">
+            <div name="button_box" position="inside">
                 <button string="Variant Prices" type="object"
                     name="get_product_attribute_values_action"
                     attrs="{'invisible': [('attribute_value_ids', '=', False)]}"
-                    groups="product.group_product_variant"/>
-            </xpath>
+                    groups="product.group_product_variant"
+                    icon="fa-money"/>
+            </div>
         </field>
     </record>
-
 </data>
 </odoo>
