@@ -13,14 +13,18 @@
                     type="object" icon="fa-wrench">
                     <field name="config_ok" widget="boolean_button" options='{"terminology": "config"}'/>
                 </button>
-                <button class="oe_stat_button" name="get_product_attribute_values_action"
-                    attrs="{'invisible': [('attribute_line_ids', '=', [])]}"
-                    groups="product.group_product_variant"
-                    type="object" icon="fa-money"
-                    string="Variant Prices">
-                </button>
             </div>
             <xpath expr='//header' position="inside">
+                <button class="oe_stat_button" name="get_product_attribute_values_action"
+                    attrs="{'invisible': ['|', ('attribute_line_ids', '=', []), ('config_ok', '=', False)]}"
+                    groups="product.group_product_variant"
+                    type="object"
+                    string="Variant Prices">
+                </button>
+                <button string="Variant Prices" type="action"
+                    name="%(product.product_attribute_value_action)d"
+                    attrs="{'invisible': ['|', ('product_variant_count', '&lt;=', 1), ('config_ok', '=', True)]}"
+                    groups="product.group_product_variant"/>
                 <button name="configure_product"
                     class="oe_highlight"
                     type="object"
@@ -162,7 +166,7 @@
             <xpath expr="//div/div[2]" position="before">
                 <div class="pull-right" groups="product_configurator.group_product_configurator" attrs="{'invisible': [('config_ok', '=', False)]}">
                     <a name="configure_product" type="object">
-                        <i class="fa fa-wrench"></i>
+                        <i class="fa fa-wrench fa-lg"></i>
                     </a>
                 </div>
             </xpath>
@@ -187,13 +191,19 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
-            <div name="button_box" position="inside">
+            <xpath expr="//form" position="inside">
+                <field name="config_ok" invisible="1"/>
+            </xpath>
+            <xpath expr='//header' position="inside">
                 <button string="Variant Prices" type="object"
                     name="get_product_attribute_values_action"
-                    attrs="{'invisible': [('attribute_value_ids', '=', False)]}"
-                    groups="product.group_product_variant"
-                    icon="fa-money"/>
-            </div>
+                    attrs="{'invisible': ['|', ('attribute_value_ids', '=', False), ('config_ok', '=', False)]}"
+                    groups="product.group_product_variant"/>
+                <button string="Variant Prices" type="action"
+                    name="%(product.product_attribute_value_action)d"
+                    attrs="{'invisible': ['|', ('product_variant_count', '&lt;=', 1), ('config_ok', '=', True)]}"
+                    groups="product.group_product_variant"/>
+            </xpath>
         </field>
     </record>
 </data>
