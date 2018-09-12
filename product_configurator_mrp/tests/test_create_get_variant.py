@@ -48,36 +48,39 @@ class CrateGetVariant(TransactionCase):
 
         attr_val_ids = self.get_attr_val_ids(conf)
 
+        # Set values on the configurations session (simulate configuration)
         self.cfg_session.value_ids = attr_val_ids
+        self.cfg_session.write({
+            'cfg_line_ids': [(0, 0, {
+                'attr_val_id': attr_val_id, 'quantity': 1
+            }) for attr_val_id in attr_val_ids
+            ]
+        })
 
         variant = self.cfg_session.create_get_variant()
 
-        # self.assertTrue(variant.bom_ids, "No BOM was created with the variant")
+        self.assertTrue(variant.bom_ids, "No BOM was created with the variant")
+
+        variant = self.cfg_session.create_get_variant()
+
+        self.assertTrue(
+            len(variant.bom_ids) == 1, "Duplicate BOM has been created on "
+            "product reconfiguration with no product changes"
+        )
 
         attr_val_engine = self.env.ref(
             'product_configurator.product_attribute_value_228i'
         )
-
         # Remove the product association so a new bom needs to be generated
         attr_val_engine.product_id = None
 
         variant = self.cfg_session.create_get_variant()
-        import pdb
-        pdb.set_trace()
 
         # Verify new bom has been generated for the respective variant with the
         # lowest sequence
-        self.assertTure(len(variant.bom_ids) == 2,
+        self.assertTrue(len(variant.bom_ids) == 2,
                         "No extra BOM has been generated on "
                         "variant reconfiguration")
-
-        config_bom_lines = self.cfg_session._compute_bom_lines()
-
-        variant_bom = bom = self.env['mrp.bom']._bom_find(
-            product=variant, company_id=self.company_id.id
-        )
-
-        variant_bom.bom_line_ids
 
         # Verify the last bom generated has the lowest sequence using _bom_find
         # Also verify the contets between computed bom and current bom match

@@ -2,39 +2,112 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
+class ProductConfigBomLine(models.Model):
+    _name = 'product.config.session.line'
+
+    cfg_session_id = fields.Many2one(
+        comodel_name='product.config.session',
+        name='Configuration Session',
+        ondelete='cascade',
+        required=True,
+    )
+    attr_val_id = fields.Many2one(
+        comodel_name='product.attribute.value',
+        name="Attribute Value",
+        required=True
+    )
+    quantity = fields.Integer(
+        name="Quantity",
+        required=True,
+        default=1
+    )
+
+
 class ProductConfigSession(models.Model):
     _inherit = 'product.config.session'
-
-    def _compute_bom_line_vals(self):
-        attr_products = self.value_ids.mapped('product_id')
-
-        line_vals = [
-            (0, 0, {'product_id': product.id}) for product in attr_products
-        ]
-
-        return line_vals
 
     quantity = fields.Integer(
         string='Quantity',
         required=True,
         default=1,
     )
+    cfg_line_ids = fields.One2many(
+        comodel_name='product.config.session.line',
+        inverse_name='cfg_session_id',
+        name='Configuration Lines'
+    )
 
     @api.model
-    def search_bom(self, product, bom_line_vals):
-        """Search for a bom on the given variant with the given bom_line_vals
+    def search_bom(self, product):
+        """Search for a bom on the given variant with the given cfg_line_vals
 
             :param variant: Dictionary with the current {dynamic_field: val}
-            :param bom_line_vals: o2m / m2m odoo write dictionary
 
             :returns bom: found / created mrp.bom record.
         """
 
-        
+        product_ids = self.cfg_line_ids.mapped('attr_val_id.product_id').ids
 
-        self.env['mrp.bom'].search([
-            ('product_id', '=', product.id)
-        ])
+        if not product_ids:
+            return None
+
+        # Get a list of boms that could potentially have the same content
+        self._cr.execute("""
+            SELECT bom_id
+            FROM mrp_bom_line
+            WHERE product_id IN %s
+            AND bom_id IN (
+                SELECT id
+                FROM mrp_bom
+                WHERE product_id = %s
+            )
+            GROUP BY bom_id
+            HAVING COUNT(*) = %s;
+        """, (tuple(product_ids), product.id, len(product_ids)))
+
+        potential_bom_ids = [row[0] for row in self._cr.fetchall()]
+
+        if not potential_bom_ids:
+            return None
+
+        # If any potential boms are found the result should be narrow enough
+        # to read and filter server-side
+        potential_boms = self.env['mrp.bom'].browse(potential_bom_ids)
+
+        cfg_session_line_vals = {
+            (l.attr_val_id.product_id.id, l.quantity)
+            for l in self.cfg_line_ids if l.attr_val_id.product_id
+        }
+
+        for bom in potential_boms:
+            bom_line_vals = {
+                (l.product_id.id, l.product_qty) for l in bom.bom_line_ids
+            }
+            if bom_line_vals == cfg_session_line_vals:
+                return bom
+        return None
+
+    @api.model
+    def get_bom_vals(self, product):
+
+        bom_line_vals = []
+
+        for line in self.cfg_line_ids:
+            if not line.attr_val_id.product_id:
+                continue
+            line_vals = {
+                'product_id': line.attr_val_id.product_id.id,
+                'product_qty': line.quantity
+            }
+            bom_line_vals.append((0, 0, line_vals))
+
+        return {
+            'product_id': product.id,
+            'product_tmpl_id': product.product_tmpl_id.id,
+            'code': 'CS%d' % self.id,
+            'product_qty': 1,
+            'bom_line_ids': bom_line_vals,
+        }
 
     @api.model
     def create_update_bom(self, product):
@@ -53,8 +126,19 @@ class ProductConfigSession(models.Model):
                 "the same template as set on the configuration session")
             )
 
-        bom_line_vals = self._compute_bom_line_vals()
-        self.search_bom(product, bom_line_vals)
+        bom = self.search_bom(product)
+
+        if bom:
+            # Todo set sequence or set preffered bom attribute = true
+            return bom
+
+        bom_vals = self.get_bom_vals(product)
+
+        if not bom_vals:
+            return None
+
+        bom = self.env['mrp.bom'].create(bom_vals)
+        return bom
 
     @api.multi
     def create_get_variant(self, value_ids=None, custom_vals=None):
