@@ -13,7 +13,7 @@
         <field name="view_mode">kanban,tree,form</field>
         <field name="view_type">form</field>
         <field name="view_id" ref="product.product_template_kanban_view"/>
-        <field name="context">{'default_config_ok': True, 'custom_create_variant': True, 'search_default_filter_config_ok': 1, 'config_ok': True}</field>
+        <field name="context">{'default_config_ok': True, 'custom_create_variant': True, 'search_default_filter_config_ok': 1}</field>
     </record>
 
     <menuitem action="product_configurable_template_action"

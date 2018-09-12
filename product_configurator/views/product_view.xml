@@ -145,32 +145,12 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_tree_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='default_code']" position="after">
-                <field name="config_ok" invisible="True"/>
-            </xpath>
             <xpath expr="//field[@name='default_code']" position="attributes">
-                <attribute name="invisible">context.get('config_ok', 0)</attribute>
+                <attribute name="invisible">context.get('default_config_ok', 0)</attribute>
             </xpath>
         </field>
     </record>
 
- <!--    <record id="template_view_tree_configurable" model="ir.ui.view">
-        <field name="name">product.template.product.tree</field>
-        <field name="model">product.template</field>
-        <field name="arch" type="xml">
-            <tree string="Product">
-                <field name="sequence" widget="handle"/>
-                <field name="name"/>
-                <field name="list_price"/>
-                <field name="standard_price"/>
-                <field name="categ_id"/>
-                <field name="type"/>
-                <field name="uom_id" options="{'no_open': True, 'no_create': True}" groups="product.group_uom"/>
-                <field name="active" invisible="1"/>
-            </tree>
-        </field>
-    </record>
- -->
     <record model="ir.actions.act_window.view" id="action_template_view_kanban_configurable">
         <field name="act_window_id" ref="product_configurable_template_action"/>
         <field name="sequence" eval="10"/>
