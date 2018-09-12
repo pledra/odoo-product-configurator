@@ -876,34 +876,10 @@ class ProductConfigurator(models.TransientModel):
             self.state = previous_step.id
         else:
             self.state = 'select'
-        self._clear_values_in_steps(active_cfg_line)
 
         self.config_session_id.config_step = self.state
 
         return wizard_action
-
-    def _clear_values_in_steps(self, active_cfg_line_id):
-        """Set values of fields in step 'active_cfg_line_id' to null/false"""
-        field_prefix = self._prefixes.get('field_prefix')
-        custom_field_prefix = self._prefixes.get('custom_field_prefix')
-
-        fields = self.fields_get()
-        active_cfg_line_fields_dict = {}
-
-        for attr_line in active_cfg_line_id.attribute_line_ids:
-            attr_id = attr_line.attribute_id.id
-            field_name = field_prefix + str(attr_id)
-            custom_field_name = custom_field_prefix + str(attr_id)
-
-            if field_name in fields:
-                if fields[field_name]['type'] == 'many2one':
-                    active_cfg_line_fields_dict.update({field_name: False})
-                elif fields[field_name]['type'] == 'many2many':
-                    active_cfg_line_fields_dict.update({field_name: []})
-            if custom_field_name in fields:
-                active_cfg_line_fields_dict.update({custom_field_name: False})
-
-        self.write(active_cfg_line_fields_dict)
 
     @api.multi
     def action_reset(self):
