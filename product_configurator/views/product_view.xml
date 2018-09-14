@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 <data>
-
-    <record id="product_template_form_view" model="ir.ui.view">
-        <field name="name">product.configurator.product.template.form</field>
+    <record id="product_template_form_view_inherite" model="ir.ui.view">
+        <field name="name">product.template.common.form</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="priority">16</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
-
+            <xpath expr="//header/button[@name='%(product.product_attribute_value_action)d']" position="attributes">
+                <attribute name="attrs">{'invisible': [('config_ok','=',True)]}</attribute>
+            </xpath>
             <div name="button_box" position="inside">
                 <button class="oe_stat_button" name="toggle_config"
                     type="object" icon="fa-wrench">
                     <field name="config_ok" widget="boolean_button" options='{"terminology": "config"}'/>
                 </button>
             </div>
+        </field>
+    </record>
+
+    <record id="product_template_form_view" model="ir.ui.view">
+        <field name="name">product.configurator.product.template.form</field>
+        <field name="model">product.template</field>
+        <field name="priority">16</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
             <xpath expr='//header' position="inside">
                 <button class="oe_stat_button" name="get_product_attribute_values_action"
                     attrs="{'invisible': ['|', ('attribute_line_ids', '=', []), ('config_ok', '=', False)]}"
@@ -21,10 +32,6 @@
                     type="object"
                     string="Variant Prices">
                 </button>
-                <button string="Variant Prices" type="action"
-                    name="%(product.product_attribute_value_action)d"
-                    attrs="{'invisible': ['|', ('product_variant_count', '&lt;=', 1), ('config_ok', '=', True)]}"
-                    groups="product.group_product_variant"/>
                 <button name="configure_product"
                     class="oe_highlight"
                     type="object"
@@ -133,16 +140,7 @@
         </field>
     </record>
 
-    <record id="product_template_form_view_inherite" model="ir.ui.view">
-        <field name="name">product.template.common.form</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_form_view"/>
-        <field name="arch" type="xml">
-            <xpath expr="//header/button[@name='%(product.product_attribute_value_action)d']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-        </field>
-    </record>
+
 
     <record id="template_view_tree_configurable" model="ir.ui.view">
         <field name="name">product.template.product.tree</field>
@@ -191,18 +189,15 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//form" position="inside">
-                <field name="config_ok" invisible="1"/>
-            </xpath>
+
             <xpath expr='//header' position="inside">
                 <button string="Variant Prices" type="object"
                     name="get_product_attribute_values_action"
                     attrs="{'invisible': ['|', ('attribute_value_ids', '=', False), ('config_ok', '=', False)]}"
                     groups="product.group_product_variant"/>
-                <button string="Variant Prices" type="action"
-                    name="%(product.product_attribute_value_action)d"
-                    attrs="{'invisible': ['|', ('product_variant_count', '&lt;=', 1), ('config_ok', '=', True)]}"
-                    groups="product.group_product_variant"/>
+            </xpath>
+            <xpath expr="//button[@name='toggle_config']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>
