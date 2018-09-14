@@ -112,18 +112,11 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def configure_product(self):
-        """ Return action for new product.configurator wizard"""
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'product.configurator',
-            'name': "Configure Product",
-            'view_mode': 'form',
-            'context': dict(
-                self.env.context,
-                default_product_tmpl_id=self.id
-            ),
-            'target': 'new',
+        wizard_vals = {
+            'product_tmpl_id': self.id
         }
+        wizard = self.env['product.configurator'].create(wizard_vals)
+        return wizard.action_next_step()
 
 
 class ProductProduct(models.Model):
