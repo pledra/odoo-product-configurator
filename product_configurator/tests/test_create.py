@@ -3,7 +3,7 @@ from odoo.tests.common import TransactionCase
 
 class ConfigurationCreate(TransactionCase):
 
-    def test_create(self):
+    def test_01_create(self):
         """Test configuration item does not make variations"""
 
         attr_test = self.env['product.attribute'].create({
@@ -31,3 +31,7 @@ class ConfigurationCreate(TransactionCase):
 
         self.assertEqual(test_template.product_variant_count, 0,
                          "Create should not have any variants")
+
+    def test_02_product_configuration_restriction(self):
+        """Values on future steps breaking current wizard view """
+        pass
