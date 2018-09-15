@@ -50,7 +50,8 @@ class PurchaseConfigurProduct(TransactionCase):
         val_rims = self.env.ref(
             'product_configurator.product_attribute_value_luxury_line')
         val_tapistry = self.env.ref(
-            'product_configurator.product_attribute_value_tapistry_oyster_black')
+            'product_configurator.product_attribute_value_tapistry' +
+            '_oyster_black')
         val_transmission = self.env.ref(
             'product_configurator.product_attribute_value_steptronic')
         val_options_1 = self.env.ref(
