@@ -55,7 +55,8 @@ class ProductConfiguratorPurchase(models.TransientModel):
 
         line_vals = {}
         for field, model in order_line._fields.items():
-            line_vals[field] = model.convert_to_write(order_line[field], order_line)
+            line_vals[field] = model.convert_to_write(
+                order_line[field], order_line)
 
         line_vals.update(self._extra_line_values(variant))
         order_line_obj.create(line_vals)
