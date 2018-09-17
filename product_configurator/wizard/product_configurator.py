@@ -777,6 +777,29 @@ class ProductConfigurator(models.TransientModel):
         self.mapped('config_session_id').unlink()
         return super(ProductConfigurator, self).unlink()
 
+    def clear_values_in_future_steps(self, active_cfg_line_id):
+        """Set values of fields in step 'active_cfg_line_id' to null/false"""
+        field_prefix = self._prefixes.get('field_prefix')
+        custom_field_prefix = self._prefixes.get('custom_field_prefix')
+
+        fields = self.fields_get()
+        active_cfg_line_fields_dict = {}
+
+        for attr_line in active_cfg_line_id.attribute_line_ids:
+            attr_id = attr_line.attribute_id.id
+            field_name = field_prefix + str(attr_id)
+            custom_field_name = custom_field_prefix + str(attr_id)
+
+            if field_name in fields:
+                if fields[field_name]['type'] == 'many2one':
+                    active_cfg_line_fields_dict.update({field_name: False})
+                elif fields[field_name]['type'] == 'many2many':
+                    active_cfg_line_fields_dict.update({field_name: []})
+            if custom_field_name in fields:
+                active_cfg_line_fields_dict.update({custom_field_name: False})
+
+        self.write(active_cfg_line_fields_dict)
+
     @api.multi
     def action_next_step(self):
         """Proceeds to the next step of the configuration process. This usually
@@ -820,8 +843,7 @@ class ProductConfigurator(models.TransientModel):
         next_step = adjacent_steps.get('next_step')
 
         session_config_step = self.config_session_id.config_step
-
-        if session_config_step and self.state != session_config_step:
+        if session_config_step and str(self.state) != session_config_step:
             next_step = self.config_session_id.config_step
         else:
             next_step = str(next_step.id) if next_step else None
