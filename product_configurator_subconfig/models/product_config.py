@@ -99,14 +99,14 @@ class ProductConfigSession(models.Model):
             try:
                 step_id = int(parent_draft_session.config_step)
                 active_step = open_steps.filtered(lambda l: l.id == step_id)
-            except:
+            except Exception:
                 active_step = cfg_step_line_obj
 
             if active_step:
                 index = [l for l in open_steps.sorted()].index(active_step)
                 try:
                     steps['next_step'] = open_steps[index + 1]
-                except:
+                except Exception:
                     steps['next_step'] = next_step
 
         if not prev_step or prev_step == 'select':
@@ -120,7 +120,7 @@ class ProductConfigSession(models.Model):
                 index = [l for l in open_steps.sorted()].index(subproduct_step)
                 try:
                     steps['prev_step'] = open_steps[index - 1]
-                except:
+                except Exception:
                     steps['prev_step'] = prev_step
 
         return steps

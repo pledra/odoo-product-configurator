@@ -282,7 +282,7 @@ class ProductConfigStepLine(models.Model):
     def _check_config_step(self):
         cfg_step_lines = self.product_tmpl_id.config_step_line_ids
         cfg_steps = cfg_step_lines.filtered(
-            lambda l: l != self).mapped('config_step_id')
+            lambda line: line != self).mapped('config_step_id')
         if self.config_step_id in cfg_steps:
             raise Warning(_('Cannot have a configuration step defined twice.'))
 
@@ -322,7 +322,7 @@ class ProductConfigSession(models.Model):
         for step in cfg_session_step_lines:
             try:
                 cfg_step_line_ids.add(int(step))
-            except:
+            except Exception:
                 pass
         cfg_step_lines = cfg_step_line_obj.browse(cfg_step_line_ids)
         for session in self:
@@ -332,7 +332,7 @@ class ProductConfigSession(models.Model):
                     lambda x: x.id == config_step
                 )
                 session.config_step_name = config_step_line.name
-            except:
+            except Exception:
                 pass
             if not session.config_step_name:
                 session.config_step_name = session.config_step
@@ -445,7 +445,7 @@ class ProductConfigSession(models.Model):
 
         if custom_val_dict:
             binary_field_ids = self.env['product.attribute'].search([
-                ('id', 'in', custom_val_dict.keys()),
+                ('id', 'in', list(custom_val_dict.keys())),
                 ('custom_type', '=', 'binary')
             ]).ids
         for attr_id, vals in custom_val_dict.items():
@@ -744,7 +744,7 @@ class ProductConfigSession(models.Model):
 
         try:
             cfg_step_line_id = int(self.config_step)
-        except:
+        except Exception:
             cfg_step_line_id = None
 
         if cfg_step_line_id:

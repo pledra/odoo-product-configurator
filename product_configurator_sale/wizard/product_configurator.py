@@ -40,11 +40,11 @@ class ProductConfigurator(models.TransientModel):
         # error legitimately raised in a nested routine
         # is passed through.
         try:
-            variant = self.product_tmpl_id.create_get_variant(
+            variant = self.config_session_id.create_get_variant(
                 self.value_ids.ids, custom_vals)
         except ValidationError:
             raise
-        except:
+        except Exception:
             raise ValidationError(
                 _('Invalid configuration! Please check all '
                   'required steps and fields.')
