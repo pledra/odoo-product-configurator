@@ -35,12 +35,8 @@ class ConfigurationWizard(TransactionCase):
     def create_wizard(self, product_tmpl=None):
         if not product_tmpl:
             product_tmpl = self.cfg_tmpl
-        wizard_action = product_tmpl.configure_product()
-        wizard_obj = self.env['product.configurator'].with_context(
-            wizard_action['context']
-        )
         wizard_vals = {
-            'product_tmpl_id': wizard_action.get('default_product_tmpl_id')
+            'product_tmpl_id': product_tmpl.id
         }
-        wizard = wizard_obj.create(vals=wizard_vals)
+        wizard = self.env['product.configurator'].create(vals=wizard_vals)
         return wizard
