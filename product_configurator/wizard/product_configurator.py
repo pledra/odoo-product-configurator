@@ -862,7 +862,7 @@ class ProductConfigurator(models.TransientModel):
             cfg_step_line_id = int(self.state)
             active_cfg_line_id = cfg_step_lines.filtered(
                 lambda x: x.id == cfg_step_line_id).id
-        except:
+        except Exception:
             active_cfg_line_id = None
 
         adjacent_steps = self.config_session_id.get_adjacent_steps(
