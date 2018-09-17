@@ -19,9 +19,51 @@ class ProductConfigurator(models.TransientModel):
     @api.multi
     def write(self, vals):
         res = super(ProductConfigurator, self).write(vals)
-        import pdb;pdb.set_trace()
+        field_prefix = self._prefixes.get('field_prefix')
+        attr_val_obj = self.env['product.attribute.value']
+
+        custom_ext_id = 'product_configurator.custom_attribute_value'
+        custom_val = self.env.ref(custom_ext_id)
+
+        custom_field_prefix = self._prefixes.get('custom_field_prefix')
+
+        for attr_line in self.product_tmpl_id.attribute_line_ids:
+            attr_id = attr_line.attribute_id.id
+            field_name = field_prefix + str(attr_id)
+            custom_field_name = custom_field_prefix + str(attr_id)
+
+            if field_name not in vals and custom_field_name not in vals:
+                continue
+
+            if vals.get(field_name, custom_val.id) == custom_val.id:
+                continue
+
+            if attr_line.multi or not isinstance(vals[field_name], int):
+                continue
+
+            attr_val_id = vals[field_name]
+            attr_val = attr_val_obj.browse(attr_val_id)
+
+            if not attr_val.product_id:
+                continue
+
+            cfg_session_line = self.config_session_id.cfg_line_ids.filtered(
+                lambda l: l.attr_val_id.attribute_id == attr_val.attribute_id
+            )
+
+            if cfg_session_line:
+                # TODO: Update with the received quantity
+                cfg_session_line.quantity = 1
+            else:
+                line_vals = {
+                    'attr_val_id': attr_val_id,
+                    'quantity': 1,
+                }
+                self.config_session_id.write({
+                    'cfg_line_ids': [(0, 0, line_vals)]
+                })
+
         return res
-        
 
     # @api.multi
     # def action_next_step(self):

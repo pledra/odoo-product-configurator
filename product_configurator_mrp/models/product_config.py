@@ -16,6 +16,11 @@ class ProductConfigBomLine(models.Model):
         name="Attribute Value",
         required=True
     )
+    product_id = fields.Many2one(
+        comodel_name='product.product',
+        related='attr_val_id.product_id',
+        readonly=True
+    )
     quantity = fields.Integer(
         name="Quantity",
         required=True,
@@ -110,7 +115,7 @@ class ProductConfigSession(models.Model):
         }
 
     @api.model
-    def create_update_bom(self, product):
+    def create_get_bom(self, product):
         """Search for an existing bom on the variant and set the first
         sequence or create a new bom if search returns nothing.
 
@@ -146,7 +151,7 @@ class ProductConfigSession(models.Model):
         variant"""
         variant = super(ProductConfigSession, self).create_get_variant(
             value_ids=value_ids, custom_vals=custom_vals)
-        self.create_update_bom(variant)
+        self.create_get_bom(variant)
         return variant
 
     # @api.model
