@@ -24,7 +24,7 @@ class ProductConfiguratorPurchase(models.TransientModel):
     def action_config_done(self):
         """Add new order line or edit linked order line with new variant"""
         custom_vals = self.config_session_id._get_custom_vals_dict()
-        variant = self.product_tmpl_id.create_get_variant(
+        variant = self.config_session_id.create_get_variant(
             self.value_ids.ids, custom_vals)
 
         order_line_obj = self.env['purchase.order.line']

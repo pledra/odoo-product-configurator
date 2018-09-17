@@ -379,7 +379,7 @@ class ProductConfigurator(models.TransientModel):
             try:
                 step_id = int(session.config_step)
                 session_step = cfg_step_line_obj.browse(step_id)
-            except:
+            except Exception:
                 pass
         if not session_step:
             open_steps = session.get_open_step_lines(session.value_ids.ids)
