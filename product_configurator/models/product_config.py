@@ -337,6 +337,10 @@ class ProductConfigSession(models.Model):
             if not session.config_step_name:
                 session.config_step_name = session.config_step
 
+    name = fields.Char(
+        string='Configuration Session Number',
+        readonly=True
+    )
     config_step = fields.Char(
         string='Configuration Step ID'
     )
@@ -481,6 +485,7 @@ class ProductConfigSession(models.Model):
 
     @api.model
     def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_code('product.config.session') or _('New')
         product_tmpl = self.env['product.template'].browse(
             vals.get('product_tmpl_id')).exists()
         if product_tmpl:
