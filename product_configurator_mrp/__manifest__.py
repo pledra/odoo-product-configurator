@@ -14,7 +14,9 @@
         'views/product_config_view.xml',
         'views/mrp_view.xml',
     ],
-    'demo': [],
+    'demo': [
+        'demo/product_template.xml',
+    ],
     'test': [],
     'installable': False,
     'auto_install': False,
