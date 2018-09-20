@@ -10,7 +10,7 @@
     "data": [
         'security/configurator_security.xml',
         'security/ir.model.access.csv',
-        # 'views/product_view.xml',
+        'views/product_view.xml',
         'views/product_config_view.xml',
         'views/mrp_view.xml',
     ],
