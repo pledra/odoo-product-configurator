@@ -52,11 +52,12 @@ class Wizard(TransactionCase):
         attr_val_ids = set(self.get_attr_val_ids(conf))
 
         field_prefix = self.cfg_wizard._prefixes['field_prefix']
+        qty_field_prefix = self.cfg_wizard._prefixes['attr_val_product_qty']
         # Proceed to the first configuration step after selecting template
 
         attr_product_count = 0
 
-        while self.cfg_session.state != 'done':
+        while self.cfg_session.value_ids.ids != attr_val_ids:
             self.cfg_wizard.action_next_step()
 
             step_id = int(self.cfg_wizard.state)
@@ -78,12 +79,16 @@ class Wizard(TransactionCase):
                         attr_product_count += 1
                     attribute_id = attr_val.attribute_id.id
                     field_name = field_prefix + str(attribute_id)
+                    qty_field_name = qty_field_prefix + str(attribute_id)
                     if attr_line.multi:
                         if field_name not in vals:
                             vals[field_name] = [(0, 0, [])]
                         vals[field_name][0][2].append(attr_val.id)
                     else:
-                        vals[field_name] = attr_val.id
+                        vals.update({
+                            field_name: attr_val.id,
+                            qty_field_name: 1
+                        })
 
             self.cfg_wizard.write(vals)
 
