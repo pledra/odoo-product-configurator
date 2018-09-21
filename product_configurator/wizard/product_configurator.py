@@ -404,9 +404,6 @@ class ProductConfigurator(models.TransientModel):
         """ Generate view dynamically using attributes stored on the
         product.template"""
 
-        field_prefix = self._prefixes.get('field_prefix')
-        custom_field_prefix = self._prefixes.get('custom_field_prefix')
-
         if view_type == 'form' and not view_id:
             view_ext_id = 'product_configurator.product_configurator_form'
             view_id = self.env.ref(view_ext_id).id
