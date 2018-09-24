@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-11-26 10:24+0000\n"
-"PO-Revision-Date: 2018-09-23 22:44+0800\n"
+"PO-Revision-Date: 2018-09-24 19:37+0800\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,7 +20,7 @@ msgstr ""
 #. module: product_configurator
 #: model:product.template,name:product_configurator.bmw_2_series
 msgid "2 Series"
-msgstr "2 Series系列"
+msgstr "宝马2 Series系列"
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_218d
@@ -629,7 +629,7 @@ msgstr "明细"
 #: model:product.product,name:product_configurator.product_bmw_luxury_line
 #: model:product.template,name:product_configurator.product_bmw_luxury_line_product_template
 msgid "Luxury Line"
-msgstr "豪华型"
+msgstr "Luxury Line"
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_m235i
@@ -674,7 +674,7 @@ msgstr "允许的最小值"
 #: model:product.product,name:product_configurator.product_bmw_model_advantage
 #: model:product.template,name:product_configurator.product_bmw_model_advantage_product_template
 msgid "Model Advantage"
-msgstr "模型优势"
+msgstr "Model Advantage"
 
 #. module: product_configurator
 #: model:product.attribute.value,name:product_configurator.product_attribute_value_model_luxury_line
@@ -701,7 +701,7 @@ msgstr "Model Sport Line"
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_multi
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_multi
 msgid "Multi"
-msgstr "多"
+msgstr "多项"
 
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_name
@@ -790,7 +790,7 @@ msgstr "相关产品"
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_required
 #: model:ir.model.fields,field_description:product_configurator.field_product_attribute_required
 msgid "Required"
-msgstr "要求"
+msgstr "必须"
 
 #. module: product_configurator
 #: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_domain_line_ids
@@ -887,7 +887,7 @@ msgstr "天窗"
 #. module: product_configurator
 #: model:product.attribute,name:product_configurator.product_attribute_tapistry
 msgid "Tapistry"
-msgstr "Tapistry"
+msgstr "车毯"
 
 #. module: product_configurator
 #: selection:product.attribute,custom_type:0
