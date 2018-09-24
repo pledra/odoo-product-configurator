@@ -79,10 +79,7 @@ class Wizard(TransactionCase):
                     lambda attr_val: attr_val.id in attr_val_ids
                 )
                 for attr_val in attr_vals:
-                    multi_line = attr_line.multi
-                    qty_val = attr_val.quantity
-                    product_id = attr_val.product_id
-                    if product_id and qty_val and not multi_line:
+                    if attr_val.product_id and not attr_line.multi:
                         attr_product_count += 1
                     attribute_id = attr_val.attribute_id.id
                     field_name = field_prefix + str(attribute_id)
