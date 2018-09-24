@@ -74,7 +74,7 @@ class ProductConfigurator(models.TransientModel):
                     lambda attr_val: attr_val.attribute_id == attribute
                 )
 
-            if not attr_val.quantity or not attr_val.product_id:
+            if not attr_val.product_id:
                 continue
 
             # Attempt to locate another config line with the same attribute

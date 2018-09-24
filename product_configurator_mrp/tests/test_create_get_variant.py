@@ -47,13 +47,17 @@ class CrateGetVariant(TransactionCase):
         ]
 
         attr_val_ids = self.get_attr_val_ids(conf)
+        attr_vals = self.env['product.attribute.value'].browse(attr_val_ids)
+        product_attr_vals = attr_vals.filtered(
+            lambda attr_val: attr_val.product_id
+        )
 
         # Set values on the configurations session (simulate configuration)
         self.cfg_session.value_ids = attr_val_ids
         self.cfg_session.write({
             'cfg_line_ids': [(0, 0, {
-                'attr_val_id': attr_val_id, 'quantity': 1
-            }) for attr_val_id in attr_val_ids
+                'attr_val_id': attr_val.id, 'quantity': 1
+            }) for attr_val in product_attr_vals
             ]
         })
 

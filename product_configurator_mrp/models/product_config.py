@@ -19,6 +19,7 @@ class ProductConfigBomLine(models.Model):
     product_id = fields.Many2one(
         comodel_name='product.product',
         related='attr_val_id.product_id',
+        required=True,
         readonly=True
     )
     quantity = fields.Integer(
@@ -42,6 +43,14 @@ class ProductConfigSession(models.Model):
         name='Configuration Lines'
     )
 
+    @api.constrains('cfg_line_ids')
+    def check_lines(self):
+        if any(not l.product_id for l in self.cfg_line_ids):
+            raise ValidationError(
+                _('Config session lines must have attribute values with '
+                  'related products only')
+            )
+
     @api.model
     def search_bom(self, product):
         """Search for a bom on the given variant with the given cfg_line_vals
@@ -52,7 +61,8 @@ class ProductConfigSession(models.Model):
         """
 
         product_ids = self.cfg_line_ids.mapped('attr_val_id.product_id').ids
-        total_qty = sum(self.cfg_line_ids.mapped('quantity'))
+        product_cfg_lines = self.cfg_line_ids.filtered(lambda l: l.product_id)
+        total_qty = sum(product_cfg_lines.mapped('quantity'))
 
         if not product_ids:
             return None
@@ -100,13 +110,16 @@ class ProductConfigSession(models.Model):
         bom_line_vals = []
 
         for line in self.cfg_line_ids:
-            if not line.attr_val_id.product_id:
+            if not line.product_id:
                 continue
             line_vals = {
-                'product_id': line.attr_val_id.product_id.id,
+                'product_id': line.product_id.id,
                 'product_qty': line.quantity
             }
             bom_line_vals.append((0, 0, line_vals))
+
+        if not bom_line_vals:
+            return None
 
         return {
             'product_id': product.id,
