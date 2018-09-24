@@ -485,7 +485,8 @@ class ProductConfigSession(models.Model):
 
     @api.model
     def create(self, vals):
-        vals['name'] = self.env['ir.sequence'].next_by_code('product.config.session') or _('New')
+        vals['name'] = self.env['ir.sequence'].next_by_code(
+            'product.config.session') or _('New')
         product_tmpl = self.env['product.template'].browse(
             vals.get('product_tmpl_id')).exists()
         if product_tmpl:
