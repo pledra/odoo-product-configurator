@@ -52,6 +52,7 @@ class ProductConfigSession(models.Model):
         """
 
         product_ids = self.cfg_line_ids.mapped('attr_val_id.product_id').ids
+        total_qty = sum(self.cfg_line_ids.mapped('quantity'))
 
         if not product_ids:
             return None
@@ -67,8 +68,9 @@ class ProductConfigSession(models.Model):
                 WHERE product_id = %s
             )
             GROUP BY bom_id
-            HAVING COUNT(*) = %s;
-        """, (tuple(product_ids), product.id, len(product_ids)))
+            HAVING COUNT(*) = %s
+            AND SUM(product_qty) = %s;
+        """, (tuple(product_ids), product.id, len(product_ids), total_qty))
 
         potential_bom_ids = [row[0] for row in self._cr.fetchall()]
 
@@ -109,7 +111,7 @@ class ProductConfigSession(models.Model):
         return {
             'product_id': product.id,
             'product_tmpl_id': product.product_tmpl_id.id,
-            'code': 'CS%d' % self.id,
+            'code': self.name,
             'product_qty': 1,
             'bom_line_ids': bom_line_vals,
         }

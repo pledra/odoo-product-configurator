@@ -20,20 +20,38 @@ class ProductConfigurator(models.TransientModel):
     def write(self, vals):
         res = super(ProductConfigurator, self).write(vals)
 
+        field_prefix = self._prefixes.get('field_prefix')
         attr_qty_prefix = self._prefixes.get('attr_val_product_qty')
 
+        attr_fields = [f for f in vals if f.startswith(field_prefix)]
         qty_fields = [f for f in vals if f.startswith(attr_qty_prefix)]
 
-        for qty_field in qty_fields:
+        attr_ids = set()
 
-            # Extract related attribute id from qty field name
-            try:
-                attr_id = int(qty_field.split(attr_qty_prefix)[1])
-            except:
-                continue
+        try:
+            attr_ids |= {int(f.split(field_prefix)[1]) for f in attr_fields}
+        except Exception:
+            pass
 
-            # Obtained entered quantity in the wizard
-            quantity = vals[qty_field]
+        try:
+            attr_ids |= {int(f.split(attr_qty_prefix)[1]) for f in qty_fields}
+        except Exception:
+            pass
+
+        # Do not consider multi selection yet
+        attr_lines = self.product_tmpl_id.attribute_line_ids.filtered(
+            lambda x: not x.multi and x.attribute_id.id in attr_ids
+        )
+
+        for line in attr_lines:
+
+            attribute = line.attribute_id
+
+            attr_field = field_prefix + str(attribute.id)
+            qty_field = attr_qty_prefix + str(attribute.id)
+
+            # Obtained entered quantity in the wizard or the default value
+            quantity = vals.get(qty_field, 1)
 
             if not isinstance(quantity, int):
                 continue
@@ -41,18 +59,27 @@ class ProductConfigurator(models.TransientModel):
             if quantity <= 0:
                 quantity = 1
 
-            # Find the attribute value assosciated with the quantity
-            attr_val = self.config_session_id.value_ids.filtered(
-                lambda attr_val: attr_val.attribute_id.id == attr_id
-            )
+            attr_val_id = vals.get(attr_field)
 
-            # If none is found or it is a multi selection skip
-            if len(attr_val) != 1 or not attr_val.product_id:
+            if attr_val_id:
+                try:
+                    attr_val_id = int(vals[attr_field])
+                    attr_val = self.env['product.attribute.value'].browse(
+                        attr_val_id
+                    )
+                except Exception:
+                    continue
+            else:
+                attr_val = self.config_session_id.value_ids.filtered(
+                    lambda attr_val: attr_val.attribute_id == attribute
+                )
+
+            if not attr_val.quantity or not attr_val.product_id:
                 continue
 
             # Attempt to locate another config line with the same attribute
             cfg_session_line = self.config_session_id.cfg_line_ids.filtered(
-                lambda l: l.attr_val_id.attribute_id.id == attr_id
+                lambda l: l.attr_val_id.attribute_id.id == attribute.id
             )
 
             # If there are two or more delete all records and set line to None
@@ -69,6 +96,7 @@ class ProductConfigurator(models.TransientModel):
                 self.config_session_id.write({
                     'cfg_line_ids': [(0, 0, line_vals)]
                 })
+            # Else update existing line with current values
             else:
                 cfg_session_line.write({
                     'quantity': quantity,
@@ -93,7 +121,8 @@ class ProductConfigurator(models.TransientModel):
 
         res = {}
         attr_qty_prefix = self._prefixes.get('attr_val_product_qty')
-        attr_vals = wiz.product_tmpl_id.attribute_line_ids.mapped('value_ids')
+        attr_vals = wiz.product_tmpl_id.attribute_line_ids.filtered(
+            lambda l: not l.multi).mapped('value_ids')
         qty_attr_vals = attr_vals.filtered(
             lambda attr_val: attr_val.product_id and attr_val.quantity
         )

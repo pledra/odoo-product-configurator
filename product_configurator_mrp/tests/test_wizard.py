@@ -57,8 +57,12 @@ class Wizard(TransactionCase):
 
         attr_product_count = 0
 
-        while self.cfg_session.value_ids.ids != attr_val_ids:
+        while self.cfg_wizard:
+            state = self.cfg_wizard.state
             self.cfg_wizard.action_next_step()
+
+            if self.cfg_wizard.state == state:
+                break
 
             step_id = int(self.cfg_wizard.state)
 
@@ -75,7 +79,10 @@ class Wizard(TransactionCase):
                     lambda attr_val: attr_val.id in attr_val_ids
                 )
                 for attr_val in attr_vals:
-                    if attr_val.product_id and not attr_line.multi:
+                    multi_line = attr_line.multi
+                    qty_val = attr_val.quantity
+                    product_id = attr_val.product_id
+                    if product_id and qty_val and not multi_line:
                         attr_product_count += 1
                     attribute_id = attr_val.attribute_id.id
                     field_name = field_prefix + str(attribute_id)
