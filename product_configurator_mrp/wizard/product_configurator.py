@@ -77,8 +77,9 @@ class ProductConfigurator(models.TransientModel):
             if not attr_val.product_id:
                 continue
 
+            cfg_bom_lines = self.config_session_id.cfg_bom_line_ids
             # Attempt to locate another config line with the same attribute
-            cfg_session_line = self.config_session_id.cfg_line_ids.filtered(
+            cfg_session_line = cfg_bom_lines.filtered(
                 lambda l: l.attr_val_id.attribute_id.id == attribute.id
             )
 
@@ -94,7 +95,7 @@ class ProductConfigurator(models.TransientModel):
                     'quantity': quantity,
                 }
                 self.config_session_id.write({
-                    'cfg_line_ids': [(0, 0, line_vals)]
+                    'cfg_bom_line_ids': [(0, 0, line_vals)]
                 })
             # Else update existing line with current values
             else:
@@ -212,7 +213,7 @@ class ProductConfigurator(models.TransientModel):
 
             qty = 1
 
-            cfg_line = self.config_session_id.cfg_line_ids.filtered(
+            cfg_line = self.config_session_id.cfg_bom_line_ids.filtered(
                 lambda l: l.attr_val_id.attribute_id.id == attr_id
             )
             if cfg_line:

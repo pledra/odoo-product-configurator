@@ -18,8 +18,8 @@
         <field name="inherit_id" ref="product_configurator.product_config_session_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page name="cfg_line_ids" string="Config Lines">
-                    <field name="cfg_line_ids">
+                <page name="cfg_bom_line_ids" string="Config Bom Lines">
+                    <field name="cfg_bom_line_ids">
                         <tree>
                             <field name="attr_val_id"/>
                             <field name="product_id"/>
