@@ -215,10 +215,10 @@
             <xpath expr="//kanban" position="inside">
                 <field name="config_ok"/>
             </xpath>
-            <xpath expr="//div/div[2]/strong[@class='o_kanban_record_title']" position="after">
+            <xpath expr="//div/div[2]/strong[hasclass('o_kanban_record_title')]" position="after">
                 <div class="pull-right" groups="product_configurator.group_product_configurator" attrs="{'invisible': [('config_ok', '=', False)]}">
                     <a name="reconfigure_product" type="object">
-                        <i class="fa fa-cogs"></i>
+                        <i class="fa fa-cogs fa-lg"></i>
                     </a>
                 </div>
             </xpath>
