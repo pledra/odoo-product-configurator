@@ -112,11 +112,26 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def configure_product(self):
+        return self.create_configurator_wizard(click_next=True)
+
+    def create_configurator_wizard(
+       self, model_name="product.configurator",
+       extra_vals=None, click_next=False):
+        """create product configuration wizard
+        - return action to launch wizard
+        - click on next step based on value of click_next"""
+
+        wizard_obj = self.env[model_name]
         wizard_vals = {
             'product_tmpl_id': self.id
         }
-        wizard = self.env['product.configurator'].create(wizard_vals)
-        return wizard.action_next_step()
+        if extra_vals:
+            wizard_vals.update(extra_vals)
+        wizard = wizard_obj.create(wizard_vals)
+        if click_next:
+            return wizard.action_next_step()
+        return self.env.ref(
+            'product_configurator.action_wizard_product_configurator')
 
 
 class ProductProduct(models.Model):
@@ -314,8 +329,8 @@ class ProductProduct(models.Model):
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
 
-        wizard_obj = self.env['product.configurator']
-        wizard = wizard_obj.create({
+        extra_vals = {
             'product_id': self.id,
-        })
-        return wizard.action_next_step()
+        }
+        return self.product_tmpl_id.create_configurator_wizard(
+            extra_vals=extra_vals, click_next=True)

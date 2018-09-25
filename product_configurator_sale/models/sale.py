@@ -21,9 +21,12 @@ class SaleOrderLine(models.Model):
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
 
-        wizard_obj = self.env['product.configurator']
-        wizard = wizard_obj.create({
-            'product_id': self.product_id.id,
+        # TODO: change wizard model to product.configurator.sale
+
+        extra_vals = {
             'order_line_id': self.id,
-        })
-        return wizard.action_next_step()
+            'product_id': self.product_id.id,
+        }
+        wizard_model = 'product.configurator'
+        return self.product_id.product_tmpl_id.create_configurator_wizard(
+            model_name=wizard_model, extra_vals=extra_vals, click_next=True)
