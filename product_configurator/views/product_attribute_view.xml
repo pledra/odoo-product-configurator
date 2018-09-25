@@ -58,7 +58,7 @@
                             </field>
                         </group>
                     </page>
-                    <page string="Validation">
+                    <page string="Configurator">
                         <group>
                             <group>
                                 <!-- <field name="type"/> -->
