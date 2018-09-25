@@ -26,6 +26,4 @@ class SaleOrderLine(models.Model):
             'product_id': self.product_id.id,
             'order_line_id': self.id,
         })
-        action = wizard.action_next_step()
-        del action['context']['view_cache']
-        return action
+        return wizard.action_next_step()
