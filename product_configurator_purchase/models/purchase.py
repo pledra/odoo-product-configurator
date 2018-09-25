@@ -47,6 +47,5 @@ class PurchaseOrderLine(models.Model):
             'order_line_id': self.id,
         })
         action = wizard.action_next_step()
-        del action['context']['view_cache']
         action['context']['wizard_model'] = wizard_model
         return action

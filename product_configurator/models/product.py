@@ -318,6 +318,4 @@ class ProductProduct(models.Model):
         wizard = wizard_obj.create({
             'product_id': self.id,
         })
-        action = wizard.action_next_step()
-        del action['context']['view_cache']
-        return action
+        return wizard.action_next_step()
