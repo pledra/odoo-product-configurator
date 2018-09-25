@@ -114,9 +114,8 @@ class ProductTemplate(models.Model):
     def configure_product(self):
         return self.create_configurator_wizard(click_next=True)
 
-    def create_configurator_wizard(
-       self, model_name="product.configurator",
-       extra_vals=None, click_next=False):
+    def create_configurator_wizard(self, model_name="product.configurator",
+                                   extra_vals=None, click_next=False):
         """create product configuration wizard
         - return action to launch wizard
         - click on next step based on value of click_next"""
