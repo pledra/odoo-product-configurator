@@ -96,10 +96,10 @@ class Wizard(TransactionCase):
 
             self.cfg_wizard.write(vals)
 
-        cfg_line_ids = self.cfg_session.cfg_line_ids
+        cfg_bom_line_ids = self.cfg_session.cfg_bom_line_ids
 
         self.assertTrue(
-            len(cfg_line_ids) == attr_product_count,
+            len(cfg_bom_line_ids) == attr_product_count,
             "Number of cfg_lines on the configuration session do not match "
             "the number of related products set on the attributes of the "
             "given configuration"

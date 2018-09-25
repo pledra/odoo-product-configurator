@@ -3,7 +3,7 @@ from odoo.exceptions import ValidationError
 
 
 class ProductConfigBomLine(models.Model):
-    _name = 'product.config.session.line'
+    _name = 'product.config.bom.line'
 
     cfg_session_id = fields.Many2one(
         comodel_name='product.config.session',
@@ -37,15 +37,15 @@ class ProductConfigSession(models.Model):
         required=True,
         default=1,
     )
-    cfg_line_ids = fields.One2many(
-        comodel_name='product.config.session.line',
+    cfg_bom_line_ids = fields.One2many(
+        comodel_name='product.config.bom.line',
         inverse_name='cfg_session_id',
         name='Configuration Lines'
     )
 
-    @api.constrains('cfg_line_ids')
+    @api.constrains('cfg_bom_line_ids')
     def check_lines(self):
-        if any(not l.product_id for l in self.cfg_line_ids):
+        if any(not l.product_id for l in self.cfg_bom_line_ids):
             raise ValidationError(
                 _('Config session lines must have attribute values with '
                   'related products only')
@@ -60,19 +60,20 @@ class ProductConfigSession(models.Model):
             :returns bom: found / created mrp.bom record.
         """
 
-        product_ids = self.cfg_line_ids.mapped('attr_val_id.product_id').ids
-        product_cfg_lines = self.cfg_line_ids.filtered(lambda l: l.product_id)
+        products = self.cfg_bom_line_ids.mapped('attr_val_id.product_id')
+        product_cfg_lines = self.cfg_bom_line_ids.filtered(
+            lambda l: l.product_id
+        )
         total_qty = sum(product_cfg_lines.mapped('quantity'))
 
-        if not product_ids:
+        if not product:
             return None
 
         # Get a list of boms that could potentially have the same content
         self._cr.execute("""
             SELECT bom_id
             FROM mrp_bom_line
-            WHERE active = True
-            AND product_id IN %s
+            WHERE product_id IN %s
             AND bom_id IN (
                 SELECT id
                 FROM mrp_bom
@@ -82,7 +83,7 @@ class ProductConfigSession(models.Model):
             GROUP BY bom_id
             HAVING COUNT(*) = %s
             AND SUM(product_qty) = %s;
-        """, (tuple(product_ids), product.id, len(product_ids), total_qty))
+        """, (tuple(products.ids), product.id, len(products.ids), total_qty))
 
         potential_bom_ids = [row[0] for row in self._cr.fetchall()]
 
@@ -95,7 +96,7 @@ class ProductConfigSession(models.Model):
 
         cfg_session_line_vals = {
             (l.attr_val_id.product_id.id, l.quantity)
-            for l in self.cfg_line_ids if l.attr_val_id.product_id
+            for l in self.cfg_bom_line_ids if l.attr_val_id.product_id
         }
 
         for bom in potential_boms:
@@ -111,7 +112,7 @@ class ProductConfigSession(models.Model):
 
         bom_line_vals = []
 
-        for line in self.cfg_line_ids:
+        for line in self.cfg_bom_line_ids:
             if not line.product_id:
                 continue
             line_vals = {

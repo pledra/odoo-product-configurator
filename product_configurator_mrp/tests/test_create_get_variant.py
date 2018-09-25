@@ -55,7 +55,7 @@ class CrateGetVariant(TransactionCase):
         # Set values on the configurations session (simulate configuration)
         self.cfg_session.value_ids = attr_val_ids
         self.cfg_session.write({
-            'cfg_line_ids': [(0, 0, {
+            'cfg_bom_line_ids': [(0, 0, {
                 'attr_val_id': attr_val.id, 'quantity': 1
             }) for attr_val in product_attr_vals
             ]
