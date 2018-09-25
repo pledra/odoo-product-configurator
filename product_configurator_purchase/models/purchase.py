@@ -38,14 +38,13 @@ class PurchaseOrderLine(models.Model):
         """Create and launch a product configurator wizard with a linked
         purchase order line to edit the configurable product"""
 
-        wizard_model = 'product.configurator.purchase'
-
-        wizard_obj = self.env[wizard_model]
-        wizard = wizard_obj.create({
-            'product_id': self.product_id.id,
+        extra_vals = {
             'order_id': self.order_id.id,
             'order_line_id': self.id,
-        })
-        action = wizard.action_next_step()
+            'product_id': self.product_id.id,
+        }
+        wizard_model = 'product.configurator.purchase'
+        action = self.product_id.product_tmpl_id.create_configurator_wizard(
+            model_name=wizard_model, extra_vals=extra_vals, click_next=True)
         action['context']['wizard_model'] = wizard_model
         return action
