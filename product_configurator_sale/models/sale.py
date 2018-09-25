@@ -28,5 +28,5 @@ class SaleOrderLine(models.Model):
             'product_id': self.product_id.id,
         }
         wizard_model = 'product.configurator'
-        return self.product_id.product_tmpl_id.create_configurator_wizard(
-            model_name=wizard_model, extra_vals=extra_vals, click_next=True)
+        return self.product_id.product_tmpl_id.create_config_wizard(
+            model_name=wizard_model, extra_vals=extra_vals)

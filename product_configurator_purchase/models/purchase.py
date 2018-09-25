@@ -44,7 +44,7 @@ class PurchaseOrderLine(models.Model):
             'product_id': self.product_id.id,
         }
         wizard_model = 'product.configurator.purchase'
-        action = self.product_id.product_tmpl_id.create_configurator_wizard(
-            model_name=wizard_model, extra_vals=extra_vals, click_next=True)
+        action = self.product_id.product_tmpl_id.create_config_wizard(
+            model_name=wizard_model, extra_vals=extra_vals)
         action['context']['wizard_model'] = wizard_model
         return action
