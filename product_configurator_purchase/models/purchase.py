@@ -38,28 +38,13 @@ class PurchaseOrderLine(models.Model):
         """Create and launch a product configurator wizard with a linked
         purchase order line to edit the configurable product"""
 
-        wizard_model = 'product.configurator.purchase'
-        cfg_steps = self.product_id.product_tmpl_id.config_step_line_ids
-        active_step = str(cfg_steps[0].id) if cfg_steps else 'configure'
-
-        wizard_obj = self.env[wizard_model]
-        wizard = wizard_obj.create({
-            'product_id': self.product_id.id,
-            'state': active_step,
+        extra_vals = {
             'order_id': self.order_id.id,
             'order_line_id': self.id,
-        })
-
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': wizard_model,
-            'name': "Configure Product",
-            'view_mode': 'form',
-            'context': dict(
-                self.env.context,
-                wizard_id=wizard.id,
-                wizard_model=wizard_model
-            ),
-            'target': 'new',
-            'res_id': wizard.id,
+            'product_id': self.product_id.id,
         }
+        wizard_model = 'product.configurator.purchase'
+        action = self.product_id.product_tmpl_id.create_config_wizard(
+            model_name=wizard_model, extra_vals=extra_vals)
+        action['context']['wizard_model'] = wizard_model
+        return action
