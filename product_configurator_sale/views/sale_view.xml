@@ -48,6 +48,7 @@
                 <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
                         help="Reconfigure"
                         icon="fa-cogs"
+                        class="fa-lg"
                         type="object"
                         attrs="{
                             'invisible': [
