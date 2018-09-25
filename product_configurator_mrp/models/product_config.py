@@ -71,11 +71,13 @@ class ProductConfigSession(models.Model):
         self._cr.execute("""
             SELECT bom_id
             FROM mrp_bom_line
-            WHERE product_id IN %s
+            WHERE active = True
+            AND product_id IN %s
             AND bom_id IN (
                 SELECT id
                 FROM mrp_bom
-                WHERE product_id = %s
+                WHERE active = True
+                AND product_id = %s
             )
             GROUP BY bom_id
             HAVING COUNT(*) = %s
