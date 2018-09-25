@@ -112,7 +112,8 @@ class ConfigurationCreate(TransactionCase):
         })
         attr_line2 = self.ProductAttributeLine.create({
             'attribute_id': self.attr_size.id,
-            'value_ids': [(6, 0, [self.value_S.id, self.value_M.id, self.value_L.id])],
+            'value_ids': [
+                (6, 0, [self.value_S.id, self.value_M.id, self.value_L.id])],
             'required': True,
             'product_tmpl_id': product.id,
         })
@@ -142,17 +143,39 @@ class ConfigurationCreate(TransactionCase):
             'product_tmpl_id': product.id,
         })
         product_config_wizard.action_next_step()
-        setattr(product_config_wizard, '__attribute-' + str(self.attr_color.id), str(self.value_blue.id))
+        setattr(
+            product_config_wizard,
+            '__attribute-' + str(self.attr_color.id),
+            str(self.value_blue.id)
+        )
         product_config_wizard.action_next_step()
-        setattr(product_config_wizard, '__attribute-' + str(self.attr_size.id), str(self.value_M.id))
+        setattr(
+            product_config_wizard,
+            '__attribute-' + str(self.attr_size.id),
+            str(self.value_M.id)
+        )
         product_config_wizard.action_previous_step()
-        setattr(product_config_wizard, '__attribute-' + str(self.attr_color.id), str(self.value_green.id))
+        setattr(
+            product_config_wizard,
+            '__attribute-' + str(self.attr_color.id),
+            str(self.value_green.id)
+        )
         product_config_wizard.action_next_step()
-        setattr(product_config_wizard, '__attribute-' + str(self.attr_size.id), str(self.value_S.id))
-        setattr(product_config_wizard, '__attribute-' + str(self.attr_width.id), str(self.value_A.id))
+        setattr(
+            product_config_wizard,
+            '__attribute-' + str(self.attr_size.id),
+            str(self.value_S.id)
+        )
+        setattr(
+            product_config_wizard,
+            '__attribute-' + str(self.attr_width.id),
+            str(self.value_A.id)
+        )
         product_config_wizard.action_next_step()
         new_variant = product.product_variant_ids.filtered(
-            lambda variant: variant.attribute_value_ids == (self.value_green + self.value_S + self.value_A)
+            lambda variant:
+            variant.attribute_value_ids
+            == (self.value_green + self.value_S + self.value_A)
         )
         self.assertNotEqual(
             new_variant.id,
