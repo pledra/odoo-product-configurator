@@ -11,7 +11,9 @@
         'data/menu_product.xml',
         'views/purchase_view.xml',
     ],
-    'demo': [],
+    'demo': [
+        'demo/product_template.xml',
+    ],
     'images': [],
     'test': [],
     'installable': True,
