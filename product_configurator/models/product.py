@@ -163,17 +163,17 @@ class ProductProduct(models.Model):
     def _compute_product_price_extra(self):
         """Compute price of configurable products as sum of products related
         to attribute values picked"""
+        super(ProductProduct, self)._compute_product_price_extra()
+
         standard_products = self.filtered(lambda x: not x.config_ok)
         configurable_products = self - standard_products
-        if standard_products:
-            prices = super(ProductProduct, self)._compute_product_price_extra()
-
         conversions = self._get_conversions_dict()
         for product in configurable_products:
             lst_price = product.product_tmpl_id.lst_price
             value_ids = product.attribute_value_ids.ids
             # TODO: Merge custom values from products with cfg session
             # and use same method to retrieve parsed custom val dict
+            # TODO: Move following code where it is needed
             custom_vals = {}
             for val in product.value_custom_ids:
                 custom_type = val.attribute_id.custom_type
@@ -190,9 +190,6 @@ class ProductProduct(models.Model):
                         )
                 else:
                     custom_vals[val.attribute_id.id] = val.value
-            prices = self.env['product.config.session'].get_cfg_price(
-                value_ids, custom_vals)
-            product.price_extra = prices['total'] - prices['taxes'] - lst_price
 
     @api.model
     def _get_config_name(self):
