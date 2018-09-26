@@ -109,7 +109,7 @@ class ProductAttribute(models.Model):
         if self.custom_type in ('int', 'float'):
             minv = self.min_val
             maxv = self.max_val
-            val = literal_eval(val)
+            val = literal_eval(str(val))
             if minv and maxv and (val < minv or val > maxv):
                 raise ValidationError(
                     _("Selected custom value '%s' must be between %s and %s"
