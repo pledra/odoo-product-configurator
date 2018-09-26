@@ -975,7 +975,6 @@ class ProductConfigSession(models.Model):
         # Check if all all the values passed are not restricted
         avail_val_ids = self.values_available(value_ids, value_ids)
         if set(value_ids) - set(avail_val_ids):
-            print(set(value_ids), set(avail_val_ids))
             return False
 
         # Check if custom values are allowed
