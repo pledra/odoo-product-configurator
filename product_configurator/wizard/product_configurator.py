@@ -786,7 +786,6 @@ class ProductConfigurator(models.TransientModel):
         More importantly it sets metadata on the context
         variable so the fields_get and fields_view_get methods can generate the
         appropriate dynamic content"""
-
         wizard_action = {
             'type': 'ir.actions.act_window',
             'res_model': self._name,
@@ -816,11 +815,12 @@ class ProductConfigurator(models.TransientModel):
             else:
                 self.state = 'configure'
                 return wizard_action
+
         adjacent_steps = self.config_session_id.get_adjacent_steps()
         next_step = adjacent_steps.get('next_step')
 
         session_config_step = self.config_session_id.config_step
-        if session_config_step and str(self.state) != session_config_step:
+        if session_config_step and self.state != session_config_step:
             next_step = self.config_session_id.config_step
         else:
             next_step = str(next_step.id) if next_step else None
@@ -871,7 +871,7 @@ class ProductConfigurator(models.TransientModel):
         previous_step = adjacent_steps.get('previous_step')
 
         if previous_step:
-            self.state = previous_step.id
+            self.state = str(previous_step.id)
         else:
             self.state = 'select'
 
