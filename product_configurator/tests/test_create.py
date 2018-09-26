@@ -82,8 +82,9 @@ class ConfigurationCreate(TransactionCase):
         self.assertEqual(test_template.product_variant_count, 0,
                          "Create should not have any variants")
 
-    def test_02_product_configuration_restriction(self):
-        """Values on future steps breaking current wizard view """
+    def test_02_previous_step_incompatible_changes(self):
+        """Test changes in previous steps which would makes
+        values in next configuration steps invalid"""
 
         product_config_wizard = self.ProductConfWizard.create({
             'product_tmpl_id': self.config_product.id,
