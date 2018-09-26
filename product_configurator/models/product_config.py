@@ -478,6 +478,10 @@ class ProductConfigSession(models.Model):
         """Validate configuration when writing new values to session"""
         # TODO: Issue warning when writing to value_ids or custom_val_ids
         res = super(ProductConfigSession, self).write(vals)
+        value_ids = self.value_ids.ids
+        avail_val_ids = self.values_available(value_ids)
+        if set(value_ids) - set(avail_val_ids):
+            self.value_ids = [(6, 0, avail_val_ids)]
         valid = self.validate_configuration(final=False)
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
