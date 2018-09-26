@@ -1,4 +1,24 @@
-from openerp import models, fields, api
+from odoo import api, fields, models
+
+
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+
+    @api.multi
+    def action_config_start(self):
+        """Return action to start configuration wizard"""
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'product.configurator.sale',
+            'name': "Product Configurator",
+            'view_mode': 'form',
+            'target': 'new',
+            'context': dict(
+                self.env.context,
+                default_order_id=self.id,
+                wizard_model='product.configurator.sale',
+            ),
+        }
 
 
 class SaleOrderLine(models.Model):
@@ -20,13 +40,11 @@ class SaleOrderLine(models.Model):
         """ Creates and launches a product configurator wizard with a linked
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
-
-        # TODO: change wizard model to product.configurator.sale
-
         extra_vals = {
+            'order_id': self.order_id.id,
             'order_line_id': self.id,
             'product_id': self.product_id.id,
         }
-        wizard_model = 'product.configurator'
+        wizard_model = 'product.configurator.sale'
         return self.product_id.product_tmpl_id.create_config_wizard(
             model_name=wizard_model, extra_vals=extra_vals)

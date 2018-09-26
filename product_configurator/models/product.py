@@ -120,6 +120,18 @@ class ProductTemplate(models.Model):
         - return action to launch wizard
         - click on next step based on value of click_next"""
 
+        action = {
+            'type': 'ir.actions.act_window',
+            'res_model': 'product.configurator',
+            'name': "Product Configurator",
+            'view_mode': 'form',
+            'target': 'new',
+            'context': dict(
+                self.env.context,
+                wizard_model='product.configurator',
+            ),
+        }
+
         wizard_obj = self.env[model_name]
         wizard_vals = {
             'product_tmpl_id': self.id
@@ -128,9 +140,8 @@ class ProductTemplate(models.Model):
             wizard_vals.update(extra_vals)
         wizard = wizard_obj.create(wizard_vals)
         if click_next:
-            return wizard.action_next_step()
-        return self.env.ref(
-            'product_configurator.action_wizard_product_configurator')
+            action = wizard.action_next_step()
+        return action
 
 
 class ProductProduct(models.Model):
