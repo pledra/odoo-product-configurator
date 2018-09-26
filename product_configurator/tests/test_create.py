@@ -140,5 +140,5 @@ class ConfigurationCreate(TransactionCase):
         self.assertNotEqual(
             new_variant.id,
             False,
-            'Error while configure product from ptoduct template form'
+            'Variant not generated at the end of the configuration process'
         )
