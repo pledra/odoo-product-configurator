@@ -17,11 +17,10 @@ class Wizard(TransactionCase):
 
         self.cfg_session = self.cfg_wizard.config_session_id
 
-        attribute_vals = self.cfg_tmpl.attribute_line_ids.mapped('value_ids')
         self.attr_vals = self.cfg_tmpl.attribute_line_ids.mapped('value_ids')
 
         self.attr_val_ext_ids = {
-            v: k for k, v in attribute_vals.get_external_id().items()
+            v: k for k, v in self.attr_vals.get_external_id().items()
         }
 
     def get_attr_val_ids(self, ext_ids):
