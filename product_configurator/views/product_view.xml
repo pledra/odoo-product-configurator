@@ -73,6 +73,12 @@
                 <field name="sequence" widget="handle"/>
             </xpath>
 
+            <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']" position="attributes">
+                <attribute name="context">{
+                    'form_view_ref': parent.config_ok and 'product_configurator.product_attribute_form_view' or 'product.product_attribute_view_form'
+                }</attribute>
+            </xpath>
+
             <!-- TODO: Apply domains so only values from template are available -->
             <xpath expr="//notebook/page[@name='variants']" position="after">
                 <page string="Configurator" name="configurator" attrs="{'invisible': [('config_ok','=',False)]}">
