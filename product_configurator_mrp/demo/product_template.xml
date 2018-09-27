@@ -6,6 +6,7 @@
 
     <record id="product_configurator.bmw_2_series" model="product.template">
         <field name="type">product</field>
+        <field name="route_ids" eval="[(6, 0, [ref('stock.route_warehouse0_mto'), ref('mrp.route_warehouse0_manufacture')])]"/>
         <field name="categ_id" ref="product_configurator.product_category_bmw"/>
     </record>
 

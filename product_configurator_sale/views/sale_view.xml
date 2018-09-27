@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<openerp>
-<data>
+<odoo>
 
     <record id="sale_order_line_form_view" model="ir.ui.view">
         <field name="name">product.configurator.sale.order.line.form.view</field>
@@ -30,10 +29,10 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='order_line']" position="before">
-                <button name="%(product_configurator.action_wizard_product_configurator)s"
+                <button name="action_config_start"
                         states="draft,sent"
                         class="oe_highlight"
-                        type="action"
+                        type="object"
                         style="margin-top: 15px;"
                         string="Configure Product"
                         groups="product_configurator.group_product_configurator"/>
@@ -61,5 +60,4 @@
         </field>
     </record>
 
-</data>
-</openerp>
+</odoo>
