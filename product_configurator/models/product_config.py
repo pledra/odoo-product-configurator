@@ -308,8 +308,10 @@ class ProductConfigSession(models.Model):
         for val in self.custom_value_ids:
             if val.attribute_id.custom_type in ['float', 'int']:
                 custom_vals[val.attribute_id.id] = literal_eval(val.value)
-            else:
+            elif val.attribute_id.custom_type == 'binary':
                 custom_vals[val.attribute_id.id] = val.attachment_ids
+            else:
+                custom_vals[val.attribute_id.id] = val.value
         return custom_vals
 
     @api.multi
