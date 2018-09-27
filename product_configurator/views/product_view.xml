@@ -65,6 +65,10 @@
                 <field name="custom" invisible="not context.get('default_config_ok', False)"/>
             </xpath>
 
+            <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='value_ids']" position="attributes">
+                <attribute name="attrs">{'required': [('custom','!=',True)]}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']" position="before">
                 <field name="sequence" widget="handle"/>
             </xpath>
