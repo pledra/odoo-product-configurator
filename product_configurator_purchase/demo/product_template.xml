@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data>
 
     <!-- TODO: Workaround until we add more demo data Services + Products -->
 
@@ -100,5 +99,4 @@
         <field name="type">product</field>
     </record>
 
-</data>
 </odoo>

@@ -1,4 +1,4 @@
-from openerp import models, fields, api
+from odoo import api, fields, models
 
 
 class PurchaseOrder(models.Model):
@@ -7,17 +7,16 @@ class PurchaseOrder(models.Model):
     @api.multi
     def action_config_start(self):
         """Return action to start configuration wizard"""
-        wizard_model = 'product.configurator.purchase'
         return {
             'type': 'ir.actions.act_window',
-            'res_model': wizard_model,
+            'res_model': 'product.configurator.purchase',
             'name': "Product Configurator",
             'view_mode': 'form',
             'target': 'new',
             'context': dict(
                 self.env.context,
                 default_order_id=self.id,
-                wizard_model=wizard_model,
+                wizard_model='product.configurator.purchase',
             ),
         }
 
@@ -25,26 +24,35 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
+    custom_value_ids = fields.One2many(
+        comodel_name='product.attribute.value.custom',
+        inverse_name='product_id',
+        related="product_id.value_custom_ids",
+        string="Custom Values"
+    )
     config_ok = fields.Boolean(
         related='product_id.config_ok',
         string="Configurable"
     )
-    parent_state = fields.Selection(
-        related='order_id.state'
-    )
 
     @api.multi
     def reconfigure_product(self):
-        """Create and launch a product configurator wizard with a linked
-        purchase order line to edit the configurable product"""
+        """ Creates and launches a product configurator wizard with a linked
+        template and variant in order to re-configure a existing product. It is
+        esetially a shortcut to pre-fill configuration data of a variant"""
+        wizard_model = 'product.configurator.purchase'
 
         extra_vals = {
             'order_id': self.order_id.id,
             'order_line_id': self.id,
             'product_id': self.product_id.id,
         }
-        wizard_model = 'product.configurator.purchase'
-        action = self.product_id.product_tmpl_id.create_config_wizard(
-            model_name=wizard_model, extra_vals=extra_vals)
-        action['context']['wizard_model'] = wizard_model
-        return action
+
+        self = self.with_context({
+            'default_order_id': self.order_id.id,
+            'default_order_line_id': self.id
+        })
+
+        return self.product_id.product_tmpl_id.create_config_wizard(
+            model_name=wizard_model, extra_vals=extra_vals
+        )
