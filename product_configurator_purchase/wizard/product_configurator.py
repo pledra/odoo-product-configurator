@@ -1,4 +1,4 @@
-from openerp import models, fields, api
+from odoo import api, fields, models
 
 
 class ProductConfiguratorPurchase(models.TransientModel):
@@ -8,57 +8,38 @@ class ProductConfiguratorPurchase(models.TransientModel):
 
     order_id = fields.Many2one(
         comodel_name='purchase.order',
-        required=True
+        required=True,
+        readonly=True,
     )
     order_line_id = fields.Many2one(
         comodel_name='purchase.order.line',
         readonly=True
     )
 
-    def _extra_line_values(self, product):
+    def _get_order_line_vals(self, product_id):
         """ Hook to allow custom line values to be put on the newly
         created or edited lines."""
-        return {'name': product._get_mako_tmpl_name()}
+        product = self.env['product.product'].browse(product_id)
+
+        return {
+            'product_id': product_id,
+            'product_qty': 1,
+            'name': product._get_mako_tmpl_name(),
+            'product_uom': product.uom_id.id,
+            'price_unit': 1,
+            'date_planned': fields.Datetime.now(),
+        }
 
     @api.multi
     def action_config_done(self):
-        """Add new order line or edit linked order line with new variant"""
-        custom_vals = self.config_session_id._get_custom_vals_dict()
-        variant = self.config_session_id.create_get_variant(
-            self.value_ids.ids, custom_vals)
+        """Parse values and execute final code before closing the wizard"""
+        res = super(ProductConfiguratorPurchase, self).action_config_done()
 
-        order_line_obj = self.env['purchase.order.line']
-
-        vals = {
-            'order_id': self.order_id.id,
-            'product_id': variant.id,
-        }
+        line_vals = self._get_order_line_vals(res['res_id'])
 
         if self.order_line_id:
-            # TODO: Run onchanges sequentially until no more values are changed
-            specs = order_line_obj._onchange_spec()
-            line_vals = self.order_line_id.read()[0]
-            onchange_updates = order_line_obj.onchange(
-                line_vals, ['product_id'], specs)
-            onchange_vals = onchange_updates.get('value', {})
-            for name, val in onchange_vals.items():
-                if isinstance(val, tuple):
-                    onchange_vals[name] = val[0]
-            vals.update(onchange_vals)
-            vals.update(self._extra_line_values(variant))
-            self.order_line_id.write(vals)
-            return
-
-        # Create cache object and run onchange method to update values
-        order_line = order_line_obj.new(vals)
-        order_line.onchange_product_id()
-
-        line_vals = {}
-        for field, model in order_line._fields.items():
-            line_vals[field] = model.convert_to_write(
-                order_line[field], order_line)
-
-        line_vals.update(self._extra_line_values(variant))
-        order_line_obj.create(line_vals)
+            self.order_line_id.write(line_vals)
+        else:
+            self.order_id.write({'order_line': [(0, 0, line_vals)]})
 
         return

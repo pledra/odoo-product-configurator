@@ -339,6 +339,10 @@ class ProductConfigSession(models.Model):
             if not session.config_step_name:
                 session.config_step_name = session.config_step
 
+    name = fields.Char(
+        string='Configuration Session Number',
+        readonly=True
+    )
     config_step = fields.Char(
         string='Configuration Step ID'
     )
@@ -477,6 +481,10 @@ class ProductConfigSession(models.Model):
         """Validate configuration when writing new values to session"""
         # TODO: Issue warning when writing to value_ids or custom_val_ids
         res = super(ProductConfigSession, self).write(vals)
+        value_ids = self.value_ids.ids
+        avail_val_ids = self.values_available(value_ids)
+        if set(value_ids) - set(avail_val_ids):
+            self.value_ids = [(6, 0, avail_val_ids)]
         valid = self.validate_configuration(final=False)
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
@@ -484,6 +492,8 @@ class ProductConfigSession(models.Model):
 
     @api.model
     def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_code(
+            'product.config.session') or _('New')
         product_tmpl = self.env['product.template'].browse(
             vals.get('product_tmpl_id')).exists()
         if product_tmpl:

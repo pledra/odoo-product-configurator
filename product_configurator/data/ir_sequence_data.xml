@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="seq_config_session" model="ir.sequence">
+            <field name="name">Configuration Session</field>
+            <field name="code">product.config.session</field>
+            <field name="prefix">CS</field>
+            <field name="padding">4</field>
+        </record>
+
+    </data>
+</odoo>
