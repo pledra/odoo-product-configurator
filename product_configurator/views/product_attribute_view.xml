@@ -35,33 +35,24 @@
     <record model="ir.ui.view" id="product_attribute_form_view">
         <field name="name">product.attribute.form.view</field>
         <field name="model">product.attribute</field>
+        <field name="inherit_id" ref="product.product_attribute_view_form"/>
         <field name="arch" type="xml">
-            <form string="Product Attributes">
+            <xpath expr="//form/group" position="before">
                 <div class="oe_left" style="width: 500px;">
                     <field name="image" widget="image" class="oe_avatar oe_left"/>
-                    <div class="oe_title" style="width: 390px;">
-                        <label class="oe_edit_only" for="name" string="Attribute Name"/>
-                        <h1><field name="name" class="oe_inline"/></h1>
-                        <label for="active"/><field name="active"/>
-                    </div>
                 </div>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="active"/>
+            </xpath>
+
+            <xpath expr="//group[@name='values_ids']" position="after">
                 <notebook>
-                    <page string="Attribute Values">
-                        <group name="values_ids">
-                            <field name="value_ids" widget="one2many_list" nolabel="1">
-                                <tree string="Values" editable="bottom">
-                                    <field name="name"/>
-                                </tree>
-                                <form string="Values">
-                                    <field name="name"/>
-                                </form>
-                            </field>
-                        </group>
-                    </page>
                     <page string="Configurator">
                         <group>
                             <group>
-                                <!-- <field name="type"/> -->
+                                <!--<field name="type"/> -->
                                 <field name="required"/>
                                 <field name="multi"/>
                                 <field name="val_custom"/>
@@ -85,7 +76,7 @@
                         </group>
                     </page>
                 </notebook>
-            </form>
+            </xpath>
         </field>
     </record>
 

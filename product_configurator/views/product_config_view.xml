@@ -165,20 +165,6 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <record model="ir.actions.act_window.view" id="action_attributes_view_form">
-        <field name="act_window_id" ref="action_attributes_view"/>
-        <field name="sequence" eval="20"/>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="product_attribute_form_view"/>
-    </record>
-
-    <record model="ir.actions.act_window.view" id="action_attributes_view_tree">
-        <field name="act_window_id" ref="action_attributes_view"/>
-        <field name="sequence" eval="10"/>
-        <field name="view_mode">tree</field>
-        <field name="view_id" ref="product_attribute_tree_view"/>
-    </record>
-
     <menuitem
         id="menu_attribute_action_configuration"
         action="action_attributes_view"
