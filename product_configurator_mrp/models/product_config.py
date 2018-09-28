@@ -42,6 +42,10 @@ class ProductConfigSession(models.Model):
         inverse_name='cfg_session_id',
         name='Configuration Lines'
     )
+    bom_id = fields.Many2one(
+        comodel_name='mrp.bom',
+        readonly=True
+    )
 
     @api.constrains('cfg_bom_line_ids')
     def check_lines(self):
@@ -59,11 +63,14 @@ class ProductConfigSession(models.Model):
 
             :returns bom: found / created mrp.bom record.
         """
-
         products = self.cfg_bom_line_ids.mapped('attr_val_id.product_id')
         product_cfg_lines = self.cfg_bom_line_ids.filtered(
             lambda l: l.product_id
         )
+
+        if not product_cfg_lines:
+            return None
+
         total_qty = sum(product_cfg_lines.mapped('quantity'))
 
         if not product:
@@ -169,5 +176,5 @@ class ProductConfigSession(models.Model):
         variant"""
         variant = super(ProductConfigSession, self).create_get_variant(
             value_ids=value_ids, custom_vals=custom_vals)
-        self.create_get_bom(variant)
+        self.bom_id = self.create_get_bom(variant)
         return variant
