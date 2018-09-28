@@ -75,7 +75,7 @@
 
             <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']" position="attributes">
                 <attribute name="context">{
-                    'form_view_ref': parent.config_ok and 'product_configurator.product_attribute_form_view' or 'product.product_attribute_view_form'
+                    'form_view_ref': parent.config_ok and 'product_configurator.product_attribute_form_view'
                 }</attribute>
             </xpath>
 
