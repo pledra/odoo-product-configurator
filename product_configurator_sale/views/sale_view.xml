@@ -8,10 +8,10 @@
         <field name="arch" type="xml">
             
             <xpath expr="//field[@name='order_line']" position="before">
-                <button name="%(product_configurator.action_wizard_product_configurator)s"
+                <button name="action_config_start"
                         states="draft,sent"
                         class="oe_highlight"
-                        type="action"
+                        type="object"
                         style="margin-top: 15px;"
                         string="Configure Product"
                         groups="product_configurator.group_product_configurator"/>
