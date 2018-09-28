@@ -1,39 +1,17 @@
 <?xml version="1.0"?>
-<openerp>
-<data>
-
-    <record id="sale_order_line_form_view" model="ir.ui.view">
-        <field name="name">product.configurator.sale.order.line.form.view</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//form//notebook//field[@name='order_line']/form/field[@name='name']" position="after">
-                <div groups="product_configurator.group_product_configurator">
-                    <label for="custom_value_ids"/>
-                    <field name="custom_value_ids">
-                        <tree>
-                            <field name="attribute_id"/>
-                            <field name="name"/>
-                            <field name="attachment_ids" widget="many2many_tags"/>
-                        </tree>
-                    </field>
-                </div>
-            </xpath>
-        </field>
-    </record>
-
-    <!-- Add Configure Product button on sale order form view -->
+<odoo>
 
     <record id="sale_order_form_config" model="ir.ui.view">
         <field name="name">sale.order.form.config</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            
             <xpath expr="//field[@name='order_line']" position="before">
-                <button name="%(product_configurator.action_wizard_product_configurator)s"
+                <button name="action_config_start"
                         states="draft,sent"
                         class="oe_highlight"
-                        type="action"
+                        type="object"
                         style="margin-top: 15px;"
                         string="Configure Product"
                         groups="product_configurator.group_product_configurator"/>
@@ -48,6 +26,7 @@
                 <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
                         help="Reconfigure"
                         icon="fa-cogs"
+                        class="fa-lg"
                         type="object"
                         attrs="{
                             'invisible': [
@@ -57,8 +36,21 @@
                             ]
                         }"/>
             </xpath>
+
+            <xpath expr="//form//notebook//field[@name='order_line']/form/field[@name='name']" position="after">
+                <div groups="product_configurator.group_product_configurator">
+                    <label for="custom_value_ids"/>
+                    <field name="custom_value_ids">
+                        <tree>
+                            <field name="attribute_id"/>
+                            <field name="name"/>
+                            <field name="attachment_ids" widget="many2many_tags"/>
+                        </tree>
+                    </field>
+                </div>
+            </xpath>
+
         </field>
     </record>
 
-</data>
-</openerp>
+</odoo>

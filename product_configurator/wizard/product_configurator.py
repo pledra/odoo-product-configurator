@@ -28,6 +28,8 @@ class ProductConfigurator(models.TransientModel):
             'custom_field_prefix': '__custom-',
         }
 
+    # TODO: Remove _prefix suffix as this is implied by the class property name
+
     def _remove_dynamic_fields(self, fields):
         """Remove elements from the fields dictionary/list that begin with any
         prefix from the _prefixes property
@@ -402,9 +404,6 @@ class ProductConfigurator(models.TransientModel):
         """ Generate view dynamically using attributes stored on the
         product.template"""
 
-        field_prefix = self._prefixes.get('field_prefix')
-        custom_field_prefix = self._prefixes.get('custom_field_prefix')
-
         if view_type == 'form' and not view_id:
             view_ext_id = 'product_configurator.product_configurator_form'
             view_id = self.env.ref(view_ext_id).id
@@ -423,9 +422,13 @@ class ProductConfigurator(models.TransientModel):
         # Get updated fields including the dynamic ones
         fields = self.fields_get()
 
+        # Include all dynamic fields in the view
+        dynamic_field_prefixes = tuple(self._prefixes.values())
+
         dynamic_fields = {
             k: v for k, v in fields.items() if k.startswith(
-                field_prefix) or k.startswith(custom_field_prefix)
+                dynamic_field_prefixes
+            )
         }
         res['fields'].update(dynamic_fields)
 
@@ -820,12 +823,10 @@ class ProductConfigurator(models.TransientModel):
         next_step = adjacent_steps.get('next_step')
 
         session_config_step = self.config_session_id.config_step
-
         if session_config_step and self.state != session_config_step:
             next_step = self.config_session_id.config_step
         else:
             next_step = str(next_step.id) if next_step else None
-
         if next_step:
             self.state = next_step
             self.config_session_id.config_step = next_step
@@ -872,7 +873,7 @@ class ProductConfigurator(models.TransientModel):
         previous_step = adjacent_steps.get('previous_step')
 
         if previous_step:
-            self.state = previous_step.id
+            self.state = str(previous_step.id)
         else:
             self.state = 'select'
 

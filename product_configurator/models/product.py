@@ -112,11 +112,36 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def configure_product(self):
+        return self.create_config_wizard()
+
+    def create_config_wizard(self, model_name="product.configurator",
+                             extra_vals=None, click_next=True):
+        """create product configuration wizard
+        - return action to launch wizard
+        - click on next step based on value of click_next"""
+
+        action = {
+            'type': 'ir.actions.act_window',
+            'res_model': 'product.configurator',
+            'name': "Product Configurator",
+            'view_mode': 'form',
+            'target': 'new',
+            'context': dict(
+                self.env.context,
+                wizard_model='product.configurator',
+            ),
+        }
+
+        wizard_obj = self.env[model_name]
         wizard_vals = {
             'product_tmpl_id': self.id
         }
-        wizard = self.env['product.configurator'].create(wizard_vals)
-        return wizard.action_next_step()
+        if extra_vals:
+            wizard_vals.update(extra_vals)
+        wizard = wizard_obj.create(wizard_vals)
+        if click_next:
+            action = wizard.action_next_step()
+        return action
 
 
 class ProductProduct(models.Model):
@@ -157,42 +182,6 @@ class ProductProduct(models.Model):
                     _("Configurable Products cannot have duplicates "
                       "(identical attribute values)")
                 )
-
-    @api.depends('attribute_value_ids.price_ids.price_extra',
-                 'attribute_value_ids.price_ids.product_tmpl_id')
-    def _compute_product_price_extra(self):
-        """Compute price of configurable products as sum of products related
-        to attribute values picked"""
-        standard_products = self.filtered(lambda x: not x.config_ok)
-        configurable_products = self - standard_products
-        if standard_products:
-            prices = super(ProductProduct, self)._compute_product_price_extra()
-
-        conversions = self._get_conversions_dict()
-        for product in configurable_products:
-            lst_price = product.product_tmpl_id.lst_price
-            value_ids = product.attribute_value_ids.ids
-            # TODO: Merge custom values from products with cfg session
-            # and use same method to retrieve parsed custom val dict
-            custom_vals = {}
-            for val in product.value_custom_ids:
-                custom_type = val.attribute_id.custom_type
-                if custom_type in conversions:
-                    try:
-                        custom_vals[val.attribute_id.id] = conversions[
-                            custom_type](val.value)
-                    except Exception:
-                        raise ValidationError(
-                            _("Could not convert custom value '%s' to '%s' on "
-                              "product variant: '%s'" % (val.value,
-                                                         custom_type,
-                                                         product.display_name))
-                        )
-                else:
-                    custom_vals[val.attribute_id.id] = val.value
-            prices = self.env['product.config.session'].get_cfg_price(
-                value_ids, custom_vals)
-            product.price_extra = prices['total'] - prices['taxes'] - lst_price
 
     @api.model
     def _get_config_name(self):
@@ -307,3 +296,16 @@ class ProductProduct(models.Model):
                 product.config_name = product._get_config_name()
             else:
                 product.config_name = product.name
+
+    @api.multi
+    def reconfigure_product(self):
+        """ Creates and launches a product configurator wizard with a linked
+        template and variant in order to re-configure an existing product.
+        It is essentially a shortcut to pre-fill configuration
+        data of a variant"""
+
+        extra_vals = {
+            'product_id': self.id,
+        }
+        return self.product_tmpl_id.create_config_wizard(
+            extra_vals=extra_vals)

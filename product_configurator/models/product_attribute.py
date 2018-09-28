@@ -134,6 +134,8 @@ class ProductAttributeLine(models.Model):
     def onchange_attribute(self):
         self.value_ids = False
         self.required = self.attribute_id.required
+        self.multi = self.attribute_id.multi
+        self.custom = self.attribute_id.val_custom
         # TODO: Remove all dependencies pointed towards the attribute being
         # changed
 
