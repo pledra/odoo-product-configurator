@@ -44,11 +44,22 @@
             </xpath>
 
             <xpath expr="//field[@name='name']" position="after">
+                <field name="create_variant" groups="base.group_no_one"/>
                 <field name="active"/>
             </xpath>
 
-            <xpath expr="//group[@name='values_ids']" position="after">
+            <xpath expr="//group[@name='values_ids']" position="replace">
                 <notebook>
+                    <page string="Attribute Values">
+                        <field name="value_ids" widget="one2many_list" nolabel="1">
+                            <tree string="Values" editable="bottom">
+                                <field name="name"/>
+                            </tree>
+                            <form string="Values">
+                                <field name="name"/>
+                            </form>
+                        </field>
+                    </page>
                     <page string="Configurator">
                         <group>
                             <group>
