@@ -185,15 +185,6 @@
                     <field name="value_custom_ids"/>
                 </page>
             </xpath>
-        </field>
-    </record>
-
-    <record id="product_normal_form_view_inherit" model="ir.ui.view">
-        <field name="name">product.product.form</field>
-        <field name="model">product.product</field>
-        <field name="inherit_id" ref="product.product_normal_form_view"/>
-        <field name="arch" type="xml">
-
             <xpath expr='//header' position="inside">
                 <button string="Variant Prices" type="object"
                     name="get_product_attribute_values_action"
