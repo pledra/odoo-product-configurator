@@ -1,6 +1,7 @@
 odoo.define('website_product_configurator.website_form', function (require) {
-"use strict";
+    "use strict";
 
+    require('web.dom_ready');
     var ajax = require('web.ajax');
     var core = require('web.core');
     var base = require('web_editor.base');
@@ -41,7 +42,7 @@ odoo.define('website_product_configurator.website_form', function (require) {
     };
 
     function update_price(onchange_vals) {
-        var dom_prices = $('#cfg_price_tags')
+        var dom_prices = $('#cfg_price_tags');
         dom_prices.text('');
         $('#cfg_tax').text(onchange_vals['prices']['taxes']);
         $('#cfg_total').text(onchange_vals['prices']['total']);
@@ -77,7 +78,7 @@ odoo.define('website_product_configurator.website_form', function (require) {
                             select_fields.each(function(){
                                 var select_options = $(this).children('option').not(':empty,.hidden');
                                 $(this).prop('disabled', select_options.length ? false : true);
-                            })
+                            });
 
                         }
                         config_form.find('.cfg_input').each(function(){
@@ -104,7 +105,7 @@ odoo.define('website_product_configurator.website_form', function (require) {
 
         if (cfg_input.is(':checked')) {
             if (cfg_input.attr('type') == 'radio') {
-                var radio_inputs = config_form.find("input[name='" + cfg_input.attr('name') + "']")
+                var radio_inputs = config_form.find("input[name='" + cfg_input.attr('name') + "']");
                 radio_inputs.each(function(){
                     if ($(this) != cfg_input) {
                         $(this).parent().removeClass('active');
@@ -112,18 +113,16 @@ odoo.define('website_product_configurator.website_form', function (require) {
                 });
             }
             cfg_input.parent().addClass('active');
-        }
-        else {
+        } else {
             $(this).parent().removeClass('active');
         }
 
         if (custom_input && value == 'custom'){
             custom_input.attr('readonly', false);
             custom_input.closest('div.cfg_custom').removeClass('hidden');
-        }
-        else {
+        } else {
             custom_input.attr('readonly', 'readonly');
-            custom_input.closest('div.cfg_custom').addClass('hidden')
+            custom_input.closest('div.cfg_custom').addClass('hidden');
             if (cfg_vals && $(this).hasClass('cfg_img_update')){
                 update_config_image(cfg_vals);
             }
