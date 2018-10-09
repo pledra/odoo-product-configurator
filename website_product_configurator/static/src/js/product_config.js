@@ -66,11 +66,14 @@ odoo.define('website_product_configurator.website_form', function (require) {
         ajax.jsonRpc(path + "/value_onchange", 'call', {'cfg_vals': cfg_vals}).then(
                 function (res) {
                     if (res) {
+                        var value_selector = '[value="' + res['value_ids'].join('"],[value="') + '"]';
+
+                        // This is for the 'Select-Box' view
                         var select_fields = config_form.find('select.cfg_input');
                         if (select_fields) {
                             var options = select_fields.children('option').not(':empty,[value="custom"]');
                             options.addClass('hidden');
-                            var available_options = options.filter('[value="' + res['value_ids'].join('"],[value="') + '"]');
+                            var available_options = options.filter(value_selector);
                             var unavailable_options = options.not(available_options).get();
                             $(unavailable_options).prop('selected', false);
                             available_options.removeClass('hidden');
@@ -81,6 +84,17 @@ odoo.define('website_product_configurator.website_form', function (require) {
                             });
 
                         }
+
+                        // Radio-Thumbnail view
+                        var input_groups = config_form.find('.input-group:has(input.cfg_input)');
+                        if (input_groups) {
+                            input_groups.addClass('hidden');
+                            var available_inputs = input_groups.filter(':has(input.cfg_input' + value_selector + ')');
+                            available_inputs.removeClass('hidden');
+                            var unavailable_inputs = options.not(available_inputs).get();
+                            $(unavailable_inputs).prop('selected', false);
+                        }
+
                         config_form.find('.cfg_input').each(function(){
                             update_price(res);
                         });
