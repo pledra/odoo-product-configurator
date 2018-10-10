@@ -101,7 +101,7 @@
     <!-- TODO: Make a scenario for lines allowing multiple selection, maybe checkbox in select?-->
     <template id="config_form_select" primary="True" inherit_id="config_form_base" name="Selection-Box">
     <xpath expr="." position="inside">
-      <form id="product_config_form" class="form-horizontal" method="post" enctype="multipart/form-data">
+      <form id="product_config_form" class="col-md-8 form-horizontal" method="post" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
         <t t-set="lines" t-value="cfg_vars.get('cfg_step_lines') or cfg_vars['attr_lines']"/>
         <t t-set="cfg_val_ids" t-value="cfg_vars['cfg_session'].value_ids"/>
@@ -154,7 +154,7 @@
 
     <template id="config_form_radio" primary="True" inherit_id="config_form_base" name="Radio-Thumbnail">
     <xpath expr="." position="inside">
-      <form id="product_config_form" class="form-horizontal" method="post">
+      <form id="product_config_form" class="col-md-8 form-horizontal" method="post">
         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
         <t t-set="lines" t-value="cfg_vars.get('cfg_step_lines') or cfg_vars.get('attr_lines')"/>
         <t t-foreach="lines" t-as="line">
