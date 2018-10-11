@@ -63,7 +63,7 @@ odoo.define('website_product_configurator.website_form', function (require) {
 
     function value_onchange(cfg_vals) {
         /* Show/hide available values with the configuration present in frontend passed as cfg_vals */
-        ajax.jsonRpc(path + "/value_onchange", 'call', {'cfg_vals': cfg_vals}).then(
+        return ajax.jsonRpc(path + "/value_onchange", 'call', {'cfg_vals': cfg_vals}).then(
                 function (res) {
                     if (res) {
                         var value_selector = '[value="' + res['value_ids'].join('"],[value="') + '"]';
@@ -99,6 +99,8 @@ odoo.define('website_product_configurator.website_form', function (require) {
                             update_price(res);
                         });
                     }
+
+                    return res;
             });
     };
 
