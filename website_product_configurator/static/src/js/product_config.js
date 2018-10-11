@@ -10,6 +10,8 @@ odoo.define('website_product_configurator.website_form', function (require) {
     var path = window.location.pathname;
     var config_form = $("#product_config_form");
 
+    var ret = {};
+
     $('button.cfg_clear').on('click', function(event){
         var path = window.location.pathname;
         ajax.jsonRpc(path + "/config_clear", 'call', {}).then(
@@ -20,7 +22,7 @@ odoo.define('website_product_configurator.website_form', function (require) {
         });
     });
 
-    function get_cfg_vals() {
+    ret.get_cfg_vals = function get_cfg_vals() {
         var cfg_vals = {};
         var inputs = config_form.find('.cfg_input');
 
@@ -32,16 +34,18 @@ odoo.define('website_product_configurator.website_form', function (require) {
         return cfg_vals;
     };
 
-    function update_config_image(cfg_vals) {
-        ajax.jsonRpc(path + "/image_update", 'call', {'cfg_vals': cfg_vals}).then(
+    ret.update_config_image = function update_config_image(cfg_vals) {
+        return ajax.jsonRpc(path + "/image_update", 'call', {'cfg_vals': cfg_vals}).then(
             function (res) {
                 if (res) {
                     $('#cfg_image').attr('src', res);
                 }
+
+                return res;
         });
     };
 
-    function update_price(onchange_vals) {
+    ret.update_price = function update_price(onchange_vals) {
         var dom_prices = $('#cfg_price_tags');
         dom_prices.text('');
         $('#cfg_tax').text(onchange_vals['prices']['taxes']);
@@ -58,10 +62,10 @@ odoo.define('website_product_configurator.website_form', function (require) {
             dom_prices.append($('<div>').addClass('col-sm-4 text-right').append(price, currency));
             dom_prices.append($('<div>').addClass('clearfix'));
         });
-    }
+    };
 
 
-    function value_onchange(cfg_vals) {
+    ret.value_onchange = function value_onchange(cfg_vals) {
         /* Show/hide available values with the configuration present in frontend passed as cfg_vals */
         return ajax.jsonRpc(path + "/value_onchange", 'call', {'cfg_vals': cfg_vals}).then(
                 function (res) {
@@ -91,12 +95,12 @@ odoo.define('website_product_configurator.website_form', function (require) {
                             input_groups.addClass('hidden');
                             var available_inputs = input_groups.filter(':has(input.cfg_input' + value_selector + ')');
                             available_inputs.removeClass('hidden');
-                            var unavailable_inputs = options.not(available_inputs).get();
+                            var unavailable_inputs = input_groups.not(available_inputs).get();
                             $(unavailable_inputs).prop('selected', false);
                         }
 
                         config_form.find('.cfg_input').each(function(){
-                            update_price(res);
+                            ret.update_price(res);
                         });
                     }
 
@@ -106,18 +110,21 @@ odoo.define('website_product_configurator.website_form', function (require) {
 
     /* Show custom input and when option is picked in selection field */
 
-    config_form.on('change', '.cfg_input, .custom_val:not([type="file"])', onchange);
+    config_form.on('change', '.cfg_input, .custom_val:not([type="file"])', function() {
+        // Allow for dynamically set onchange handler
+        return ret.onchange.apply(this, arguments);
+    });
 
     /*TODO* Only when value is changed in custom value trigger not on every blur*/
 
-    function onchange(){
+    ret.onchange = function onchange(){
         var cfg_input = $(this);
         var cfg_vals = config_form.find('.cfg_input, .custom_val').serializeArray();
         var custom_input = config_form.find('#custom_attribute_' + cfg_input.data('oe-id'));
         var value = cfg_input.val();
 
         /* Send all values from the form to backend */
-        value_onchange(cfg_vals);
+        ret.value_onchange(cfg_vals);
 
         if (cfg_input.is(':checked')) {
             if (cfg_input.attr('type') == 'radio') {
@@ -140,7 +147,7 @@ odoo.define('website_product_configurator.website_form', function (require) {
             custom_input.attr('readonly', 'readonly');
             custom_input.closest('div.cfg_custom').addClass('hidden');
             if (cfg_vals && $(this).hasClass('cfg_img_update')){
-                update_config_image(cfg_vals);
+                ret.update_config_image(cfg_vals);
             }
         }
     };
@@ -192,11 +199,5 @@ odoo.define('website_product_configurator.website_form', function (require) {
         return false;
     });
 
-    return {
-        get_cfg_vals: get_cfg_vals,
-        onchange: onchange,
-        update_config_image: update_config_image,
-        update_price: update_price,
-        value_onchange: value_onchange
-    };
+    return ret;
 });
