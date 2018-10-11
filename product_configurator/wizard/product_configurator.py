@@ -820,6 +820,10 @@ class ProductConfigurator(models.TransientModel):
             if (self.value_ids or self.custom_value_ids)\
                     and not self.state == 'select':
                 return self.action_config_done()
+            elif not (self.value_ids or self.custom_value_ids)\
+                    and not self.state == 'select':
+                raise Warning(_("You must select at least one\
+                    attribute in order to configure a product"))
             else:
                 self.state = 'configure'
                 return wizard_action
@@ -835,6 +839,9 @@ class ProductConfigurator(models.TransientModel):
         if next_step:
             self.state = next_step
             self.config_session_id.config_step = next_step
+        elif not (self.value_ids or self.custom_value_ids):
+            raise Warning(_("You must select at least one\
+                    attribute in order to configure a product"))
         else:
             return self.action_config_done()
 
