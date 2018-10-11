@@ -15,7 +15,7 @@ odoo.define('website_product_configurator.website_form', function (require) {
         ajax.jsonRpc(path + "/config_clear", 'call', {}).then(
             function (res) {
                 if (res) {
-                    window.location.replace(res)
+                    window.location.replace(res);
                 }
         });
     });
@@ -26,7 +26,7 @@ odoo.define('website_product_configurator.website_form', function (require) {
 
         inputs.each(function(){
             var value = parseInt($(this).val());
-            cfg_vals[$(this).attr('name')] = parseInt($(this).val())
+            cfg_vals[$(this).attr('name')] = parseInt($(this).val());
         });
 
         return cfg_vals;
@@ -162,7 +162,7 @@ odoo.define('website_product_configurator.website_form', function (require) {
             var mousex = e.pageX + 20; //Get X coordinates
             var mousey = e.pageY + 10; //Get Y coordinates
             $('.attr_description')
-            .css({ top: mousey, left: mousex })
+            .css({ top: mousey, left: mousex });
     });
 
     /* Validate the form */
@@ -192,4 +192,11 @@ odoo.define('website_product_configurator.website_form', function (require) {
         return false;
     });
 
+    return {
+        get_cfg_vals: get_cfg_vals,
+        onchange: onchange,
+        update_config_image: update_config_image,
+        update_price: update_price,
+        value_onchange: value_onchange
+    };
 });
