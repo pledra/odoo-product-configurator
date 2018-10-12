@@ -500,6 +500,13 @@ class ProductConfigurator(models.TransientModel):
                 # If attribute is required make it so only in the proper step
                 if attr_line.required:
                     attrs['required'].append(('state', 'in', cfg_step_ids))
+            else:
+                attrs['invisible'].append(('state', 'not in', ['configure']))
+                attrs['readonly'].append(('state', 'not in', ['configure']))
+
+                # If attribute is required make it so only in the proper step
+                if attr_line.required:
+                    attrs['required'].append(('state', 'in', ['configure']))
 
             if attr_line.custom:
                 pass
@@ -557,9 +564,6 @@ class ProductConfigurator(models.TransientModel):
                     'no_open': True
                 })
             )
-
-            if attr_line.required and not config_steps:
-                node.attrib['required'] = '1'
 
             field_type = dynamic_fields[field_name].get('type')
             if field_type == 'many2many':
@@ -813,8 +817,13 @@ class ProductConfigurator(models.TransientModel):
 
         cfg_step_lines = self.product_tmpl_id.config_step_line_ids
         if not cfg_step_lines:
-            if self.value_ids:
+            if (self.value_ids or self.custom_value_ids)\
+                    and not self.state == 'select':
                 return self.action_config_done()
+            elif not (self.value_ids or self.custom_value_ids)\
+                    and not self.state == 'select':
+                raise Warning(_("You must select at least one\
+                    attribute in order to configure a product"))
             else:
                 self.state = 'configure'
                 return wizard_action
@@ -830,8 +839,12 @@ class ProductConfigurator(models.TransientModel):
         if next_step:
             self.state = next_step
             self.config_session_id.config_step = next_step
+        elif not (self.value_ids or self.custom_value_ids):
+            raise Warning(_("You must select at least one\
+                    attribute in order to configure a product"))
         else:
             return self.action_config_done()
+
         return wizard_action
 
     @api.multi
@@ -857,6 +870,7 @@ class ProductConfigurator(models.TransientModel):
         cfg_step_lines = self.product_tmpl_id.config_step_line_ids
 
         if not cfg_step_lines:
+            self.state = 'select'
             return wizard_action
 
         try:

@@ -308,6 +308,8 @@ class ProductConfigSession(models.Model):
         for val in self.custom_value_ids:
             if val.attribute_id.custom_type in ['float', 'int']:
                 custom_vals[val.attribute_id.id] = literal_eval(val.value)
+            elif val.attribute_id.custom_type == 'binary':
+                custom_vals[val.attribute_id.id] = val.attachment_ids
             else:
                 custom_vals[val.attribute_id.id] = val.value
         return custom_vals
@@ -464,6 +466,7 @@ class ProductConfigSession(models.Model):
             if attr_id in binary_field_ids:
                 attachments = [(0, 0, {
                     'name': val.get('name'),
+                    'datas_fname': val.get('name'),
                     'datas': val.get('datas')
                 }) for val in vals]
                 custom_vals.update({'attachment_ids': attachments})
