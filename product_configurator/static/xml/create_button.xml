@@ -15,5 +15,13 @@
             </button>
         </t>
     </t>
+    <t t-extend="KanbanView.buttons">
+        <t t-jquery="button.o-kanban-button-new" t-operation="after">
+            <button type="button" style="display:none"
+                class="btn btn-primary btn-sm o_kanban_button_create_custom" >
+                Create
+            </button>
+        </t>
+    </t>
 
 </templates>
