@@ -4,6 +4,7 @@ odoo.define('product_configurator.FormView', function (require) {
   var core = require('web.core');
   var ListView = require('web.ListController');
   var FormView = require('web.FormController');
+  var KanbanController = require('web.KanbanController');
   var AbstractField = require('web.AbstractField');
   var registry = require('web.field_registry');
   var basic_fields = require('web.basic_fields');
@@ -26,6 +27,31 @@ odoo.define('product_configurator.FormView', function (require) {
         }
       },
     });
+
+  KanbanController.include({
+    renderButtons: function ($node) {
+      var self = this;
+      this._super.apply(this, arguments);
+      if(self.modelName == 'product.product' && self.initialState.context.custom_create_variant) {
+        this.$buttons.find('.o-kanban-button-new').css('display', 'none')
+        this.$buttons.find('.o_kanban_button_create_custom').css('display', 'inline')
+        this.$buttons.on('click', '.o_kanban_button_create_custom', function(ev) {
+          ev.preventDefault();
+          return self.do_action({
+            name: 'Product Configurator',
+            res_model: 'product.configurator',
+            views: [[false, 'form']],
+            type: 'ir.actions.act_window',
+            view_type: 'form',
+            view_mode: 'form',
+            target: 'new'
+          });
+          return false;
+        });
+      }
+    },
+  })
+
 
   ListView.include({
     renderButtons: function() {
