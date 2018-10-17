@@ -252,6 +252,48 @@ class ProductAttributeValue(models.Model):
     # ]
 
 
+class ProductAttributeValueLine(models.Model):
+    _name = 'product.attribute.value.line'
+
+    product_tmpl_id = fields.Many2one(
+        comodel_name='product.template',
+        string='Product Template',
+        ondelete='cascade',
+        required=True
+    )
+    value_id = fields.Many2one(
+        comodel_name='product.attribute.value',
+        required="True",
+        string="Attribute Value"
+    )
+    attribute_id = fields.Many2one(
+        comodel_name='product.attribute',
+        related='value_id.attribute_id',
+    )
+    value_ids = fields.Many2many(
+        comodel_name='product.attribute.value',
+        id1="attr_val_line_id",
+        id2="attr_val_id",
+        string="Values Configuration",
+    )
+
+    @api.multi
+    @api.constrains('value_ids')
+    def _validate_configuration(self):
+        """Ensure that the passed configuration in value_ids is a valid"""
+        cfg_session_obj = self.env['product.config.session']
+        for attr_val_line in self:
+            valid = cfg_session_obj.validate_configuration(
+                value_ids=attr_val_line.value_ids.ids,
+                product_tmpl_id=attr_val_line.product_tmpl_id.id, final=False
+            )
+            if not valid:
+                raise ValidationError(
+                    _('Values provided to the attribute value line are '
+                      'incompatible with the current rules')
+                )
+
+
 class ProductAttributeValueCustom(models.Model):
 
     @api.multi
