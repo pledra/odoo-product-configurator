@@ -226,7 +226,7 @@ class ProductConfigImage(models.Model):
         cfg_session_obj = self.env['product.config.session']
         for cfg_img in self:
             valid = cfg_session_obj.validate_configuration(
-                cfg_img.value_ids.ids, final=False)
+                value_ids=cfg_img.value_ids.ids, final=False)
             if not valid:
                 raise ValidationError(
                     _("Values entered for line '%s' generate "
@@ -503,7 +503,7 @@ class ProductConfigSession(models.Model):
             if value_ids:
                 default_val_ids += value_ids[0][2]
             valid_conf = self.validate_configuration(
-                default_val_ids, final=False)
+                value_ids=default_val_ids, final=False)
             # TODO: Remove if cond when PR with raise error on github is merged
             if not valid_conf:
                 raise ValidationError(
@@ -949,7 +949,8 @@ class ProductConfigSession(models.Model):
 
     @api.model
     def validate_configuration(
-            self, value_ids=None, custom_vals=None, final=True):
+            self, value_ids=None, custom_vals=None,
+            product_tmpl_id=False, final=True):
         """ Verifies if the configuration values passed via value_ids and custom_vals
         are valid
 
@@ -966,10 +967,15 @@ class ProductConfigSession(models.Model):
         if not value_ids:
             value_ids = self.value_ids.ids
 
+        if product_tmpl_id:
+            product_tmpl = self.env['product.template'].browse(product_tmpl_id)
+        else:
+            product_tmpl = self.product_tmpl_id
+
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
 
-        for line in self.product_tmpl_id.attribute_line_ids:
+        for line in product_tmpl.attribute_line_ids:
             # Validate custom values
             attr = line.attribute_id
             if attr.id in custom_vals:
@@ -987,14 +993,14 @@ class ProductConfigSession(models.Model):
             return False
 
         # Check if custom values are allowed
-        custom_attr_ids = self.product_tmpl_id.attribute_line_ids.filtered(
+        custom_attr_ids = product_tmpl.attribute_line_ids.filtered(
             'custom').mapped('attribute_id').ids
 
         if not set(custom_vals.keys()) <= set(custom_attr_ids):
             return False
 
         # Check if there are multiple values passed for non-multi attributes
-        mono_attr_lines = self.product_tmpl_id.attribute_line_ids.filtered(
+        mono_attr_lines = product_tmpl.attribute_line_ids.filtered(
             lambda l: not l.multi)
 
         for line in mono_attr_lines:

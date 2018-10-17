@@ -53,6 +53,24 @@
                 }</attribute>
             </xpath>
 
+            <!-- Product attribute value lines -->
+            <xpath expr="//page[@name='variants']" position="inside">
+                <field name="attribute_line_val_ids" invisible="1"/>
+                <field name="attribute_value_line_ids">
+                    <tree string="Attribute value lines" editable="bottom" context="{'default_product_tmpl_id': self.id}">
+                        <field name="product_tmpl_id" invisible="1"/>
+                        <field name="attribute_id" invisible="1"/>
+                        <field name="value_id"
+                               domain="[('id', 'in', parent.attribute_line_val_ids)]"/>
+                        <field name="value_ids"
+                               domain="[
+                                ('id', 'in', parent.attribute_line_val_ids),
+                                ('attribute_id', '!=', attribute_id)
+                               ]" widget="many2many_tags"/>
+                    </tree>
+                </field>
+            </xpath>
+
             <!-- TODO: Implement a method to hide this field for non-configurable product templates -->
             <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='value_ids']" position="after">
                 <field name="default_val"
