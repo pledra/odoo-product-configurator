@@ -662,7 +662,7 @@ class ProductConfigSession(models.Model):
             return self.formatPrices(prices)
         return prices
 
-    def get_config_image_obj(
+    def get_config_image(
             self, value_ids=None, custom_vals=None, size=None):
         """
         Retreive the image object that most closely resembles the configuration
@@ -689,7 +689,7 @@ class ProductConfigSession(models.Model):
             if matches > max_matches:
                 img_obj = line
                 max_matches = matches
-        return img_obj
+        return img_obj.image
 
     @api.model
     def get_variant_vals(self, value_ids=None, custom_vals=None, **kwargs):
@@ -708,7 +708,7 @@ class ProductConfigSession(models.Model):
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
 
-        image = self.get_config_image_obj(value_ids).image
+        image = self.get_config_image(value_ids).image
         all_images = tools.image_get_resized_images(
             image, avoid_resize_medium=True)
         vals = {

@@ -60,8 +60,8 @@ class ProductConfigurator(models.TransientModel):
         # TODO: Update when allowing custom values to influence image
 
         cfg_sessions = self.config_session_id.with_context(bin_size=False)
-        img_obj = cfg_sessions.get_config_image_obj()
-        self.product_img = img_obj.image
+        image = cfg_sessions.get_config_image()
+        self.product_img = image
 
     @api.multi
     @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids')
@@ -179,10 +179,10 @@ class ProductConfigurator(models.TransientModel):
                 dynamic_fields.update({k: None})
                 vals[k] = None
 
-        product_img = self.config_session_id.get_config_image_obj(
+        product_img = self.config_session_id.get_config_image(
             dynamic_fields.values())
 
-        vals.update(product_img=product_img.image)
+        vals.update(product_img=product_img)
 
         return vals
 

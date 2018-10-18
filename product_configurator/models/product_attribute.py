@@ -255,6 +255,7 @@ class ProductAttributeValue(models.Model):
 class ProductAttributeValueLine(models.Model):
     _name = 'product.attribute.value.line'
 
+    sequence = fields.Integer(string='Sequence', default=10)
     product_tmpl_id = fields.Many2one(
         comodel_name='product.template',
         string='Product Template',
@@ -276,6 +277,8 @@ class ProductAttributeValueLine(models.Model):
         id2="attr_val_id",
         string="Values Configuration",
     )
+
+    _order = 'sequence'
 
     @api.multi
     @api.constrains('value_ids')
