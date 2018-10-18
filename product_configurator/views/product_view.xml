@@ -60,6 +60,7 @@
                     <tree string="Attribute value lines" editable="bottom" context="{'default_product_tmpl_id': self.id}">
                         <field name="product_tmpl_id" invisible="1"/>
                         <field name="attribute_id" invisible="1"/>
+                        <field name="sequence" widget="handle"/>
                         <field name="value_id"
                                domain="[('id', 'in', parent.attribute_line_val_ids)]"/>
                         <field name="value_ids"

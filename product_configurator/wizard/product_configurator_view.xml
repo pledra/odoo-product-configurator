@@ -18,6 +18,7 @@
                     <field name="state" widget="statusbar" clickable="True"/>
                 </header>
                 <sheet>
+                    <field attrs="{'invisible': [('product_img', '=', False)]}" name="product_img" readonly="1" nolabel="1" widget="image"/>
                     <group col="4">
                         <group name='static_form' colspan="3" states='select'>
                             <field name="product_id" invisible="1"/>
@@ -31,7 +32,6 @@
                             </field>
                         </group>
                         <group colspan="1">
-                            <field attrs="{'invisible': [('product_img', '=', False)]}" name="product_img" readonly="1" nolabel="1" widget="image"/>
                         </group>
                     </group>
                 </sheet>
