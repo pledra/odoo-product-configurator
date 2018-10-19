@@ -1,14 +1,5 @@
 from mako.runtime import Context
-from odoo import api, fields, models
-
-
-class ProductAttributeLine(models.Model):
-    _inherit = 'product.attribute.line'
-
-    quantity = fields.Boolean(
-        string='Quantity',
-        help='Set quantity for variants related to attribute values selected?'
-    )
+from odoo import api, models
 
 
 class ProductProduct(models.Model):
@@ -65,27 +56,3 @@ class ProductProduct(models.Model):
         ctx_vars.update(cfg_parts=cfg_parts, bom=bom)
         res = Context(buf, **ctx_vars)
         return res
-
-
-class ProductAttributeValue(models.Model):
-    _inherit = 'product.attribute.value'
-
-    quantity = fields.Boolean(
-        string='Quantity',
-        help='Allow quantity selection in product configuration '
-        'for the related product'
-    )
-
-    @api.onchange('product_id')
-    def onchange_product_id(self):
-        if not self.product_id:
-            self.quantity = False
-
-
-# class ProductTemplate(models.Model):
-#     _inherit = 'product.template'
-
-#     routing_id = fields.Many2one(
-#         comodel_name='mrp.routing',
-#         string='Routing'
-#     )
