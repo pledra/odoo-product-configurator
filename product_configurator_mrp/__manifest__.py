@@ -15,6 +15,7 @@
         'views/mrp_view.xml',
     ],
     'demo': [
+        'demo/product_template.xml'
     ],
     'test': [],
     'installable': True,
