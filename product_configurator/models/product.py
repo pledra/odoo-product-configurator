@@ -15,6 +15,44 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    @api.multi
+    @api.depends('attribute_line_ids.value_ids')
+    def _compute_template_attr_vals(self):
+        for product_tmpl in self.filtered(lambda t: t.config_ok):
+            value_ids = product_tmpl.attribute_line_ids.mapped('value_ids')
+            product_tmpl.attribute_line_val_ids = value_ids
+
+    @api.multi
+    @api.constrains(
+        'attribute_line_ids',
+        'attribute_value_line_ids',
+    )
+    def check_attr_value_ids(self):
+        for product_tmpl in self:
+            attr_val_lines = product_tmpl.attribute_value_line_ids
+            attr_val_ids = attr_val_lines.mapped('value_ids')
+            if not attr_val_ids <= product_tmpl.attribute_line_val_ids:
+                raise ValidationError(
+                    _("All attribute values used in attribute value lines "
+                      "must be defined in the attribute lines of the template")
+                )
+
+    @api.multi
+    @api.constrains('attribute_value_line_ids')
+    def _validate_unique_config(self):
+        """Check for duplicate configurations for the same attribute value"""
+        attr_val_line_vals = self.attribute_value_line_ids.read(
+            ['value_id', 'value_ids'], load=False
+        )
+        attr_val_line_vals = [
+            (l['value_id'], tuple(l['value_ids'])) for l in attr_val_line_vals
+        ]
+        if len(set(attr_val_line_vals)) != len(attr_val_line_vals):
+            raise ValidationError(
+                _('You cannot have a duplicate configuration for the '
+                  'same value')
+            )
+
     config_ok = fields.Boolean(string='Can be Configured')
 
     config_line_ids = fields.One2many(
@@ -27,6 +65,18 @@ class ProductTemplate(models.Model):
         comodel_name='product.config.image',
         inverse_name='product_tmpl_id',
         string='Configuration Images'
+    )
+
+    attribute_value_line_ids = fields.One2many(
+        comodel_name='product.attribute.value.line',
+        inverse_name='product_tmpl_id',
+        string="Attribute Value Lines"
+    )
+
+    attribute_line_val_ids = fields.Many2many(
+        comodel_name='product.attribute.value',
+        compute='_compute_template_attr_vals',
+        store=False
     )
 
     config_step_line_ids = fields.One2many(
