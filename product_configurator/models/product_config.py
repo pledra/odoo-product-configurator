@@ -708,7 +708,7 @@ class ProductConfigSession(models.Model):
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
 
-        image = self.get_config_image(value_ids).image
+        image = self.get_config_image(value_ids)
         all_images = tools.image_get_resized_images(
             image, avoid_resize_medium=True)
         vals = {
