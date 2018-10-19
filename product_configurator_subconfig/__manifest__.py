@@ -1,6 +1,6 @@
 {
     'name': 'Product Configurator Subconfiguration',
-    'version': '11.0.1.0.0',
+    'version': '11.0.1.0.1',
     'category': 'Generic Modules/Base',
     'summary': 'Allow configuration of multiple products within one template ',
     'author': 'Pledra',
