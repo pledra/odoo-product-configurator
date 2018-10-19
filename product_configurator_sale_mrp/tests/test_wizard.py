@@ -103,6 +103,10 @@ class Wizard(TransactionCase):
 
         production_order = order_line.move_ids.created_production_id
 
+        self.assertTrue(production_order,
+                        "There was no production order created after sales "
+                        "order confirmation")
+
         self.assertTrue(production_order.bom_id == bom,
                         "Manufacturing order does not use the bom_id stored "
                         "on the sale order line")
