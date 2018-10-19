@@ -286,9 +286,11 @@ class ProductAttributeValueLine(models.Model):
         """Ensure that the passed configuration in value_ids is a valid"""
         cfg_session_obj = self.env['product.config.session']
         for attr_val_line in self:
+            value_ids = attr_val_line.value_ids.ids + attr_val_line.value_id.id
             valid = cfg_session_obj.validate_configuration(
-                value_ids=attr_val_line.value_ids.ids,
-                product_tmpl_id=attr_val_line.product_tmpl_id.id, final=False
+                value_ids=value_ids,
+                product_tmpl_id=attr_val_line.product_tmpl_id.id,
+                final=False
             )
             if not valid:
                 raise ValidationError(
