@@ -229,7 +229,7 @@ class ProductAttributeValue(models.Model):
             val_ids = set(tmpl_vals.ids)
             if preset_val_ids:
                 val_ids -= set(arg[2])
-            val_ids = product_tmpl.values_available(
+            val_ids = self.env['product.config.session'].values_available(
                 val_ids, preset_val_ids)
             new_args.append(('id', 'in', val_ids))
             mono_tmpl_lines = product_tmpl.attribute_line_ids.filtered(
@@ -286,7 +286,8 @@ class ProductAttributeValueLine(models.Model):
         """Ensure that the passed configuration in value_ids is a valid"""
         cfg_session_obj = self.env['product.config.session']
         for attr_val_line in self:
-            value_ids = attr_val_line.value_ids.ids + attr_val_line.value_id.id
+            value_ids = attr_val_line.value_ids.ids
+            value_ids.append(attr_val_line.value_id.id)
             valid = cfg_session_obj.validate_configuration(
                 value_ids=value_ids,
                 product_tmpl_id=attr_val_line.product_tmpl_id.id,
