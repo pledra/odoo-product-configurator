@@ -1,17 +1,25 @@
-image: vauxoo/odoo-80-image-shippable-auto
 stages:
-  - test
   - build
+  - test
 #  - deploy
 
 variables:
-    PSQL_VERSION: "9.6"
     VERSION: "11.0"
+    PSQL_VERSION: "9.6"
     ODOO_REPO: "odoo/odoo"
     ODOO_BRANCH: "11.0"
-    TRAVIS_BUILD_DIR: "$CI_PROJECT_DIR"
-    TRAVIS_PYTHON_VERSION: "3.5"
+    ODOO_STAGING_BRANCH: "11.0-staging"
+    REGISTRY_HOST: "gcr.io/pledra-1"
+    GIT_HOST: "git@gitlab.pledra.com:pledra"
+    GIT_DOCKER_PROJECT_REPO: "docker-odoo-product-configurator"
     GIT_DEPTH: "3"
+    CI_IMAGE: "$REGISTRY_HOST/$CI_PROJECT_NAME-$ODOO_BRANCH"
+    CI_TEST_IMAGE: "$REGISTRY_HOST/$CI_PROJECT_NAME-$ODOO_BRANCH-test"
+    POSTGRES_DB: test
+    POSTGRES_USER: odoo
+    POSTGRES_PASSWORD: "odoopassword"
+    ADDON_CATEGORIES: "--private --extra"
+    ADDONS_EXTRA_ARGS: "-r product-configurator"
 
 before_script:
     - eval "$(ssh-agent -s)"
@@ -23,51 +31,78 @@ before_script:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add  - > /dev/null
     - echo "$SSH_ENTERPRISE_PRIVATE_KEY" | tr -d '\r' | ssh-add  - > /dev/null
     - chmod 600 ~/.ssh/ -R
-#    - echo $GCE_SERVICE_ACCOUNT_JSON > service_account.json
+    - echo $GCE_SERVICE_ACCOUNT_JSON > service_account.json
 
-lint:
+Build:
+ image: google/cloud-sdk:alpine
+ stage: build
+ script:
+   - gcloud auth activate-service-account --key-file=service_account.json
+   - git clone $GIT_HOST/$GIT_DOCKER_PROJECT_REPO.git -b ${ODOO_BRANCH} --depth=1 $CI_PROJECT_NAME
+   - gcloud builds submit --config $CI_PROJECT_NAME/cloudbuild.yaml $CI_PROJECT_NAME --substitutions _CI_IMAGE=$CI_IMAGE,_CI_TEST_IMAGE=$CI_TEST_IMAGE,_CI_PIPELINE_ID=$CI_PIPELINE_ID
+ retry: 1
+
+Test Addons:
+  services:
+    - name: postgres:10.0-alpine
+  image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
   stage: test
   variables:
-    LINT_CHECK: "1"
-    TESTS: "0"
+    PGHOST: "localhost"
+    ODOO_MINOR: "11.0"
+    ADDON_CATEGORIES: "--private --extra"
+    ADDONS_EXTRA_ARGS: "-r product-configurator"
+  before_script: []
   script:
-    - source ${REPO_REQUIREMENTS}/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/activate
-    - source ${REPO_REQUIREMENTS}/virtualenv/nodejs/bin/activate
-    - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
-    - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
-    - travis_install_nightly
-    - travis_run_tests
-    - travis_after_tests_success || true
-  retry: 1
+    # Execute entrypoint to wait for db to be ready and other things
+    - /opt/odoo/common/entrypoint
+    # Initialize the database and install all the repository modules
+    - addons init -i $ADDONS_EXTRA_ARGS $ADDON_CATEGORIES
+    # Execute coverage tests on the initialized database
+    - qa_coverage
+    # Move coverage report
+    - mv /qa/artifacts/coverage .
+  artifacts:
+    paths:
+      - coverage
+    when: always
+  coverage: /TOTAL.* (\d+)%/
 
-test:
+Pylint Loose: &pylint
+  image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
   stage: test
   variables:
-    LINT_CHECK: "0"
-    TESTS: "1"
-
+    ADDONS_EXTRA_ARGS: "-r product-configurator"
+  before_script: []
   script:
-    - source ${REPO_REQUIREMENTS}/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/activate
-    - source ${REPO_REQUIREMENTS}/virtualenv/nodejs/bin/activate
-    - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
-    - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
-    - travis_install_nightly
-    - sed -i '/\*__manifest*/a \    */project_task_subtask/*' .coveragerc
-    - travis_run_tests
-    - travis_after_tests_success || true
-  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
-  retry: 1
+    - qa_pylint
 
-#build:
-#  image: google/cloud-sdk:alpine
-#  stage: build
-#  script:
-#    - gcloud auth activate-service-account --key-file=service_account.json
-#    - git clone git@gitlab.pledra.com:pledra/simply-solar-docker-base.git -b ${ODOO_BRANCH}-staging simply-solar
-#    - gcloud container builds submit --config simply-solar/cloudbuild.yaml simply-solar --substitutions _CI_PIPELINE_ID=$CI_PIPELINE_ID
-#  only:
-#    - /^.*-staging$/
-#  retry: 1
+Pylint Strict:
+  <<: *pylint
+  variables:
+    LINT_MODE: "pr"
+  except:
+    - ^\d+\.\d+$
+
+Pylint Strict Warnings:
+  <<: *pylint
+  allow_failure: true
+  only:
+    - ^\d+\.\d+$
+
+Pylint Beta:
+  <<: *pylint
+  variables:
+    LINT_MODE: "beta"
+  allow_failure: true
+
+Flake8:
+  image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
+  stage: test
+  before_script: []
+  script:
+    - qa_flake8
+
 
 #deploy_staging:
 #  image: google/cloud-sdk:alpine

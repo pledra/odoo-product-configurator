@@ -31,7 +31,7 @@ class ProductConfiguratorMrp(models.TransientModel):
                 self.value_ids.ids, custom_vals)
         except ValidationError:
             raise
-        except:
+        except Exception:
             raise ValidationError(
                 _('Invalid configuration! Please check all '
                   'required steps and fields.')
