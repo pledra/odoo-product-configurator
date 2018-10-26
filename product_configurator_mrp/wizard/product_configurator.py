@@ -30,12 +30,12 @@ class ProductConfigurator(models.TransientModel):
 
         try:
             attr_ids |= {int(f.split(field_prefix)[1]) for f in attr_fields}
-        except Exception:
+        except ValueError:
             pass
 
         try:
             attr_ids |= {int(f.split(attr_qty_prefix)[1]) for f in qty_fields}
-        except Exception:
+        except ValueError:
             pass
 
         # Do not consider multi selection yet
@@ -208,7 +208,7 @@ class ProductConfigurator(models.TransientModel):
         for field in qty_fields:
             try:
                 attr_id = int(field.split(attr_qty_prefix)[1])
-            except:
+            except ValueError:
                 continue
 
             qty = 1
