@@ -324,7 +324,7 @@ class ProductConfigSession(models.Model):
         for step in cfg_session_step_lines:
             try:
                 cfg_step_line_ids.add(int(step))
-            except Exception:
+            except ValueError:
                 pass
         cfg_step_lines = cfg_step_line_obj.browse(cfg_step_line_ids)
         for session in self:
@@ -757,7 +757,7 @@ class ProductConfigSession(models.Model):
 
         try:
             cfg_step_line_id = int(self.config_step)
-        except Exception:
+        except ValueError:
             cfg_step_line_id = None
 
         if cfg_step_line_id:
