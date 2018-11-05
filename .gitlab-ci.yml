@@ -43,7 +43,8 @@ Build:
    - gcloud auth activate-service-account --key-file=service_account.json
    - git clone $GIT_HOST/$GIT_DOCKER_PROJECT_REPO.git -b ${ODOO_MINOR} --depth=1 /$CI_PROJECT_NAME
    # Add the private addons only if this is not a stable branch
-   - if ! [[ $CI_COMMIT_REF_NAME =~ ^[0-9]{1,2}\.[0-9]{1,2}$ ]] ; then cp $CI_PROJECT_DIR/* /$CI_PROJECT_NAME/src/private -R; fi
+   # - if ! [[ $CI_COMMIT_REF_NAME =~ ^[0-9]{1,2}\.[0-9]{1,2}$ ]] ; then cp $CI_PROJECT_DIR/* /$CI_PROJECT_NAME/src/private -R; fi
+   - cp $CI_PROJECT_DIR/* /$CI_PROJECT_NAME/src/private -R;
    - gcloud builds submit --config /$CI_PROJECT_NAME/cloudbuild.yaml /$CI_PROJECT_NAME --substitutions _CI_IMAGE=$CI_IMAGE,_CI_TEST_IMAGE=$CI_TEST_IMAGE,_CI_PIPELINE_ID=$CI_PIPELINE_ID
  retry: 1
 
