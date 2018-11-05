@@ -1,25 +1,25 @@
 stages:
   - build
   - test
-#  - deploy
+  - cleanup
 
-variables:
-    VERSION: "11.0"
+variables: &globalvars
     PSQL_VERSION: "9.6"
     ODOO_REPO: "odoo/odoo"
-    ODOO_BRANCH: "11.0"
+    ODOO_MINOR: "11.0"
     ODOO_STAGING_BRANCH: "11.0-staging"
     REGISTRY_HOST: "gcr.io/pledra-1"
+    GIT_DEPTH: "3"
+    GIT_STRATEGY: none
     GIT_HOST: "git@gitlab.pledra.com:pledra"
     GIT_DOCKER_PROJECT_REPO: "docker-odoo-product-configurator"
-    GIT_DEPTH: "3"
-    CI_IMAGE: "$REGISTRY_HOST/$CI_PROJECT_NAME-$ODOO_BRANCH"
-    CI_TEST_IMAGE: "$REGISTRY_HOST/$CI_PROJECT_NAME-$ODOO_BRANCH-test"
+    CI_IMAGE: "$REGISTRY_HOST/$CI_PROJECT_NAME-$ODOO_MINOR"
+    CI_TEST_IMAGE: "$REGISTRY_HOST/$CI_PROJECT_NAME-$ODOO_MINOR-test"
+    PGHOST: "localhost"
     POSTGRES_DB: test
     POSTGRES_USER: odoo
     POSTGRES_PASSWORD: "odoopassword"
-    ADDON_CATEGORIES: "--private --extra"
-    ADDONS_EXTRA_ARGS: "-r product-configurator"
+    ADDON_CATEGORIES: "--private"
 
 before_script:
     - eval "$(ssh-agent -s)"
@@ -36,10 +36,15 @@ before_script:
 Build:
  image: google/cloud-sdk:alpine
  stage: build
+ variables:
+   <<: *globalvars
+   GIT_STRATEGY: clone
  script:
    - gcloud auth activate-service-account --key-file=service_account.json
-   - git clone $GIT_HOST/$GIT_DOCKER_PROJECT_REPO.git -b ${ODOO_BRANCH} --depth=1 $CI_PROJECT_NAME
-   - gcloud builds submit --config $CI_PROJECT_NAME/cloudbuild.yaml $CI_PROJECT_NAME --substitutions _CI_IMAGE=$CI_IMAGE,_CI_TEST_IMAGE=$CI_TEST_IMAGE,_CI_PIPELINE_ID=$CI_PIPELINE_ID
+   - git clone $GIT_HOST/$GIT_DOCKER_PROJECT_REPO.git -b ${ODOO_MINOR} --depth=1 /$CI_PROJECT_NAME
+   # Add the private addons only if this is not a stable branch
+   - if ! [[ $CI_COMMIT_REF_NAME =~ ^[0-9]{1,2}\.[0-9]{1,2}$ ]] ; then cp $CI_PROJECT_DIR/* /$CI_PROJECT_NAME/src/private -R; fi
+   - gcloud builds submit --config /$CI_PROJECT_NAME/cloudbuild.yaml /$CI_PROJECT_NAME --substitutions _CI_IMAGE=$CI_IMAGE,_CI_TEST_IMAGE=$CI_TEST_IMAGE,_CI_PIPELINE_ID=$CI_PIPELINE_ID
  retry: 1
 
 Test Addons:
@@ -47,17 +52,12 @@ Test Addons:
     - name: postgres:10.0-alpine
   image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
   stage: test
-  variables:
-    PGHOST: "localhost"
-    ODOO_MINOR: "11.0"
-    ADDON_CATEGORIES: "--private --extra"
-    ADDONS_EXTRA_ARGS: "-r product-configurator"
   before_script: []
   script:
     # Execute entrypoint to wait for db to be ready and other things
     - /opt/odoo/common/entrypoint
     # Initialize the database and install all the repository modules
-    - addons init -i $ADDONS_EXTRA_ARGS $ADDON_CATEGORIES
+    - addons init -i $ADDON_CATEGORIES
     # Execute coverage tests on the initialized database
     - qa_coverage
     # Move coverage report
@@ -71,8 +71,6 @@ Test Addons:
 Pylint Loose: &pylint
   image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
   stage: test
-  variables:
-    ADDONS_EXTRA_ARGS: "-r product-configurator"
   before_script: []
   script:
     - qa_pylint
@@ -135,3 +133,15 @@ Flake8:
 #  when: manual
 #  only:
 #    - /^.*-(staging|test)$/
+
+Cleanup:
+  image: google/cloud-sdk:alpine
+  stage: cleanup
+  script:
+    - export LATEST_IMG_TAG_DATE=$(gcloud container images list-tags $CI_IMAGE --filter=tags:latest --format="value(timestamp)")
+    - export LATEST_TEST_IMG_TAG_DATE=$(gcloud container images list-tags $CI_TEST_IMAGE --filter=tags:latest --format="value(timestamp)")
+    - export OBSOLETE_IMAGE_DIGESTS=$(gcloud container images list-tags $CI_IMAGE --filter="timestamp.datetime < $LATEST_IMG_TAG_DATE" --format='get(digest)')
+    - export OBSOLETE_TEST_IMAGE_DIGESTS=$(gcloud container images list-tags $CI_TEST_IMAGE --filter="timestamp.datetime < $LATEST_TEST_IMG_TAG_DATE" --format='get(digest)')
+    - for IMG_DIGEST in $OBSOLETE_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_IMAGE@$IMG_DIGEST; done
+    - for IMG_DIGEST in $OBSOLETE_TEST_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_TEST_IMAGE@$IMG_DIGEST; done
+
