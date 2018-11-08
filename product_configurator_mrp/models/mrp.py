@@ -1,4 +1,4 @@
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class MrpProduction(models.Model):
@@ -19,3 +19,12 @@ class MrpProduction(models.Model):
                 wizard_model='product.configurator.mrp',
             ),
         }
+
+
+class MrpBom(models.Model):
+    _inherit = 'mrp.bom'
+
+    config_ok = fields.Boolean(
+        related='product_tmpl_id.config_ok',
+        store=True
+    )

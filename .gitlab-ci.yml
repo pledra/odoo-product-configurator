@@ -31,7 +31,7 @@ before_script:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add  - > /dev/null
     - echo "$SSH_ENTERPRISE_PRIVATE_KEY" | tr -d '\r' | ssh-add  - > /dev/null
     - chmod 600 ~/.ssh/ -R
-    - echo $GCE_SERVICE_ACCOUNT_JSON > service_account.json
+    - echo $GCE_SERVICE_ACCOUNT_JSON > /service_account.json
 
 Build:
  image: google/cloud-sdk:alpine
@@ -40,7 +40,7 @@ Build:
    <<: *globalvars
    GIT_STRATEGY: clone
  script:
-   - gcloud auth activate-service-account --key-file=service_account.json
+   - gcloud auth activate-service-account --key-file=/service_account.json
    - git clone $GIT_HOST/$GIT_DOCKER_PROJECT_REPO.git -b ${ODOO_MINOR} --depth=1 /$CI_PROJECT_NAME
    # Add the private addons only if this is not a stable branch
    # - if ! [[ $CI_COMMIT_REF_NAME =~ ^[0-9]{1,2}\.[0-9]{1,2}$ ]] ; then cp $CI_PROJECT_DIR/* /$CI_PROJECT_NAME/src/private -R; fi
