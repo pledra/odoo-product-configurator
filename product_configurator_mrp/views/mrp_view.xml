@@ -17,4 +17,24 @@
         </field>
     </record>
 
+    <record id="mrp_bom_form_view" model="ir.ui.view">
+        <field name="name">product.config.mrp.bom.form.view</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_tmpl_id']" position="after">
+                <field name="config_ok" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='attribute_value_ids']" position="attributes">
+                <attribute name="domain">[
+                    '|',
+                    '&amp;',
+                    ('active', '=', parent.config_ok),
+                    ('attribute_line_ids.product_tmpl_id', '=', parent.product_tmpl_id),
+                    ('product_ids.product_tmpl_id', '=', parent.product_tmpl_id)
+                ]</attribute>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
