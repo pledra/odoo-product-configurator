@@ -202,6 +202,10 @@ class ProductAttributeValue(models.Model):
         comodel_name='product.product',
         string='Related Product'
     )
+    attribute_line_ids = fields.Many2many(
+        comodel_name='product.attribute.line',
+        string="Attribute Lines"
+    )
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
