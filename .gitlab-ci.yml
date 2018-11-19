@@ -4,22 +4,26 @@ stages:
   - cleanup
 
 variables: &globalvars
-    PSQL_VERSION: "9.6"
-    ODOO_REPO: "odoo/odoo"
-    ODOO_MINOR: "11.0"
-    ODOO_STAGING_BRANCH: "11.0-staging"
-    REGISTRY_HOST: "gcr.io/pledra-1"
+    ADDON_CATEGORIES: "--private"
+    CI_IMAGE: "gcr.io/$GCLOUD_PROJECT/$CI_PROJECT_NAME-$ODOO_MINOR"
+    CI_TEST_IMAGE: "gcr.io/$GCLOUD_PROJECT/$CI_PROJECT_NAME-$ODOO_MINOR-test"
     GIT_DEPTH: "3"
     GIT_STRATEGY: none
     GIT_HOST: "git@gitlab.pledra.com:pledra"
     GIT_DOCKER_PROJECT_REPO: "docker-odoo-product-configurator"
-    CI_IMAGE: "$REGISTRY_HOST/$CI_PROJECT_NAME-$ODOO_MINOR"
-    CI_TEST_IMAGE: "$REGISTRY_HOST/$CI_PROJECT_NAME-$ODOO_MINOR-test"
+    GCLOUD_PROJECT: "pledra-1"
+    GCLOUD_ZONE: "europe-west1-b"
+    # K8S_CLUSTER: "pledra"
+    # K8S_DEPLOYMENT_LABELS: "type=server,release=parker-v12-staging"
+    # K8S_NAMESPACE: "default"
+    ODOO_REPO: "odoo/odoo"
+    ODOO_MINOR: "11.0"
+    ODOO_STAGING_BRANCH: "11.0-staging"
+    PSQL_VERSION: "9.6"
     PGHOST: "localhost"
     POSTGRES_DB: test
     POSTGRES_USER: odoo
     POSTGRES_PASSWORD: "odoopassword"
-    ADDON_CATEGORIES: "--private"
 
 before_script:
     - eval "$(ssh-agent -s)"
@@ -40,17 +44,15 @@ Build:
    <<: *globalvars
    GIT_STRATEGY: clone
  script:
-   - gcloud auth activate-service-account --key-file=/service_account.json
+   - gcloud auth activate-service-account --key-file=/service_account.json --project=$GCLOUD_PROJECT
    - git clone $GIT_HOST/$GIT_DOCKER_PROJECT_REPO.git -b ${ODOO_MINOR} --depth=1 /$CI_PROJECT_NAME
-   # Add the private addons only if this is not a stable branch
-   # - if ! [[ $CI_COMMIT_REF_NAME =~ ^[0-9]{1,2}\.[0-9]{1,2}$ ]] ; then cp $CI_PROJECT_DIR/* /$CI_PROJECT_NAME/src/private -R; fi
    - cp $CI_PROJECT_DIR/* /$CI_PROJECT_NAME/src/private -R;
    - gcloud builds submit --config /$CI_PROJECT_NAME/cloudbuild.yaml /$CI_PROJECT_NAME --substitutions _CI_IMAGE=$CI_IMAGE,_CI_TEST_IMAGE=$CI_TEST_IMAGE,_CI_PIPELINE_ID=$CI_PIPELINE_ID
  retry: 1
 
 Test Addons:
   services:
-    - name: postgres:10.0-alpine
+    - name: postgres:9.6-alpine
   image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
   stage: test
   before_script: []
@@ -135,14 +137,14 @@ Flake8:
 #  only:
 #    - /^.*-(staging|test)$/
 
-Cleanup:
-  image: google/cloud-sdk:alpine
-  stage: cleanup
-  script:
-    - export LATEST_IMG_TAG_DATE=$(gcloud container images list-tags $CI_IMAGE --filter=tags:latest --format="value(timestamp)")
-    - export LATEST_TEST_IMG_TAG_DATE=$(gcloud container images list-tags $CI_TEST_IMAGE --filter=tags:latest --format="value(timestamp)")
-    - export OBSOLETE_IMAGE_DIGESTS=$(gcloud container images list-tags $CI_IMAGE --filter="timestamp.datetime < $LATEST_IMG_TAG_DATE" --format='get(digest)')
-    - export OBSOLETE_TEST_IMAGE_DIGESTS=$(gcloud container images list-tags $CI_TEST_IMAGE --filter="timestamp.datetime < $LATEST_TEST_IMG_TAG_DATE" --format='get(digest)')
-    - for IMG_DIGEST in $OBSOLETE_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_IMAGE@$IMG_DIGEST; done
-    - for IMG_DIGEST in $OBSOLETE_TEST_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_TEST_IMAGE@$IMG_DIGEST; done
+# Cleanup:
+#   image: google/cloud-sdk:alpine
+#   stage: cleanup
+#   script:
+#     - export LATEST_IMG_TAG_DATE=$(gcloud container images list-tags $CI_IMAGE --filter=tags:latest --format="value(timestamp)")
+#     - export LATEST_TEST_IMG_TAG_DATE=$(gcloud container images list-tags $CI_TEST_IMAGE --filter=tags:latest --format="value(timestamp)")
+#     - export OBSOLETE_IMAGE_DIGESTS=$(gcloud container images list-tags $CI_IMAGE --filter="timestamp.datetime < $LATEST_IMG_TAG_DATE" --format='get(digest)')
+#     - export OBSOLETE_TEST_IMAGE_DIGESTS=$(gcloud container images list-tags $CI_TEST_IMAGE --filter="timestamp.datetime < $LATEST_TEST_IMG_TAG_DATE" --format='get(digest)')
+#     - for IMG_DIGEST in $OBSOLETE_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_IMAGE@$IMG_DIGEST; done
+#     - for IMG_DIGEST in $OBSOLETE_TEST_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_TEST_IMAGE@$IMG_DIGEST; done
 
