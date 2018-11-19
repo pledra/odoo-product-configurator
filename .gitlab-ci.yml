@@ -20,7 +20,7 @@ variables: &globalvars
     ODOO_MINOR: "11.0"
     ODOO_STAGING_BRANCH: "11.0-staging"
     PSQL_VERSION: "9.6"
-    PGHOST: "localhost"
+    PGHOST: "127.0.0.1"
     POSTGRES_DB: test
     POSTGRES_USER: odoo
     POSTGRES_PASSWORD: "odoopassword"
