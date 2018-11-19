@@ -52,7 +52,7 @@ Build:
 
 Test Addons:
   services:
-    - name: postgres:9.6-alpine
+    - name: postgres:10-alpine
   image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
   stage: test
   before_script: []
