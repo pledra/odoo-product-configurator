@@ -19,8 +19,8 @@ variables: &globalvars
     ODOO_REPO: "odoo/odoo"
     ODOO_MINOR: "11.0"
     ODOO_STAGING_BRANCH: "11.0-staging"
-    PSQL_VERSION: "9.6"
-    PGHOST: "127.0.0.1"
+    PSQL_VERSION: "10.0"
+    PGHOST: "localhost"
     POSTGRES_DB: test
     POSTGRES_USER: odoo
     POSTGRES_PASSWORD: "odoopassword"
@@ -52,7 +52,7 @@ Build:
 
 Test Addons:
   services:
-    - name: postgres:10-alpine
+    - name: postgres:10.0-alpine
   image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
   stage: test
   before_script: []
