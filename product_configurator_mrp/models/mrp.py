@@ -44,8 +44,8 @@ class MrpBomLine(models.Model):
 
         for config in self.configuration_ids:
             if set(config.value_ids.ids) <= product_value_ids:
-                return True
-        return False
+                return False
+        return True
 
     configuration_ids = fields.Many2many(
         comodel_name="mrp.bom.line.configuration",
