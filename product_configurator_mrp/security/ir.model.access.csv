@@ -2,6 +2,5 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 mrp_bom,BOM,mrp.model_mrp_bom,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
 mrp_bom_line,BOM,mrp.model_mrp_bom_line,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
 ,,,,,,,
-product_config_bom_line,Config Bom Lines,product_configurator_mrp.model_product_config_bom_line,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
 product_config_mrp_bom_line_config_set,Bom Line Config Set,product_configurator_mrp.model_mrp_bom_line_configuration_set,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
 product_config_mrp_bom_line_config,Bom Line Config,product_configurator_mrp.model_mrp_bom_line_configuration,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
