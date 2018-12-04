@@ -3,3 +3,5 @@ mrp_bom,BOM,mrp.model_mrp_bom,product_configurator_mrp.group_product_configurato
 mrp_bom_line,BOM,mrp.model_mrp_bom_line,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
 ,,,,,,,
 product_config_bom_line,Config Bom Lines,product_configurator_mrp.model_product_config_bom_line,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
+product_config_mrp_bom_line_config_set,Bom Line Config Set,product_configurator_mrp.model_mrp_bom_line_configuration_set,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
+product_config_mrp_bom_line_config,Bom Line Config,product_configurator_mrp.model_mrp_bom_line_configuration,product_configurator_mrp.group_product_configurator_mrp,1,1,1,1
