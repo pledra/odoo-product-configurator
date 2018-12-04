@@ -40,53 +40,70 @@ class MrpBomLine(models.Model):
         if not self.bom_id.config_ok:
             return super(MrpBomLine, self)._skip_bom_line(product=product)
 
+        if not self.config_set_id.configuration_ids:
+            return False
+
         product_value_ids = set(product.attribute_value_ids.ids)
 
-        for config in self.configuration_ids:
+        for config in self.config_set_id.configuration_ids:
             if set(config.value_ids.ids) <= product_value_ids:
                 return False
         return True
 
-    configuration_ids = fields.Many2many(
-        comodel_name="mrp.bom.line.configuration",
-        inverse_name="bom_line_id",
-        string="Configurations"
+    config_set_id = fields.Many2one(
+        comodel_name="mrp.bom.line.configuration.set",
+        string="Configuration Set"
+    )
+
+
+class MrpBomLineConfigurationSet(models.Model):
+    _name = 'mrp.bom.line.configuration.set'
+
+    name = fields.Char(
+        string="Configuration",
+        required=True,
+    )
+    bom_line_id = fields.Many2one(
+        comodel_name="mrp.bom.line",
+        string="Bom Line ID",
+        ondelete='cascade',
+        required=True,
+    )
+    configuration_ids = fields.One2many(
+        comodel_name='mrp.bom.line.configuration',
+        inverse_name='config_set_id',
+        string='Configurations',
     )
 
 
 class MrpBomLineConfiguration(models.Model):
     _name = 'mrp.bom.line.configuration'
 
-    @api.depends('value_ids')
-    def _get_configuration_string(self):
-        self.name = ' '.join(self.value_ids.mapped('name'))
-
-    name = fields.Char(
-        string="Configuration",
-        compute="_get_configuration_string",
-        store="True"
+    config_set_id = fields.Many2one(
+        comodel_name='mrp.bom.line.configuration.set',
+        ondelete='cascade',
+        required=True,
     )
-    bom_line_id = fields.Many2one(
-        comodel_name="mrp.bom.line",
-        string="Bom Line ID",
-        required=True
+    product_tmpl_id = fields.Many2one(
+        comodel_name='product.template',
+        related='config_set_id.bom_line_id.bom_id.product_tmpl_id'
     )
     product_tmpl_value_ids = fields.Many2many(
         comodel_name='product.attribute.value',
-        compute='_compute_product_attribute_value_ids',
-        related='bom_line_id.bom_id.product_tmpl_id.attribute_line_val_ids'
+        related='product_tmpl_id.attribute_line_val_ids'
     )
     value_ids = fields.Many2many(
-        string='Configuration',
+        string='Attribute Values',
         comodel_name='product.attribute.value',
         domain="[('id', 'in', product_tmpl_value_ids)]"
     )
 
     @api.constrains('value_ids')
     def validate_configuration(self):
-        product_tmpl_id = self.bom_line_id.bom_id.product_tmpl_id.id
         valid = self.env['product.config.session'].validate_configuration(
-            value_ids=self.value_ids.ids, product_tmpl_id=product_tmpl_id
+            value_ids=self.value_ids.ids,
+            product_tmpl_id=self.product_tmpl_id.id,
+            final=False
         )
 
         if not valid:
