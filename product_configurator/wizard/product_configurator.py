@@ -454,7 +454,7 @@ class ProductConfigurator(models.TransientModel):
                 "//group[@name='static_form']")[0]
             xml_dynamic_form = etree.Element(
                 'group',
-                colspan='3',
+                colspan='2',
                 name='dynamic_form'
             )
             xml_parent = xml_static_form.getparent()
