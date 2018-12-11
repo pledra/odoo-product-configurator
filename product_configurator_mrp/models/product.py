@@ -24,6 +24,7 @@ class ProductTemplate(models.Model):
         values = {
             'product_tmpl_id': self.id,
             'product_id': variant.id,
+            'product_uom_id': variant.uom_id.id,
             'bom_line_ids': line_vals
         }
 
