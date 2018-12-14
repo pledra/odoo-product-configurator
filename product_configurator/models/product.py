@@ -91,7 +91,10 @@ class ProductTemplate(models.Model):
         open_step_lines = self.get_open_step_lines(value_ids)
 
         if not active_cfg_step_line:
-            return {'next_step': open_step_lines[0]}
+            if open_step_lines:
+                return {'next_step': open_step_lines[0]}
+            else:
+                return {}
 
         nr_steps = len(open_step_lines)
 
