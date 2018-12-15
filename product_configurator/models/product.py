@@ -230,21 +230,35 @@ class ProductTemplate(models.Model):
         for value_id in value_ids:
             domain.append(('attribute_value_ids', '=', value_id))
 
-        attr_search = attr_obj.search([
+        products = self.env['product.product'].search(domain)
+
+        attr_search_ids = attr_obj.search([
             ('search_ok', '=', True),
             ('custom_type', 'not in', attr_obj._get_nosearch_fields())
-        ])
+        ]).ids
 
-        for attr_id, value in custom_values.iteritems():
-            if attr_id not in attr_search.ids:
-                domain.append(
-                    ('value_custom_ids.attribute_id', '!=', int(attr_id)))
-            else:
-                domain.append(
-                    ('value_custom_ids.attribute_id', '=', int(attr_id)))
-                domain.append(('value_custom_ids.value', '=', value))
-
-        products = self.env['product.product'].search(domain)
+        # ignore products that have the same custom values
+        # cannot do it with regular domain search
+        # TODO: possible implement a sql query to improve performance?
+        for p in products:
+            match = True
+            for attr_id, value in custom_values.iteritems():
+                # not searchable attributes cannot be repeated
+                if attr_id not in attr_search_ids:
+                    if (
+                            attr_id in 
+                            p.value_custom_ids.mapped('attribute_id').ids
+                        ):
+                            match = False
+                # searchable attributes need a full match
+                else:
+                    value_id = p.value_custom_ids.filtered(lambda r: (
+                        r.attribute_id.id == int(attr_id) and
+                        r.value == value))
+                    if not value_id:
+                        match = False
+            if not match:
+                products -= p
 
         # At this point, we might have found products with all of the passed
         # in values, but it might have more attributes!  These are NOT
