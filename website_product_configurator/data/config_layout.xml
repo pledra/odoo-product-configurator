@@ -55,10 +55,10 @@
           <input
               type="text"
               t-att-id="cfg_vars['custom_attr_field_prefix'] + str(line.attribute_id.id)"
-              t-att-min="line.attribute_id.min_val"
-              t-att-max="line.attribute_id.max_val"
+              t-att-min="str(line.attribute_id.min_val)"
+              t-att-max="str(line.attribute_id.max_val)"
               t-att-name="cfg_vars['custom_attr_field_prefix'] + str(line.attribute_id.id)"
-              t-att-class="'js_quantity form-control %s' % ' '.join(attr_classes)"
+              t-att-class="'js_quantity form-control ' + ' '.join(attr_classes)"
               t-att-value="custom_value.value"
               t-att-readonly="'readonly' if not custom_value else None"/>
           <span class="input-group-addon">
@@ -80,7 +80,7 @@
         <input type="file"
           t-att-id="cfg_vars['custom_attr_field_prefix'] + str(line.attribute_id.id)"
           t-att-name="cfg_vars['custom_attr_field_prefix'] + str(line.attribute_id.id)"
-          t-att-class="'form-control %s' % ' '.join([cls for cls in attr_classes if cls != 'required' and not custom_value.attachment_ids])"
+          t-att-class="'form-control ' + ' '.join([cls for cls in attr_classes if cls != 'required' and not custom_value.attachment_ids])"
           t-att-readonly="'readonly' if not custom_value else None"
           t-att-multiple="'multiple' if line.multi else ''"/>
       </t>
