@@ -295,7 +295,7 @@ class ProductConfigSession(models.Model):
     def _compute_cfg_price(self):
         for session in self:
             if session.product_tmpl_id:
-                price = session.get_cfg_price()['total']
+                price = session.get_cfg_price()
             else:
                 price = 0.00
             session.price = price
@@ -604,16 +604,13 @@ class ProductConfigSession(models.Model):
         return prices
 
     @api.model
-    def get_cfg_price(self, value_ids=None, custom_vals=None,
-                      pricelist_id=None, formatLang=False):
+    def get_cfg_price(self, value_ids=None, custom_vals=None):
         """ Computes the price of the configured product based on the configuration
             passed in via value_ids and custom_values
 
         :param value_ids: list of attribute value_ids
         :param custom_vals: dictionary of custom attribute values
-        :param pricelist_id: id of pricelist to use for price computation
-        :param formatLang: boolean for formatting price dictionary
-        :returns: dictionary of prices per attribute and total price"""
+        :returns: final configuration price"""
 
         if not value_ids:
             value_ids = self.value_ids.ids
@@ -621,46 +618,18 @@ class ProductConfigSession(models.Model):
         if custom_vals is None:
             custom_vals = {}
 
-        if not pricelist_id:
-            pricelist = self.env.user.partner_id.property_product_pricelist
-            pricelist_id = pricelist.id
-        else:
-            pricelist = self.env['product.pricelist'].browse(pricelist_id)
+        product_tmpl = self.product_tmpl_id
 
-        currency = pricelist.currency_id
+        self = self.with_context({'active_id': product_tmpl.id})
 
-        product = self.product_tmpl_id.with_context({
-            'pricelist': pricelist.id
-        })
+        vals = self.env['product.attribute.value'].browse(value_ids)
 
-        base_prices = product.taxes_id.sudo().compute_all(
-            price_unit=product.price,
-            currency=pricelist.currency_id,
-            quantity=1,
-            product=product,
-            partner=self.env.user.partner_id
-        )
+        price_extra = 0.0
+        for attribute_price in vals.mapped('price_ids'):
+            if attribute_price.product_tmpl_id == product_tmpl:
+                price_extra += attribute_price.price_extra
 
-        total_included = base_prices['total_included']
-        total_excluded = base_prices['total_excluded']
-
-        prices = {
-            'vals': [
-                ('Base', self.product_tmpl_id.name, total_excluded)
-            ],
-            'total': total_included,
-            'taxes': total_included - total_excluded,
-            'currency': currency.name
-        }
-
-        component_prices = self.get_components_prices(
-            prices, pricelist, value_ids
-        )
-        prices.update(component_prices)
-
-        if formatLang:
-            return self.formatPrices(prices)
-        return prices
+        return product_tmpl.list_price + price_extra
 
     def get_config_image(
             self, value_ids=None, custom_vals=None, size=None):

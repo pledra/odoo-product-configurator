@@ -240,11 +240,15 @@ class ProductConfigurator(models.TransientModel):
             lambda v: v.attribute_id.id not in view_attribute_ids
         )
 
-        # Combine database values with wizard values
+        # Combine database values with wizard values_available
         cfg_val_ids = cfg_vals.ids + list(view_val_ids)
 
         domains = self.get_onchange_domains(values, cfg_val_ids)
         vals = self.get_form_vals(dynamic_fields, domains)
+        vals.update({
+            'price': self.config_session_id.get_cfg_price(cfg_val_ids),
+            'value_ids': [(6, 0, cfg_val_ids)]
+        })
         return {'value': vals, 'domain': domains}
 
     config_session_id = fields.Many2one(
@@ -557,7 +561,11 @@ class ProductConfigurator(models.TransientModel):
                 on_change="onchange_attribute_value(%s, context)" % field_name,
                 default_focus="1" if attr_line == attr_lines[0] else "0",
                 attrs=str(attrs),
-                context="{'show_attribute': False}",
+                context=str({
+                    'show_attribute': False,
+                    'show_price_extra': True,
+                    'active_id': wiz.product_tmpl_id.id
+                }),
                 options=str({
                     'no_create': True,
                     'no_create_edit': True,
@@ -680,7 +688,9 @@ class ProductConfigurator(models.TransientModel):
                 })
             vals = attr_line.value_ids.filtered(
                 lambda v: v in self.value_ids).with_context({
-                    'show_attribute': False
+                    'show_attribute': False,
+                    'show_price_extra': True,
+                    'active_id': self.product_tmpl_id.id
                 })
 
             if not attr_line.custom and not vals:

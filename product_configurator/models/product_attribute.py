@@ -207,6 +207,25 @@ class ProductAttributeValue(models.Model):
         string="Attribute Lines"
     )
 
+    @api.multi
+    def name_get(self):
+        res = super(ProductAttributeValue, self).name_get()
+        if not self._context.get('show_price_extra'):
+            return res
+
+        extra_prices = {
+            av.id: av.price_extra for av in self if av.price_extra
+        }
+
+        res_prices = []
+
+        for val in res:
+            price_extra = extra_prices.get(val[0])
+            if price_extra:
+                val = (val[0], '%s ( +%s )' % (val[1], price_extra))
+            res_prices.append(val)
+        return res_prices
+
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
         """Use name_search as a domain restriction for the frontend to show
