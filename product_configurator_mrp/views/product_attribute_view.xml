@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="product_attribute_value_form_view_mrp" model="ir.ui.view">
-        <field name="name">product.configurator.mrp.attribute.value.form</field>
+    <record id="product_config_session_tree_view" model="ir.ui.view">
+        <field name="name">product.config.mrp.attribute.tree</field>
         <field name="model">product.attribute.value</field>
-        <field name="inherit_id" ref="product_configurator.product_attribute_value_form_view"/>
+        <field name="inherit_id" ref="product.product_attribute_value_view_tree"/>
         <field name="arch" type="xml">
-
-            <xpath expr="//field[@name='product_id']" position="after">
-                <field name="quantity" attrs="{'readonly': [('product_id', '=', False)]}" force_save="1"/>
+            <xpath expr="//field[@name='price_extra']" position="before">
+                <field name="weight_extra"/>
             </xpath>
         </field>
     </record>

@@ -1,6 +1,6 @@
 {
     'name': 'Product Configurator Manufacturing',
-    'version': '11.0.1.0.5',
+    'version': '11.0.1.0.6',
     'category': 'Manufacturing',
     'summary': 'BOM Support for configurable products',
     'author': 'Pledra',
@@ -10,8 +10,10 @@
     "data": [
         'security/configurator_security.xml',
         'security/ir.model.access.csv',
-        'views/product_attribute_view.xml',
         'views/mrp_view.xml',
+        'views/product_view.xml',
+        'views/product_attribute_view.xml',
+        'wizard/product_configurator_view.xml',
     ],
     'demo': [
         'demo/product_template.xml'

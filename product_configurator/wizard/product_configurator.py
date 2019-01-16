@@ -152,7 +152,18 @@ class ProductConfigurator(models.TransientModel):
                     continue
         return domains
 
-    def get_form_vals(self, dynamic_fields, domains):
+    def get_onchange_vals(self, cfg_val_ids):
+        """Onchange hook to add / modify returned values by onchange method"""
+        product_img = self.config_session_id.get_config_image(cfg_val_ids)
+        price = self.config_session_id.get_cfg_price(cfg_val_ids)
+
+        return {
+            'product_img': product_img,
+            'value_ids': cfg_val_ids,
+            'price': price
+        }
+
+    def get_form_vals(self, dynamic_fields, domains, cfg_val_ids=None):
         """Generate a dictionary to return new values via onchange method.
         Domains hold the values available, this method enforces these values
         if a selection exists in the view that is not available anymore.
@@ -179,10 +190,9 @@ class ProductConfigurator(models.TransientModel):
                 dynamic_fields.update({k: None})
                 vals[k] = None
 
-        product_img = self.config_session_id.get_config_image(
-            dynamic_fields.values())
+        final_cfg_val_ids = list(dynamic_fields.values())
 
-        vals.update(product_img=product_img)
+        vals.update(self.get_onchange_vals(final_cfg_val_ids))
 
         return vals
 
@@ -245,10 +255,6 @@ class ProductConfigurator(models.TransientModel):
 
         domains = self.get_onchange_domains(values, cfg_val_ids)
         vals = self.get_form_vals(dynamic_fields, domains)
-        vals.update({
-            'price': self.config_session_id.get_cfg_price(cfg_val_ids),
-            'value_ids': [(6, 0, cfg_val_ids)]
-        })
         return {'value': vals, 'domain': domains}
 
     config_session_id = fields.Many2one(

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_configurator_form_inherit" model="ir.ui.view">
+        <field name="name">product.configurator.mrp.inherit</field>
+        <field name="model">product.configurator</field>
+        <field name="inherit_id" ref="product_configurator.product_configurator_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price']" position="before">
+                <field name="weight"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

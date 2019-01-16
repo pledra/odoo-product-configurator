@@ -15,6 +15,17 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    @api.one
+    @api.depends('product_variant_ids.product_tmpl_id')
+    def _compute_product_variant_count(self):
+        """For configurable products return the number of variants configured or 1
+        as many views and methods trigger only when a template has at least one
+        variant attached. Since we create them from the template we should have
+        access to them always"""
+        super(ProductTemplate, self)._compute_product_variant_count()
+        if self.config_ok and not self.product_variant_count:
+            self.product_variant_count = 1
+
     @api.multi
     @api.depends('attribute_line_ids.value_ids')
     def _compute_template_attr_vals(self):
@@ -23,10 +34,7 @@ class ProductTemplate(models.Model):
             product_tmpl.attribute_line_val_ids = value_ids
 
     @api.multi
-    @api.constrains(
-        'attribute_line_ids',
-        'attribute_value_line_ids',
-    )
+    @api.constrains('attribute_line_ids', 'attribute_value_line_ids')
     def check_attr_value_ids(self):
         for product_tmpl in self:
             attr_val_lines = product_tmpl.attribute_value_line_ids
