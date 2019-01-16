@@ -268,6 +268,23 @@ class ProductProduct(models.Model):
                     self.display_name)
         return self.display_name
 
+    @api.depends('attribute_value_ids.price_ids.weight_extra',
+                 'attribute_value_ids.price_ids.product_tmpl_id')
+    def _compute_product_weight_extra(self):
+        for product in self:
+            weight_extra = 0.0
+            attr_prices = product.mapped('attribute_value_ids.price_ids')
+            for attribute_price in attr_prices:
+                if attribute_price.product_tmpl_id == product.product_tmpl_id:
+                    weight_extra += attribute_price.weight_extra
+            product.weight_extra = weight_extra
+
+    @api.depends('product_tmpl_id.weight', 'weight_extra')
+    def _compute_product_weight(self):
+        for product in self:
+            tmpl_weight = product.product_tmpl_id.weight
+            product.weight = tmpl_weight + product.weight_extra
+
     config_name = fields.Char(
         string="Name",
         size=256,
@@ -285,6 +302,12 @@ class ProductProduct(models.Model):
         help="This is the sum of the extra price of all attributes",
         digits=dp.get_precision('Product Price')
     )
+    weight_extra = fields.Float(
+        string='Weight Extra',
+        compute='_compute_product_weight_extra'
+    )
+
+    weight = fields.Float(compute='_compute_product_weight')
 
     @api.multi
     def get_product_attribute_values_action(self):
