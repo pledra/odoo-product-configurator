@@ -93,6 +93,17 @@
 
     <!-- Product Attribute Value -->
 
+    <record id="product_attribute_value_view_tree" model="ir.ui.view">
+        <field name="name">product.config.attribute.value.tree.view</field>
+        <field name="model">product.attribute.value</field>
+        <field name="inherit_id" ref="product.product_attribute_value_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_extra']" position="before">
+                <field name="weight_extra"/>
+            </xpath>
+        </field>
+    </record>
+
     <record id="product_attribute_value_tree_view" model="ir.ui.view">
         <field name="name">product.config.attribute.value.tree</field>
         <field name="model">product.attribute.value</field>
@@ -103,6 +114,7 @@
             </xpath>
         </field>
     </record>
+
 
     <record model="ir.ui.view" id="product_attribute_value_form_view">
         <field name="name">product.config.product.attribute.value.form.view</field>

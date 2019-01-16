@@ -156,11 +156,13 @@ class ProductConfigurator(models.TransientModel):
         """Onchange hook to add / modify returned values by onchange method"""
         product_img = self.config_session_id.get_config_image(cfg_val_ids)
         price = self.config_session_id.get_cfg_price(cfg_val_ids)
+        weight = self.config_session_id.get_cfg_weight(value_ids=cfg_val_ids)
 
         return {
             'product_img': product_img,
             'value_ids': cfg_val_ids,
-            'price': price
+            'weight': weight,
+            'price': price,
         }
 
     def get_form_vals(self, dynamic_fields, domains, cfg_val_ids=None):

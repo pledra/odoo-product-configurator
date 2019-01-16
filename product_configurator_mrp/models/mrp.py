@@ -1,5 +1,4 @@
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models
 
 
 class MrpProduction(models.Model):
@@ -44,7 +43,7 @@ class MrpBomLine(models.Model):
             return False
 
         product_value_ids = set(product.attribute_value_ids.ids)
-        
+
         for config in self.config_set_id.configuration_ids:
             if len(set(config.value_ids.ids) - product_value_ids) == 0:
                 return False

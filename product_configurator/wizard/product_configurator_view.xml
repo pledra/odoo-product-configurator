@@ -32,6 +32,7 @@
                             </field>
                         </group>
                         <group colspan="1">
+                            <field name="weight"/>
                             <field name="price" widget="monetary"/>
                         </group>
                     </group>
