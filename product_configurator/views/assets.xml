@@ -6,6 +6,7 @@
             <link href="/product_configurator/static/css/style.css" rel="stylesheet"/>
             <script type="text/javascript" src="/product_configurator/static/js/form_widgets.js"/>
             <script type="text/javascript" src="/product_configurator/static/js/data_manager.js"/>
+            <script type="text/javascript" src="/product_configurator/static/js/relational_fields.js"/>
         </xpath>
     </template>
 
