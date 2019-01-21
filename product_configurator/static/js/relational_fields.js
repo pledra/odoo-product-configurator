@@ -8,7 +8,7 @@ odoo.define('product_configurator.FieldStatus', function (require) {
 
         /* Prase input as string in order to have a clickable statusbar*/
         _onClickStage: function (e) {
-            if (this.model == 'product.configurator') {
+            if ( this.model.startsWith('product.configurator') ) {
                 this._setValue(String($(e.currentTarget).data("value")));
             }
             else {
