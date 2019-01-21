@@ -120,7 +120,7 @@ class ProductTemplate(models.Model):
         # TODO: Remove if cond when PR with raise error on github is merged
         cfg_session_obj = self.env['product.config.session']
         valid_conf = cfg_session_obj.validate_configuration(
-            value_ids=default_val_ids, final=False
+            value_ids=default_val_ids, product_tmpl_id=self.id, final=False
         )
         if not valid_conf:
             raise ValidationError(

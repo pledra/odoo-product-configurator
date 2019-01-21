@@ -540,7 +540,9 @@ class ProductConfigSession(models.Model):
             if value_ids:
                 default_val_ids += value_ids[0][2]
             valid_conf = self.validate_configuration(
-                value_ids=default_val_ids, final=False)
+                value_ids=default_val_ids, final=False,
+                product_tmpl_id=product_tmpl.id
+            )
             # TODO: Remove if cond when PR with raise error on github is merged
             if not valid_conf:
                 raise ValidationError(
@@ -919,7 +921,8 @@ class ProductConfigSession(models.Model):
 
     @api.model
     def values_available(
-            self, check_val_ids, value_ids=None, custom_vals=None):
+            self, check_val_ids, value_ids=None,
+            custom_vals=None, product_tmpl_id=None):
         """Determines whether the attr_values from the product_template
         are available for selection given the configuration ids and the
         dependencies set on the product template
@@ -932,6 +935,13 @@ class ProductConfigSession(models.Model):
         :returns: list of available attribute values
         """
 
+        if not self.product_tmpl_id:
+            product_tmpl = self.env['product.template'].browse(product_tmpl_id)
+        else:
+            product_tmpl = self.product_tmpl_id
+
+        product_tmpl.ensure_one()
+
         if not value_ids:
             value_ids = self.value_ids.ids
 
@@ -941,7 +951,7 @@ class ProductConfigSession(models.Model):
         avail_val_ids = []
         for attr_val_id in check_val_ids:
 
-            config_lines = self.product_tmpl_id.config_line_ids.filtered(
+            config_lines = product_tmpl.config_line_ids.filtered(
                 lambda l: attr_val_id in l.value_ids.ids
             )
             domains = config_lines.mapped('domain_id').compute_domain()
@@ -978,6 +988,8 @@ class ProductConfigSession(models.Model):
         else:
             product_tmpl = self.product_tmpl_id
 
+        product_tmpl.ensure_one()
+
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
 
@@ -994,7 +1006,9 @@ class ProductConfigSession(models.Model):
                     return False
 
         # Check if all all the values passed are not restricted
-        avail_val_ids = self.values_available(value_ids, value_ids)
+        avail_val_ids = self.values_available(
+            value_ids, value_ids, product_tmpl_id=product_tmpl_id
+        )
         if set(value_ids) - set(avail_val_ids):
             return False
 
