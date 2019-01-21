@@ -569,9 +569,11 @@ class ProductConfigSession(models.Model):
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
 
-        valid = self.validate_configuration()
-        if not valid:
-            raise ValidationError(_('Invalid Configuration'))
+        # Temporarily removed
+
+        # valid = self.validate_configuration()
+        # if not valid:
+        #     raise ValidationError(_('Invalid Configuration'))
 
         duplicates = self.search_variant(
             value_ids=value_ids, custom_vals=custom_vals)
