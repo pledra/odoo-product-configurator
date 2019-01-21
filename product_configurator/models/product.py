@@ -111,7 +111,7 @@ class ProductTemplate(models.Model):
         return action
 
     @api.multi
-    @api.constrains('attribute_line_ids')
+    @api.constrains('attribute_line_ids', 'attribute_line_ids.default_val')
     def _check_default_values(self):
         """Validate default values set on the product template"""
         default_val_ids = self.attribute_line_ids.filtered(
