@@ -160,7 +160,7 @@ class ProductConfigurator(models.TransientModel):
 
         return {
             'product_img': product_img,
-            'value_ids': cfg_val_ids,
+            'value_ids': [(6, 0, cfg_val_ids)],
             'weight': weight,
             'price': price,
         }

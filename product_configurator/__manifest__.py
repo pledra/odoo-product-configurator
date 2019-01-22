@@ -1,6 +1,6 @@
 {
     'name': 'Product Configurator',
-    'version': '11.0.1.0.11',
+    'version': '11.0.1.0.12',
     'category': 'Generic Modules/Base',
     'summary': 'Base for product configuration interface modules',
     'author': 'Pledra',
