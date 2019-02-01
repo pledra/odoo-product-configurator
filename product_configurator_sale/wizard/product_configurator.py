@@ -19,13 +19,11 @@ class ProductConfiguratorSale(models.TransientModel):
     def _get_order_line_vals(self, product_id):
         """ Hook to allow custom line values to be put on the newly
         created or edited lines."""
-        product = self.env['product.product'].browse(product_id)
 
-        return {
+        return self.order_line_id._prepare_add_missing_fields({
             'product_id': product_id,
-            'name': product._get_mako_tmpl_name(),
-            'product_uom': product.uom_id.id,
-        }
+            'order_id': self.order_id.id
+        })
 
     @api.multi
     def action_config_done(self):
