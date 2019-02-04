@@ -20,10 +20,14 @@ class ProductConfiguratorSale(models.TransientModel):
         """ Hook to allow custom line values to be put on the newly
         created or edited lines."""
 
-        return self.order_line_id._prepare_add_missing_fields({
+        line_vals = {
             'product_id': product_id,
             'order_id': self.order_id.id
-        })
+        }
+
+        extra_vals = self.order_line_id._prepare_add_missing_fields(line_vals)
+        line_vals.update(extra_vals)
+        return line_vals
 
     @api.multi
     def action_config_done(self):
