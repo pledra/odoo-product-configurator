@@ -121,6 +121,19 @@
                     </field> -->
                 </page>
             </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="invisible">context.get('default_config_ok')</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="config_name" placeholder="Product Name" invisible="not context.get('default_config_ok')"/>
+            </xpath>
+            <xpath expr="//label[@for='name']" position="attributes">
+                <attribute name="invisible">context.get('default_config_ok')</attribute>
+            </xpath>
+            <xpath expr="//label[@for='name']" position="after">
+                <label class="oe_edit_only" for="config_name" string="Product Name" invisible="not context.get('default_config_ok')"/>
+            </xpath>
+
         </field>
     </record>
 
