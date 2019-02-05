@@ -3,7 +3,6 @@
 from odoo.tools.misc import formatLang
 from odoo.exceptions import ValidationError
 from odoo import models, fields, api, tools, _
-from lxml import etree
 
 
 class ProductTemplate(models.Model):
@@ -621,33 +620,6 @@ class ProductProduct(models.Model):
     _constraints = [
         (_check_attribute_value_ids, None, ['attribute_value_ids'])
     ]
-
-    @api.model
-    def fields_view_get(self, view_id=None, view_type='form',
-                        toolbar=False, submenu=False):
-        """ For configurable products switch the name field with the config_name
-            so as to keep the view intact in whatever form it is at the moment
-            of execution and not duplicate the original just for the sole
-            purpose of displaying the proper name"""
-        res = super(ProductProduct, self).fields_view_get(
-            view_id=view_id, view_type=view_type,
-            toolbar=toolbar, submenu=submenu
-        )
-        if self.env.context.get('default_config_ok'):
-            xml_view = etree.fromstring(res['arch'])
-            xml_name = xml_view.xpath("//field[@name='name']")
-            xml_label = xml_view.xpath("//label[@for='name']")
-            if xml_name:
-                xml_name[0].attrib['name'] = 'config_name'
-                if xml_label:
-                    xml_label[0].attrib['for'] = 'config_name'
-                view_obj = self.env['ir.ui.view']
-                xarch, xfields = view_obj.postprocess_and_fields(self._name,
-                                                                 xml_view,
-                                                                 view_id)
-                res['arch'] = xarch
-                res['fields'] = xfields
-        return res
 
     # TODO: Implement naming method for configured products
     # TODO: Provide a field with custom name in it that defaults to a name
