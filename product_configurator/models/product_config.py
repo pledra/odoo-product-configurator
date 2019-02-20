@@ -591,9 +591,16 @@ class ProductConfigSession(models.Model):
             return duplicates[:1]
 
         vals = self.get_variant_vals(value_ids, custom_vals)
-        variant = self.env['product.product'].create(vals)
 
-        # TODO: Find a better way to locate the session (could be subsession)
+        product_obj = self.env['product.product'].sudo().with_context(
+            mail_create_nolog=True
+        )
+        variant = product_obj.sudo().create(vals)
+
+        variant.message_post(
+            body=_('Product created via configuration wizard'),
+            author_id=self.env.user.partner_id.id
+        )
 
         self.action_confirm()
 

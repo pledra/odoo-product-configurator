@@ -949,15 +949,7 @@ class ProductConfigurator(models.TransientModel):
         # In the meantime, at least make sure that a validation
         # error legitimately raised in a nested routine
         # is passed through.
-        try:
-            variant = self.config_session_id.create_get_variant()
-        except ValidationError:
-            raise
-        except Exception:
-            raise ValidationError(
-                _('Invalid configuration! Please check all '
-                  'required steps and fields.')
-            )
+        variant = self.config_session_id.create_get_variant()
         action = {
             'type': 'ir.actions.act_window',
             'res_model': 'product.product',
