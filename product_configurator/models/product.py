@@ -15,6 +15,8 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    attribute_line_ids = fields.One2many('product.attribute.line', 'product_tmpl_id', 'Product Attributes', copy=True)
+
     @api.one
     @api.depends('product_variant_ids.product_tmpl_id')
     def _compute_product_variant_count(self):
@@ -66,13 +68,15 @@ class ProductTemplate(models.Model):
     config_line_ids = fields.One2many(
         comodel_name='product.config.line',
         inverse_name='product_tmpl_id',
-        string="Attribute Dependencies"
+        string="Attribute Dependencies",
+        copy=True
     )
 
     config_image_ids = fields.One2many(
         comodel_name='product.config.image',
         inverse_name='product_tmpl_id',
-        string='Configuration Images'
+        string='Configuration Images',
+        copy=True
     )
 
     attribute_value_line_ids = fields.One2many(
@@ -90,12 +94,14 @@ class ProductTemplate(models.Model):
     config_step_line_ids = fields.One2many(
         comodel_name='product.config.step.line',
         inverse_name='product_tmpl_id',
-        string='Configuration Lines'
+        string='Configuration Lines',
+        copy=True
     )
 
     mako_tmpl_name = fields.Text(
         string='Variant name',
-        help="Generate Name based on Mako Template"
+        help="Generate Name based on Mako Template",
+        copy=True
     )
 
     @api.multi
