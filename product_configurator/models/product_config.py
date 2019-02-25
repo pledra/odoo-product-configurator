@@ -358,6 +358,7 @@ class ProductConfigSession(models.Model):
 
         self = self.with_context({'active_id': product_tmpl.id})
 
+        value_ids = self.flatten_val_ids(value_ids)
         vals = self.env['product.attribute.value'].browse(value_ids)
 
         weight_extra = 0.0
@@ -668,6 +669,7 @@ class ProductConfigSession(models.Model):
 
         self = self.with_context({'active_id': product_tmpl.id})
 
+        value_ids = self.flatten_val_ids(value_ids)
         vals = self.env['product.attribute.value'].browse(value_ids)
 
         price_extra = 0.0
