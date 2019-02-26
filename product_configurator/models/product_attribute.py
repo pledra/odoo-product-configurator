@@ -293,7 +293,7 @@ class ProductAttributeValue(models.Model):
             if preset_val_ids:
                 val_ids -= set(arg[2])
             val_ids = self.env['product.config.session'].values_available(
-                val_ids, preset_val_ids)
+                val_ids, preset_val_ids, product_tmpl_id=product_tmpl_id)
             new_args.append(('id', 'in', val_ids))
             mono_tmpl_lines = product_tmpl.attribute_line_ids.filtered(
                 lambda l: not l.multi)
@@ -307,7 +307,6 @@ class ProductAttributeValue(models.Model):
         res = super(ProductAttributeValue, self).name_search(
             name=name, args=args, operator=operator, limit=limit)
         return res
-
 
     # TODO: Prevent unlinking custom options by overriding unlink
 

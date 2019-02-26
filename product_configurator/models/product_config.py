@@ -226,7 +226,9 @@ class ProductConfigImage(models.Model):
         cfg_session_obj = self.env['product.config.session']
         for cfg_img in self:
             valid = cfg_session_obj.validate_configuration(
-                value_ids=cfg_img.value_ids.ids, final=False)
+                value_ids=cfg_img.value_ids.ids,
+                product_tmpl_id=self.product_tmpl_id.id,
+                final=False)
             if not valid:
                 raise ValidationError(
                     _("Values entered for line '%s' generate "
