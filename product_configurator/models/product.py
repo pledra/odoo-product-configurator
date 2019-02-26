@@ -15,8 +15,6 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    attribute_line_ids = fields.One2many('product.attribute.line', 'product_tmpl_id', 'Product Attributes', copy=True)
-
     @api.one
     @api.depends('product_variant_ids.product_tmpl_id')
     def _compute_product_variant_count(self):
@@ -103,6 +101,9 @@ class ProductTemplate(models.Model):
         help="Generate Name based on Mako Template",
         copy=True
     )
+    
+    # Copy attribute-lines with product template
+    attribute_line_ids = fields.One2many(copy=True)
 
     @api.multi
     def get_product_attribute_values_action(self):
