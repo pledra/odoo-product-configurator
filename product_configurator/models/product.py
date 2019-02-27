@@ -39,6 +39,7 @@ class ProductTemplate(models.Model):
         for product_tmpl in self:
             attr_val_lines = product_tmpl.attribute_value_line_ids
             attr_val_ids = attr_val_lines.mapped('value_ids')
+            print("$$$$$$$$$$$$$$$$$$$$$$ ",attr_val_lines, attr_val_ids, product_tmpl.attribute_line_val_ids)
             if not attr_val_ids <= product_tmpl.attribute_line_val_ids:
                 raise ValidationError(
                     _("All attribute values used in attribute value lines "
@@ -67,7 +68,7 @@ class ProductTemplate(models.Model):
         comodel_name='product.config.line',
         inverse_name='product_tmpl_id',
         string="Attribute Dependencies",
-        copy=True
+        copy=False
     )
 
     config_image_ids = fields.One2many(
@@ -80,7 +81,8 @@ class ProductTemplate(models.Model):
     attribute_value_line_ids = fields.One2many(
         comodel_name='product.attribute.value.line',
         inverse_name='product_tmpl_id',
-        string="Attribute Value Lines"
+        string="Attribute Value Lines",
+        copy=True
     )
 
     attribute_line_val_ids = fields.Many2many(
@@ -93,7 +95,7 @@ class ProductTemplate(models.Model):
         comodel_name='product.config.step.line',
         inverse_name='product_tmpl_id',
         string='Configuration Lines',
-        copy=True
+        copy=False
     )
 
     mako_tmpl_name = fields.Text(
@@ -101,9 +103,6 @@ class ProductTemplate(models.Model):
         help="Generate Name based on Mako Template",
         copy=True
     )
-    
-    # Copy attribute-lines with product template
-    attribute_line_ids = fields.One2many(copy=True)
 
     @api.multi
     def get_product_attribute_values_action(self):
@@ -172,8 +171,42 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def copy(self, default=None):
-        res = super(ProductTemplate, self).copy(default=default)
-        return res
+        new_products = self.env['product.template']
+        for product in self:
+            res = super(ProductTemplate, self).copy(default=default)
+
+            print(res.id)
+            # default = {'product_tmpl_id': res.id}
+            attribute_line_dict = {}
+            print("self.attribute_line_ids ",self.attribute_line_ids, self.config_line_ids)
+            for line in self.attribute_line_ids:
+                default = {'product_tmpl_id': res.id}
+                new_line = line.copy(default)
+                attribute_line_dict.update({line.id: new_line.id})
+
+            print("Qqqqqqqqqqqqqqqqqqqqqqq",attribute_line_dict)
+
+            for line in self.config_line_ids:
+                old_restriction = line.domain_id
+                new_restriction = old_restriction.copy()
+                default = {'product_tmpl_id': res.id, 'domain_id': new_restriction.id}
+                new_attribute_line_id = attribute_line_dict.get(line.id, False)
+                if new_attribute_line_id:
+                    default.update({'attribute_line_id': new_attribute_line_id})
+                line.copy(default)
+
+            for line in self.config_step_line_ids:
+                default = {'product_tmpl_id': res.id}
+                new_attribute_line_ids = [
+                    attribute_line_dict.get(old_attr_line.id)
+                    for old_attr_line in line.attribute_line_ids
+                ]
+                if new_attribute_line_ids:
+                    default.update({'attribute_line_ids': [(6, 0, new_attribute_line_ids)]})
+                line.copy(default)
+
+            new_products += res
+        return new_products
 
     @api.multi
     def configure_product(self):
