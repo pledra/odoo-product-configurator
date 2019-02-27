@@ -297,7 +297,15 @@ class ProductConfigurator(models.TransientModel):
         default='select',
         string='State',
     )
-
+    
+    @api.onchange('state')
+    def _onchange_state(self):
+    	print ("RRRRRRRRRRRRRRRRRRRRRRR ", self.value_ids)
+    	print("config_session_id ",self.config_session_id, self._origin, self._origin.config_session_id)
+    	
+    	self._origin.config_session_id.value_ids = self.value_ids
+    	
+    	
     @api.model
     def get_field_default_attrs(self):
 
