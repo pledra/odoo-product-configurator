@@ -143,6 +143,14 @@
                 <attribute name="attrs">{'invisible': [('config_ok','=',True)]}</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='weight']" position="attributes">
+                <attribute name="attrs">{'invisible': [('config_ok','=',True)]}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='weight']" position="after">
+                <field name="weight_dummy" attrs="{'invisible': [('config_ok','=',False)]}"/>
+            </xpath>
+
         </field>
     </record>
 
