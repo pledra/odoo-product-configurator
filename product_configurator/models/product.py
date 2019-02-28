@@ -97,6 +97,9 @@ class ProductTemplate(models.Model):
         string='Variant name',
         help="Generate Name based on Mako Template"
     )
+    # We are calculating weight of variants based on weight of
+    # product-template so that no need of compute and inverse on this
+    weight = fields.Float(compute=False, inverse=False)
 
     @api.multi
     def get_product_attribute_values_action(self):
