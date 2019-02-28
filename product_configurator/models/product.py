@@ -99,7 +99,32 @@ class ProductTemplate(models.Model):
     )
     # We are calculating weight of variants based on weight of
     # product-template so that no need of compute and inverse on this
-    weight = fields.Float(compute=False, inverse=False)
+    weight = fields.Float(
+        compute='_compute_weight',
+        inverse='_set_weight'
+    )
+    weight_dummy = fields.Float(
+        string='Weight',
+        digits=dp.get_precision('Stock Weight'),
+        help="The weight of the contents in Kg, not\
+        including any packaging, etc.",
+    )
+
+    @api.depends('product_variant_ids', 'product_variant_ids.weight')
+    def _compute_weight(self):
+        config_products = self.filtered(
+            lambda template: template.config_ok)
+        for product in config_products:
+            product.weight = product.weight_dummy
+        standard_products = self - config_products
+        super(ProductTemplate, standard_products)._compute_weight()
+
+    @api.one
+    def _set_weight(self):
+        if self.config_ok:
+            return
+        else:
+            super(ProductTemplate, self)._set_weight()
 
     @api.multi
     def get_product_attribute_values_action(self):
