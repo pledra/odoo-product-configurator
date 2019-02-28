@@ -101,9 +101,6 @@ class ProductTemplate(models.Model):
         help="Generate Name based on Mako Template",
         copy=True
     )
-    
-    # Copy attribute-lines with product template
-    attribute_line_ids = fields.One2many(copy=True)
 
     @api.multi
     def get_product_attribute_values_action(self):
