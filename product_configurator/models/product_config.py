@@ -59,7 +59,8 @@ class ProductConfigDomain(models.Model):
         comodel_name='product.config.domain.line',
         inverse_name='domain_id',
         string='Restrictions',
-        required=True
+        required=True,
+        copy=True
     )
     implied_ids = fields.Many2many(
         comodel_name='product.config.domain',

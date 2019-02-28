@@ -205,7 +205,8 @@ class ProductTemplate(models.Model):
         for line in self.config_step_line_ids:
             new_attribute_line_ids = [
                 attribute_line_dict.get(old_attr_line.id)
-                for old_attr_line in line.attribute_line_ids
+                for old_attr_line in line.attribute_line_ids 
+                if old_attr_line.id in attribute_line_dict
             ]
             if new_attribute_line_ids:
                 config_step_line_default.update({
