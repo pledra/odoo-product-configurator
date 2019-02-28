@@ -37,6 +37,8 @@ class ProductTemplate(models.Model):
     @api.constrains('attribute_line_ids', 'attribute_value_line_ids')
     def check_attr_value_ids(self):
         for product_tmpl in self:
+            if not product_tmpl.env.context.get('check_constraint', True):
+                continue
             attr_val_lines = product_tmpl.attribute_value_line_ids
             attr_val_ids = attr_val_lines.mapped('value_ids')
             if not attr_val_ids <= product_tmpl.attribute_line_val_ids:
@@ -66,19 +68,22 @@ class ProductTemplate(models.Model):
     config_line_ids = fields.One2many(
         comodel_name='product.config.line',
         inverse_name='product_tmpl_id',
-        string="Attribute Dependencies"
+        string="Attribute Dependencies",
+        copy=False
     )
 
     config_image_ids = fields.One2many(
         comodel_name='product.config.image',
         inverse_name='product_tmpl_id',
-        string='Configuration Images'
+        string='Configuration Images',
+        copy=True
     )
 
     attribute_value_line_ids = fields.One2many(
         comodel_name='product.attribute.value.line',
         inverse_name='product_tmpl_id',
-        string="Attribute Value Lines"
+        string="Attribute Value Lines",
+        copy=True
     )
 
     attribute_line_val_ids = fields.Many2many(
@@ -90,12 +95,14 @@ class ProductTemplate(models.Model):
     config_step_line_ids = fields.One2many(
         comodel_name='product.config.step.line',
         inverse_name='product_tmpl_id',
-        string='Configuration Lines'
+        string='Configuration Lines',
+        copy=False
     )
 
     mako_tmpl_name = fields.Text(
         string='Variant name',
-        help="Generate Name based on Mako Template"
+        help="Generate Name based on Mako Template",
+        copy=True
     )
 
     @api.multi
@@ -165,7 +172,47 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def copy(self, default=None):
+        if not default:
+            default = {}
+        new_products = self.env['product.template']
+        self = self.with_context(check_constraint=False)
         res = super(ProductTemplate, self).copy(default=default)
+
+        attribute_line_dict = {}
+        attribute_line_default = {'product_tmpl_id': res.id}
+        for line in self.attribute_line_ids:
+            new_line = line.copy(attribute_line_default)
+            attribute_line_dict.update({line.id: new_line.id})
+
+
+
+        for line in self.config_line_ids:
+            old_restriction = line.domain_id
+            new_restriction = old_restriction.copy()
+            config_line_default = {
+                'product_tmpl_id': res.id,
+                'domain_id': new_restriction.id
+            }
+            new_attribute_line_id = attribute_line_dict.get(
+                line.attribute_line_id.id, False)
+            if new_attribute_line_id:
+                config_line_default.update({
+                    'attribute_line_id': new_attribute_line_id
+                })
+            line.copy(config_line_default)
+
+        config_step_line_default = {'product_tmpl_id': res.id}
+        for line in self.config_step_line_ids:
+            new_attribute_line_ids = [
+                attribute_line_dict.get(old_attr_line.id)
+                for old_attr_line in line.attribute_line_ids 
+                if old_attr_line.id in attribute_line_dict
+            ]
+            if new_attribute_line_ids:
+                config_step_line_default.update({
+                    'attribute_line_ids': [(6, 0, new_attribute_line_ids)]
+                })
+            line.copy(config_step_line_default)
         return res
 
     @api.multi
