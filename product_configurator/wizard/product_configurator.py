@@ -115,6 +115,11 @@ class ProductConfigurator(models.TransientModel):
                 _('Changing the product template while having an active '
                   'configuration will erase reset/clear all values')
             )
+        if not self.config_session_id and self.product_tmpl_id:
+            session = self.env['product.config.session'].create_get_session(
+                product_tmpl_id=self.product_tmpl_id.id
+            )
+            self.config_session_id = session
 
     def get_onchange_domains(self, values, cfg_val_ids):
         """Generate domains to be returned by onchange method in order
@@ -300,9 +305,10 @@ class ProductConfigurator(models.TransientModel):
     
     @api.onchange('state')
     def _onchange_state(self):
-        self.config_session_id.write({
-            'value_ids': [[6,0, self.value_ids.ids]]
-        })
+        if self.config_session_id:
+            self.config_session_id.write({
+                'value_ids': [[6,0, self.value_ids.ids]]
+            })
 
     @api.model
     def get_field_default_attrs(self):
