@@ -21,6 +21,7 @@
                     <field attrs="{'invisible': [('product_img', '=', False)]}" name="product_img" readonly="1" nolabel="1" widget="image"/>
                     <group col="3">
                         <group name='static_form' colspan="2" states='select'>
+                            <field name="config_session_id" invisible="1"/>
                             <field name="product_id" invisible="1"/>
                             <field name="product_tmpl_id" attrs="{'readonly': [('product_id', '!=', False)]}" required="True" options="{'no_create': True}"/>
                             <field attrs="{'invisible': [('attribute_line_ids', '=', [])]}" name="attribute_line_ids">

@@ -300,12 +300,10 @@ class ProductConfigurator(models.TransientModel):
     
     @api.onchange('state')
     def _onchange_state(self):
-    	print ("RRRRRRRRRRRRRRRRRRRRRRR ", self.value_ids)
-    	print("config_session_id ",self.config_session_id, self._origin, self._origin.config_session_id)
-    	
-    	self._origin.config_session_id.value_ids = self.value_ids
-    	
-    	
+        self.config_session_id.write({
+            'value_ids': [[6,0, self.value_ids.ids]]
+        })
+
     @api.model
     def get_field_default_attrs(self):
 
