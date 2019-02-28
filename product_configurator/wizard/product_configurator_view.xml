@@ -23,7 +23,16 @@
                         <group name='static_form' colspan="2" states='select'>
                             <field name="config_session_id" invisible="1"/>
                             <field name="product_id" invisible="1"/>
-                            <field name="product_tmpl_id" attrs="{'readonly': [('product_id', '!=', False)]}" required="True" options="{'no_create': True}"/>
+                            <!-- Old Code: context is not working with attrs and we can remove condition as
+                            first stage 'select' is not visible while recofiguration-->
+                            <!-- <field name="product_tmpl_id"
+                                attrs="{'readonly': [('product_id', '!=', False)]}"
+                                required="True" options="{'no_create': True}"/> -->
+                            <field name="product_tmpl_id"
+                                readonly="context.get('product_tmpl_id_readonly', False)"
+                                required="True" options="{'no_create': True}"/>
+                            <field name="product_preset" invisible="context.get('wizard_id')" options="{'no_create': True}"/>
+                            <label string="To reset/change the Preset Please close and start the configuration again"  invisible="not context.get('wizard_id')" colspan="4"/>
                             <field attrs="{'invisible': [('attribute_line_ids', '=', [])]}" name="attribute_line_ids">
                                 <tree>
                                     <field name="attribute_id"/>
@@ -39,7 +48,7 @@
                     </group>
                 </sheet>
                 <footer>
-                    <field name="value_ids" readonly="1" invisible="1"/>
+                    <field name="value_ids" readonly="1" force_save="1" invisible="1"/>
                     <button type="object" name="action_previous_step" attrs="{'invisible': [('state','=','select')]}" string="Back" special="no_save"/>
                     <button type="object" name="action_next_step" class="oe_highlight" string="Next"/>
                 </footer>

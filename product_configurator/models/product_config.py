@@ -425,6 +425,12 @@ class ProductConfigSession(models.Model):
         string="Weight",
         compute="_compute_cfg_weight"
     )
+    # Product preset
+    product_preset = fields.Many2one(
+        comodel_name='product.product',
+        string='Preset',
+        domain="[('product_tmpl_id', '=', product_tmpl_id)]"
+    )
 
     @api.multi
     def action_confirm(self):
@@ -519,6 +525,7 @@ class ProductConfigSession(models.Model):
     def write(self, vals):
         """Validate configuration when writing new values to session"""
         # TODO: Issue warning when writing to value_ids or custom_val_ids
+
         res = super(ProductConfigSession, self).write(vals)
         value_ids = self.value_ids.ids
         avail_val_ids = self.values_available(value_ids)
