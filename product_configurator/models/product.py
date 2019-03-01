@@ -314,8 +314,11 @@ class ProductProduct(models.Model):
         string='Weight Extra',
         compute='_compute_product_weight_extra'
     )
-
     weight = fields.Float(compute='_compute_product_weight')
+
+    # product preset
+    config_preset_ok = fields.Boolean(
+        string="Is Preset")
 
     @api.multi
     def get_product_attribute_values_action(self):

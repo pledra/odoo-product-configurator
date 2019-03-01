@@ -429,7 +429,8 @@ class ProductConfigSession(models.Model):
     product_preset = fields.Many2one(
         comodel_name='product.product',
         string='Preset',
-        domain="[('product_tmpl_id', '=', product_tmpl_id)]"
+        domain="[('product_tmpl_id', '=', product_tmpl_id),\
+            ('config_preset_ok', '=', True)]"
     )
 
     @api.multi
