@@ -3,7 +3,7 @@ from lxml import etree
 from odoo.osv import orm
 from odoo.addons.base.ir.ir_model import FIELD_TYPES
 
-from odoo import models, fields, api, _
+from odoo import models, fields, tools, api, _
 from odoo.exceptions import Warning, ValidationError
 
 
@@ -195,6 +195,11 @@ class ProductConfigurator(models.TransientModel):
         final_cfg_val_ids = list(dynamic_fields.values())
 
         vals.update(self.get_onchange_vals(final_cfg_val_ids))
+        # To solve the Multi selection problem removing extra []
+        if 'value_ids' in vals:
+            val_ids = vals['value_ids'][0]
+            vals['value_ids'] = [[val_ids[0], val_ids[1],
+                                 tools.flatten(val_ids[2])]]
 
         return vals
 
@@ -297,12 +302,12 @@ class ProductConfigurator(models.TransientModel):
         default='select',
         string='State',
     )
-    
+
     @api.onchange('state')
     def _onchange_state(self):
         if self.config_session_id:
             self.config_session_id.write({
-                'value_ids': [[6,0, self.value_ids.ids]]
+                'value_ids': [[6, 0, self.value_ids.ids]]
             })
 
     @api.model
