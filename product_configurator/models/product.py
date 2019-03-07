@@ -203,7 +203,6 @@ class ProductTemplate(models.Model):
     def copy(self, default=None):
         if not default:
             default = {}
-        new_products = self.env['product.template']
         self = self.with_context(check_constraint=False)
         res = super(ProductTemplate, self).copy(default=default)
 
@@ -212,8 +211,6 @@ class ProductTemplate(models.Model):
         for line in self.attribute_line_ids:
             new_line = line.copy(attribute_line_default)
             attribute_line_dict.update({line.id: new_line.id})
-
-
 
         for line in self.config_line_ids:
             old_restriction = line.domain_id

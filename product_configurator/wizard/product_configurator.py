@@ -951,6 +951,61 @@ class ProductConfigurator(models.TransientModel):
         }
         return action
 
+    def get_wizard_action(self, view_cache=False, wizard=None):
+        """Return action of wizard
+        :param view_cache: Boolean (True/False)
+        :param wizard: recordset of product.configurator
+        :returns : dictionary
+        """
+        if not wizard:
+            wizard = self
+        wizard_action = {
+            'type': 'ir.actions.act_window',
+            'res_model': wizard._name,
+            'name': 'Configure Product',
+            'view_mode': 'form',
+            'context': dict(
+                wizard.env.context,
+                wizard_id=wizard.id,
+                view_cache=view_cache,
+            ),
+            'target': 'new',
+            'res_id': wizard.id,
+        }
+        return wizard_action
+
+    def open_step(self, step):
+        """Open wizard step 'step'
+        :param step: recordset of product.config.step.line
+        """
+        wizard_action = self.get_wizard_action()
+        self.state = str(step.id)
+        self.config_session_id.config_step = str(step.id)
+        return wizard_action
+
+    def check_and_open_incomplete_step(self, value_ids=None):
+        """ Check and open incomplete step if any
+        :param value_ids: recordset of product.attribute.value
+        """
+        if not value_ids:
+            value_ids = self.value_ids
+        open_step_lines = self.config_session_id.get_open_step_lines(value_ids)
+        step_to_open = False
+        for step in open_step_lines:
+            for attr_line in step.attribute_line_ids:
+                print(attr_line.value_ids.ids, value_ids.ids)
+            unset_attr_line = step.attribute_line_ids.filtered(
+                lambda attr_line:
+                attr_line.required and
+                not any([value in value_ids for value in attr_line.value_ids])
+            )
+            if unset_attr_line:
+                step_to_open = step
+                break
+        if step_to_open:
+            return self.open_step(step_to_open)
+        return False
+
     @api.multi
     def action_config_done(self):
         """This method is for the final step which will be taken care by a
@@ -962,6 +1017,9 @@ class ProductConfigurator(models.TransientModel):
         # In the meantime, at least make sure that a validation
         # error legitimately raised in a nested routine
         # is passed through.
+        res = self.check_and_open_incomplete_step()
+        if res:
+            return res
         variant = self.config_session_id.create_get_variant()
         action = {
             'type': 'ir.actions.act_window',
