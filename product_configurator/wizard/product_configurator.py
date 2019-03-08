@@ -989,11 +989,9 @@ class ProductConfigurator(models.TransientModel):
         """
         if not value_ids:
             value_ids = self.value_ids
-        open_step_lines = self.config_session_id.get_open_step_lines(value_ids)
+        open_step_lines = self.config_session_id.get_open_step_lines()
         step_to_open = False
         for step in open_step_lines:
-            for attr_line in step.attribute_line_ids:
-                print(attr_line.value_ids.ids, value_ids.ids)
             unset_attr_line = step.attribute_line_ids.filtered(
                 lambda attr_line:
                 attr_line.required and
