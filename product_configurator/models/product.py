@@ -118,7 +118,9 @@ class ProductTemplate(models.Model):
         including any packaging, etc.",
     )
 
-    @api.depends('product_variant_ids', 'product_variant_ids.weight')
+    @api.depends(
+        'product_variant_ids', 'product_variant_ids.weight',
+        'weight_dummy', 'config_ok')
     def _compute_weight(self):
         config_products = self.filtered(
             lambda template: template.config_ok)
