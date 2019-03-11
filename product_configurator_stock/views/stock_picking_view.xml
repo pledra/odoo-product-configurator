@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_picking_type_form_config" model="ir.ui.view">
+        <field name="name">Operation Types</field>
+        <field name="model">stock.picking.type</field>
+        <field name="inherit_id" ref="stock.view_picking_type_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='show_reserved']" position="after">
+                <field name="allow_configuration"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_picking_form_config" model="ir.ui.view">
+        <field name="name">stock.picking.form.config</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_lines']" position="before">
+                <field name="allow_configuration" invisible="1"/>
+                <button name="action_config_start"
+                        attrs="{'invisible': ['|', ('state', 'not in', ['draft','waiting','confirmed','assigned']), ('allow_configuration', '=', False)]}"
+                        class="oe_highlight"
+                        type="object"
+                        style="margin-top: 15px;"
+                        string="Configure Product"
+                        groups="product_configurator.group_product_configurator"/>
+            </xpath>
+
+            <xpath expr="//field[@name='move_lines']/tree//field[@name='product_id']" position="after">
+                    <field name="allow_configuration" invisible="1"/>
+                    <field name="config_ok" invisible="1"/>
+                    <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
+                            help="Reconfigure"
+                            icon="fa-cogs"
+                            class="fa-lg"
+                            type="object"
+                            attrs="{'invisible': [
+                                    '|', '|',
+                                    ('config_ok','=',False),
+                                    ('state','not in',['draft', 'waiting', 'confirmed', 'assigned']),
+                                    ('allow_configuration', '=', False)
+                                ]
+                            }"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
