@@ -19,7 +19,7 @@ odoo.define('product_configurator_lot.FormView', function (require) {
           ev.preventDefault();
           return self._rpc({
             route: '/web/action/load',
-            params: {action_id: "product_configurator_stock.action_wizard_product_configurator_lot"}
+            params: {action_id: "product_configurator_stock_lots.action_wizard_product_configurator_lot"}
           }).then(function (action) {
             self.do_action(action);
           });
@@ -40,7 +40,7 @@ odoo.define('product_configurator_lot.FormView', function (require) {
           ev.preventDefault();
           return self._rpc({
             route: '/web/action/load',
-            params: {action_id: "product_configurator_stock.action_wizard_product_configurator_lot" }
+            params: {action_id: "product_configurator_stock_lots.action_wizard_product_configurator_lot" }
           }).then(function (action) {
             self.do_action(action);
           });
