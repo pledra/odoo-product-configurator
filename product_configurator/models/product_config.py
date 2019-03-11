@@ -1004,8 +1004,9 @@ class ProductConfigSession(models.Model):
 
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
-
-        for line in product_tmpl.attribute_line_ids:
+        open_step_lines = self.get_open_step_lines()
+        attribute_line_ids = open_step_lines.mapped('attribute_line_ids')
+        for line in attribute_line_ids:
             # Validate custom values
             attr = line.attribute_id
             if attr.id in custom_vals:
