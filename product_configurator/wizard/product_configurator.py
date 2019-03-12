@@ -983,21 +983,36 @@ class ProductConfigurator(models.TransientModel):
         self.config_session_id.config_step = str(step.id)
         return wizard_action
 
-    def check_and_open_incomplete_step(self, value_ids=None):
+    def check_and_open_incomplete_step(self, value_ids=None,
+                                       custom_value_ids=None):
         """ Check and open incomplete step if any
         :param value_ids: recordset of product.attribute.value
         """
         if not value_ids:
             value_ids = self.value_ids
+        if not custom_value_ids:
+            custom_value_ids = self.custom_value_ids
         open_step_lines = self.config_session_id.get_open_step_lines()
         step_to_open = False
         for step in open_step_lines:
-            unset_attr_line = step.attribute_line_ids.filtered(
+            set_attr_line = step.attribute_line_ids.filtered(
                 lambda attr_line:
                 attr_line.required and
-                not any([value in value_ids for value in attr_line.value_ids])
+                (
+                    any([
+                        value in value_ids
+                        for value in attr_line.value_ids
+                    ])
+                ) or (
+                    attr_line.custom and
+                    custom_value_ids.filtered(
+                        lambda line:
+                        (line.value or line.attachment_ids) and
+                        attr_line.attribute_id == line.attribute_id
+                    )
+                )
             )
-            if unset_attr_line:
+            if step.attribute_line_ids - set_attr_line:
                 step_to_open = step
                 break
         if step_to_open:
