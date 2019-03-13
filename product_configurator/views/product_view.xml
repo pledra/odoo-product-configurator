@@ -143,14 +143,6 @@
                 <attribute name="attrs">{'invisible': [('config_ok','=',True)]}</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='weight']" position="attributes">
-                <attribute name="attrs">{'invisible': [('config_ok','=',True)]}</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='weight']" position="after">
-                <field name="weight_dummy" attrs="{'invisible': [('config_ok','=',False)]}"/>
-            </xpath>
-
         </field>
     </record>
 
@@ -221,6 +213,9 @@
             </xpath>
             <xpath expr="//button[@name='toggle_config']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='weight']" position="attributes">
+                <attribute name="attrs">{'readonly': [('config_ok', '=', True)]}</attribute>
             </xpath>
         </field>
     </record>
