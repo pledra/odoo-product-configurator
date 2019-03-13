@@ -109,7 +109,9 @@ class ProductTemplate(models.Model):
     # product-template so that no need of compute and inverse on this
     weight = fields.Float(
         compute='_compute_weight',
-        inverse='_set_weight'
+        inverse='_set_weight',
+        search='_search_weight',
+        store=False
     )
     weight_dummy = fields.Float(
         string='Manual Weight',
@@ -117,10 +119,6 @@ class ProductTemplate(models.Model):
         help="Manual setting of product template weight",
     )
 
-    @api.depends(
-        'product_variant_ids', 'product_variant_ids.weight',
-        'product_variant_ids.weight_dummy',
-        'weight_dummy', 'config_ok')
     def _compute_weight(self):
         config_products = self.filtered(
             lambda template: template.config_ok)
@@ -134,6 +132,9 @@ class ProductTemplate(models.Model):
         self.weight_dummy = self.weight
         if not self.config_ok:
             super(ProductTemplate, self)._set_weight()
+
+    def _search_weight(self, operator, value):
+        return [('weight_dummy', operator, value)]
 
     @api.multi
     def get_product_attribute_values_action(self):
@@ -353,21 +354,19 @@ class ProductProduct(models.Model):
                     weight_extra += attribute_price.weight_extra
             product.weight_extra = weight_extra
 
-    @api.depends(
-        'attribute_value_ids.price_ids.weight_extra',
-        'attribute_value_ids.price_ids.product_tmpl_id',
-        'product_tmpl_id.weight_dummy',
-        'product_tmpl_id.weight'
-    )
     def _compute_product_weight(self):
         for product in self:
             if product.config_ok:
-                tmpl_weight = product.product_tmpl_id.weight_dummy
+                tmpl_weight = product.product_tmpl_id.weight
                 product.weight = tmpl_weight + product.weight_extra
             else:
                 product.weight = product.weight_dummy
 
+    def _search_product_weight(self, operator, value):
+        return [('weight_dummy', operator, value)]
+
     def _set_product_weight(self):
+        """Store weight in dummy field"""
         self.weight_dummy = self.weight
 
     config_name = fields.Char(
@@ -393,12 +392,13 @@ class ProductProduct(models.Model):
     )
     weight_dummy = fields.Float(
         string="Manual Weight",
-        digits=dp.get_precision('Stock Weight')
+        digits=dp.get_precision('Stock Weight'),
     )
     weight = fields.Float(
         compute='_compute_product_weight',
         inverse='_set_product_weight',
-        store=True
+        search='_search_product_weight',
+        store=False
     )
 
     @api.multi
