@@ -392,7 +392,8 @@ class ProductProduct(models.Model):
         compute='_compute_product_weight_extra',
     )
     weight_dummy = fields.Float(
-        string="Manual Weight"
+        string="Manual Weight",
+        digits=dp.get_precision('Stock Weight')
     )
     weight = fields.Float(
         compute='_compute_product_weight',
