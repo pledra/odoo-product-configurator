@@ -37,6 +37,8 @@ class ProductTemplate(models.Model):
     @api.constrains('attribute_line_ids', 'attribute_value_line_ids')
     def check_attr_value_ids(self):
         for product_tmpl in self:
+            if not product_tmpl.env.context.get('check_constraint', True):
+                continue
             attr_val_lines = product_tmpl.attribute_value_line_ids
             attr_val_ids = attr_val_lines.mapped('value_ids')
             if not attr_val_ids <= product_tmpl.attribute_line_val_ids:
@@ -67,7 +69,7 @@ class ProductTemplate(models.Model):
         comodel_name='product.config.line',
         inverse_name='product_tmpl_id',
         string="Attribute Dependencies",
-        copy=True
+        copy=False
     )
 
     config_image_ids = fields.One2many(
@@ -80,7 +82,8 @@ class ProductTemplate(models.Model):
     attribute_value_line_ids = fields.One2many(
         comodel_name='product.attribute.value.line',
         inverse_name='product_tmpl_id',
-        string="Attribute Value Lines"
+        string="Attribute Value Lines",
+        copy=True
     )
 
     attribute_line_val_ids = fields.Many2many(
@@ -93,7 +96,7 @@ class ProductTemplate(models.Model):
         comodel_name='product.config.step.line',
         inverse_name='product_tmpl_id',
         string='Configuration Lines',
-        copy=True
+        copy=False
     )
 
     mako_tmpl_name = fields.Text(
@@ -101,6 +104,37 @@ class ProductTemplate(models.Model):
         help="Generate Name based on Mako Template",
         copy=True
     )
+
+    # We are calculating weight of variants based on weight of
+    # product-template so that no need of compute and inverse on this
+    weight = fields.Float(
+        compute='_compute_weight',
+        inverse='_set_weight',
+        search='_search_weight',
+        store=False
+    )
+    weight_dummy = fields.Float(
+        string='Manual Weight',
+        digits=dp.get_precision('Stock Weight'),
+        help="Manual setting of product template weight",
+    )
+
+    def _compute_weight(self):
+        config_products = self.filtered(
+            lambda template: template.config_ok)
+        for product in config_products:
+            product.weight = product.weight_dummy
+        standard_products = self - config_products
+        super(ProductTemplate, standard_products)._compute_weight()
+
+    @api.one
+    def _set_weight(self):
+        self.weight_dummy = self.weight
+        if not self.config_ok:
+            super(ProductTemplate, self)._set_weight()
+
+    def _search_weight(self, operator, value):
+        return [('weight_dummy', operator, value)]
 
     @api.multi
     def get_product_attribute_values_action(self):
@@ -169,7 +203,44 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def copy(self, default=None):
+        if not default:
+            default = {}
+        self = self.with_context(check_constraint=False)
         res = super(ProductTemplate, self).copy(default=default)
+
+        attribute_line_dict = {}
+        attribute_line_default = {'product_tmpl_id': res.id}
+        for line in self.attribute_line_ids:
+            new_line = line.copy(attribute_line_default)
+            attribute_line_dict.update({line.id: new_line.id})
+
+        for line in self.config_line_ids:
+            old_restriction = line.domain_id
+            new_restriction = old_restriction.copy()
+            config_line_default = {
+                'product_tmpl_id': res.id,
+                'domain_id': new_restriction.id
+            }
+            new_attribute_line_id = attribute_line_dict.get(
+                line.attribute_line_id.id, False)
+            if new_attribute_line_id:
+                config_line_default.update({
+                    'attribute_line_id': new_attribute_line_id
+                })
+            line.copy(config_line_default)
+
+        config_step_line_default = {'product_tmpl_id': res.id}
+        for line in self.config_step_line_ids:
+            new_attribute_line_ids = [
+                attribute_line_dict.get(old_attr_line.id)
+                for old_attr_line in line.attribute_line_ids
+                if old_attr_line.id in attribute_line_dict
+            ]
+            if new_attribute_line_ids:
+                config_step_line_default.update({
+                    'attribute_line_ids': [(6, 0, new_attribute_line_ids)]
+                })
+            line.copy(config_step_line_default)
         return res
 
     @api.multi
@@ -287,11 +358,20 @@ class ProductProduct(models.Model):
                     weight_extra += attribute_price.weight_extra
             product.weight_extra = weight_extra
 
-    @api.depends('product_tmpl_id.weight', 'weight_extra')
     def _compute_product_weight(self):
         for product in self:
-            tmpl_weight = product.product_tmpl_id.weight
-            product.weight = tmpl_weight + product.weight_extra
+            if product.config_ok:
+                tmpl_weight = product.product_tmpl_id.weight
+                product.weight = tmpl_weight + product.weight_extra
+            else:
+                product.weight = product.weight_dummy
+
+    def _search_product_weight(self, operator, value):
+        return [('weight_dummy', operator, value)]
+
+    def _set_product_weight(self):
+        """Store weight in dummy field"""
+        self.weight_dummy = self.weight
 
     config_name = fields.Char(
         string="Name",
@@ -312,7 +392,17 @@ class ProductProduct(models.Model):
     )
     weight_extra = fields.Float(
         string='Weight Extra',
-        compute='_compute_product_weight_extra'
+        compute='_compute_product_weight_extra',
+    )
+    weight_dummy = fields.Float(
+        string="Manual Weight",
+        digits=dp.get_precision('Stock Weight'),
+    )
+    weight = fields.Float(
+        compute='_compute_product_weight',
+        inverse='_set_product_weight',
+        search='_search_product_weight',
+        store=False
     )
     weight = fields.Float(compute='_compute_product_weight')
 

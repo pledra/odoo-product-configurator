@@ -3,7 +3,7 @@ from lxml import etree
 from odoo.osv import orm
 from odoo.addons.base.ir.ir_model import FIELD_TYPES
 
-from odoo import models, fields, api, _
+from odoo import models, fields, tools, api, _
 from odoo.exceptions import Warning, ValidationError
 
 
@@ -121,11 +121,6 @@ class ProductConfigurator(models.TransientModel):
                 _('Changing the product template while having an active '
                   'configuration will erase reset/clear all values')
             )
-        if not self.config_session_id and self.product_tmpl_id:
-            session = self.env['product.config.session'].create_get_session(
-                product_tmpl_id=self.product_tmpl_id.id
-            )
-            self.config_session_id = session
 
     def get_onchange_domains(self, values, cfg_val_ids):
         """Generate domains to be returned by onchange method in order
@@ -206,6 +201,11 @@ class ProductConfigurator(models.TransientModel):
         final_cfg_val_ids = list(dynamic_fields.values())
 
         vals.update(self.get_onchange_vals(final_cfg_val_ids))
+        # To solve the Multi selection problem removing extra []
+        if 'value_ids' in vals:
+            val_ids = vals['value_ids'][0]
+            vals['value_ids'] = [[val_ids[0], val_ids[1],
+                                 tools.flatten(val_ids[2])]]
 
         return vals
 
@@ -308,23 +308,27 @@ class ProductConfigurator(models.TransientModel):
         default='select',
         string='State',
     )
-    
+
     @api.onchange('state')
     def _onchange_state(self):
         if self.config_session_id:
             self.config_session_id.write({
-                'value_ids': [[6,0, self.value_ids.ids]],
+                'value_ids': [[6, 0, self.value_ids.ids]],
+                'config_step': self.state,
+
             })
 
     @api.onchange('product_preset')
     def _onchange_product_preset(self):
         if self.product_preset:
-           self.value_ids = self.product_preset.attribute_value_ids
-           self.config_session_id.write({
-                'value_ids': [[6,0, self.product_preset.attribute_value_ids.ids]],
+            self.value_ids = self.product_preset.attribute_value_ids
+            self.config_session_id.write({
+                'value_ids': [[
+                    6, 0,
+                    self.product_preset.attribute_value_ids.ids
+                ]],
                 'product_preset': self.product_preset.id,
             })
-
 
     @api.model
     def get_field_default_attrs(self):
@@ -966,6 +970,59 @@ class ProductConfigurator(models.TransientModel):
         }
         return action
 
+    def get_wizard_action(self, view_cache=False, wizard=None):
+        """Return action of wizard
+        :param view_cache: Boolean (True/False)
+        :param wizard: recordset of product.configurator
+        :returns : dictionary
+        """
+        if not wizard:
+            wizard = self
+        wizard_action = {
+            'type': 'ir.actions.act_window',
+            'res_model': wizard._name,
+            'name': 'Configure Product',
+            'view_mode': 'form',
+            'context': dict(
+                wizard.env.context,
+                wizard_id=wizard.id,
+                view_cache=view_cache,
+            ),
+            'target': 'new',
+            'res_id': wizard.id,
+        }
+        return wizard_action
+
+    def open_step(self, step):
+        """Open wizard step 'step'
+        :param step: recordset of product.config.step.line
+        """
+        wizard_action = self.get_wizard_action()
+        self.state = str(step.id)
+        self.config_session_id.config_step = str(step.id)
+        return wizard_action
+
+    def check_and_open_incomplete_step(self, value_ids=None):
+        """ Check and open incomplete step if any
+        :param value_ids: recordset of product.attribute.value
+        """
+        if not value_ids:
+            value_ids = self.value_ids
+        open_step_lines = self.config_session_id.get_open_step_lines()
+        step_to_open = False
+        for step in open_step_lines:
+            unset_attr_line = step.attribute_line_ids.filtered(
+                lambda attr_line:
+                attr_line.required and
+                not any([value in value_ids for value in attr_line.value_ids])
+            )
+            if unset_attr_line:
+                step_to_open = step
+                break
+        if step_to_open:
+            return self.open_step(step_to_open)
+        return False
+
     @api.multi
     def action_config_done(self):
         """This method is for the final step which will be taken care by a
@@ -977,6 +1034,9 @@ class ProductConfigurator(models.TransientModel):
         # In the meantime, at least make sure that a validation
         # error legitimately raised in a nested routine
         # is passed through.
+        res = self.check_and_open_incomplete_step()
+        if res:
+            return res
         variant = self.config_session_id.create_get_variant()
         action = {
             'type': 'ir.actions.act_window',

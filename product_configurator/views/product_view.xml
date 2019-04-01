@@ -228,6 +228,8 @@
             <xpath expr="//field[@name='active']" position="after">
                 <field name="config_ok" invisible="1"/>
                 <field name="config_preset_ok" attrs="{'invisible': [('config_ok', '=', False)]}"/>
+            <xpath expr="//field[@name='weight']" position="attributes">
+                <attribute name="attrs">{'readonly': [('config_ok', '=', True)]}</attribute>
             </xpath>
         </field>
     </record>

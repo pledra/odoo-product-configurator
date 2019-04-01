@@ -59,7 +59,8 @@ class ProductConfigDomain(models.Model):
         comodel_name='product.config.domain.line',
         inverse_name='domain_id',
         string='Restrictions',
-        required=True
+        required=True,
+        copy=True
     )
     implied_ids = fields.Many2many(
         comodel_name='product.config.domain',
@@ -360,6 +361,7 @@ class ProductConfigSession(models.Model):
 
         self = self.with_context({'active_id': product_tmpl.id})
 
+        value_ids = self.flatten_val_ids(value_ids)
         vals = self.env['product.attribute.value'].browse(value_ids)
 
         weight_extra = 0.0
@@ -678,6 +680,7 @@ class ProductConfigSession(models.Model):
 
         self = self.with_context({'active_id': product_tmpl.id})
 
+        value_ids = self.flatten_val_ids(value_ids)
         vals = self.env['product.attribute.value'].browse(value_ids)
 
         price_extra = 0.0
@@ -1009,8 +1012,9 @@ class ProductConfigSession(models.Model):
 
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
-
-        for line in product_tmpl.attribute_line_ids:
+        open_step_lines = self.get_open_step_lines()
+        attribute_line_ids = open_step_lines.mapped('attribute_line_ids')
+        for line in attribute_line_ids:
             # Validate custom values
             attr = line.attribute_id
             if attr.id in custom_vals:

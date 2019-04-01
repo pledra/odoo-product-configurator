@@ -1,12 +1,12 @@
 {
     'name': 'Product Configurator',
-    'version': '11.0.1.0.13',
+    'version': '11.0.1.0.15',
     'category': 'Generic Modules/Base',
     'summary': 'Base for product configuration interface modules',
     'author': 'Pledra',
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',
-    'depends': ['account', ],
+    'depends': ['account', 'stock'],
     "data": [
         'data/menu_configurable_product.xml',
         'data/product_attribute.xml',

@@ -21,7 +21,7 @@
                     <field attrs="{'invisible': [('product_img', '=', False)]}" name="product_img" readonly="1" nolabel="1" widget="image"/>
                     <group col="3">
                         <group name='static_form' colspan="2" states='select'>
-                            <field name="config_session_id" invisible="1"/>
+                            <field name="config_session_id" required="context.get('wizard_id')" invisible="1"/>
                             <field name="product_id" invisible="1"/>
                             <!-- Old Code: context is not working with attrs and we can remove condition as
                             first stage 'select' is not visible while recofiguration-->
