@@ -8,10 +8,11 @@ class ProductAttributeValueLine(models.Model):
         string='Sequence', related='sequence')
 
 
-    @api.multi
-    def create(self):
-        for record in self:
-            return max(record.search([]).mapped('sequence')) + 1
+    @api.model
+    def create(self, vals):
+        res = super(ProductAttributeValueLine, self).create(vals)
+        res.sequence = max(self.env['product.attribute.value.line'].search([]).mapped('sequence')) + 1
+        return res
 
     @api.multi
     def add_after(self):
@@ -22,7 +23,7 @@ class ProductAttributeValueLine(models.Model):
             'view_mode': 'form',
             'context': dict(
                 self.env.context,
-                default_sequence=max(self.search([]).mapped('sequence')) + 1,
+                default_sequence=max(self.env['product.attribute.value.line'].search([]).mapped('sequence')) + 1,
             ),
         }
     
