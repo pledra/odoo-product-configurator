@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="product_attribute_value_line_tree" model="ir.ui.view">
+            <field name="name">product.attribute.value.line.tree</field>
+            <field name="model">product.attribute.value.line</field>
+            <field name="arch" type="xml">
+                <tree string="Product Attribute Valuec Line">
+                    <field name="sequence" widget="handle"/>
+                    <field name="sequence_copy"/>
+                    <field name="product_tmpl_id"/>
+                    <field name="attribute_id" invisible="1"/>
+                    <field name="value_id"/>
+                    <field name="value_ids"/>
+                    <button type="object" name="add_after" string="Add After" class="oe_highlight"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="product_attribute_value_line_form" model="ir.ui.view">
+            <field name="name">product.attribute.value.line.form</field>
+            <field name="model">product.attribute.value.line</field>
+            <field name="arch" type="xml">
+                <form string="Product Attribute Value Line">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="sequence" widget="handle" invisible="1"/>
+                                <field name="sequence_copy"/>
+                                <field name="product_tmpl_id"/>
+                            </group>
+                            <group>
+                                <field name="attribute_id" invisible="1"/>
+                                <field name="value_id"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Value Configuration">
+                                <field name="value_ids"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <act_window
+            name="Mass resequence"
+            res_model="product.attribute.wizard"
+            src_model="product.attribute.value.line"
+            key2="client_action_multi"
+            target="new"
+            multi="True"
+            view_mode="form"
+            id="action_product_attribute_value_line_act"/>
+    </data>
+</odoo>
