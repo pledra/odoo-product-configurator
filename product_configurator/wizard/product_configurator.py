@@ -320,15 +320,14 @@ class ProductConfigurator(models.TransientModel):
 
     @api.onchange('product_preset')
     def _onchange_product_preset(self):
-        if self.product_preset:
-            self.value_ids = self.product_preset.attribute_value_ids
-            self.config_session_id.write({
-                'value_ids': [[
-                    6, 0,
-                    self.product_preset.attribute_value_ids.ids
-                ]],
-                'product_preset': self.product_preset.id,
-            })
+        self.value_ids = self.product_preset.attribute_value_ids
+        self.config_session_id.write({
+            'value_ids': [[
+                6, 0,
+                self.product_preset.attribute_value_ids.ids
+            ]],
+            'product_preset': self.product_preset.id,
+        })
 
     @api.model
     def get_field_default_attrs(self):
