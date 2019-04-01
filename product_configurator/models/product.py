@@ -404,7 +404,6 @@ class ProductProduct(models.Model):
         search='_search_product_weight',
         store=False
     )
-    weight = fields.Float(compute='_compute_product_weight')
 
     # product preset
     config_preset_ok = fields.Boolean(
