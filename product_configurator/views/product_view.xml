@@ -120,7 +120,7 @@
                     </tree>
                 </field>
                 <field name="attribute_line_val_ids" invisible="1"/>
-                <field name="attribute_value_line_ids" invisible="1" context="{'default_product_tmpl_id': self.id}">
+                <field name="attribute_value_line_ids" invisible="1">
                     <tree string="Attribute value lines" editable="bottom" context="{'default_product_tmpl_id': self.id}">
                         <field name="product_tmpl_id" invisible="1"/>
                         <field name="attribute_id" invisible="1"/>
