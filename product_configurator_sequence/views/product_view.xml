@@ -23,35 +23,11 @@
             <field name="priority">16</field>
             <field name="inherit_id" ref="product.product_template_only_form_view"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='attribute_value_line_ids']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
                 <xpath expr="//field[@name='attribute_value_line_ids']/tree/field[@name='value_id']" position="before">
                     <field name="sequence_copy"/>
-                </xpath>
-                <xpath expr="//field[@name='attribute_value_line_ids']/tree" position="before">
-                    <form string="Attribute value lines" editable="bottom">
-                        <sheet>
-                            <group>
-                                <field name="product_tmpl_id"/>
-                                <field name="attribute_id" invisible="1"/>
-                                <field name="sequence" widget="handle"/>
-                                <field name="value_id"
-                                       domain="[('id', 'in', parent.attribute_line_val_ids)]"/>
-                                <field name="value_ids"
-                                       domain="[
-                                        ('id', 'in', parent.attribute_line_val_ids),
-                                        ('attribute_id', '!=', attribute_id)
-                                       ]" widget="many2many_tags"/>
-                            </group>
-                        </sheet>
-                    </form>
-                    <search string="Attribute value lines">
-                        <field name="product_tmpl_id" string="Product Template Id"/>
-                        <field name="attribute_id"/>
-                        <field name="value_ids"/>
-                        <group expand="0" string="Group By...">
-                                <filter string="Product Template Id" domain="[]" context="{'group_by':'product_tmpl_id'}"/>
-                                <filter string="Value Ids" domain="[]" context="{'group_by':'value_ids'}"/>
-                        </group>
-                    </search>
                 </xpath>
             </field>
         </record>

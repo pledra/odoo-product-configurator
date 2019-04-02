@@ -1,4 +1,4 @@
-from odoo import fields, models, api
+from odoo import models, api
 
 
 class ProductTemplate(models.Model):
@@ -17,6 +17,3 @@ class ProductTemplate(models.Model):
                 default_product_tmpl_id=self.id,
             ),
         }
-
-
-

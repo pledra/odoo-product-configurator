@@ -15,9 +15,8 @@ class ProductAttributeWizard(models.TransientModel):
             ('sequence', '>=', self.sequence_number)]) - record
         curr_seq = self.sequence_number
         for rec in record:
-            rec.sequence = curr_seq + 1
+            rec.sequence = curr_seq
             curr_seq += 1
         for line in product_att_line:
-            line.sequence = curr_seq + 1
+            line.sequence = curr_seq
             curr_seq += 1
-
