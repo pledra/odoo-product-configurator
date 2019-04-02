@@ -4,15 +4,10 @@ from odoo import fields, models, api
 class ProductAttributeValueLine(models.Model):
     _inherit = 'product.attribute.value.line'
 
+    sequence = fields.Integer(string='Sequence',
+        default=lambda self: max(self.env['product.attribute.value.line'].search([]).mapped('sequence')) + 1)
     sequence_copy = fields.Integer(
         string='Sequence', related='sequence')
-
-
-    @api.model
-    def create(self, vals):
-        res = super(ProductAttributeValueLine, self).create(vals)
-        res.sequence = max(self.env['product.attribute.value.line'].search([]).mapped('sequence')) + 1
-        return res
 
     @api.multi
     def add_after(self):
@@ -23,7 +18,7 @@ class ProductAttributeValueLine(models.Model):
             'view_mode': 'form',
             'context': dict(
                 self.env.context,
-                default_sequence=max(self.env['product.attribute.value.line'].search([]).mapped('sequence')) + 1,
+                default_sequence=self.sequence + 1,
             ),
         }
     

@@ -11,9 +11,10 @@ class ProductTemplate(models.Model):
             'res_model': 'product.attribute.value.line',
             'name': "Configure Image",
             'view_mode': 'tree,form',
+            'domain': [('product_tmpl_id', '=', self.id)],
             'context': dict(
                 self.env.context,
-                default_order_id=self.id,
+                default_product_tmpl_id=self.id,
             ),
         }
 
