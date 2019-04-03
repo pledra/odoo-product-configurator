@@ -113,7 +113,7 @@ class ProductConfigurator(models.TransientModel):
         if template:
             session = self.env['product.config.session'].search_session(
                 product_tmpl_id=template.id)
-            self.product_preset = session.product_preset
+            self.product_preset_id = session.product_preset_id
 
         if self.value_ids:
             # TODO: Add confirmation button an delete cfg session
@@ -318,9 +318,9 @@ class ProductConfigurator(models.TransientModel):
 
             })
 
-    @api.onchange('product_preset')
+    @api.onchange('product_preset_id')
     def _onchange_product_preset(self):
-        self.value_ids = self.product_preset.attribute_value_ids
+        self.value_ids = self.product_preset_id.attribute_value_ids
 
     @api.model
     def get_field_default_attrs(self):

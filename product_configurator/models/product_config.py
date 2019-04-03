@@ -428,7 +428,7 @@ class ProductConfigSession(models.Model):
         compute="_compute_cfg_weight"
     )
     # Product preset
-    product_preset = fields.Many2one(
+    product_preset_id = fields.Many2one(
         comodel_name='product.product',
         string='Preset',
         domain="[('product_tmpl_id', '=', product_tmpl_id),\
