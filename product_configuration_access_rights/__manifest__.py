@@ -9,6 +9,7 @@
     "data": [
         'security/configurator_security.xml',
         "data/menu_configurable_product.xml",
+        'security/ir.model.access.csv',
     ],
     'images': [
         'static/description/cover.png'
