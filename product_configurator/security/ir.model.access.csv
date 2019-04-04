@@ -6,7 +6,7 @@ product_configurator_config_step_line,Config Step Line,model_product_config_step
 product_configurator_config_domain,Config Domain,model_product_config_domain,group_product_configurator,1,1,1,1
 product_configurator_config_domain_line,Config Domain Line,model_product_config_domain_line,group_product_configurator,1,1,1,1
 product_configurator_custom_value,Custom Value,model_product_attribute_value_custom,group_product_configurator,1,1,1,1
-product_configurator_custom_value,Attribute Value Line,model_product_attribute_value_line,group_product_configurator,1,1,1,1
+product_configurator_custom_attribute_value,Attribute Value Line,model_product_attribute_value_line,group_product_configurator,1,1,1,1
 product_configurator_config_session,Config Session,model_product_config_session,group_product_configurator,1,1,1,1
 product_configurator_config_session_custom_value,Config Session Custom Value,model_product_config_session_custom_value,group_product_configurator,1,1,1,1
 ,,,,,,,
@@ -17,7 +17,7 @@ user_config_step_line,User Config Step Line,model_product_config_step_line,base.
 user_config_domain_line,User Config Domain Line,model_product_config_domain_line,base.group_user,1,0,0,0
 user_config_domain,User Config Domain,model_product_config_domain,base.group_user,1,0,0,0
 user_custom_value,User Custom Value,model_product_attribute_value_custom,base.group_user,1,0,0,0
-user_custom_value,User Attribute Value Line,model_product_attribute_value_line,base.group_user,1,0,0,0
+user_custom_attribute_value,User Attribute Value Line,model_product_attribute_value_line,base.group_user,1,0,0,0
 user_config_session,User Config Session,model_product_config_session,base.group_user,1,0,0,0
 user_config_session_custom_value,User Config Session Custom Value,model_product_config_session_custom_value,base.group_user,1,0,0,0
 ,,,,,,,
