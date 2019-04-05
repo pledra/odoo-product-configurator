@@ -30,6 +30,7 @@
     'images': [
         'static/description/cover.png'
     ],
+    'post_init_hook': 'post_init_hook',
     'qweb': ['static/xml/create_button.xml'],
     'test': [],
     'installable': True,

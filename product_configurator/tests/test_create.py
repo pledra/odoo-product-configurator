@@ -79,7 +79,7 @@ class ConfigurationCreate(TransactionCase):
             ]
         })
 
-        self.assertEqual(test_template.product_variant_count, 0,
+        self.assertEqual(len(test_template.product_variant_ids), 0,
                          "Create should not have any variants")
 
     def test_02_previous_step_incompatible_changes(self):
