@@ -1,6 +1,6 @@
 {
     'name': 'Product Configuration Access Rights',
-    'version': '11.0.1.0.16',
+    'version': '11.0.1.1.0',
     'category': 'Generic Modules',
     'author': 'Pledra',
     'license': 'AGPL-3',

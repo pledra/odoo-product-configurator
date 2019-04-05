@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <record id="group_product_configurator_manager" model="res.groups">
-            <field name="name">Product Configurator Manager</field>
+            <field name="name">Manager</field>
             <field name="category_id" ref="product_configurator.product_config_category"/>
             <field name="implied_ids" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
             <field name="users" eval="[(4, ref('base.user_root'))]"/>
