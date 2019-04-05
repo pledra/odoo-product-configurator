@@ -19,9 +19,3 @@ msgstr ""
 #: model:ir.model,name:product_configurator_mrp.model_product_template
 msgid "Product Template"
 msgstr ""
-
-#. module: product_configurator_mrp
-#: model:res.groups,name:product_configurator_mrp.group_product_configurator_mrp
-msgid "Products & BOMS"
-msgstr ""
-
