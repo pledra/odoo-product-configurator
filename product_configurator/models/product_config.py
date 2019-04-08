@@ -1016,21 +1016,21 @@ class ProductConfigSession(models.Model):
                 custom_val = custom_vals.get(attr.id)
                 if line.required and not common_vals and not custom_val:
                     # TODO: Verify custom value type to be correct
-                    return False
+                    raise ValidationError(_('Incorrect Custom Value Type !'))
 
         # Check if all all the values passed are not restricted
         avail_val_ids = self.values_available(
             value_ids, value_ids, product_tmpl_id=product_tmpl_id
         )
         if set(value_ids) - set(avail_val_ids):
-            return False
+            raise ValidationError(_('There is a Restricted value Passing !'))
 
         # Check if custom values are allowed
         custom_attr_ids = product_tmpl.attribute_line_ids.filtered(
             'custom').mapped('attribute_id').ids
 
         if not set(custom_vals.keys()) <= set(custom_attr_ids):
-            return False
+            raise ValidationError(_('There Are Selected Wrong Attribute As Custome Value !'))
 
         # Check if there are multiple values passed for non-multi attributes
         mono_attr_lines = product_tmpl.attribute_line_ids.filtered(
@@ -1038,7 +1038,7 @@ class ProductConfigSession(models.Model):
 
         for line in mono_attr_lines:
             if len(set(line.value_ids.ids) & set(value_ids)) > 1:
-                return False
+                raise ValidationError(_('There Are Multiple Values Passed For Non-Multi Attributes !'))
         return True
 
     @api.model
