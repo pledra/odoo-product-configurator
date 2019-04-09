@@ -1,2 +1,1 @@
-from . import sale
-from . import product_config
+from . import product_config_website

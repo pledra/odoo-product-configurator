@@ -777,6 +777,9 @@ class ProductConfigSession(models.Model):
             vals.update(parent_id=parent_id)
         return vals
 
+
+    # TODO: Should be renamed to get_active_step_line
+
     @api.model
     def get_active_step(self):
         """Attempt to return product.config.step.line object that has the id
