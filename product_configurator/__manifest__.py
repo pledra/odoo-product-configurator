@@ -8,10 +8,10 @@
     'website': 'http://www.pledra.com/',
     'depends': ['account', 'stock'],
     "data": [
+        'security/configurator_security.xml',
         'data/menu_configurable_product.xml',
         'data/product_attribute.xml',
         'data/ir_sequence_data.xml',
-        'security/configurator_security.xml',
         'security/ir.model.access.csv',
         'views/assets.xml',
         'views/product_view.xml',
