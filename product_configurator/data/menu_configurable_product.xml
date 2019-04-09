@@ -2,7 +2,7 @@
 <odoo>
 <data>
 
-    <menuitem id="menu_product_configurable" 
+    <menuitem id="menu_product_configurable"
       name="Configurator" parent="" web_icon="product_configurator,static/description/icon.png"
       sequence="20" groups="product_configurator.group_product_configurator_manager"/>
     <menuitem id="menu_product_configurable_product_main" name="Configurable Products" parent="menu_product_configurable" sequence="10" />
