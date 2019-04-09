@@ -149,23 +149,6 @@ class ProductTemplate(models.Model):
         return action
 
     @api.multi
-    @api.constrains('attribute_line_ids', 'attribute_line_ids.default_val')
-    def _check_default_values(self):
-        """Validate default values set on the product template"""
-        default_val_ids = self.attribute_line_ids.filtered(
-            lambda l: l.default_val).mapped('default_val').ids
-
-        # TODO: Remove if cond when PR with raise error on github is merged
-        cfg_session_obj = self.env['product.config.session']
-        valid_conf = cfg_session_obj.validate_configuration(
-            value_ids=default_val_ids, product_tmpl_id=self.id, final=False
-        )
-        if not valid_conf:
-            raise ValidationError(
-                _('Default values provided generate an invalid configuration')
-            )
-
-    @api.multi
     @api.constrains('config_line_ids')
     def _check_default_value_domains(self):
         try:
