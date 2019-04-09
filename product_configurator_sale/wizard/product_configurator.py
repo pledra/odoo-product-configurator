@@ -38,7 +38,14 @@ class ProductConfiguratorSale(models.TransientModel):
 
         if self.order_line_id:
             self.order_line_id.write(line_vals)
+            order_line_id = self.order_line_id
         else:
             self.order_id.write({'order_line': [(0, 0, line_vals)]})
+            order_line_id = self.order_id.order_line.filtered(
+                lambda line: line.product_id.id == res['res_id'])
+
+        if order_line_id:
+            order_line_id.product_id_change()
+            order_line_id._onchange_discount()
 
         return
