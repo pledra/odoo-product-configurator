@@ -1,6 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-mrp_bom,BOM,mrp.model_mrp_bom,,1,1,1,1
-mrp_bom_line,BOM,mrp.model_mrp_bom_line,,1,1,1,1
-,,,,,,,
-product_config_mrp_bom_line_config_set,Bom Line Config Set,product_configurator_mrp.model_mrp_bom_line_configuration_set,,1,1,1,1
-product_config_mrp_bom_line_config,Bom Line Config,product_configurator_mrp.model_mrp_bom_line_configuration,,1,1,1,1
