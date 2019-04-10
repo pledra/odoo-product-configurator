@@ -159,8 +159,6 @@
         </field>
     </record>
 
-
-
     <record id="template_view_tree_configurable" model="ir.ui.view">
         <field name="name">product.template.product.tree</field>
         <field name="model">product.template</field>
@@ -213,6 +211,23 @@
             </xpath>
             <xpath expr="//button[@name='toggle_config']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[@name='options']" position="inside">
+                <field name="config_preset_ok" attrs="{'invisible': [('config_ok', '=', False)]}"/>
+                <label for="config_preset_ok" attrs="{'invisible': [('config_ok', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_variant_easy_edit_view_inherit" model="ir.ui.view">
+        <field name="name">product.product.view.form.easy</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active']" position="after">
+                <field name="config_ok" invisible="1"/>
+                <field name="config_preset_ok" attrs="{'invisible': [('config_ok', '=', False)]}"/>
             </xpath>
             <xpath expr="//field[@name='weight']" position="attributes">
                 <attribute name="attrs">{'readonly': [('config_ok', '=', True)]}</attribute>
