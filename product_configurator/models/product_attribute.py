@@ -180,20 +180,7 @@ class ProductAttributeLine(models.Model):
                           line.attribute_id.name, line.default_val.name)
                       )
                 )
-            default_val_ids = self.product_tmpl_id.attribute_line_ids.filtered(
-                lambda l: l.default_val).mapped('default_val').ids
-
-            cfg_session_obj = self.env['product.config.session']
-            valid_conf = cfg_session_obj.validate_configuration(
-                value_ids=default_val_ids,
-                product_tmpl_id=self.product_tmpl_id.id,
-                final=False
-            )
-            if not valid_conf:
-                raise ValidationError(
-                    _('Default values provided generate an invalid '
-                      'configuration')
-                )
+            self.product_tmpl_id._check_default_values()
 
 
 class ProductAttributeValue(models.Model):

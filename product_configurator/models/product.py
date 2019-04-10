@@ -148,6 +148,21 @@ class ProductTemplate(models.Model):
         action['context'] = context
         return action
 
+    def _check_default_values(self):
+        default_val_ids = self.attribute_line_ids.filtered(
+            lambda l: l.default_val).mapped('default_val').ids
+
+        cfg_session_obj = self.env['product.config.session']
+        valid_conf = cfg_session_obj.validate_configuration(
+            value_ids=default_val_ids,
+            product_tmpl_id=self.id,
+            final=False
+        )
+        if not valid_conf:
+            raise ValidationError(_(
+                'Default values provided generate an invalid configuration'
+            ))
+
     @api.multi
     @api.constrains('config_line_ids')
     def _check_default_value_domains(self):
