@@ -1,6 +1,6 @@
 {
     'name': 'Product Configurator',
-    'version': '11.0.1.0.15',
+    'version': '11.0.1.0.16',
     'category': 'Generic Modules/Base',
     'summary': 'Base for product configuration interface modules',
     'author': 'Pledra',
@@ -8,10 +8,10 @@
     'website': 'http://www.pledra.com/',
     'depends': ['account', 'stock'],
     "data": [
+        'security/configurator_security.xml',
         'data/menu_configurable_product.xml',
         'data/product_attribute.xml',
         'data/ir_sequence_data.xml',
-        'security/configurator_security.xml',
         'security/ir.model.access.csv',
         'views/assets.xml',
         'views/product_view.xml',
@@ -30,6 +30,7 @@
     'images': [
         'static/description/cover.png'
     ],
+    'post_init_hook': 'post_init_hook',
     'qweb': ['static/xml/create_button.xml'],
     'test': [],
     'installable': True,

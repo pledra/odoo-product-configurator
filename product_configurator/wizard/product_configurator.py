@@ -109,6 +109,12 @@ class ProductConfigurator(models.TransientModel):
         self.config_step_ids = template.config_step_line_ids.mapped(
             'config_step_id')
 
+        # Set product preset if exist in session
+        if template:
+            session = self.env['product.config.session'].search_session(
+                product_tmpl_id=template.id)
+            self.product_preset_id = session.product_preset_id
+
         if self.value_ids:
             # TODO: Add confirmation button an delete cfg session
             raise Warning(
@@ -308,8 +314,13 @@ class ProductConfigurator(models.TransientModel):
         if self.config_session_id:
             self.config_session_id.write({
                 'value_ids': [[6, 0, self.value_ids.ids]],
-                'config_step': self.state
+                'config_step': self.state,
+
             })
+
+    @api.onchange('product_preset_id')
+    def _onchange_product_preset(self):
+        self.value_ids = self.product_preset_id.attribute_value_ids
 
     @api.model
     def get_field_default_attrs(self):
