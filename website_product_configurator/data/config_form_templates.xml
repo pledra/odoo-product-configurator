@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="config_form_base" name="Base Config Form View"/>
+      
+    <!-- Default views for for frontend confiugration -->
+
+    <template id="config_form_select" primary="True" inherit_id="config_form_base" name="Selection-Box">
+    <xpath expr="." position="inside">
+      <t t-call="website.layout">
+      <form id="product_config_form" class="form-horizontal" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+        Configuration form
+      </form>
+      </t>
+    </xpath>
+    </template>
+
+</odoo>

@@ -107,9 +107,6 @@
         <t t-set="lines" t-value="cfg_vars.get('cfg_step_lines') or cfg_vars['attr_lines']"/>
         <t t-set="cfg_val_ids" t-value="cfg_vars['cfg_session'].value_ids"/>
         <t t-foreach="lines" t-as="line">
-          <t t-set="custom_value" t-value="cfg_vars['cfg_session'].custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
-          <t t-set="parent_val" t-value="cfg_vars['cfg_session'].value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
-          <t t-set="available_val_ids" t-value="product_tmpl.values_available(line.value_ids.ids, cfg_val_ids.ids)"/>
           <div class="form-group oe_website_sale">
             <label class="control-label col-xs-12 col-md-2" t-att-for="line.attribute_id.id">
               <span style="padding-right: 7px" t-esc="line.attribute_id.name"/>

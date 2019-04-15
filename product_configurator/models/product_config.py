@@ -944,7 +944,7 @@ class ProductConfigSession(models.Model):
 
     @api.model
     def values_available(
-            self, check_val_ids, value_ids=None,
+            self, check_val_ids=None, value_ids=None,
             custom_vals=None, product_tmpl_id=None):
         """Determines whether the attr_values from the product_template
         are available for selection given the configuration ids and the
@@ -957,6 +957,9 @@ class ProductConfigSession(models.Model):
 
         :returns: list of available attribute values
         """
+
+        if not check_val_ids:
+            check_val_ids = self.value_ids.ids
 
         if not self.product_tmpl_id:
             product_tmpl = self.env['product.template'].browse(product_tmpl_id)

@@ -1,1 +1,1 @@
-from . import product_config_website
+from . import product_config

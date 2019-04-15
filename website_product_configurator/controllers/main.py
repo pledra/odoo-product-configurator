@@ -31,6 +31,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'cfg_session': cfg_session,
             'cfg_step_lines': cfg_session.get_open_step_lines(),
             'active_step': cfg_session.get_active_step(),
+            'value_ids': cfg_session.value_ids,
+            'available_value_ids': cfg_session.values_available(),
+            'main_object': cfg_session.product_tmpl_id
         }
 
         return vals
@@ -39,11 +42,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         """Render the website form for the given template and configuration
         session"""
 
-        vals = self.get_render_vals()
+        vals = self.get_render_vals(cfg_session)
         cfg_step_line = vals.get('active_step', vals.get('cfg_step_lines')[:1])
 
         # TODO: Implement method to select template from step line if
         # applied or config step if not
         template = cfg_step_line.get_website_template()
 
-        request.render(template, vals)
+        return request.render(template, vals)
