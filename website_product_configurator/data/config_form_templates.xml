@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Base view for website configuration -->
+    <template id="config_header" name="Product Configuration Header">
+        <div id="cfg_header" class="form-group text-right">
+           <div class="col-xs-12">Image goes here</div>
+        </div>
+    </template>
+
+    <!-- Base view for website configuration body -->
     <template id="product_configurator" name="Product Configuration Interface">
       <xpath expr="." position="inside">
         <t t-call="website.layout">
         <div itemscope="itemscope" itemtype="http://schema.org/Product" id="wrap">
           <div class="container">
+
+            <t t-call="website_product_configurator.config_header"/>  
+
             <form id="product_config_form" class="form-horizontal" method="post" enctype="multipart/form-data">
               <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
               <!-- Render the tabs for configuration step lines -->
@@ -14,13 +23,27 @@
 
               <!-- Render forms for each line -->
               <t t-call="website_product_configurator.config_form"/>
+
+              <t t-call="website_product_configurator.config_footer"/>
             </form>
           </div>
         </div>
         </t>
       </xpath>
     </template>
-    <template id="config_form_base" name="Base Config Form View"/>
+
+    <template id="config_footer" name="Product Configuration Footer">
+        <div id="cfg_footer" class="form-group text-right">
+           <div class="col-xs-12">
+              <button id="form_action"
+                      type="submit"
+                      class="btn btn-default pull-right mb32 btn-primary">
+                    <span>Continue</span>
+            </button>
+            </div>
+        </div>
+    </template>    
+
 
     <!-- Base view for the form view of each configuration step -->
     <template id="config_form" name="Product Configuration Form">
@@ -49,7 +72,10 @@
       </div>
     </template>
 
+
 <!-- Configuration forms -->
+    
+    <template id="config_form_base" name="Base Config Form View"/>
 
     <!-- Default configuration form (selectboxes ) -->
     <template id="config_form_select" name="Selectbox configuration form">
@@ -63,7 +89,7 @@
                 <option name=""/>
                 <t t-foreach="line.value_ids" t-as="value">
                     <option
-                        t-att-selected="'selected' if value in value_ids else None"
+                        t-att-selected="'selected' if value.id in value_ids else None"
                         t-att-class="'disabled' if value.id not in available_value_ids else None"
                         t-att-value="value.id"
                         t-att-data-oe-id="value.id"
