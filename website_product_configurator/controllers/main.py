@@ -45,3 +45,13 @@ class ProductConfigWebsiteSale(WebsiteSale):
         return request.render(
             'website_product_configurator.product_configurator', vals
         )
+
+    @http.route('/website_product_configurator/onchange',
+                type='json', methods=['POST'], auth="public", website=True)
+    def onchange(self, form_values, field_name):
+        """Capture onchange events in the website and forward data to backend
+        onchange method"""
+        import pdb
+        pdb.set_trace()
+        for form_val in form_values:
+            

@@ -10,7 +10,8 @@
     'depends': ['website_sale', 'product_configurator'],
 
     'data': [
-        'data/config_form_templates.xml'
+        'data/config_form_templates.xml',
+        'views/assets.xml'
     ],
     'demo': [
     ],
