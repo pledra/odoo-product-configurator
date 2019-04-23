@@ -1016,29 +1016,35 @@ class ProductConfigSession(models.Model):
                 custom_val = custom_vals.get(attr.id)
                 if line.required and not common_vals and not custom_val:
                     # TODO: Verify custom value type to be correct
-                    raise ValidationError(_('Incorrect Custom Value Type !'))
+                    raise ValidationError(_('You have not fill the value in required field !'))
 
         # Check if all all the values passed are not restricted
         avail_val_ids = self.values_available(
             value_ids, value_ids, product_tmpl_id=product_tmpl_id
         )
         if set(value_ids) - set(avail_val_ids):
-            raise ValidationError(_('There is a Restricted value Passing !'))
+            restrict_val = list(set(value_ids) - set(avail_val_ids))
+            product_att_value = self.env['product.attribute.value'].browse(restrict_val)
+            raise ValidationError(_('%s value is not available on %s !') % (
+                product_att_value.name, product_att_value.attribute_id.name))
 
         # Check if custom values are allowed
         custom_attr_ids = product_tmpl.attribute_line_ids.filtered(
             'custom').mapped('attribute_id').ids
-
         if not set(custom_vals.keys()) <= set(custom_attr_ids):
-            raise ValidationError(_('There Are Selected Wrong Attribute As Custome Value !'))
+            product_att_line = self.env['product.attribute.line'].browse(
+                list(set(custom_vals.keys()))).mapped('attribute_id.name')
+            raise ValidationError(_('The configure product already exists custom value on %s field !\
+                contact administrator to reconfigure it.') % (",".join(product_att_line)))
 
         # Check if there are multiple values passed for non-multi attributes
         mono_attr_lines = product_tmpl.attribute_line_ids.filtered(
             lambda l: not l.multi)
-
         for line in mono_attr_lines:
             if len(set(line.value_ids.ids) & set(value_ids)) > 1:
-                raise ValidationError(_('There Are Multiple Values Passed For Non-Multi Attributes !'))
+                att_line = line.mapped('attribute_id.name')
+                raise ValidationError(_('The configure product already exists multiple value on %s field !\
+                contact administrator to reconfigure it.') % (",".join(att_line)))
         return True
 
     @api.model
