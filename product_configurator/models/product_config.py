@@ -1110,11 +1110,13 @@ class ProductConfigSession(models.Model):
         return session
 
     @api.model
-    def create_get_session(self, product_tmpl_id, parent_id=None):
-        session = self.search_session(product_tmpl_id=product_tmpl_id,
+    def create_get_session(self, product_tmpl_id, parent_id=None,
+                           force_create=False):
+        if not force_create:
+            session = self.search_session(product_tmpl_id=product_tmpl_id,
                                       parent_id=parent_id)
-        if session:
-            return session[0]
+            if session:
+                return session[0]
         vals = self.get_session_vals(
             product_tmpl_id=product_tmpl_id,
             parent_id=parent_id
