@@ -1029,22 +1029,27 @@ class ProductConfigSession(models.Model):
             for domain_line in restriction.domain_line_ids:
                 att_line = product_tmpl.attribute_line_ids.filtered(
                     lambda l: l.attribute_id in domain_line.attribute_id and l.default_val not in domain_line.value_ids.ids)
-            raise ValidationError(_('%s %s is not available with %s %s.It is\
-                %s %s is only available with : %s !') % (
-                product_att_value.attribute_id.name, product_att_value.name,
-                att_line.attribute_id.name, att_line.default_val.name,
-                product_att_value.attribute_id.name, product_att_value.name,
-                restriction.name
-                ))
+            if att_line.default_val.name:
+                raise ValidationError(_('%s %s is not available with %s %s.\
+                    %s %s is only available with %s %s !') % (
+                    product_att_value.attribute_id.name, product_att_value.name,
+                    att_line.attribute_id.name, att_line.default_val.name,
+                    product_att_value.attribute_id.name, product_att_value.name,
+                    domain_line.attribute_id.name, domain_line.value_ids.name
+                    ))
 
         # Check if custom values are allowed
         custom_attr_ids = product_tmpl.attribute_line_ids.filtered(
             'custom').mapped('attribute_id').ids
+        custom_lines_with_error = []
         if not set(custom_vals.keys()) <= set(custom_attr_ids):
             product_att_line = self.env['product.attribute.line'].browse(
-                list(set(custom_vals.keys()))).mapped('attribute_id.name')
-            raise ValidationError(_('There are some changes in product-template configuration. Current session has wrong values for fields : %s\
-             Please delete your curent session or cantact to your administractor in order to proceed ') % (",".join(product_att_line)))
+                list(set(custom_vals.keys()) - set(custom_attr_ids)))
+            for line in product_att_line:
+                custom_lines_with_error.append(line.attribute_id.name)
+        if custom_lines_with_error:
+            raise ValidationError(_('Sorry! Request can not be completed.\n There are some changes in product-template configuration. Current session has wrong values for fields : %s.\
+             Please delete your current session or contact to your administrator in order to proceed ') % (",".join(custom_lines_with_error)))
 
         # Check if there are multiple values passed for non-multi attributes
         mono_attr_lines = product_tmpl.attribute_line_ids.filtered(
@@ -1054,8 +1059,8 @@ class ProductConfigSession(models.Model):
             if len(set(line.value_ids.ids) & set(value_ids)) > 1:
                 lines_with_error.append(line.attribute_id.name)
         if lines_with_error:
-            raise ValidationError(_('There are some changes in product-template configuration. Current session has multiple values for fields : %s\
-             Please delete your curent session or cantact to your administractor in order to proceed ') % (",".join(lines_with_error)))
+            raise ValidationError(_('Sorry! Request can not be completed.\n There are some changes in product-template configuration. Current session has multiple values for fields : %s.\
+             Please delete your current session or contact to your administrator in order to proceed ') % (",".join(lines_with_error)))
         return True
 
     @api.model
