@@ -1037,14 +1037,6 @@ class ProductConfigSession(models.Model):
                 restriction.name
                 ))
 
-
-            product_att_line = product_tmpl.attribute_line_ids.filtered(
-                lambda l: l.default_val).mapped('default_val').ids
-            att_line = self.env['product.attribute.line'].browse(product_att_line)
-            for line in att_line:
-                restrict_val = list(set(value_ids) - set(avail_val_ids))
-                product_att_value = self.env['product.attribute.value'].browse(restrict_val)
-
         # Check if custom values are allowed
         custom_attr_ids = product_tmpl.attribute_line_ids.filtered(
             'custom').mapped('attribute_id').ids
