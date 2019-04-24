@@ -1023,10 +1023,27 @@ class ProductConfigSession(models.Model):
             value_ids, value_ids, product_tmpl_id=product_tmpl_id
         )
         if set(value_ids) - set(avail_val_ids):
-            restrict_val = list(set(value_ids) - set(avail_val_ids))
+            restrict_val = list(set(value_ids) - set(avail_val_ids))[:1]
             product_att_value = self.env['product.attribute.value'].browse(restrict_val)
-            raise ValidationError(_('%s value is not available on %s !') % (
-                product_att_value.name, product_att_value.attribute_id.name))
+            restriction = product_tmpl.config_line_ids.filtered(lambda x: restrict_val[0] in x.value_ids.ids).domain_id
+            for domain_line in restriction.domain_line_ids:
+                att_line = product_tmpl.attribute_line_ids.filtered(
+                    lambda l: l.attribute_id in domain_line.attribute_id and l.default_val not in domain_line.value_ids.ids)
+            raise ValidationError(_('%s %s is not available with %s %s.It is\
+                %s %s is only available with : %s !') % (
+                product_att_value.attribute_id.name, product_att_value.name,
+                att_line.attribute_id.name, att_line.default_val.name,
+                product_att_value.attribute_id.name, product_att_value.name,
+                restriction.name
+                ))
+
+
+            product_att_line = product_tmpl.attribute_line_ids.filtered(
+                lambda l: l.default_val).mapped('default_val').ids
+            att_line = self.env['product.attribute.line'].browse(product_att_line)
+            for line in att_line:
+                restrict_val = list(set(value_ids) - set(avail_val_ids))
+                product_att_value = self.env['product.attribute.value'].browse(restrict_val)
 
         # Check if custom values are allowed
         custom_attr_ids = product_tmpl.attribute_line_ids.filtered(
@@ -1034,17 +1051,19 @@ class ProductConfigSession(models.Model):
         if not set(custom_vals.keys()) <= set(custom_attr_ids):
             product_att_line = self.env['product.attribute.line'].browse(
                 list(set(custom_vals.keys()))).mapped('attribute_id.name')
-            raise ValidationError(_('The configure product already exists custom value on %s field !\
-                contact administrator to reconfigure it.') % (",".join(product_att_line)))
+            raise ValidationError(_('There are some changes in product-template configuration. Current session has wrong values for fields : %s\
+             Please delete your curent session or cantact to your administractor in order to proceed ') % (",".join(product_att_line)))
 
         # Check if there are multiple values passed for non-multi attributes
         mono_attr_lines = product_tmpl.attribute_line_ids.filtered(
             lambda l: not l.multi)
+        lines_with_error = []
         for line in mono_attr_lines:
             if len(set(line.value_ids.ids) & set(value_ids)) > 1:
-                att_line = line.mapped('attribute_id.name')
-                raise ValidationError(_('The configure product already exists multiple value on %s field !\
-                contact administrator to reconfigure it.') % (",".join(att_line)))
+                lines_with_error.append(line.attribute_id.name)
+        if lines_with_error:
+            raise ValidationError(_('There are some changes in product-template configuration. Current session has multiple values for fields : %s\
+             Please delete your curent session or cantact to your administractor in order to proceed ') % (",".join(lines_with_error)))
         return True
 
     @api.model
