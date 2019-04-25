@@ -1026,16 +1026,38 @@ class ProductConfigSession(models.Model):
             restrict_val = list(set(value_ids) - set(avail_val_ids))[:1]
             product_att_value = self.env['product.attribute.value'].browse(restrict_val)
             restriction = product_tmpl.config_line_ids.filtered(lambda x: restrict_val[0] in x.value_ids.ids).domain_id
+            domain_oprator_vals = restriction.domain_line_ids.filtered(
+                lambda d: d.condition == 'in' and d.operator == 'and')
+            list_op_in = []
+            list_op_notin = []
             for domain_line in restriction.domain_line_ids:
-                att_line = product_tmpl.attribute_line_ids.filtered(
-                    lambda l: l.attribute_id in domain_line.attribute_id and l.default_val not in domain_line.value_ids.ids)
-            if att_line.default_val.name:
-                raise ValidationError(_('%s %s is not available with %s %s.\
-                    %s %s is only available with %s %s !') % (
+                # check restriction 'in'
+                restrict_domain_in = domain_line.filtered(lambda d:
+                    product_tmpl.attribute_line_ids.filtered(
+                lambda l: l.attribute_id in domain_line.attribute_id and l.default_val not in domain_line.value_ids.ids) and d.condition == 'in')
+                # check restriction 'not in'
+                restrict_domain_notin = domain_line.filtered(lambda d:
+                    product_tmpl.attribute_line_ids.filtered(
+                lambda l: l.attribute_id in domain_line.attribute_id and l.default_val not in domain_line.value_ids.ids) and d.condition == 'not in')
+                # check restriction 'in' with operator
+                restrict_domain_in_op = domain_line.filtered(
+                    lambda d: (restrict_domain_in and d.operator == 'and') or (restrict_domain_in and d.operator == 'or'))
+                list_op_in.append(restrict_domain_in_op.attribute_id.name)
+                list_op_in.append(restrict_domain_in_op.value_ids.name)
+                # check restriction 'not in' with operator
+                restrict_domain_notin_op = domain_line.filtered(
+                    lambda d: (restrict_domain_notin and d.operator == 'and') or (restrict_domain_notin and d.operator == 'or'))
+                list_op_notin.append(restrict_domain_notin_op.attribute_id.name)
+                list_op_notin.append(restrict_domain_notin_op.value_ids.name)
+            if restrict_domain_in_op:
+                raise ValidationError(_('%s %s is only available with %s') % (
                     product_att_value.attribute_id.name, product_att_value.name,
-                    att_line.attribute_id.name, att_line.default_val.name,
+                    ",".join([str(x) for x in list_op_in if x])
+                    ))
+            if restrict_domain_notin_op:
+                raise ValidationError(_('%s %s is not available with %s') % (
                     product_att_value.attribute_id.name, product_att_value.name,
-                    domain_line.attribute_id.name, domain_line.value_ids.name
+                    ",".join([str(x) for x in list_op_notin if x])
                     ))
 
         # Check if custom values are allowed
@@ -1043,10 +1065,10 @@ class ProductConfigSession(models.Model):
             'custom').mapped('attribute_id').ids
         custom_lines_with_error = []
         if not set(custom_vals.keys()) <= set(custom_attr_ids):
-            product_att_line = self.env['product.attribute.line'].browse(
-                list(set(custom_vals.keys()) - set(custom_attr_ids)))
-            for line in product_att_line:
-                custom_lines_with_error.append(line.attribute_id.name)
+            attr_line_vals = list(set(custom_vals.keys()) - set(custom_attr_ids))
+            product_att = self.env['product.attribute'].browse(attr_line_vals)
+            for line in product_att:
+                custom_lines_with_error.append(line.name)
         if custom_lines_with_error:
             raise ValidationError(_('Sorry! Request can not be completed.\n There are some changes in product-template configuration. Current session has wrong values for fields : %s.\
              Please delete your current session or contact to your administrator in order to proceed ') % (",".join(custom_lines_with_error)))

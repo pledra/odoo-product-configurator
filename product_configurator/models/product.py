@@ -170,10 +170,11 @@ class ProductTemplate(models.Model):
     def _check_default_value_domains(self):
         try:
             self._check_default_values()
-        except ValidationError:
+        except ValidationError as e:
             raise ValidationError(
                 _('Restrictions added make the current default values '
-                  'generate an invalid configuration')
+                  'generate an invalid configuration.\
+                  According to current restrictions %s') % (e.name)
             )
 
     @api.multi
