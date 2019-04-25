@@ -19,6 +19,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'product_config_session',
             {}
         )
+        is_public_user = request.env.user.has_group('base.group_public')
         if product_config_sessions and product_config_sessions.get(product.id):
             cfg_session = cfg_session_obj.browse(
                 int(product_config_sessions.get(product.id))
@@ -27,7 +28,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         # Retrieve and active configuration session or create a new one
         if not cfg_session:
             cfg_session = cfg_session_obj.sudo().create_get_session(
-                product.id, force_create=True)
+                product.id, force_create=is_public_user)
             if product_config_sessions:
                 request.session['product_config_session'].update({
                     product.id: cfg_session.id
