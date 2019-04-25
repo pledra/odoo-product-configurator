@@ -122,7 +122,7 @@ class ProductConfigurator(models.TransientModel):
                   'configuration will erase reset/clear all values')
             )
 
-    def get_onchange_domains(self, values, cfg_val_ids):
+    def get_onchange_domains(self, values, cfg_val_ids, product_tmpl_id=False, config_session_id=False):
         """Generate domains to be returned by onchange method in order
         to restrict the availble values of dynamically inserted fields
 
@@ -134,9 +134,13 @@ class ProductConfigurator(models.TransientModel):
         """
 
         field_prefix = self._prefixes.get('field_prefix')
+        if not product_tmpl_id:
+            product_tmpl_id = self.product_tmpl_id
+        if not config_session_id:
+            config_session_id = self.config_session_id
 
         domains = {}
-        for line in self.product_tmpl_id.attribute_line_ids.sorted():
+        for line in product_tmpl_id.attribute_line_ids.sorted():
             field_name = field_prefix + str(line.attribute_id.id)
 
             if field_name not in values:
@@ -145,7 +149,7 @@ class ProductConfigurator(models.TransientModel):
             vals = values[field_name]
 
             # get available values
-            avail_ids = self.config_session_id.values_available(
+            avail_ids = config_session_id.values_available(
                 check_val_ids=line.value_ids.ids, value_ids=cfg_val_ids)
             domains[field_name] = [('id', 'in', avail_ids)]
 
@@ -158,11 +162,14 @@ class ProductConfigurator(models.TransientModel):
                     continue
         return domains
 
-    def get_onchange_vals(self, cfg_val_ids):
+    def get_onchange_vals(self, cfg_val_ids, config_session_id=None):
         """Onchange hook to add / modify returned values by onchange method"""
-        product_img = self.config_session_id.get_config_image(cfg_val_ids)
-        price = self.config_session_id.get_cfg_price(cfg_val_ids)
-        weight = self.config_session_id.get_cfg_weight(value_ids=cfg_val_ids)
+        if not config_session_id:
+            config_session_id = self.config_session_id
+
+        product_img = config_session_id.get_config_image(cfg_val_ids)
+        price = config_session_id.get_cfg_price(cfg_val_ids)
+        weight = config_session_id.get_cfg_weight(value_ids=cfg_val_ids)
 
         return {
             'product_img': product_img,
@@ -171,7 +178,8 @@ class ProductConfigurator(models.TransientModel):
             'price': price,
         }
 
-    def get_form_vals(self, dynamic_fields, domains, cfg_val_ids=None):
+    def get_form_vals(self, dynamic_fields, domains, cfg_val_ids=None,
+                      product_tmpl_id=None, config_session_id=None):
         """Generate a dictionary to return new values via onchange method.
         Domains hold the values available, this method enforces these values
         if a selection exists in the view that is not available anymore.
@@ -181,7 +189,7 @@ class ProductConfigurator(models.TransientModel):
 
         :returns vals: Dictionary passed to {'value': vals} by onchange method
         """
-
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ",dynamic_fields,domains,product_tmpl_id,config_session_id)
         vals = {}
         dynamic_fields = {k: v for k, v in dynamic_fields.items() if v}
         for k, v in dynamic_fields.items():
@@ -197,10 +205,12 @@ class ProductConfigurator(models.TransientModel):
             elif v not in available_val_ids:
                 dynamic_fields.update({k: None})
                 vals[k] = None
+            else:
+                vals[k] = v
 
         final_cfg_val_ids = list(dynamic_fields.values())
 
-        vals.update(self.get_onchange_vals(final_cfg_val_ids))
+        vals.update(self.get_onchange_vals(final_cfg_val_ids, config_session_id))
         # To solve the Multi selection problem removing extra []
         if 'value_ids' in vals:
             val_ids = vals['value_ids'][0]
@@ -214,6 +224,28 @@ class ProductConfigurator(models.TransientModel):
         """ Override the onchange wrapper to return domains to dynamic
         fields as onchange isn't triggered for non-db fields
         """
+        # when it is called from controller then
+        print("##################### valuesvalues ",values)
+        product_tmpl_id = self.env['product.template'].browse(
+            values.get('product_tmpl_id', []))
+        if not product_tmpl_id:
+            product_tmpl_id = self.product_tmpl_id
+
+        config_session_id = self.env['product.config.session'].browse(
+            values.get('config_session_id', []))
+        if not config_session_id:
+            config_session_id = self.config_session_id
+
+        state = values.get('state', False)
+        if not state:
+            state = self.state
+
+        cfg_vals = self.env['product.attribute.value']
+        if values.get('value_ids', []):
+            cfg_vals = self.env['product.attribute.value'].browse(
+                values.get('value_ids', [])[0][2])
+        if not cfg_vals:
+            cfg_vals = self.value_ids
 
         field_type = type(field_name)
 
@@ -224,14 +256,13 @@ class ProductConfigurator(models.TransientModel):
                 values, field_name, field_onchange)
             return res
 
-        cfg_vals = self.value_ids
 
         view_val_ids = set()
         view_attribute_ids = set()
 
         try:
-            cfg_step_id = int(self.state)
-            cfg_step = self.product_tmpl_id.config_step_line_ids.filtered(
+            cfg_step_id = int(state)
+            cfg_step = product_tmpl_id.config_step_line_ids.filtered(
                 lambda x: x.id == cfg_step_id)
         except Exception:
             cfg_step = self.env['product.config.step.line']
@@ -266,8 +297,15 @@ class ProductConfigurator(models.TransientModel):
         # Combine database values with wizard values_available
         cfg_val_ids = cfg_vals.ids + list(view_val_ids)
 
-        domains = self.get_onchange_domains(values, cfg_val_ids)
-        vals = self.get_form_vals(dynamic_fields, domains)
+        domains = self.get_onchange_domains(
+            values, cfg_val_ids, product_tmpl_id, config_session_id)
+        vals = self.get_form_vals(
+            dynamic_fields=dynamic_fields,
+            domains=domains,
+            product_tmpl_id=product_tmpl_id,
+            config_session_id=config_session_id,
+        )
+        print("########################vals ",vals)
         return {'value': vals, 'domain': domains}
 
     config_session_id = fields.Many2one(

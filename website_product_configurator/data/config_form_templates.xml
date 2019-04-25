@@ -47,10 +47,14 @@
 
     <!-- Base view for the form view of each configuration step -->
     <template id="config_form" name="Product Configuration Form">
+      <div>
+        <input name="product_tmpl_id" t-att-value="main_object.id" class="product_tmpl_id" type="hidden"/>
+        <input name="config_session_id" t-att-value="cfg_session.id" class="config_session_id" type="hidden"/>
+      </div>
       <div class="tab-content">
         <t t-foreach="cfg_step_lines" t-as="cfg_step_line">
             <!-- <t t-set="line_val_ids" t-value="line.attribute_line_ids.mapped('value_ids') | available_value_ids"/> -->
-            <div t-attf-id="cfg_step_{{cfg_step_line.id}}" class="tab-pane container fade">
+            <div t-attf-id="cfg_step_{{cfg_step_line.id}}" t-att-class="'tab-pane container fade' + (cfg_step_line.id == active_step.id and ' active in' or '')">
               <t t-call="{{cfg_step_line.get_website_template()}}"/>
             </div>
         </t>
@@ -63,7 +67,7 @@
         <div class="col-lg-12">
           <ul class="nav nav-tabs">
             <t t-foreach="cfg_step_lines" t-as="cfg_step_line">
-              <li class="nav-item">
+              <li t-att-class="'nav-item' + (cfg_step_line.id == active_step.id and ' active' or '')">
                 <a class="nav-link" data-toggle="tab" t-attf-href="#cfg_step_{{cfg_step_line.id}}" t-esc="cfg_step_line.config_step_id.name"/>
               </li>
             </t>
@@ -84,7 +88,7 @@
                       t-att-data-oe-id="line.attribute_id.id"
                       t-att-multiple="'multiple' if line.multi else None"
                       t-att-name="line.attribute_id.id"
-                      t-att-class="'form-control'">
+                      t-att-class="'form-control config_attribute'">
                       <!-- t-att-disabled="'disabled' if not available_val_ids and not line.custom else None" -->
                 <option name=""/>
                 <t t-foreach="line.value_ids" t-as="value">

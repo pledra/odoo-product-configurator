@@ -7,7 +7,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
 	    var config_form = $("#product_config_form");
 
 	 	/* Monitor input changes in the configuration form and call the backend onchange method*/
-	 	config_form.find(':input').change(function() {
+	 	config_form.find('.config_attribute').change(function(ev) {
 			ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
                 form_values: config_form.serializeArray(),
                 field_name: $(this)[0].name,
