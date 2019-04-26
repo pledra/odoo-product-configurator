@@ -1,3 +1,4 @@
+import itertools
 from ast import literal_eval
 
 from odoo import api, fields, models, tools, _
@@ -1052,12 +1053,12 @@ class ProductConfigSession(models.Model):
             if restrict_domain_in_op:
                 raise ValidationError(_('%s %s is only available with %s') % (
                     product_att_value.attribute_id.name, product_att_value.name,
-                    ",".join([str(x) for x in list_op_in if x])
+                    str(dict(itertools.zip_longest(*[iter([x for x in list_op_in if x])] * 2, fillvalue="")))[1:-1]
                     ))
             if restrict_domain_notin_op:
                 raise ValidationError(_('%s %s is not available with %s') % (
                     product_att_value.attribute_id.name, product_att_value.name,
-                    ",".join([str(x) for x in list_op_notin if x])
+                    str(dict(itertools.zip_longest(*[iter([x for x in list_op_notin if x])] * 2, fillvalue="")))[1:-1]
                     ))
 
         # Check if custom values are allowed
