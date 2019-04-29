@@ -189,7 +189,6 @@ class ProductConfigurator(models.TransientModel):
 
         :returns vals: Dictionary passed to {'value': vals} by onchange method
         """
-        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ",dynamic_fields,domains,product_tmpl_id,config_session_id)
         vals = {}
         dynamic_fields = {k: v for k, v in dynamic_fields.items() if v}
         for k, v in dynamic_fields.items():
@@ -225,7 +224,6 @@ class ProductConfigurator(models.TransientModel):
         fields as onchange isn't triggered for non-db fields
         """
         # when it is called from controller then
-        print("##################### valuesvalues ",values)
         product_tmpl_id = self.env['product.template'].browse(
             values.get('product_tmpl_id', []))
         if not product_tmpl_id:
@@ -305,7 +303,6 @@ class ProductConfigurator(models.TransientModel):
             product_tmpl_id=product_tmpl_id,
             config_session_id=config_session_id,
         )
-        print("########################vals ",vals)
         return {'value': vals, 'domain': domains}
 
     config_session_id = fields.Many2one(

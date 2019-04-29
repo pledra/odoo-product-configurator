@@ -12,6 +12,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 form_values: config_form.serializeArray(),
                 field_name: $(this)[0].name,
             }).then(function(data) {
+                var values = data.value;
+                var domains = data.domain;
             	debugger;
             });
 		});
