@@ -26,9 +26,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
 
         # Retrieve and active configuration session or create a new one
-        if not cfg_session:
+        if not cfg_session or not cfg_session.exists():
             cfg_session = cfg_session_obj.sudo().create_get_session(
-                product.id, force_create=is_public_user)
+                product.id,
+                force_create=is_public_user,
+                user_id=request.env.user.id
+            )
             if product_config_sessions:
                 request.session['product_config_session'].update({
                     product.id: cfg_session.id
@@ -37,6 +40,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 request.session['product_config_session'] = {
                     product.id: cfg_session.id
                 }
+        if (cfg_session.user_id.has_group('base.group_public') and not
+                is_public_user):
+            cfg_session.user_id = request.env.user
 
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
