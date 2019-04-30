@@ -231,4 +231,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
     @http.route('/website_product_configurator/save_configuration',
                 type='json', methods=['POST'], auth="public", website=True)
     def save_configuration(self, form_values):
-        form_values = self.get_dictionary_from_form_vals(form_values)
+        product_configurator_obj = request.env['product.configurator']
+        result = self.get_session_and_product(form_values)
+        config_session_id = result.get('config_session')
+        product_template_id = result.get('product_tmpl')
+
+        form_values = self.get_dictionary_from_form_vals(
+            form_values, config_session_id, product_template_id)
+        try:
+            config_session_id.update_config(attr_val_dict=form_values)
+        except Exception:
+            return False
+        return True
