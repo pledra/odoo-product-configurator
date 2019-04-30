@@ -829,6 +829,20 @@ class ProductConfigSession(models.Model):
         return open_step_lines.sorted()
 
     @api.model
+    def get_all_step_lines(self, product_tmpl_id=None):
+        """
+        Returns a recordset of configuration step lines of product_tmpl_id
+
+        :param product_tmpl_id: record-set of product.template
+        :returns: recordset of all configuration steps
+        """
+        if not product_tmpl_id:
+            product_tmpl_id = self.product_tmpl_id
+
+        open_step_lines = product_tmpl_id.config_step_line_ids
+        return open_step_lines.sorted()
+
+    @api.model
     def get_adjacent_steps(self, value_ids=None, active_step_line_id=None):
         """Returns the previous and next steps given the configuration passed
         via value_ids and the active step line passed via cfg_step_line_id."""
