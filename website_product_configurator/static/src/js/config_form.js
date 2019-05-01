@@ -25,6 +25,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
                         if (condition == 'in' || config_form == '=') {
                             if ($.inArray(parseInt(option.value), domain[0][2]) < 0) {
                                 $(option).attr('disabled', true);
+                                if (option.selected) {
+                                    option.selected = false;
+                                };
                             } else {
                                 $(option).attr('disabled', false);
                             };
@@ -33,6 +36,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
                                 $(option).attr('disabled', false);
                             } else {
                                 $(option).attr('disabled', true);
+                                if (option.selected) {
+                                    option.selected = false;
+                                };
                             };
                         };
                     });
@@ -53,7 +59,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                         };
                     };
                 });
-            	debugger;
+            	//debugger;
             });
 		});
 
