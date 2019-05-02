@@ -174,7 +174,7 @@ class ProductTemplate(models.Model):
             raise ValidationError(
                 _('Restrictions added make the current default values '
                   'generate an invalid configuration.\
-                  According to current restrictions %s') % (e.name)
+                  \n%s') % (e.name)
             )
 
     @api.multi
