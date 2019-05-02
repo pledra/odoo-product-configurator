@@ -1025,59 +1025,32 @@ class ProductConfigSession(models.Model):
         )
         if set(value_ids) - set(avail_val_ids):
             restrict_val = list(set(value_ids) - set(avail_val_ids))[:1]
-            product_att_value = self.env['product.attribute.value'].browse(restrict_val)
-            restriction = product_tmpl.config_line_ids.filtered(lambda x: restrict_val[0] in x.value_ids.ids).domain_id
-            list_op_in = []
-            list_op_notin = []
-            for domain_line in restriction.domain_line_ids:
-                # check restriction 'in'
-                restrict_domain_in = domain_line.filtered(lambda d:
-                    product_tmpl.attribute_line_ids.filtered(
-                lambda l: l.attribute_id in d.attribute_id and l.default_val not in d.value_ids.ids) and d.condition == 'in')
-                # check restriction 'in' with operator
-                restrict_domain_in_op = domain_line.filtered(
-                    lambda d: (restrict_domain_in and d.operator == 'and') or (restrict_domain_in and d.operator == 'or'))
-
-                attr_line = product_tmpl.attribute_line_ids.mapped('default_val')
-                if domain_line.value_ids not in attr_line:
-                    list_op_in.append(restrict_domain_in_op.attribute_id.name)
-                    list_op_in.append(restrict_domain_in_op.value_ids.name)
-
-                # check restriction 'not in'
-                restrict_domain_notin = domain_line.filtered(lambda d:
-                    product_tmpl.attribute_line_ids.filtered(
-                lambda l: l.attribute_id in d.attribute_id and l.default_val not in d.value_ids.ids) and d.condition == 'not in')
-                # check restriction 'not in' with operator
-                restrict_domain_notin_op = domain_line.filtered(
-                    lambda d: (restrict_domain_notin and d.operator == 'and') or (restrict_domain_notin and d.operator == 'or'))
-
-                if domain_line.value_ids in attr_line:
-                    list_op_notin.append(restrict_domain_notin_op.attribute_id.name)
-                    list_op_notin.append(restrict_domain_notin_op.value_ids.name)
-
-            if list_op_in:
-                raise ValidationError(_('%s %s is only available with %s') % (
-                    product_att_value.attribute_id.name, product_att_value.name,
-                    str(dict(itertools.zip_longest(*[iter([x for x in list_op_in if x])] * 2))).replace("'", '')[1:-1],
-                    ))
-            if list_op_notin:
-                raise ValidationError(_('%s %s is not available with %s') % (
-                    product_att_value.attribute_id.name, product_att_value.name,
-                    str(dict(itertools.zip_longest(*[iter([x for x in list_op_notin if x])] * 2))).replace("'", '')[1:-1],
-                    ))
+            product_att_value = self.env['product.attribute.value'].browse(
+                restrict_val)
+            raise ValidationError(_('According to current configuration and\
+             restrictions %s %s is not available.') % (
+             product_att_value.attribute_id.name, product_att_value.name))
 
         # Check if custom values are allowed
         custom_attr_ids = product_tmpl.attribute_line_ids.filtered(
             'custom').mapped('attribute_id').ids
         custom_lines_with_error = []
         if not set(custom_vals.keys()) <= set(custom_attr_ids):
-            attr_line_vals = list(set(custom_vals.keys()) - set(custom_attr_ids))
-            product_att = self.env['product.attribute'].browse(attr_line_vals)
+            attr_line_vals = list(
+                set(custom_vals.keys()) - set(custom_attr_ids))
+            product_att = self.env['product.attribute'].browse(
+                attr_line_vals)
             for line in product_att:
                 custom_lines_with_error.append(line.name)
         if custom_lines_with_error:
-            raise ValidationError(_('Sorry! Request can not be completed.\n There are some changes in product-template configuration. Current session has wrong values for fields : %s.\
-             Please delete your current session or contact to your administrator in order to proceed ') % (",".join(custom_lines_with_error)))
+            raise ValidationError(_('Sorry! Request can not be\
+             completed.\n There are some changes in product-template\
+             configuration. Current session has wrong values for fields\
+              : %s. Please delete your current session or contact\
+               to your administrator in order to proceed') % (
+               ",".join(custom_lines_with_error)
+              )
+            )
 
         # Check if there are multiple values passed for non-multi attributes
         mono_attr_lines = product_tmpl.attribute_line_ids.filtered(
@@ -1087,8 +1060,12 @@ class ProductConfigSession(models.Model):
             if len(set(line.value_ids.ids) & set(value_ids)) > 1:
                 lines_with_error.append(line.attribute_id.name)
         if lines_with_error:
-            raise ValidationError(_('Sorry! Request can not be completed.\n There are some changes in product-template configuration. Current session has multiple values for fields : %s.\
-             Please delete your current session or contact to your administrator in order to proceed ') % (",".join(lines_with_error)))
+            raise ValidationError(_('Sorry! Request can not be completed.\
+                \n There are some changes in product-template configuration.\
+                 Current session has multiple values for fields : %s.\
+                 Please delete your current session or contact to your\
+                  administrator in order to proceed') % (
+                  ",".join(lines_with_error)))
         return True
 
     @api.model
