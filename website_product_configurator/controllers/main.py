@@ -5,6 +5,8 @@ from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 class ProductConfigWebsiteSale(WebsiteSale):
 
+    # TODO :: remaining part : FOR CUSTOM
+
     @http.route()
     def product(self, product, category='', search='', **kwargs):
         # Use parent workflow for regular products
@@ -18,6 +20,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         # Retrieve and active configuration session or create a new one
         cfg_session = cfg_session_obj.create_get_session(product.id)
 
+        # Set config-step in config session when it creates from wizard
+        # because select state not exist on website
+        if not cfg_session.config_step:
+            self.set_config_next_step(cfg_session)
+
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
 
@@ -27,6 +34,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         """Return dictionary with values required for website template
         rendering"""
 
+        # if no config step exist
         open_cfg_step_lines = cfg_session.get_open_step_lines()
         active_step = cfg_session.get_active_step()
         cfg_step_lines = cfg_session.get_all_step_lines()
@@ -38,9 +46,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
             active_step = cfg_step_lines[:1]
         vals = {
             'cfg_session': cfg_session,
-            'cfg_step_lines': cfg_step_lines or self.get_default_step(),
-            'open_cfg_step_lines': (open_cfg_step_lines or
-                                    self.get_default_step()),
+            'cfg_step_lines': cfg_step_lines,
+            'open_cfg_step_lines': open_cfg_step_lines,
             'active_step': active_step,
             'value_ids': cfg_session.value_ids.ids,
             'available_value_ids': available_value_ids,
@@ -58,6 +65,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
         )
 
     def remove_prefix(self, values):
+        """Remove field prefix from dynamic field name
+        before sending data to js"""
         product_configurator_obj = request.env['product.configurator']
         field_prefix = product_configurator_obj._prefixes.get('field_prefix')
         custom_field_prefix = product_configurator_obj._prefixes.get(
@@ -70,6 +79,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
         return new_values
 
     def remove_recursive_list(self, values):
+        """Return dictionary by removing extra list
+        :param: values: dictionary having values in form [[4, 0, [2, 3]]]
+        :return: dictionary 
+        EX- {2: [2, 3]}"""
         new_values = {}
         for key, value in values.items():
             if isinstance(value, tuple):
@@ -79,12 +92,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
             new_values[key] = value
         return new_values
 
-    def get_default_step(self):
-        return self.env.ref(
-            'website_product_configurator.config_step_configure')
-
     def get_current_configuration(self, form_values,
                                   cfg_session, product_tmpl_id):
+        """Return list of value ids same as
+        we store in value_ids in session"""
         product_attribute_lines = product_tmpl_id.attribute_line_ids
         value_ids = []
         for attr_line in product_attribute_lines:
@@ -150,7 +161,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             product_tmpl_id, form_vals))
         return config_fields
 
-    # TODO :: remaining part : FOR CUSTOM
     def get_dictionary_from_form_vals(self, form_vals,
                                       config_session, product_tmpl_id):
         values = {}
@@ -219,8 +229,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         value_ids = self.get_current_configuration(
             form_values, config_session_id, product_template_id)
         open_cfg_step_lines = config_session_id.get_open_step_lines(value_ids)
-        if not open_cfg_step_lines:
-            open_cfg_step_lines = self.get_default_step()
 
         updates['value'] = self.remove_prefix(updates['value'])
         updates['value'] = self.remove_recursive_list(updates['value'])
@@ -228,9 +236,20 @@ class ProductConfigWebsiteSale(WebsiteSale):
         updates['open_cfg_step_lines'] = open_cfg_step_lines.ids
         return updates
 
+    def set_config_next_step(self, config_session_id, next_step=False):
+        # TODO :: If no config step exist
+        if not next_step:
+            adjacent_steps = config_session_id.get_adjacent_steps()
+            next_step = adjacent_steps.get('next_step', False)
+            if next_step:
+                next_step = '%s' % (next_step.id)
+        if next_step:
+            config_session_id.config_step = next_step
+        return next_step
+
     @http.route('/website_product_configurator/save_configuration',
                 type='json', methods=['POST'], auth="public", website=True)
-    def save_configuration(self, form_values):
+    def save_configuration(self, form_values, next_step=False):
         product_configurator_obj = request.env['product.configurator']
         result = self.get_session_and_product(form_values)
         config_session_id = result.get('config_session')
@@ -240,6 +259,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
             form_values, config_session_id, product_template_id)
         try:
             config_session_id.update_config(attr_val_dict=form_values)
-        except Exception:
-            return False
-        return True
+            next_step = self.set_config_next_step(config_session_id, next_step)
+            if next_step:
+                return {'next_step': next_step}
+            product = config_session_id.create_get_variant()
+            if product:
+                return {'product_id': product.id}
+        except Exception as Ex:
+            return {'error': Ex}
+        return {}

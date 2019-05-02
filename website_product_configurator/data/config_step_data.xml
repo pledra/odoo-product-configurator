@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <data>
-        <record id="config_step_configure" model="product.config.step">
-            <field name="name">Configure</field>
-        </record>
-
-    </data>
-</odoo>

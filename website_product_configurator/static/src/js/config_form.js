@@ -63,9 +63,10 @@ odoo.define('website_product_configurator.config_form', function (require) {
             });
 		});
 
-        function _onChangeConfigStep(event) {
+        function _onChangeConfigStep(event, next_step) {
             return ajax.jsonRpc("/website_product_configurator/save_configuration", 'call', {
                 form_values: config_form.serializeArray(),
+                next_step: next_step || false,
             }).then(function(data) {
                 if (!data) {
                     alert("ERROR");
@@ -73,10 +74,10 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 return data;
             });
         };
-
-        function configure_product() {
-            console.log("################### configure_product");
-        };
+        config_form.find('.config_step').click(function (event) {
+            var next_step = event.currentTarget.getAttribute('data-step-id')
+            _onChangeConfigStep(event, next_step)
+        });
 
         function active_step_body(next_step) {
             var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
@@ -87,29 +88,31 @@ odoo.define('website_product_configurator.config_form', function (require) {
             step_to_active.addClass('active in');
         };
 
-        config_form.find('.config_step').click(_onChangeConfigStep);
         config_form.submit(function (event) {
             event.preventDefault();
             event.stopPropagation();
 
             var result = _onChangeConfigStep(event);
             result.then(function (data) {
-                var next_step;
                 if (data) {
-                    var config_step = config_form.find('.nav.nav-tabs').find('.nav-item.config_step.active');
-                    if (config_step.length) {
-                        config_step.removeClass('active');
-                        next_step = config_step.next();
-                    } else {
-                        config_step = config_form.find('.nav.nav-tabs').find('.nav-item.config_step');
-                        next_step = $(config_step[0])
-                    };
-                    if (!next_step.length) {
-                        configure_product();
-                    } else {
-                        next_step.addClass('active');
-                        active_step_body(next_step)
+                    var next_step;
+                    if (data.next_step) {
+                        var config_step_header = config_form.find('.nav.nav-tabs')
+                        var config_step = config_step_header.find('.nav-item.config_step.active');
+                        if (config_step.length) {
+                            config_step.removeClass('active');
+                        }
+                        var next_step = config_step_header.find('.nav-item.config_step[data-step-id=' + data.next_step + ']')
+                        if (next_step.length) {
+                            next_step.addClass('active');
+                            active_step_body(next_step)
+                        }
                     }
+
+                    //     next_step = config_step.next();
+                    //     config_step = config_form.find('.nav.nav-tabs').find('.nav-item.config_step');
+                    //     next_step = $(config_step[0])
+                    // };
                 };
             });
         });
