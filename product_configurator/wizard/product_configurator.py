@@ -893,6 +893,7 @@ class ProductConfigurator(models.TransientModel):
             )
 
         cfg_step_lines = self.product_tmpl_id.config_step_line_ids
+        # state, config_session, product_template_id
         if not cfg_step_lines:
             if (self.value_ids or self.custom_value_ids)\
                     and not self.state == 'select':

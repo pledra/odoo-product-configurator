@@ -91,7 +91,7 @@
                       t-att-data-oe-id="line.attribute_id.id"
                       t-att-multiple="'multiple' if line.multi else None"
                       t-att-name="line.attribute_id.id"
-                      t-att-class="'form-control config_attribute'">
+                      t-att-class="'form-control config_attribute' + (line.required and ' required_config_attrib' or '')">
                       <!-- t-att-disabled="'disabled' if not available_val_ids and not line.custom else None" -->
                 <option name=""/>
                 <t t-foreach="line.value_ids" t-as="value">
@@ -107,6 +107,109 @@
                   </t>
             </select>
         </t>
+    </template>
+
+
+
+    <!-- Product configurator checkout -->
+
+    <template id="cfg_session" name="Configuration Session">
+      <t t-call="website.layout">
+          <t t-set="additional_title" t-value="product_tmpl.name"/>
+          <div itemscope="itemscope" itemtype="http://schema.org/Product" id="wrap" class="js_sale oe_website_sale">
+            <section t-attf-class="container" id="product_detail">
+              <div class="row">
+                <div class="col-xs-12 col-sm-4">
+                    <ul class="mt16 product_vals">
+                      <t t-foreach="get_product_vals(cfg_session)" t-as="val">
+                        <li>
+                            <strong t-field="val.attribute_id.name"/>:
+                            <t t-if="val._name == 'product.attribute.value'">
+                              <span t-field="val.name"/>
+                            </t>
+                            <t t-if="val._name == 'product.config.session.custom.value'">
+                              <span t-field="val.value"/>
+                              <t t-foreach="val.attachment_ids" t-as="attachment">
+                                <br t-if="not attachment_first"/>
+                                <span t-field="attachment.name"/>
+                              </t>
+                            </t>
+                          </li>
+                      </t>
+                    </ul>
+                </div>
+
+                <div class="col-xs-12 col-md-4">
+                  image will display here
+                  <!-- <img id="cfg_image" itemprop="image" class="img img-responsive img-center" t-att-src="get_config_image(product_tmpl, cfg_session.value_ids.ids)"/> -->
+                </div>
+
+                <div class="col-xs-12 col-sm-4">
+                    <h1 itemprop="name" t-field="product_tmpl.name">Product Name</h1>
+                    <!-- <span itemprop="url" style="display:none;" t-attf-hre="/configurator/#{slug(product)}"/> -->
+
+                    <form action="/shop/cart/update" class="js_add_cart_variants" method="post">
+                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                      <input type="hidden" class="product_id" name="product_id" t-att-value="product_id.id" />
+
+                      <div class="js_product">
+                        <t t-placeholder="select">
+                          <input type="hidden" class="cfg_session_id" name="cfg_session_id" t-att-value="cfg_session.id"/>
+                        </t>
+
+                        <div itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer" class="product_price mt16">
+                            <h4 class="oe_price_h4 css_editable_mode_hidden">
+                                <span class="text-danger oe_default_price" style="text-decoration: line-through; white-space: nowrap;"
+                                  t-field="cfg_session.price"
+                                  t-options='{
+                                    "widget": "monetary",
+                                    "from_currency": "product_tmpl.currency_id",
+                                    "display_currency": "website.currency_id"
+                                 }'/>
+                                <b class="oe_price" style="white-space: nowrap;"
+                                  t-field="cfg_session.price"
+                                  t-options='{
+                                     "widget": "monetary",
+                                     "display_currency": "website.currency_id"
+                                 }'/>
+                                <span itemprop="price" style="display:none;" t-esc="cfg_session.price"/>
+                                <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
+                            </h4>
+                            <h4 class="css_non_editable_mode_hidden">
+                              <span t-field="cfg_session.price"
+                                    t-options='{
+                                       "widget": "monetary",
+                                      "display_currency": "product_tmpl.currency_id"
+                                    }'/>
+                            </h4>
+                            <h4 class="hidden oe_not_available bg-warning">Product not available</h4>
+                        </div>
+
+                        <div class="mt8">
+                          <div class="input-group oe_website_spinner css_quantity">
+                              <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json">
+                                  <i class="fa fa-minus"></i>
+                              </a>
+                              <input type="text" class="js_quantity form-control" data-min="1" name="add_qty" value="1"/>
+                              <a t-attf-href="#" class="mb8 input-group-addon float_left js_add_cart_json">
+                                  <i class="fa fa-plus"></i>
+                              </a>
+                          </div>
+                          <button id="add_to_cart" type="submit" class="btn btn-default pull-left mb32 mt8 btn-primary">
+                            Add to Cart
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+
+                    <hr t-if="product_tmpl.description_sale"/>
+                    <div><p t-field="product_tmpl.description_sale" class="text-muted"/></div>
+                </div>
+              </div>
+            </section>
+            <div itemprop="description" t-field="product_tmpl.website_description" class="oe_structure mt16" id="product_full_description"/>
+          </div>
+      </t>
     </template>
 
 </odoo>

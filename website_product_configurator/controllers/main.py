@@ -1,6 +1,17 @@
 from odoo import http
 from odoo.http import request
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+from odoo.addons.http_routing.models.ir_http import slug
+
+
+def get_pricelist():
+    sale_order = request.env.context.get('sale_order')
+    if sale_order:
+        pricelist = sale_order.pricelist_id
+    else:
+        partner = request.env.user.partner_id
+        pricelist = partner.property_product_pricelist
+    return pricelist
 
 
 class ProductConfigWebsiteSale(WebsiteSale):
@@ -264,7 +275,40 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 return {'next_step': next_step}
             product = config_session_id.create_get_variant()
             if product:
-                return {'product_id': product.id}
+                redirect_url = "/website_product_configurator/open_product"
+                redirect_url += '/%s' % (slug(config_session_id))
+                redirect_url += '/%s' % (slug(product))
+                return {
+                    'product_id': product.id,
+                    'config_session': config_session_id.id,
+                    'redirect_url': redirect_url,
+                }
         except Exception as Ex:
             return {'error': Ex}
         return {}
+
+    @http.route(
+        '/website_product_configurator/open_product/<model("product.config.session"):cfg_session>/<model("product.product"):product_id>',
+        type='http', auth="public", website=True)
+    def cfg_session(self, cfg_session, product_id, **post):
+        try:
+            product_tmpl = cfg_session.product_tmpl_id
+        except:
+            product_tmpl = product_id.product_tmpl_id
+
+        def _get_product_vals(cfg_session):
+            vals = cfg_session.value_ids
+            # vals += cfg_session.custom_value_ids
+            return sorted(vals, key=lambda obj: obj.attribute_id.sequence)
+
+        pricelist = get_pricelist()
+        values = {
+            'get_product_vals': _get_product_vals,
+            # 'get_config_image': self.get_config_image,
+            'product_id': product_id,
+            'product_tmpl': product_tmpl,
+            'pricelist': pricelist,
+            'cfg_session': cfg_session,
+        }
+        return request.render(
+            "website_product_configurator.cfg_session", values)

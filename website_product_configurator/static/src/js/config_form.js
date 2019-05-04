@@ -64,19 +64,57 @@ odoo.define('website_product_configurator.config_form', function (require) {
 		});
 
         function _onChangeConfigStep(event, next_step) {
-            return ajax.jsonRpc("/website_product_configurator/save_configuration", 'call', {
-                form_values: config_form.serializeArray(),
-                next_step: next_step || false,
-            }).then(function(data) {
-                if (!data) {
-                    alert("ERROR");
-                }
-                return data;
-            });
+            var flag = _check_required_fields(event)
+            if (flag) {
+                return ajax.jsonRpc("/website_product_configurator/save_configuration", 'call', {
+                    form_values: config_form.serializeArray(),
+                    next_step: next_step || false,
+                }).then(function(data) {
+                    if (data.error) {
+                        alert(data.error);
+                    };
+                    return data;
+                });
+            } else {
+                return false;
+            }
         };
+        
+        function _display_tooltip(config_attribut) {
+            $(config_attribut).focus();
+            $(config_attribut).tooltip({
+                title: "Please select an item in the list.",
+                placement: "bottom",
+                trigger: "manual",
+                delay: {show: 500, hide: 500},
+                template: "<div class='tooltip'><div class='tooltip-arrow'></div><div class='tooltip-inner'></div></div>"
+            }).tooltip('show');
+            setTimeout(function(){
+                $(config_attribut).tooltip('hide');
+            }, 2000);
+        };
+
+        function _check_required_fields(event) {
+            var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
+            var config_attr = active_step.find('.form-control.config_attribute');
+            var flag = true;
+            for (var i = 0; i < config_attr.length; i++) {
+               if ($(config_attr[i]).hasClass('required_config_attrib') && !config_attr[i].value) {
+                    flag = false;
+                    _display_tooltip(config_attr[i]);
+                    break;
+               };
+            };
+            return flag;
+        };
+
         config_form.find('.config_step').click(function (event) {
-            var next_step = event.currentTarget.getAttribute('data-step-id')
-            _onChangeConfigStep(event, next_step)
+            var next_step = event.currentTarget.getAttribute('data-step-id');
+            var result = _onChangeConfigStep(event, next_step);
+            if (!result) {
+                event.preventDefault();
+                event.stopPropagation();
+            };
         });
 
         function active_step_body(next_step) {
@@ -88,33 +126,40 @@ odoo.define('website_product_configurator.config_form', function (require) {
             step_to_active.addClass('active in');
         };
 
+        function add_required_attr(config_step) {
+            config_step = config_form.find('.tab-content').find('tab-pane container[data-step-id=' + config_step + ']');
+            _.each(config_step.find('.form-control.config_attribute'), function(attribute_field) {
+                $(attribute_field).attr('required', true);
+            });
+        };
+
         config_form.submit(function (event) {
             event.preventDefault();
             event.stopPropagation();
 
             var result = _onChangeConfigStep(event);
-            result.then(function (data) {
-                if (data) {
-                    var next_step;
-                    if (data.next_step) {
-                        var config_step_header = config_form.find('.nav.nav-tabs')
-                        var config_step = config_step_header.find('.nav-item.config_step.active');
-                        if (config_step.length) {
-                            config_step.removeClass('active');
-                        }
-                        var next_step = config_step_header.find('.nav-item.config_step[data-step-id=' + data.next_step + ']')
-                        if (next_step.length) {
-                            next_step.addClass('active');
-                            active_step_body(next_step)
-                        }
-                    }
-
-                    //     next_step = config_step.next();
-                    //     config_step = config_form.find('.nav.nav-tabs').find('.nav-item.config_step');
-                    //     next_step = $(config_step[0])
-                    // };
-                };
-            });
+            if (result) {
+                result.then(function (data) {
+                    if (data) {
+                        var next_step;
+                        if (data.next_step) {
+                            var config_step_header = config_form.find('.nav.nav-tabs');
+                            var config_step = config_step_header.find('.nav-item.config_step.active');
+                            if (config_step.length) {
+                                config_step.removeClass('active');
+                            }
+                            var next_step = config_step_header.find('.nav-item.config_step[data-step-id=' + data.next_step + ']');
+                            if (next_step.length) {
+                                next_step.addClass('active');
+                                active_step_body(next_step);
+                            }
+                        };
+                        if (data.redirect_url) {
+                            window.location = data.redirect_url;
+                        };
+                    };
+                });
+            }
         });
 	 });
 
