@@ -65,10 +65,13 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         function _onChangeConfigStep(event, next_step) {
             var flag = _check_required_fields(event)
+            var config_step_header = config_form.find('.nav.nav-tabs');
+            var current_config_step = config_step_header.find('.nav-item.config_step.active').attr('data-step-id');
             if (flag) {
                 return ajax.jsonRpc("/website_product_configurator/save_configuration", 'call', {
                     form_values: config_form.serializeArray(),
                     next_step: next_step || false,
+                    current_step: current_config_step || false,
                 }).then(function(data) {
                     if (data.error) {
                         alert(data.error);

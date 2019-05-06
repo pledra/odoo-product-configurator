@@ -777,6 +777,57 @@ class ProductConfigSession(models.Model):
             vals.update(parent_id=parent_id)
         return vals
 
+    @api.multi
+    def get_next_step(self, state, product_tmpl_id=False,
+                      value_ids=False, custom_value_ids=False):
+        """Find and return next step if exit. This usually
+        implies the next configuration step (if any) defined via the
+        config_step_line_ids on the product.template.
+        """
+
+        if not product_tmpl_id:
+            product_tmpl_id = self.product_tmpl_id
+        if not value_ids:
+            value_ids = self.value_ids
+        if not custom_value_ids:
+            custom_value_ids = self.custom_value_ids
+        if not state:
+            state = self.config_step
+
+        cfg_step_lines = product_tmpl_id.config_step_line_ids
+        if not cfg_step_lines:
+            if (value_ids or custom_value_ids)\
+                    and not state == 'select':
+                return False
+            elif not (value_ids or custom_value_ids)\
+                    and not state == 'select':
+                raise Warning(_("You must select at least one\
+                    attribute in order to configure a product"))
+            else:
+                return 'configure'
+
+        adjacent_steps = self.get_adjacent_steps()
+        next_step = adjacent_steps.get('next_step')
+        open_step_lines = list(map(
+            lambda x: '%s' % (x),
+            self.get_open_step_lines().ids
+        ))
+
+        session_config_step = self.config_step
+        if (session_config_step and
+                state != session_config_step and
+                session_config_step in open_step_lines):
+            next_step = self.config_step
+        else:
+            next_step = str(next_step.id) if next_step else None
+        if next_step:
+                pass
+        elif not (value_ids or custom_value_ids):
+            raise Warning(_("You must select at least one\
+                    attribute in order to configure a product"))
+        else:
+            return False
+        return next_step
 
     # TODO: Should be renamed to get_active_step_line
 
@@ -880,6 +931,35 @@ class ProductConfigSession(models.Model):
                     'previous_step': None if i == 0 else open_step_lines[i - 1]
                 })
         return adjacent_steps
+
+    def check_and_open_incomplete_step(self, value_ids=None,
+                                       custom_value_ids=None):
+        """ Check and open incomplete step if any
+        :param value_ids: recordset of product.attribute.value
+        """
+        if not value_ids:
+            value_ids = self.value_ids
+        if not custom_value_ids:
+            custom_value_ids = self.custom_value_ids
+        custom_attr_selected = custom_value_ids.mapped('attribute_id')
+        open_step_lines = self.get_open_step_lines()
+        step_to_open = False
+        for step in open_step_lines:
+            unset_attr_line = step.attribute_line_ids.filtered(
+                lambda attr_line:
+                attr_line.required and
+                not any([value in value_ids for value in attr_line.value_ids])
+                and not (
+                    attr_line.custom and
+                    attr_line.attribute_id in custom_attr_selected
+                )
+            )
+            if unset_attr_line:
+                step_to_open = step
+                break
+        if step_to_open:
+            return '%s' % (step_to_open.id)
+        return False
 
     @api.model
     def get_variant_search_domain(

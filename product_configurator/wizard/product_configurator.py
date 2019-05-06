@@ -870,19 +870,7 @@ class ProductConfigurator(models.TransientModel):
         More importantly it sets metadata on the context
         variable so the fields_get and fields_view_get methods can generate the
         appropriate dynamic content"""
-        wizard_action = {
-            'type': 'ir.actions.act_window',
-            'res_model': self._name,
-            'name': 'Configure Product',
-            'view_mode': 'form',
-            'context': dict(
-                self.env.context,
-                wizard_id=self.id,
-                view_cache=False,
-            ),
-            'target': 'new',
-            'res_id': self.id,
-        }
+        wizard_action = self.get_wizard_action()
 
         if not self.product_tmpl_id:
             return wizard_action
@@ -892,38 +880,15 @@ class ProductConfigurator(models.TransientModel):
                 _('Product Template does not have any attribute lines defined')
             )
 
-        cfg_step_lines = self.product_tmpl_id.config_step_line_ids
-        # state, config_session, product_template_id
-        if not cfg_step_lines:
-            if (self.value_ids or self.custom_value_ids)\
-                    and not self.state == 'select':
-                return self.action_config_done()
-            elif not (self.value_ids or self.custom_value_ids)\
-                    and not self.state == 'select':
-                raise Warning(_("You must select at least one\
-                    attribute in order to configure a product"))
-            else:
-                self.state = 'configure'
-                return wizard_action
-
-        adjacent_steps = self.config_session_id.get_adjacent_steps()
-        next_step = adjacent_steps.get('next_step')
-
-        session_config_step = self.config_session_id.config_step
-        if session_config_step and self.state != session_config_step:
-            next_step = self.config_session_id.config_step
-        else:
-            next_step = str(next_step.id) if next_step else None
-        if next_step:
-            self.state = next_step
-            self.config_session_id.config_step = next_step
-        elif not (self.value_ids or self.custom_value_ids):
-            raise Warning(_("You must select at least one\
-                    attribute in order to configure a product"))
-        else:
+        next_step = self.config_session_id.get_next_step(
+            state=self.state,
+            product_tmpl_id=self.product_tmpl_id,
+            value_ids=self.value_ids,
+            custom_value_ids=self.custom_value_ids,
+        )
+        if not next_step:
             return self.action_config_done()
-
-        return wizard_action
+        return self.open_step(step=next_step)
 
     @api.multi
     def action_previous_step(self):
@@ -1026,30 +991,13 @@ class ProductConfigurator(models.TransientModel):
         :param step: recordset of product.config.step.line
         """
         wizard_action = self.get_wizard_action()
-        self.state = str(step.id)
-        self.config_session_id.config_step = str(step.id)
+        if not step:
+            return wizard_action
+        if isinstance(step, type(self.env['product.config.step.line'])):
+            step = '%s' %(step.id)
+        self.state = step
+        self.config_session_id.config_step = step
         return wizard_action
-
-    def check_and_open_incomplete_step(self, value_ids=None):
-        """ Check and open incomplete step if any
-        :param value_ids: recordset of product.attribute.value
-        """
-        if not value_ids:
-            value_ids = self.value_ids
-        open_step_lines = self.config_session_id.get_open_step_lines()
-        step_to_open = False
-        for step in open_step_lines:
-            unset_attr_line = step.attribute_line_ids.filtered(
-                lambda attr_line:
-                attr_line.required and
-                not any([value in value_ids for value in attr_line.value_ids])
-            )
-            if unset_attr_line:
-                step_to_open = step
-                break
-        if step_to_open:
-            return self.open_step(step_to_open)
-        return False
 
     @api.multi
     def action_config_done(self):
@@ -1062,9 +1010,9 @@ class ProductConfigurator(models.TransientModel):
         # In the meantime, at least make sure that a validation
         # error legitimately raised in a nested routine
         # is passed through.
-        res = self.check_and_open_incomplete_step()
-        if res:
-            return res
+        step_to_open = self.config_session_id.check_and_open_incomplete_step()
+        if step_to_open:
+            return self.open_step(step_to_open)
         variant = self.config_session_id.create_get_variant()
         action = {
             'type': 'ir.actions.act_window',

@@ -21,7 +21,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
     @http.route()
     def product(self, product, category='', search='', **kwargs):
         # Use parent workflow for regular products
-        if not product.config_ok:
+        if not product.config_ok or not product.attribute_line_ids:
             return super(ProductConfigWebsiteSale, self).product(
                 product, category, search, **kwargs
             )
@@ -92,7 +92,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
     def remove_recursive_list(self, values):
         """Return dictionary by removing extra list
         :param: values: dictionary having values in form [[4, 0, [2, 3]]]
-        :return: dictionary 
+        :return: dictionary
         EX- {2: [2, 3]}"""
         new_values = {}
         for key, value in values.items():
@@ -247,21 +247,28 @@ class ProductConfigWebsiteSale(WebsiteSale):
         updates['open_cfg_step_lines'] = open_cfg_step_lines.ids
         return updates
 
-    def set_config_next_step(self, config_session_id, next_step=False):
+    def set_config_next_step(self, config_session_id,
+                             current_step=False, next_step=False):
         # TODO :: If no config step exist
         if not next_step:
-            adjacent_steps = config_session_id.get_adjacent_steps()
-            next_step = adjacent_steps.get('next_step', False)
-            if next_step:
-                next_step = '%s' % (next_step.id)
+            next_step = config_session_id.get_next_step(
+                state=current_step,
+            )
+        if not next_step:
+            next_step = config_session_id.check_and_open_incomplete_step()
+        if next_step and isinstance(
+                next_step,
+                type(request.env['product.config.step.line'])
+        ):
+            next_step = '%s' % (next_step.id)
         if next_step:
             config_session_id.config_step = next_step
         return next_step
 
     @http.route('/website_product_configurator/save_configuration',
                 type='json', methods=['POST'], auth="public", website=True)
-    def save_configuration(self, form_values, next_step=False):
-        product_configurator_obj = request.env['product.configurator']
+    def save_configuration(self, form_values, current_step=False,
+                           next_step=False):
         result = self.get_session_and_product(form_values)
         config_session_id = result.get('config_session')
         product_template_id = result.get('product_tmpl')
@@ -270,9 +277,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
             form_values, config_session_id, product_template_id)
         try:
             config_session_id.update_config(attr_val_dict=form_values)
-            next_step = self.set_config_next_step(config_session_id, next_step)
+            next_step = self.set_config_next_step(
+                config_session_id=config_session_id,
+                current_step=current_step,
+                next_step=next_step
+            )
             if next_step:
                 return {'next_step': next_step}
+
             product = config_session_id.create_get_variant()
             if product:
                 redirect_url = "/website_product_configurator/open_product"
@@ -288,12 +300,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
         return {}
 
     @http.route(
-        '/website_product_configurator/open_product/<model("product.config.session"):cfg_session>/<model("product.product"):product_id>',
+        '/website_product_configurator/open_product/'
+        '<model("product.config.session"):cfg_session>/'
+        '<model("product.product"):product_id>',
         type='http', auth="public", website=True)
     def cfg_session(self, cfg_session, product_id, **post):
         try:
             product_tmpl = cfg_session.product_tmpl_id
-        except:
+        except Exception:
             product_tmpl = product_id.product_tmpl_id
 
         def _get_product_vals(cfg_session):
