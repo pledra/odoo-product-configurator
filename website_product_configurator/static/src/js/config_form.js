@@ -16,55 +16,60 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var domains = data.domain;
                 var open_cfg_step_lines = data.open_cfg_step_lines;
 
-                // Domain
-                _.each(domains, function (domain, attr_id) {
-                    var $selection = config_form.find('#' + attr_id);
-                    var $options = $selection.find('.config_attr_value');
-                    _.each($options, function (option) {
-                        var condition = domain[0][1];
-                        if (condition == 'in' || config_form == '=') {
-                            if ($.inArray(parseInt(option.value), domain[0][2]) < 0) {
-                                $(option).attr('disabled', true);
-                                if (option.selected) {
-                                    option.selected = false;
-                                };
-                            } else {
-                                $(option).attr('disabled', false);
-                            };
-                        } else if (condition == 'not in' || config_form == '!=') {
-                            if ($.inArray(parseInt(option.value), domain[0][2]) < 0) {
-                                $(option).attr('disabled', false);
-                            } else {
-                                $(option).attr('disabled', true);
-                                if (option.selected) {
-                                    option.selected = false;
-                                };
-                            };
-                        };
-                    });
-                });
+                _applyDomainOnValues(domains);
+                _handleOpenSteps(open_cfg_step_lines)
 
-                // Open steps
-                var $steps = config_form.find('.config_step');
-                _.each($steps, function (step) {
-                    step = $(step);
-                    var step_id = step.attr('data-step-id');
-                    if ($.inArray(parseInt(step_id), open_cfg_step_lines) < 0) {
-                        if (!step.hasClass('hidden')) {
-                            step.addClass('hidden');
-                        };
-                    } else {
-                        if (step.hasClass('hidden')) {
-                            step.removeClass('hidden');
-                        };
-                    };
-                });
-            	//debugger;
             });
 		});
 
+        function _handleOpenSteps(open_cfg_step_lines) {
+            var $steps = config_form.find('.config_step');
+            _.each($steps, function (step) {
+                step = $(step);
+                var step_id = step.attr('data-step-id');
+                if ($.inArray(parseInt(step_id), open_cfg_step_lines) < 0) {
+                    if (!step.hasClass('hidden')) {
+                        step.addClass('hidden');
+                    };
+                } else {
+                    if (step.hasClass('hidden')) {
+                        step.removeClass('hidden');
+                    };
+                };
+            });
+        }
+
+        function _applyDomainOnValues(domains) {
+            _.each(domains, function (domain, attr_id) {
+                var $selection = config_form.find('#' + attr_id);
+                var $options = $selection.find('.config_attr_value');
+                _.each($options, function (option) {
+                    var condition = domain[0][1];
+                    if (condition == 'in' || config_form == '=') {
+                        if ($.inArray(parseInt(option.value), domain[0][2]) < 0) {
+                            $(option).attr('disabled', true);
+                            if (option.selected) {
+                                option.selected = false;
+                            };
+                        } else {
+                            $(option).attr('disabled', false);
+                        };
+                    } else if (condition == 'not in' || config_form == '!=') {
+                        if ($.inArray(parseInt(option.value), domain[0][2]) < 0) {
+                            $(option).attr('disabled', false);
+                        } else {
+                            $(option).attr('disabled', true);
+                            if (option.selected) {
+                                option.selected = false;
+                            };
+                        };
+                    };
+                });
+            });
+        }
+
         function _onChangeConfigStep(event, next_step) {
-            var flag = _check_required_fields(event)
+            var flag = _checkRequiredFields(event)
             var config_step_header = config_form.find('.nav.nav-tabs');
             var current_config_step = config_step_header.find('.nav-item.config_step.active').attr('data-step-id');
             if (flag) {
@@ -83,7 +88,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
         };
         
-        function _display_tooltip(config_attribut) {
+        function _displayTooltip(config_attribut) {
             $(config_attribut).focus();
             $(config_attribut).tooltip({
                 title: "Please select an item in the list.",
@@ -97,14 +102,14 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }, 2000);
         };
 
-        function _check_required_fields(event) {
+        function _checkRequiredFields(event) {
             var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
             var config_attr = active_step.find('.form-control.config_attribute');
             var flag = true;
             for (var i = 0; i < config_attr.length; i++) {
                if ($(config_attr[i]).hasClass('required_config_attrib') && !config_attr[i].value) {
                     flag = false;
-                    _display_tooltip(config_attr[i]);
+                    _displayTooltip(config_attr[i]);
                     break;
                };
             };
@@ -120,16 +125,25 @@ odoo.define('website_product_configurator.config_form', function (require) {
             };
         });
 
-        function active_step_body(next_step) {
+        function _openNextStep(step) {
+            var config_step_header = config_form.find('.nav.nav-tabs');
+            var config_step = config_step_header.find('.nav-item.config_step.active');
+            if (config_step.length) {
+                config_step.removeClass('active');
+            }
             var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
             active_step.removeClass('active in');
 
-            var selector = next_step.find('a:first-child').attr('href');
-            var step_to_active = config_form.find('.tab-content').find(selector);
-            step_to_active.addClass('active in');
+            var next_step = config_step_header.find('.nav-item.config_step[data-step-id=' + step + ']');
+            if (next_step.length) {
+                next_step.addClass('active');
+                var selector = next_step.find('a:first-child').attr('href');
+                var step_to_active = config_form.find('.tab-content').find(selector);
+                step_to_active.addClass('active in');
+            }
         };
 
-        function add_required_attr(config_step) {
+        function addRequiredAttr(config_step) {
             config_step = config_form.find('.tab-content').find('tab-pane container[data-step-id=' + config_step + ']');
             _.each(config_step.find('.form-control.config_attribute'), function(attribute_field) {
                 $(attribute_field).attr('required', true);
@@ -144,18 +158,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
             if (result) {
                 result.then(function (data) {
                     if (data) {
-                        var next_step;
                         if (data.next_step) {
-                            var config_step_header = config_form.find('.nav.nav-tabs');
-                            var config_step = config_step_header.find('.nav-item.config_step.active');
-                            if (config_step.length) {
-                                config_step.removeClass('active');
-                            }
-                            var next_step = config_step_header.find('.nav-item.config_step[data-step-id=' + data.next_step + ']');
-                            if (next_step.length) {
-                                next_step.addClass('active');
-                                active_step_body(next_step);
-                            }
+                            _openNextStep(data.next_step);
                         };
                         if (data.redirect_url) {
                             window.location = data.redirect_url;
