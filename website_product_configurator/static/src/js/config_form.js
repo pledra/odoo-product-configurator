@@ -111,10 +111,10 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
         };
         
-        function _displayTooltip(config_attribut) {
+        function _displayTooltip(config_attribut, message) {
             $(config_attribut).focus();
             $(config_attribut).tooltip({
-                title: "Please select an item in the list.",
+                title: message,
                 placement: "bottom",
                 trigger: "manual",
                 delay: {show: 500, hide: 500},
@@ -132,7 +132,12 @@ odoo.define('website_product_configurator.config_form', function (require) {
             for (var i = 0; i < config_attr.length; i++) {
                if (!config_attr[i].value) {
                     flag = false;
-                    _displayTooltip(config_attr[i]);
+                    if (config_attr[i].tagName == 'SELECT') {
+                        var message = "Please select an item in the list."
+                    } else if (config_attr[i].tagName == 'INPUT') {
+                        var message = "Please enter value."
+                    }
+                    _displayTooltip(config_attr[i], message);
                     break;
                };
             };
