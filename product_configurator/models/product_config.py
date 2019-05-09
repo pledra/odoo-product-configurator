@@ -445,6 +445,75 @@ class ProductConfigSession(models.Model):
         return True
 
     @api.multi
+    def update_session_configuration_value(self, vals, product_tmpl_id=None):
+        """Update value of configuration in current session
+
+        :param: vals: Dictionary of fields(of configution wizard) and values
+        :param: product_tmpl_id: record set of preoduct template
+        :return: True/False
+        """
+        self.ensure_one()
+        if not product_tmpl_id:
+            product_tmpl_id = self.product_tmpl_id
+
+        product_configurator_obj = self.env['product.configurator']
+        field_prefix = product_configurator_obj._prefixes.get('field_prefix')
+        custom_field_prefix = product_configurator_obj._prefixes.get('custom_field_prefix')
+
+        custom_ext_id = 'product_configurator.custom_attribute_value'
+        custom_val = self.env.ref(custom_ext_id)
+
+        attr_val_dict = {}
+        custom_val_dict = {}
+        for attr_line in product_tmpl_id.attribute_line_ids:
+            attr_id = attr_line.attribute_id.id
+            field_name = field_prefix + str(attr_id)
+            custom_field_name = custom_field_prefix + str(attr_id)
+
+            if field_name not in vals and custom_field_name not in vals:
+                continue
+
+            # Add attribute values from the client except custom attribute
+            # If a custom value is being written, but field name is not in
+            #   the write dictionary, then it must be a custom value!
+            if vals.get(field_name, custom_val.id) != custom_val.id:
+                if attr_line.multi and isinstance(vals[field_name], list):
+                    if not vals[field_name]:
+                        field_val = None
+                    else:
+                        field_val = vals[field_name][0][2]
+                elif not attr_line.multi and isinstance(vals[field_name], int):
+                    field_val = vals[field_name]
+                else:
+                    raise Warning(
+                        _('An error occursed while parsing value for '
+                          'attribute %s' % attr_line.attribute_id.name)
+                    )
+                attr_val_dict.update({
+                    attr_id: field_val
+                })
+                # Ensure there is no custom value stored if we have switched
+                # from custom value to selected attribute value.
+                if attr_line.custom:
+                    custom_val_dict.update({attr_id: False})
+            elif attr_line.custom:
+                val = vals.get(custom_field_name, False)
+                if attr_line.attribute_id.custom_type == 'binary':
+                    # TODO: Add widget that enables multiple file uploads
+                    val = [{
+                        'name': 'custom',
+                        'datas': vals[custom_field_name]
+                    }]
+                custom_val_dict.update({
+                    attr_id: val
+                })
+                # Ensure there is no standard value stored if we have switched
+                # from selected value to custom value.
+                attr_val_dict.update({attr_id: False})
+
+        self.update_config(attr_val_dict, custom_val_dict)
+
+    @api.multi
     def update_config(self, attr_val_dict=None, custom_val_dict=None):
         """Update the session object with the given value_ids and custom values.
 

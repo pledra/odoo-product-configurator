@@ -12,6 +12,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 form_values: config_form.serializeArray(),
                 field_name: $(this)[0].name,
             }).then(function(data) {
+                if (data.error) {
+                    alert(data.error);
+                };
                 var values = data.value;
                 var domains = data.domain;
                 var open_cfg_step_lines = data.open_cfg_step_lines;
@@ -20,6 +23,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 _handleOpenSteps(open_cfg_step_lines)
 
             });
+            if ($(ev.currentTarget.selectedOptions[0]).hasClass('custom_config_attr_value')) {
+                config_form.find('.custom_config_value').parent().removeClass('hidden');
+            }
 		});
 
         function _handleOpenSteps(open_cfg_step_lines) {

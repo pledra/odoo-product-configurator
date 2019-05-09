@@ -84,19 +84,85 @@
     
     <template id="config_form_base" name="Base Config Form View"/>
 
+    <template id="config_custom_field" name="Custom Configuration Field">
+        <t t-set='custom_type' t-value='line.attribute_id.custom_type'/>
+        <t t-if="not custom_type or custom_type in ['color', 'char']">
+            <input
+                t-att-type="'color' if line.attribute_id.custom_type == 'color' else 'text'"
+                t-att-style="'width: 44px' if line.attribute_id.custom_type == 'color' else None"
+                t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                t-att-data-oe-id="line.attribute_id.id"
+                t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                t-att-class="'form-control custom_config_value' + (' required_config_attrib' if custom_value else '')"
+                t-att-value="custom_value.value"/>
+        </t>
+        <t t-if="custom_type in ['float','int']">
+            <div class="input-group oe_website_spinner css_quantity mt6">
+                <span class="input-group-addon">
+                    <a t-attf-href="#" class="mb8 js_add_qty">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                </span>
+                <input
+                    type="text"
+                    t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                    t-att-min="line.attribute_id.min_val"
+                    t-att-max="line.attribute_id.max_val"
+                    t-att-data-oe-id="line.attribute_id.id"
+                    t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                    t-att-class="'js_quantity form-control custom_config_value' + (' required_config_attrib' if custom_value else '')"
+                    t-att-value="custom_value.value"/>
+                <span class="input-group-addon">
+                    <a t-attf-href="#" class="mb8 float_left js_add_qty">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </span>
+            </div>
+        </t>
+        <t t-if="custom_type == 'binary'">
+            <t t-foreach="custom_value.attachment_ids" t-as="attachment">
+                <div class="col-xs-1">
+                    <i style="font-size: 30px;" class="fa fa-paperclip fa-5" aria-hidden="true"></i>
+                </div>
+                <div class="col-xs-11" style="min-height: 40px;padding-top: 5px">
+                    <span t-field="attachment.name"/>
+                </div>
+            </t>
+            <input type="file"
+                t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                t-att-data-oe-id="line.attribute_id.id"
+                t-att-class="'form-control custom_config_value' + (' required_config_attrib' if custom_value else '')"
+                t-att-multiple="'multiple' if line.multi else ''"/>
+        </t>
+        <t t-if="custom_type == 'text'">
+            <textarea
+                t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                t-att-data-oe-id="line.attribute_id.id"
+                t-att-class="'form-control custom_config_value' + (' required_config_attrib' if custom_value else '')">
+                <t t-esc="custom_value.value"/>
+            </textarea>
+        </t>
+
+    </template>
+
     <!-- Default configuration form (selectboxes ) -->
     <template id="config_form_select" name="Selectbox configuration form">
+        <t t-set="field_prefix" t-value="prefixes.get('field_prefix')"/>
+        <t t-set="custom_field_prefix" t-value="prefixes.get('custom_field_prefix')"/>
         <t t-foreach="cfg_step_line.attribute_line_ids" t-as="line">
-            <select t-att-id="line.attribute_id.id"
+            <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
+            <select t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                       t-att-data-oe-id="line.attribute_id.id"
                       t-att-multiple="'multiple' if line.multi else None"
-                      t-att-name="line.attribute_id.id"
+                      t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
                       t-att-class="'form-control config_attribute' + (line.required and ' required_config_attrib' or '')">
                       <!-- t-att-disabled="'disabled' if not available_val_ids and not line.custom else None" -->
                 <option name=""/>
                 <t t-foreach="line.value_ids" t-as="value">
                     <option
-                        t-att-selected="'selected' if value.id in value_ids else None"
+                        t-att-selected="'selected' if value.id in value_ids.ids else None"
                         t-att-class="'config_attr_value' + (' disabled' if value.id not in available_value_ids else '')"
                         t-att-value="value.id"
                         t-att-data-oe-id="value.id"
@@ -105,11 +171,26 @@
                         <t t-esc="value.name"/>    
                     </option>
                   </t>
+                  <t t-if="line.custom">
+                      <option
+                          t-att-selected="'selected' if custom_value else None"
+                          t-att-class="'config_attr_value custom_config_attr_value' + (' disabled' if custom_val_id.id not in available_value_ids else '')"
+                          t-att-value="custom_val_id.id"
+                          t-att-data-oe-id="custom_val_id.id"
+                          t-att-name="custom_val_id.id"
+                          t-att-disabled="custom_val_id.id not in available_value_ids and True or False">
+                          <t t-esc="custom_val_id.name"/>
+                      </option>
+                  </t>
             </select>
+            <t t-if="line.custom">
+                <div t-att-class="'hidden' if not custom_value else ''"
+                    t-att-data-oe-id="line.attribute_id.id">
+                    <t t-call="website_product_configurator.config_custom_field"/>
+                </div>
+            </t>
         </t>
     </template>
-
-
 
     <!-- Product configurator checkout -->
 
