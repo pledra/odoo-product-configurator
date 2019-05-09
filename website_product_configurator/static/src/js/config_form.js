@@ -23,10 +23,27 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 _handleOpenSteps(open_cfg_step_lines)
 
             });
-            if ($(ev.currentTarget.selectedOptions[0]).hasClass('custom_config_attr_value')) {
-                config_form.find('.custom_config_value').parent().removeClass('hidden');
-            }
+            _handleCustomAttribute(ev)
 		});
+
+        function _handleCustomAttribute(event) {
+            var container = $(event.currentTarget).closest('.tab-pane.container');
+            var attribute_id = $(event.currentTarget).attr('data-oe-id');
+            var custom_value = container.find('.custom_config_value[data-oe-id=' + attribute_id + ']');
+            var custom_value_container = custom_value.parent();
+            if ($(event.currentTarget.selectedOptions[0]).hasClass('custom_config_attr_value') && custom_value_container.hasClass('hidden')) {
+                custom_value_container.removeClass('hidden');
+                var is_required = $(event.currentTarget).hasClass('required_config_attrib');
+                if (is_required) {
+                    custom_value.addClass('required_config_attrib');
+                }
+            } else if (!custom_value_container.hasClass('hidden')){
+                custom_value_container.addClass('hidden');
+                if (custom_value.hasClass('required_config_attrib')) {
+                    custom_value.removeClass('required_config_attrib');
+                }
+            }
+        }
 
         function _handleOpenSteps(open_cfg_step_lines) {
             var $steps = config_form.find('.config_step');
@@ -110,10 +127,10 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         function _checkRequiredFields(event) {
             var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
-            var config_attr = active_step.find('.form-control.config_attribute');
+            var config_attr = active_step.find('.form-control.required_config_attrib');
             var flag = true;
             for (var i = 0; i < config_attr.length; i++) {
-               if ($(config_attr[i]).hasClass('required_config_attrib') && !config_attr[i].value) {
+               if (!config_attr[i].value) {
                     flag = false;
                     _displayTooltip(config_attr[i]);
                     break;
