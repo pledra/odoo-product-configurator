@@ -34,6 +34,8 @@ class ProductConfigDomain(models.Model):
         computed_domain = []
         for domain in self:
             lines = domain.trans_implied_ids.mapped('domain_line_ids').sorted()
+            if not lines:
+                continue
             for line in lines[:-1]:
                 if line.operator == 'or':
                     computed_domain.append('|')
