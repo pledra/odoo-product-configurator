@@ -17,8 +17,6 @@ def get_pricelist():
 
 class ProductConfigWebsiteSale(WebsiteSale):
 
-    # TODO :: remaining part : FOR CUSTOM
-
     @http.route()
     def product(self, product, category='', search='', **kwargs):
         # Use parent workflow for regular products
@@ -35,6 +33,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         # Set config-step in config session when it creates from wizard
         # because select state not exist on website
         if not cfg_session.config_step:
+            cfg_session.config_step = 'select'
             self.set_config_next_step(cfg_session)
 
         # Render the configuration template based on the configuration session
@@ -59,6 +58,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
             check_val_ids=check_val_ids.ids)
         if not active_step:
             active_step = cfg_step_lines[:1]
+        extra_attribute_line_ids = self.get_extra_attribute_line_ids(
+            cfg_session.product_tmpl_id)
         vals = {
             'cfg_session': cfg_session,
             'cfg_step_lines': cfg_step_lines,
@@ -70,6 +71,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'main_object': cfg_session.product_tmpl_id,
             'prefixes': product_configurator_obj._prefixes,
             'custom_val_id': custom_val_id,
+            'extra_attribute_line_ids': extra_attribute_line_ids,
         }
         return vals
 
@@ -216,6 +218,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'product_tmpl': product_template_id
         }
 
+    def get_extra_attribute_line_ids(self, product_template_id):
+        extra_attribute_line_ids = (
+            product_template_id.attribute_line_ids -
+            product_template_id.config_step_line_ids.mapped(
+                'attribute_line_ids'
+            )
+        )
+        return extra_attribute_line_ids
+
     @http.route('/website_product_configurator/onchange',
                 type='json', methods=['POST'], auth="public", website=True)
     def onchange(self, form_values, field_name):
@@ -248,20 +259,35 @@ class ProductConfigWebsiteSale(WebsiteSale):
         value_ids = self.get_current_configuration(
             form_values, config_session_id, product_template_id)
         open_cfg_step_lines = config_session_id.sudo()\
-            .get_open_step_lines(value_ids)
+            .get_open_step_lines(value_ids).ids
+
+        open_cfg_step_lines = ['%s' % (step) for step in open_cfg_step_lines]
+        extra_attr_line_ids = self.get_extra_attribute_line_ids(
+            product_template_id)
+        if extra_attr_line_ids:
+            open_cfg_step_lines.append('configure')
 
         updates['value'] = self.remove_recursive_list(updates['value'])
-        updates['open_cfg_step_lines'] = open_cfg_step_lines.ids
+        updates['open_cfg_step_lines'] = open_cfg_step_lines
         return updates
 
     def set_config_next_step(self, config_session_id,
                              current_step=False, next_step=False):
-        # TODO :: If no config step exist
         config_session_id = config_session_id.sudo()
+        extra_attr_line_ids = self.get_extra_attribute_line_ids(
+            config_session_id.product_tmpl_id)
+        if extra_attr_line_ids and current_step == 'configure':
+            return next_step
+
         if not next_step:
             next_step = config_session_id.get_next_step(
                 state=current_step,
             )
+        if (not next_step and
+                extra_attr_line_ids and
+                current_step != 'configure'):
+            next_step = 'configure'
+
         if not next_step:
             next_step = config_session_id.check_and_open_incomplete_step()
         if next_step and isinstance(

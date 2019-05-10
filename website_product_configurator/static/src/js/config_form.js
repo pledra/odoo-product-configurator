@@ -50,7 +50,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             _.each($steps, function (step) {
                 step = $(step);
                 var step_id = step.attr('data-step-id');
-                if ($.inArray(parseInt(step_id), open_cfg_step_lines) < 0) {
+                if ($.inArray(step_id, open_cfg_step_lines) < 0) {
                     if (!step.hasClass('hidden')) {
                         step.addClass('hidden');
                     };

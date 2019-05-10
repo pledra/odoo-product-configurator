@@ -52,14 +52,25 @@
         <input name="config_session_id" t-att-value="cfg_session.id" class="config_session_id" type="hidden"/>
       </div>
       <div class="tab-content">
-        <t t-foreach="cfg_step_lines" t-as="cfg_step_line">
-            <!-- <t t-set="line_val_ids" t-value="line.attribute_line_ids.mapped('value_ids') | available_value_ids"/> -->
-            <div t-attf-id="cfg_step_{{cfg_step_line.id}}"
-              t-att-data-step-id="cfg_step_line.id"
-              t-att-class="'tab-pane container fade' + (cfg_step_line.id == active_step.id and ' active in' or '')">
-              <t t-call="{{cfg_step_line.get_website_template()}}"/>
-            </div>
-        </t>
+          <t t-foreach="cfg_step_lines" t-as="cfg_step_line">
+              <!-- <t t-set="line_val_ids" t-value="line.attribute_line_ids.mapped('value_ids') | available_value_ids"/> -->
+              <div t-attf-id="cfg_step_{{cfg_step_line.id}}"
+                t-att-data-step-id="cfg_step_line.id"
+                t-att-class="'tab-pane container fade' + (cfg_step_line.id == active_step.id and ' active in' or '')">
+                <t t-call="{{cfg_step_line.get_website_template()}}">
+                    <t t-set="cfg_step_attribute_line_ids" t-value="cfg_step_line.attribute_line_ids"/>
+                </t>
+              </div>
+          </t>
+          <t t-if="extra_attribute_line_ids">
+              <div t-attf-id="cfg_step_configure"
+                t-att-data-step-id="configure"
+                t-att-class="'tab-pane container fade' + (not active_step and ' active in' or '')">
+                <t t-call="website_product_configurator.config_form_select">
+                    <t t-set="cfg_step_attribute_line_ids" t-value="extra_attribute_line_ids"/>
+                </t>
+              </div>
+          </t>
       </div>
     </template>
 
@@ -69,10 +80,16 @@
         <div class="col-lg-12">
           <ul class="nav nav-tabs">
             <t t-foreach="cfg_step_lines" t-as="cfg_step_line">
-              <li t-att-data-step-id="cfg_step_line.id"
-                t-att-class="'nav-item config_step' + (cfg_step_line.id == active_step.id and ' active' or '') + (cfg_step_line not in open_cfg_step_lines and ' hidden' or '')">
-                <a class="nav-link" data-toggle="tab" t-attf-href="#cfg_step_{{cfg_step_line.id}}" t-esc="cfg_step_line.config_step_id.name"/>
-              </li>
+                <li t-att-data-step-id="cfg_step_line.id"
+                    t-att-class="'nav-item config_step' + (cfg_step_line.id == active_step.id and ' active' or '') + (cfg_step_line not in open_cfg_step_lines and ' hidden' or '')">
+                    <a class="nav-link" data-toggle="tab" t-attf-href="#cfg_step_{{cfg_step_line.id}}" t-esc="cfg_step_line.config_step_id.name"/>
+                </li>
+            </t>
+            <t t-if="extra_attribute_line_ids">
+                <li data-step-id="configure"
+                    t-att-class="'nav-item config_step' + (not active_step and ' active' or '')">
+                    <a class="nav-link" data-toggle="tab" href="#cfg_step_configure">Configure</a>
+                </li>
             </t>
           </ul>
         </div>
@@ -151,7 +168,7 @@
     <template id="config_form_select" name="Selectbox configuration form">
         <t t-set="field_prefix" t-value="prefixes.get('field_prefix')"/>
         <t t-set="custom_field_prefix" t-value="prefixes.get('custom_field_prefix')"/>
-        <t t-foreach="cfg_step_line.attribute_line_ids" t-as="line">
+        <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
             <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
             <span t-esc="line.attribute_id.name"/>
             <select t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
