@@ -1017,55 +1017,81 @@ class ProductConfigSession(models.Model):
                 custom_val = custom_vals.get(attr.id)
                 if line.required and not common_vals and not custom_val:
                     # TODO: Verify custom value type to be correct
-                    raise ValidationError(_('You have not fill the value in required field !'))
+                    raise ValidationError(_(
+                        "Required attribute '%s' is empty" % (attr.name)))
 
         # Check if all all the values passed are not restricted
         avail_val_ids = self.values_available(
             value_ids, value_ids, product_tmpl_id=product_tmpl_id
         )
         if set(value_ids) - set(avail_val_ids):
-            restrict_val = list(set(value_ids) - set(avail_val_ids))[:1]
-            product_att_value = self.env['product.attribute.value'].browse(
+            restrict_val = list(set(value_ids) - set(avail_val_ids))
+            product_att_values = self.env['product.attribute.value'].browse(
                 restrict_val)
-            raise ValidationError(_('According to current configuration and\
-             restrictions %s %s is not available.') % (
-             product_att_value.attribute_id.name, product_att_value.name))
+            group_by_attr = {}
+            for val in product_att_values:
+                if val.attribute_id in group_by_attr:
+                    group_by_attr[val.attribute_id] += val
+                else:
+                    group_by_attr[val.attribute_id] = val
+
+            message = 'The following values are not available:'
+            for attr, val in group_by_attr.items():
+                message += '\n%s: %s' % (
+                    attr.name, ', '.join(val.mapped('name'))
+                )
+            raise ValidationError(_(message))
 
         # Check if custom values are allowed
         custom_attr_ids = product_tmpl.attribute_line_ids.filtered(
             'custom').mapped('attribute_id').ids
-        custom_lines_with_error = []
         if not set(custom_vals.keys()) <= set(custom_attr_ids):
-            attr_line_vals = list(
+            custom_attrs_with_error = list(
                 set(custom_vals.keys()) - set(custom_attr_ids))
-            product_att = self.env['product.attribute'].browse(
-                attr_line_vals)
-            for line in product_att:
-                custom_lines_with_error.append(line.name)
-        if custom_lines_with_error:
-            raise ValidationError(_('Sorry! Request can not be\
-             completed.\n There are some changes in product-template\
-             configuration. Current session has wrong values for fields\
-              : %s. Please delete your current session or contact\
-               to your administrator in order to proceed') % (
-               ",".join(custom_lines_with_error)
-              )
+            custom_attrs_with_error = self.env['product.attribute'].browse(
+                custom_attrs_with_error)
+            error_message = _(
+                "The following custom values are not permitted "
+                "according to the product template - %s.\n\nIt is possible "
+                "that a change has been made to allowed custom values "
+                "while your configuration was in process. Please reset your "
+                "current session and start over or contact your administrator"
+                " in order to proceed."
             )
+            message_vals = ""
+            for attr_id in custom_attrs_with_error:
+                message_vals += "\n%s: %s" % (
+                    attr_id.name,
+                    custom_vals.get(attr_id.id)
+                )
+            raise ValidationError(error_message % (message_vals))
 
         # Check if there are multiple values passed for non-multi attributes
         mono_attr_lines = product_tmpl.attribute_line_ids.filtered(
             lambda l: not l.multi)
-        lines_with_error = []
+        attrs_with_error = {}
         for line in mono_attr_lines:
             if len(set(line.value_ids.ids) & set(value_ids)) > 1:
-                lines_with_error.append(line.attribute_id.name)
-        if lines_with_error:
-            raise ValidationError(_('Sorry! Request can not be completed.\
-                \n There are some changes in product-template configuration.\
-                 Current session has multiple values for fields : %s.\
-                 Please delete your current session or contact to your\
-                  administrator in order to proceed') % (
-                  ",".join(lines_with_error)))
+                wrong_vals = self.env['product.attribute.value'].browse(
+                    set(line.value_ids.ids) & set(value_ids)
+                )
+                attrs_with_error[line.attribute_id] = wrong_vals
+        if attrs_with_error:
+            error_message = _(
+                "The following multi values are not permitted "
+                "according to the product template - %s.\n\nIt is possible "
+                "that a change has been made to allowed multi values "
+                "while your configuration was in process. Please reset your "
+                "current session and start over or contact your administrator"
+                " in order to proceed."
+            )
+            message_vals = ""
+            for attr_id, vals in attrs_with_error.items():
+                message_vals += "\n%s: %s" % (
+                    attr_id.name,
+                    ', '.join(vals.mapped('name'))
+                )
+            raise ValidationError(error_message % (message_vals))
         return True
 
     @api.model
