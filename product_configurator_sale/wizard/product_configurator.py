@@ -36,6 +36,17 @@ class ProductConfiguratorSale(models.TransientModel):
 
         line_vals = self._get_order_line_vals(res['res_id'])
 
+        # To call onchange explicite as write and create
+        # will not trigger onchange automatically
+        order_line_obj = self.env['sale.order.line']
+        specs = order_line_obj._onchange_spec()
+        updates = order_line_obj.onchange(line_vals, ['product_id'], specs)
+        values = updates.get('value', {})
+        for name, val in values.items():
+            if isinstance(val, tuple):
+                values[name] = val[0]
+        line_vals.update(values)
+
         if self.order_line_id:
             self.order_line_id.write(line_vals)
         else:

@@ -180,6 +180,7 @@ class ProductAttributeLine(models.Model):
                           line.attribute_id.name, line.default_val.name)
                       )
                 )
+            self.product_tmpl_id._check_default_values()
 
 
 class ProductAttributeValue(models.Model):

@@ -148,14 +148,10 @@ class ProductTemplate(models.Model):
         action['context'] = context
         return action
 
-    @api.multi
-    @api.constrains('attribute_line_ids', 'attribute_line_ids.default_val')
     def _check_default_values(self):
-        """Validate default values set on the product template"""
         default_val_ids = self.attribute_line_ids.filtered(
             lambda l: l.default_val).mapped('default_val').ids
 
-        # TODO: Remove if cond when PR with raise error on github is merged
         cfg_session_obj = self.env['product.config.session']
         try:
             cfg_session_obj.validate_configuration(
@@ -249,7 +245,9 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def configure_product(self):
-        return self.create_config_wizard()
+        return self.with_context(
+            product_tmpl_id_readonly=True
+        ).create_config_wizard(click_next=False)
 
     def create_config_wizard(self, model_name="product.configurator",
                              extra_vals=None, click_next=True):
@@ -278,6 +276,8 @@ class ProductTemplate(models.Model):
         wizard = wizard_obj.create(wizard_vals)
         if click_next:
             action = wizard.action_next_step()
+        else:
+            action.update({'res_id': wizard.id})
         return action
 
 
@@ -404,6 +404,10 @@ class ProductProduct(models.Model):
         search='_search_product_weight',
         store=False
     )
+
+    # product preset
+    config_preset_ok = fields.Boolean(
+        string="Is Preset")
 
     @api.multi
     def get_product_attribute_values_action(self):

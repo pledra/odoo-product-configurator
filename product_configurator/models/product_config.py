@@ -34,6 +34,8 @@ class ProductConfigDomain(models.Model):
         computed_domain = []
         for domain in self:
             lines = domain.trans_implied_ids.mapped('domain_line_ids').sorted()
+            if not lines:
+                continue
             for line in lines[:-1]:
                 if line.operator == 'or':
                     computed_domain.append('|')
@@ -428,6 +430,13 @@ class ProductConfigSession(models.Model):
         string="Weight",
         compute="_compute_cfg_weight"
     )
+    # Product preset
+    product_preset_id = fields.Many2one(
+        comodel_name='product.product',
+        string='Preset',
+        domain="[('product_tmpl_id', '=', product_tmpl_id),\
+            ('config_preset_ok', '=', True)]"
+    )
 
     @api.multi
     def action_confirm(self):
@@ -523,6 +532,7 @@ class ProductConfigSession(models.Model):
     def write(self, vals):
         """Validate configuration when writing new values to session"""
         # TODO: Issue warning when writing to value_ids or custom_val_ids
+
         res = super(ProductConfigSession, self).write(vals)
         value_ids = self.value_ids.ids
         avail_val_ids = self.values_available(value_ids)
