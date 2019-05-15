@@ -994,25 +994,21 @@ class ProductConfigurator(models.TransientModel):
             custom_value_ids = self.custom_value_ids
         open_step_lines = self.config_session_id.get_open_step_lines()
         step_to_open = False
+        custom_attr_selected = custom_value_ids.mapped('attribute_id')
         for step in open_step_lines:
-            set_attr_line = step.attribute_line_ids.filtered(
-                lambda attr_line:
-                attr_line.required and
-                (
-                    any([
-                        value in value_ids
-                        for value in attr_line.value_ids
-                    ])
-                ) or (
-                    attr_line.custom and
-                    custom_value_ids.filtered(
-                        lambda line:
-                        (line.value or line.attachment_ids) and
-                        attr_line.attribute_id == line.attribute_id
-                    )
-                )
-            )
-            if step.attribute_line_ids - set_attr_line:
+            unset_attr_line_value_ids = step.attribute_line_ids.search([
+                ('id', 'in', step.attribute_line_ids.ids),
+                ('required', '=', True),
+                ('value_ids', 'not in', value_ids.ids),
+
+            ])
+            unset_attr_line_custom_vals = step.attribute_line_ids.search([
+                ('id', 'in', unset_attr_line_value_ids.ids),
+                ('custom', '=', True),
+                ('attribute_id', 'in', custom_attr_selected.ids)
+            ])
+
+            if unset_attr_line_value_ids - unset_attr_line_custom_vals:
                 step_to_open = step
                 break
         if step_to_open:
