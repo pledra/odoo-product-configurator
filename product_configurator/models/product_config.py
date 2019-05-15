@@ -1,4 +1,3 @@
-import itertools
 from ast import literal_eval
 
 from odoo import api, fields, models, tools, _
@@ -232,7 +231,7 @@ class ProductConfigImage(models.Model):
                     value_ids=cfg_img.value_ids.ids,
                     product_tmpl_id=self.product_tmpl_id.id,
                     final=False)
-            except ValidationError as ex:
+            except ValidationError:
                 raise ValidationError(
                     _("Values entered for line '%s' generate "
                       "a incompatible configuration" % cfg_img.name)
@@ -435,7 +434,7 @@ class ProductConfigSession(models.Model):
         if self.product_tmpl_id.config_ok:
             try:
                 self.validate_configuration()
-            except:
+            except Exception:
                 return False
         self.state = 'done'
         return True
@@ -554,7 +553,8 @@ class ProductConfigSession(models.Model):
                     value_ids=default_val_ids, final=False,
                     product_tmpl_id=product_tmpl.id
                 )
-                # TODO: Remove if cond when PR with raise error on github is merged
+                # TODO: Remove if cond when PR with
+                # raise error on github is merged
             except ValidationError as ex:
                 raise ValidationError(ex.name)
             except Exception:
@@ -567,8 +567,9 @@ class ProductConfigSession(models.Model):
 
     @api.multi
     def create_get_variant(self, value_ids=None, custom_vals=None):
-        """ Creates a new product variant with the attributes passed via value_ids
-        and custom_values or retrieves an existing one based on search result
+        """ Creates a new product variant with the attributes passed
+        via value_ids and custom_values or retrieves an existing
+        one based on search result
 
             :param value_ids: list of product.attribute.values ids
             :param custom_vals: dict {product.attribute.id: custom_value}
