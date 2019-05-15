@@ -227,11 +227,12 @@ class ProductConfigImage(models.Model):
     def _check_value_ids(self):
         cfg_session_obj = self.env['product.config.session']
         for cfg_img in self:
-            valid = cfg_session_obj.validate_configuration(
-                value_ids=cfg_img.value_ids.ids,
-                product_tmpl_id=self.product_tmpl_id.id,
-                final=False)
-            if not valid:
+            try:
+                cfg_session_obj.validate_configuration(
+                    value_ids=cfg_img.value_ids.ids,
+                    product_tmpl_id=self.product_tmpl_id.id,
+                    final=False)
+            except ValidationError as ex:
                 raise ValidationError(
                     _("Values entered for line '%s' generate "
                       "a incompatible configuration" % cfg_img.name)
@@ -432,9 +433,10 @@ class ProductConfigSession(models.Model):
     @api.multi
     def action_confirm(self):
         if self.product_tmpl_id.config_ok:
-            valid = self.validate_configuration()
-            if not valid:
-                return valid
+            try:
+                self.validate_configuration()
+            except:
+                return False
         self.state = 'done'
         return True
 
@@ -527,8 +529,11 @@ class ProductConfigSession(models.Model):
         avail_val_ids = self.values_available(value_ids)
         if set(value_ids) - set(avail_val_ids):
             self.value_ids = [(6, 0, avail_val_ids)]
-        valid = self.validate_configuration(final=False)
-        if not valid:
+        try:
+            self.validate_configuration(final=False)
+        except ValidationError as ex:
+            raise ValidationError(ex.name)
+        except Exception:
             raise ValidationError(_('Invalid Configuration'))
         return res
 
@@ -544,12 +549,15 @@ class ProductConfigSession(models.Model):
             value_ids = vals.get('value_ids')
             if value_ids:
                 default_val_ids += value_ids[0][2]
-            valid_conf = self.validate_configuration(
-                value_ids=default_val_ids, final=False,
-                product_tmpl_id=product_tmpl.id
-            )
-            # TODO: Remove if cond when PR with raise error on github is merged
-            if not valid_conf:
+            try:
+                self.validate_configuration(
+                    value_ids=default_val_ids, final=False,
+                    product_tmpl_id=product_tmpl.id
+                )
+                # TODO: Remove if cond when PR with raise error on github is merged
+            except ValidationError as ex:
+                raise ValidationError(ex.name)
+            except Exception:
                 raise ValidationError(
                     _('Default values provided generate an invalid '
                       'configuration')
@@ -574,8 +582,11 @@ class ProductConfigSession(models.Model):
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
 
-        valid = self.validate_configuration()
-        if not valid:
+        try:
+            self.validate_configuration()
+        except ValidationError as ex:
+            raise ValidationError(ex.name)
+        except Exception:
             raise ValidationError(_('Invalid Configuration'))
 
         duplicates = self.search_variant(

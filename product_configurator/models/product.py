@@ -157,10 +157,13 @@ class ProductTemplate(models.Model):
 
         # TODO: Remove if cond when PR with raise error on github is merged
         cfg_session_obj = self.env['product.config.session']
-        valid_conf = cfg_session_obj.validate_configuration(
-            value_ids=default_val_ids, product_tmpl_id=self.id, final=False
-        )
-        if not valid_conf:
+        try:
+            cfg_session_obj.validate_configuration(
+                value_ids=default_val_ids, product_tmpl_id=self.id, final=False
+            )
+        except ValidationError as ex:
+            raise ValidationError(ex.name)
+        except Exception:
             raise ValidationError(
                 _('Default values provided generate an invalid configuration')
             )
