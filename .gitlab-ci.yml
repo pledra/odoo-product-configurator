@@ -39,7 +39,7 @@ before_script:
     - echo $GCE_SERVICE_ACCOUNT_JSON > /service_account.json
 
 Build:
- image: google/cloud-sdk:alpine
+ image: google/cloud-sdk:latest
  stage: build
  variables:
    <<: *globalvars
@@ -52,8 +52,6 @@ Build:
    # Add a worktree for the CI branch and set to private
    - git worktree add $PRIVATE_DIR/__ci_project_dir $CI_COMMIT_REF_NAME
    - cp $PRIVATE_DIR/__ci_project_dir/* $PRIVATE_DIR -R && rm -rf $PRIVATE_DIR/__ci_project_dir
-   # Install python3 for build/deployment script
-   - apt install python3
    # Send source to google cloud builder
    - ci/image build      
  retry: 1
