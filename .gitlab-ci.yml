@@ -46,6 +46,8 @@ Build:
  script:
    # Authenticate to gain access to gcloud services for this project
    - gcloud auth activate-service-account --key-file=/service_account.json --project=$GCLOUD_PROJECT
+   # Checkout scaffolding
+   - git checkout scaffolding
    # Add a worktree for the CI branch and set to private
    - git worktree add ./odoo/custom/src/private $CI_COMMIT_REF_NAME --force
    # Send source to google cloud builder
