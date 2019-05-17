@@ -50,7 +50,7 @@ Build:
    # Checkout scaffolding
    - git fetch origin scaffolding && git checkout scaffolding
    # Add a worktree for the CI branch and set to private
-   - git worktree add $PRIVATE_DIR/__ci_project_dir $CI_COMMIT_REF_NAME
+   - git worktree add ./odoo/custom/src/private/__ci_project_dir $CI_COMMIT_REF_NAME
    - cp $PRIVATE_DIR/__ci_project_dir/* $PRIVATE_DIR -R && rm -rf $PRIVATE_DIR/__ci_project_dir
    # Send source to google cloud builder
    - ci/image build      
