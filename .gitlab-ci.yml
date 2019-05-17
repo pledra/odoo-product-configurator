@@ -53,7 +53,7 @@ Build:
    - git worktree add ./odoo/custom/src/private/__ci_project_dir $CI_COMMIT_SHA
    - cp $PRIVATE_DIR/__ci_project_dir/* $PRIVATE_DIR -R && rm -rf $PRIVATE_DIR/__ci_project_dir
    # Install yaml dependency
-   - pip install pyyaml
+   - pip install yaml
    # Send source to google cloud builder
    - ci/image build      
  retry: 1
