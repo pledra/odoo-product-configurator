@@ -30,7 +30,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var container = $(event.currentTarget).closest('.tab-pane.container');
             var attribute_id = $(event.currentTarget).attr('data-oe-id');
             var custom_value = container.find('.custom_config_value[data-oe-id=' + attribute_id + ']');
-            var custom_value_container = custom_value.parent();
+            var custom_value_container = custom_value.closest('.custom_field_container[data-oe-id=' + attribute_id + ']');
             if ($(event.currentTarget.selectedOptions[0]).hasClass('custom_config_attr_value') && custom_value_container.hasClass('hidden')) {
                 custom_value_container.removeClass('hidden');
                 var is_required = $(event.currentTarget).hasClass('required_config_attrib');
