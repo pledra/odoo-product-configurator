@@ -164,7 +164,7 @@ class ProductTemplate(models.Model):
             ))
 
     @api.multi
-    @api.constrains('config_line_ids')
+    @api.constrains('config_line_ids', 'attribute_line_ids')
     def _check_default_value_domains(self):
         try:
             self._check_default_values()
