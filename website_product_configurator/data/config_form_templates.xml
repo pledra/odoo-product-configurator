@@ -104,9 +104,8 @@
     <template id="config_custom_field" name="Custom Configuration Field">
         <t t-set='custom_type' t-value='line.attribute_id.custom_type'/>
         <t t-if="not custom_type or custom_type in ['color', 'char']">
-            <input
-                t-att-type="'color' if line.attribute_id.custom_type == 'color' else 'text'"
-                t-att-style="'width: 44px' if line.attribute_id.custom_type == 'color' else None"
+            <input t-att-type="'color' if custom_type == 'color' else 'text'"
+                t-att-style="'width: 44px' if custom_type == 'color' else None"
                 t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-data-oe-id="line.attribute_id.id"
                 t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
@@ -120,8 +119,7 @@
                         <i class="fa fa-minus"></i>
                     </a>
                 </span>
-                <input
-                    type="text"
+                <input type="text"
                     t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                     t-att-min="line.attribute_id.min_val"
                     t-att-max="line.attribute_id.max_val"
@@ -153,15 +151,29 @@
                 t-att-multiple="'multiple' if line.multi else ''"/>
         </t>
         <t t-if="custom_type == 'text'">
-            <textarea
-                t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+            <textarea t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-data-oe-id="line.attribute_id.id"
                 t-att-class="'form-control custom_config_value' + (' required_config_attrib' if custom_value else '')">
                 <t t-esc="custom_value.value"/>
             </textarea>
         </t>
-
+        <t t-if="custom_type == 'datetime'">
+            <input type="text"
+                t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                t-att-data-oe-id="line.attribute_id.id"
+                t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                t-att-class="'product_config_datetimepicker form-control custom_config_value' + (' required_config_attrib' if custom_value else '')"
+                t-att-value="custom_value.value"/>
+        </t>
+        <t t-if="custom_type == 'date'">
+            <input type="text"
+                t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                t-att-data-oe-id="line.attribute_id.id"
+                t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
+                t-att-class="'product_config_datepicker form-control custom_config_value' + (' required_config_attrib' if custom_value else '')"
+                t-att-value="custom_value.value"/>
+        </t>
     </template>
 
     <!-- Default configuration form (selectboxes ) -->
@@ -170,7 +182,7 @@
         <t t-set="custom_field_prefix" t-value="prefixes.get('custom_field_prefix')"/>
         <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
             <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
-            <span t-esc="line.attribute_id.name"/>
+            <label class="control-label" t-esc="line.attribute_id.name"></label>
             <select t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                       t-att-data-oe-id="line.attribute_id.id"
                       t-att-multiple="'multiple' if line.multi else None"

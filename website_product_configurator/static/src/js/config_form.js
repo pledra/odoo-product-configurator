@@ -2,9 +2,31 @@ odoo.define('website_product_configurator.config_form', function (require) {
     'use strict';
 
     var ajax = require('web.ajax');
+    var time = require('web.time');
 
 	$(document).ready(function () {
 	    var config_form = $("#product_config_form");
+        var datetimepickers_options = {
+            calendarWeeks: true,
+            icons : {
+                time: 'fa fa-clock-o',
+                date: 'fa fa-calendar',
+                next: 'fa fa-chevron-right',
+                previous: 'fa fa-chevron-left',
+                up: 'fa fa-chevron-up',
+                down: 'fa fa-chevron-down',
+               },
+            locale : moment.locale(),
+            widgetParent: 'body',
+            allowInputToggle: true,
+            showClose: true,
+            format : time.getLangDatetimeFormat(),
+        };
+
+        var datepickers_options = $.extend({}, datetimepickers_options, {format: time.getLangDateFormat()})
+
+        config_form.find('.product_config_datetimepicker').datetimepicker(datetimepickers_options);
+        config_form.find('.product_config_datepicker').datetimepicker(datepickers_options);
 
 	 	/* Monitor input changes in the configuration form and call the backend onchange method*/
 	 	config_form.find('.config_attribute').change(function(ev) {
