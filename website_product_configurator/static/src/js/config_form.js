@@ -196,6 +196,18 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 });
             }
         });
-	 });
+
+        $('.js_remove_qty').on('click', function() {
+            var input = document.getElementById("__custom-12").value;
+            var input = input - 1;
+            document.getElementById('__custom-12').value = input;
+        });
+
+        $('.js_add_qty').on('click', function() {
+            var input= document.getElementById("__custom-12").value;
+            input = parseFloat(input) + 1;
+            document.getElementById('__custom-12').value = input;
+        });
+    });
 
 });

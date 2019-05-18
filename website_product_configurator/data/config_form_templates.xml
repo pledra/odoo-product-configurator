@@ -116,7 +116,7 @@
         <t t-if="custom_type in ['float','int']">
             <div class="input-group oe_website_spinner css_quantity mt6">
                 <span class="input-group-addon">
-                    <a t-attf-href="#" class="mb8 js_add_qty">
+                    <a t-attf-href="#" class="mb8 js_remove_qty">
                         <i class="fa fa-minus"></i>
                     </a>
                 </span>
