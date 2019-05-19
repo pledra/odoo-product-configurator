@@ -5,8 +5,7 @@ stages:
 
 variables: &globalvars
     ADDON_CATEGORIES: "--private"
-    CI_IMAGE: "gcr.io/$GCLOUD_PROJECT/$CI_PROJECT_NAME-$ODOO_MINOR"
-    CI_TEST_IMAGE: "gcr.io/$GCLOUD_PROJECT/$CI_PROJECT_NAME-$ODOO_MINOR-test"
+    CI_IMAGE: "gcr.io/pledra-1/product-configurator"
     GIT_DEPTH: "3"
     GIT_STRATEGY: none
     GIT_HOST: "git@gitlab.pledra.com:pledra"
@@ -58,60 +57,59 @@ Build:
    - ci/image build      
  retry: 1
 
-# Test Addons:
-#   services:
-#     - name: postgres:10.0-alpine
-#   image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
-#   stage: test
-#   before_script: []
-#   script:
-#     # Execute entrypoint to wait for db to be ready and other things
-#     - /opt/odoo/common/entrypoint
-#     # Initialize the database and install all the repository modules
-#     - addons init -i $ADDON_CATEGORIES
-#     # Execute coverage tests on the initialized database
-#     - qa_coverage
-#     # Move coverage report
-#     - mv /qa/artifacts/coverage .
-#   artifacts:
-#     paths:
-#       - coverage
-#     when: always
-#   coverage: /TOTAL.* (\d+)%/
+Test Addons:
+  services:
+    - name: postgres:10.0-alpine
+  image: ${CI_IMAGE}:${CI_PIPELINE_ID}
+  stage: test
+  before_script: []
+  script:
+    # Execute entrypoint to wait for db to be ready and other things
+    - /opt/odoo/common/entrypoint
+    # Initialize the database and install all the repository modules
+    - addons init -i $ADDON_CATEGORIES
+    # Execute coverage tests on the initialized database
+    - qa_coverage
+    # Move coverage report
+    - mv /qa/artifacts/coverage .
+  artifacts:
+    paths:
+      - coverage
+    when: always
+  coverage: /TOTAL.* (\d+)%/
 
-# Pylint Loose: &pylint
-#   image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
-#   stage: test
-#   before_script: []
-#   script:
-#     - qa_pylint
+Pylint Loose: &pylint
+  image: ${CI_IMAGE}:${CI_PIPELINE_ID}
+  stage: test
+  before_script: []
+  script:
+    - qa_pylint
 
-# Pylint Strict:
-#   <<: *pylint
-#   variables:
-#     LINT_MODE: "pr"
-#   except:
-#     - ^\d+\.\d+$
+Pylint Strict:
+  <<: *pylint
+  variables:
+    LINT_MODE: "pr"
+  except:
+    - ^\d+\.\d+$
 
-# Pylint Strict Warnings:
-#   <<: *pylint
-#   allow_failure: true
-#   only:
-#     - ^\d+\.\d+$
+Pylint Strict Warnings:
+  <<: *pylint
+  allow_failure: true
+  only:
+    - ^\d+\.\d+$
 
-# Pylint Beta:
-#   <<: *pylint
-#   variables:
-#     LINT_MODE: "beta"
-#   allow_failure: true
+Pylint Beta:
+  <<: *pylint
+  variables:
+    LINT_MODE: "beta"
+  allow_failure: true
 
-# Flake8:
-#   image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
-#   stage: test
-#   before_script: []
-#   script:
-#     - qa_flake8
-
+Flake8:
+  image: ${CI_IMAGE}:${CI_PIPELINE_ID}
+  stage: test
+  before_script: []
+  script:
+    - qa_flake8
 
 #deploy_staging:
 #  image: google/cloud-sdk:alpine
