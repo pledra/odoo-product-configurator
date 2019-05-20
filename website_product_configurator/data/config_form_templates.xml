@@ -3,7 +3,10 @@
 
     <template id="config_header" name="Product Configuration Header">
         <div id="cfg_header" class="form-group text-right">
-           <div class="col-xs-12">Image goes here</div>
+           <div class="col-xs-12">
+             <img id="cfg_image" itemprop="image" class="img img-responsive pull-right"
+                    t-att-src="config_image_url"/>
+           </div>
         </div>
     </template>
 
@@ -251,8 +254,7 @@
                 </div>
 
                 <div class="col-xs-12 col-md-4">
-                  image will display here
-                  <!-- <img id="cfg_image" itemprop="image" class="img img-responsive img-center" t-att-src="get_config_image(product_tmpl, cfg_session.value_ids.ids)"/> -->
+                    <img id="cfg_image" itemprop="image" class="img img-responsive img-center" t-att-src="config_image_url"/>
                 </div>
 
                 <div class="col-xs-12 col-sm-4">
