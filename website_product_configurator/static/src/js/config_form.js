@@ -219,21 +219,70 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
         });
 
-        $('.js_remove_qty').on('click', function(ev) {
-            var container = $(event.currentTarget).closest('.custom_field_container');
+        function _disableEnableAddRemoveQtyButton(quantity, max_val, min_val) {
+            if (quantity >= max_val) {
+                $('.js_add_qty').addClass('btn-disabled');
+            } else if (quantity < max_val && $('.js_add_qty').hasClass('btn-disabled')) {
+                $('.js_add_qty').removeClass('btn-disabled');
+            }
+            if (quantity <= min_val) {
+                $('.js_remove_qty').addClass('btn-disabled');
+            } else if (quantity > min_val && $('.js_remove_qty').hasClass('btn-disabled')) {
+                $('.js_remove_qty').removeClass('btn-disabled');
+            }
+        }
+
+        function _handleSppinerCustomValue(ev) {
+            var current_target = $(ev.currentTarget);
+            var container = current_target.closest('.custom_field_container');
             var custom_value = container.find('input.custom_config_value');
-            var quantity = custom_value.val();
-            quantity = parseFloat(quantity) - 1;
-            custom_value.val(quantity);
+            var quantity = parseFloat(custom_value.val());
+            var max_val = parseFloat(container.find('input.custom_config_value').attr('max'));
+            var min_value = parseFloat(container.find('input.custom_config_value').attr('min'));
+            if (isNaN(min_value)) {
+                min_value = 0;
+            }
+            if (current_target.hasClass('js_add_qty')) {
+                quantity = quantity + 1;
+                custom_value.val(quantity);
+                _disableEnableAddRemoveQtyButton(quantity ,max_val ,min_value);
+            } else if (current_target.hasClass('js_remove_qty')) {
+                quantity = quantity - 1;
+                custom_value.val(quantity);
+                _disableEnableAddRemoveQtyButton(quantity ,max_val ,min_value);
+            }
+            return {'quantity': quantity, 'max_val': max_val, 'min_val': min_value}
+        }
+
+        $('.custom_config_value').change(function(ev) {
+            var result = _handleSppinerCustomValue(ev);
+            var container = $(ev.currentTarget).closest('.custom_field_container');
+            var custom_value = container.find('input.custom_config_value');
+            var old_value = custom_value.attr('data-old-value');
+            var quantity = result.quantity;
+            if (result.quantity > result.max_val) {
+                alert("you entered more then max value");
+                custom_value.val(old_value);
+                quantity = parseFloat(old_value);
+            }
+            else if (result.quantity < result.min_val || isNaN(result.quantity)) {
+                alert("you entered less then min value");
+                custom_value.val(old_value);
+                quantity = parseFloat(old_value);
+            }
+            else {
+                custom_value.attr('data-old-value', quantity);
+            }
+            _disableEnableAddRemoveQtyButton(quantity ,result.max_val ,result.min_val)
         });
 
         $('.js_add_qty').on('click', function(ev) {
-            var container = $(event.currentTarget).closest('.custom_field_container');
-            var custom_value = container.find('input.custom_config_value');
-            var quantity= custom_value.val();
-            quantity = parseFloat(quantity) + 1;
-            custom_value.val(quantity);
+            var result = _handleSppinerCustomValue(ev);
+        });
+
+        $('.js_remove_qty').on('click', function(ev) {
+            var result = _handleSppinerCustomValue(ev);
         });
 	});
 
-});
+})

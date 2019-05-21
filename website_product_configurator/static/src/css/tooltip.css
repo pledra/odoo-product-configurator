@@ -6,3 +6,7 @@
 .tooltip {
     font-weight: bolder;
 }
+
+.btn-disabled {
+	pointer-events: none;
+}
