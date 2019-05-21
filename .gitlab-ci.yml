@@ -155,4 +155,3 @@ Flake8:
 #     - export OBSOLETE_TEST_IMAGE_DIGESTS=$(gcloud container images list-tags $CI_TEST_IMAGE --filter="timestamp.datetime < $LATEST_TEST_IMG_TAG_DATE" --format='get(digest)')
 #     - for IMG_DIGEST in $OBSOLETE_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_IMAGE@$IMG_DIGEST; done
 #     - for IMG_DIGEST in $OBSOLETE_TEST_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_TEST_IMAGE@$IMG_DIGEST; done
-
