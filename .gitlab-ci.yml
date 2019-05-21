@@ -66,6 +66,8 @@ Test Addons:
   script:
     # Execute entrypoint to wait for db to be ready and other things
     - /opt/odoo/common/entrypoint
+    # Initialize the qa virtualenvironment
+    - source /qa/venv/bin/activate
     # Initialize the database and install all the repository modules
     - addons init -i $ADDON_CATEGORIES
     # Execute coverage tests on the initialized database
