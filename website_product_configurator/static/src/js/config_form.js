@@ -6,8 +6,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
 	$(document).ready(function () {
 	    var config_form = $("#product_config_form");
-
-        // if custom attr type id date/datetime
         var datetimepickers_options = {
             calendarWeeks: true,
             icons : {
@@ -44,18 +42,11 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var open_cfg_step_lines = data.open_cfg_step_lines;
 
                 _applyDomainOnValues(domains);
-                _handleOpenSteps(open_cfg_step_lines);
-                _addConfigImageUrl(data.config_image_url);
+                _handleOpenSteps(open_cfg_step_lines)
 
             });
-            _handleCustomAttribute(ev);
+            _handleCustomAttribute(ev)
 		});
-
-        function _addConfigImageUrl(config_image_url) {
-            if (config_image_url) {
-                $('#cfg_image').attr('src', config_image_url);
-            };
-        };
 
         function _handleCustomAttribute(event) {
             var container = $(event.currentTarget).closest('.tab-pane.container');
@@ -67,14 +58,14 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var is_required = $(event.currentTarget).hasClass('required_config_attrib');
                 if (is_required) {
                     custom_value.addClass('required_config_attrib');
-                };
+                }
             } else if (!custom_value_container.hasClass('hidden')){
                 custom_value_container.addClass('hidden');
                 if (custom_value.hasClass('required_config_attrib')) {
                     custom_value.removeClass('required_config_attrib');
-                };
-            };
-        };
+                }
+            }
+        }
 
         function _handleOpenSteps(open_cfg_step_lines) {
             var $steps = config_form.find('.config_step');
@@ -91,7 +82,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     };
                 };
             });
-        };
+        }
 
         function _applyDomainOnValues(domains) {
             _.each(domains, function (domain, attr_id) {
@@ -120,7 +111,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     };
                 });
             });
-        };
+        }
 
         function _onChangeConfigStep(event, next_step) {
             var flag = _checkRequiredFields(event)
@@ -139,7 +130,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 });
             } else {
                 return false;
-            };
+            }
         };
         
         function _displayTooltip(config_attribut, message) {
@@ -199,7 +190,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var selector = next_step.find('a:first-child').attr('href');
                 var step_to_active = config_form.find('.tab-content').find(selector);
                 step_to_active.addClass('active in');
-            };
+            }
         };
 
         function addRequiredAttr(config_step) {
@@ -225,7 +216,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                         };
                     };
                 });
-            };
+            }
         });
 
         $('.js_remove_qty').on('click', function() {

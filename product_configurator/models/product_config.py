@@ -1,5 +1,4 @@
 from ast import literal_eval
-import base64
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import Warning, ValidationError
@@ -787,7 +786,7 @@ class ProductConfigSession(models.Model):
             if matches > max_matches:
                 img_obj = line
                 max_matches = matches
-        return base64.b64encode(img_obj.image)
+        return img_obj.image
 
     @api.model
     def get_variant_vals(self, value_ids=None, custom_vals=None, **kwargs):

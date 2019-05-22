@@ -1,13 +1,8 @@
-import base64
-import hashlib
-
 from odoo import http
-from odoo.addons.website_sale.controllers.main import WebsiteSale
-from odoo.tools import safe_eval, pycompat
-from odoo.addons.http_routing.models.ir_http import slug
 from odoo.http import request
-from odoo.tools.mimetypes import guess_mimetype
-from odoo.addons.web.controllers.main import Binary
+from odoo.addons.website_sale.controllers.main import WebsiteSale
+from odoo.addons.http_routing.models.ir_http import slug
+from odoo.tools import safe_eval
 
 
 def get_pricelist():
@@ -18,11 +13,6 @@ def get_pricelist():
         partner = request.env.user.partner_id
         pricelist = partner.property_product_pricelist
     return pricelist
-
-# def force_contenttype(headers, contenttype='image/png'):
-#         dictheaders = dict(headers)
-#         dictheaders['Content-Type'] = contenttype
-#         return list(dictheaders.items())
 
 
 class ProductConfigWebsiteSale(WebsiteSale):
@@ -70,9 +60,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             active_step = cfg_step_lines[:1]
         extra_attribute_line_ids = self.get_extra_attribute_line_ids(
             cfg_session.product_tmpl_id)
-        config_image_url = self.get_config_image_url(
-            config_session_id=cfg_session,
-            value_ids=cfg_session.value_ids.ids)
         vals = {
             'cfg_session': cfg_session,
             'cfg_step_lines': cfg_step_lines,
@@ -85,7 +72,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'prefixes': product_configurator_obj._prefixes,
             'custom_val_id': custom_val_id,
             'extra_attribute_line_ids': extra_attribute_line_ids,
-            'config_image_url': config_image_url,
         }
         return vals
 
@@ -123,26 +109,16 @@ class ProductConfigWebsiteSale(WebsiteSale):
         :param: product_tmpl_id: record set of product template"""
 
         product_attribute_lines = product_tmpl_id.attribute_line_ids
-        product_configurator_obj = request.env['product.configurator']
-        field_prefix = product_configurator_obj._prefixes.get('field_prefix')
-        # custom_field_prefix = product_configurator_obj._prefixes.get(
-        #    'custom_field_prefix')
-
         value_ids = []
         for attr_line in product_attribute_lines:
             if attr_line.custom:
                 pass
             else:
-                attr_values = form_values.get(
-                    '%s%s' % (field_prefix, attr_line.attribute_id.id),
-                    False
-                )
+                attr_values = form_values.get(attr_line.attribute_id.id, False)
                 if not attr_values:
                     continue
                 if not isinstance(attr_values, list):
                     attr_values = [attr_values]
-                elif isinstance(attr_values[0], list):
-                    attr_values = attr_values[0][2]
                 value_ids += attr_values
         return value_ids
 
@@ -251,22 +227,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         )
         return extra_attribute_line_ids
 
-    def get_config_image_url(self, config_session_id, value_ids=False,
-                             custom_value_ids=False):
-        if not custom_value_ids:
-            custom_value_ids = config_session_id.custom_value_ids
-
-        if not value_ids:
-            value_ids = config_session_id.value_ids
-
-        image_url = '/website_product_configurator/image/%s' % (
-            slug(config_session_id)
-        )
-        image_url += '?'
-        for value in value_ids:
-            image_url += '&value=%s' % (value)
-        return image_url
-
     @http.route('/website_product_configurator/onchange',
                 type='json', methods=['POST'], auth="public", website=True)
     def onchange(self, form_values, field_name):
@@ -300,19 +260,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
             form_values, config_session_id, product_template_id)
         open_cfg_step_lines = config_session_id.sudo()\
             .get_open_step_lines(value_ids).ids
-        open_cfg_step_lines = ['%s' % (step) for step in open_cfg_step_lines]
 
-        # if no step is defined or some attribute remains to add in a step
+        open_cfg_step_lines = ['%s' % (step) for step in open_cfg_step_lines]
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             product_template_id)
         if extra_attr_line_ids:
             open_cfg_step_lines.append('configure')
-
-        # image URL
-        config_image_url = self.get_config_image_url(
-            config_session_id=config_session_id,
-            value_ids=value_ids)
-        updates['config_image_url'] = config_image_url
 
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_lines'] = open_cfg_step_lines
@@ -320,12 +273,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
     def set_config_next_step(self, config_session_id,
                              current_step=False, next_step=False):
-        """Return next step of configuration wizard
-            param: current_step: (string) current step of configuration wizard
-            param: current_step: (string) next step of configuration wizard
-                (in case when someone click on step directly instead
-                of clicking on next button)
-            return: (string) next step """
         config_session_id = config_session_id.sudo()
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id)
@@ -356,9 +303,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 type='json', methods=['POST'], auth="public", website=True)
     def save_configuration(self, form_values, current_step=False,
                            next_step=False):
-        """Save current configuration in related session and
-        next step if exist otherwise create variant using
-        configuration redirect to product page of configured product"""
         result = self.get_session_and_product(form_values)
         config_session_id = result.get('config_session')
         product_template_id = result.get('product_tmpl')
@@ -399,7 +343,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         '<model("product.product"):product_id>',
         type='http', auth="public", website=True)
     def cfg_session(self, cfg_session, product_id, **post):
-        """Remnder product page of product_id"""
         try:
             product_tmpl = cfg_session.sudo().product_tmpl_id
         except Exception:
@@ -411,12 +354,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
             return sorted(vals, key=lambda obj: obj.attribute_id.sequence)
 
         pricelist = get_pricelist()
-        config_image_url = self.get_config_image_url(
-            config_session_id=cfg_session,
-            value_ids=cfg_session.value_ids.ids)
         values = {
             'get_product_vals': _get_product_vals,
-            'config_image_url': config_image_url,
+            # 'get_config_image': self.get_config_image,
             'product_id': product_id,
             'product_tmpl': product_tmpl,
             'pricelist': pricelist,
@@ -424,47 +364,3 @@ class ProductConfigWebsiteSale(WebsiteSale):
         }
         return request.render(
             "website_product_configurator.cfg_session", values)
-
-    @http.route(
-        '/website_product_configurator/image/'
-        '<model("product.config.session"):cfg_session>',
-        type='http', auth="public", website=True)
-    def get_configuration_image(self, cfg_session, value='',
-                                custom_value='', **kw):
-        """return response with image data"""
-        value_ids = request.httprequest.args.getlist('value')
-        value_ids = [int(value_id) for value_id in value_ids]
-        # custom_value_ids = request.httprequest.args.getlist('custome_value')
-
-        content = cfg_session.sudo().get_config_image(value_ids)
-
-        headers = []
-        # mimetype
-        mimetype = guess_mimetype(
-            base64.b64decode(content),
-            default='application/octet-stream'
-        )
-        headers += [
-            ('Content-Type', mimetype),
-            ('X-Content-Type-Options', 'nosniff')
-        ]
-
-        # cache
-        etag = (
-            bool(request) and
-            request.httprequest.headers.get('If-None-Match')
-        )
-        retag = '"%s"' % (
-            hashlib.md5(pycompat.to_text(content).encode('utf-8')).hexdigest()
-        )
-        headers.append(('ETag', retag))
-        headers.append(('Cache-Control', 'max-age=%s' % (0)))
-        status = (304 if etag == retag else 200)
-        headers = Binary().force_contenttype(headers, contenttype='image/png')
-
-        # response
-        image_base64 = base64.b64decode(content)
-        headers.append(('Content-Length', len(image_base64)))
-        response = request.make_response(image_base64, headers)
-        response.status_code = status
-        return response
