@@ -261,12 +261,12 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var old_value = custom_value.attr('data-old-value');
             var quantity = result.quantity;
             if (result.quantity > result.max_val) {
-                alert("you entered more then max value");
+                alert("Maximum allowed value is" + " " +result.max_val);
                 custom_value.val(old_value);
                 quantity = parseFloat(old_value);
             }
-            else if (result.quantity < result.min_val || isNaN(result.quantity)) {
-                alert("you entered less then min value");
+            else if (result.quantity < result.min_val) {
+                alert("Minimum allowed value is" + " " +result.min_val);
                 custom_value.val(old_value);
                 quantity = parseFloat(old_value);
             }
