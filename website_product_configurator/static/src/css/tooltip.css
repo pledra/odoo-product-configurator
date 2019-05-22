@@ -10,3 +10,7 @@
 .btn-disabled {
 	pointer-events: none;
 }
+
+.textbox-border-color {
+	border-color: red;
+}

@@ -134,7 +134,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
         };
         
         function _displayTooltip(config_attribut, message) {
-            $(config_attribut).focus();
             $(config_attribut).tooltip({
                 title: message,
                 placement: "bottom",
@@ -152,16 +151,19 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var config_attr = active_step.find('.form-control.required_config_attrib');
             var flag = true;
             for (var i = 0; i < config_attr.length; i++) {
-               if (!config_attr[i].value) {
+                if (!config_attr[i].value) {
+                    $(config_attr[i]).addClass('textbox-border-color');
                     flag = false;
                     if (config_attr[i].tagName == 'SELECT') {
                         var message = "Please select an item in the list."
                     } else if (config_attr[i].tagName == 'INPUT') {
                         var message = "Please enter value."
                     }
-                    _displayTooltip(config_attr[i], message);
-                    break;
-               };
+                    // _displayTooltip(config_attr[i], message);
+                }
+                else if (config_attr[i].value) {
+                    $(config_attr[i]).removeClass('textbox-border-color');
+                }
             };
             return flag;
         };
