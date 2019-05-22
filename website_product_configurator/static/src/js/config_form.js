@@ -242,6 +242,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
             if (isNaN(min_value)) {
                 min_value = 0;
             }
+            if (isNaN(quantity)) {
+                quantity = min_value;
+            }
             if (current_target.hasClass('js_add_qty')) {
                 quantity = quantity + 1;
                 custom_value.val(quantity);
