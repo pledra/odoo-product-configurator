@@ -258,7 +258,10 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var result = _handleSppinerCustomValue(ev);
             var container = $(ev.currentTarget).closest('.custom_field_container');
             var custom_value = container.find('input.custom_config_value');
-            var old_value = custom_value.attr('data-old-value');
+            var old_value = parseFloat(custom_value.attr('data-old-value'));
+            if (isNaN(old_value)) {
+                old_value = '';
+            }
             var quantity = result.quantity;
             if (result.quantity > result.max_val) {
                 alert("Maximum allowed value is" + " " +result.max_val);
@@ -271,7 +274,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 quantity = parseFloat(old_value);
             }
             else {
-                custom_value.attr('data-old-value', quantity);
+                parseFloat(custom_value.attr('data-old-value', quantity));
             }
             _disableEnableAddRemoveQtyButton(quantity ,result.max_val ,result.min_val)
         });
