@@ -108,17 +108,27 @@ class ProductConfigWebsiteSale(WebsiteSale):
         :param: cfg_session: record set of config session
         :param: product_tmpl_id: record set of product template"""
 
+        product_configurator_obj = request.env['product.configurator']
+        field_prefix = product_configurator_obj._prefixes.get('field_prefix')
+        # custom_field_prefix = product_configurator_obj._prefixes.get(
+        #    'custom_field_prefix')
+
         product_attribute_lines = product_tmpl_id.attribute_line_ids
         value_ids = []
         for attr_line in product_attribute_lines:
             if attr_line.custom:
                 pass
             else:
-                attr_values = form_values.get(attr_line.attribute_id.id, False)
+                attr_values = form_values.get(
+                    '%s%s' % (field_prefix, attr_line.attribute_id.id),
+                    False
+                )
                 if not attr_values:
                     continue
                 if not isinstance(attr_values, list):
                     attr_values = [attr_values]
+                elif isinstance(attr_values[0], list):
+                    attr_values = attr_values[0][2]
                 value_ids += attr_values
         return value_ids
 
@@ -261,6 +271,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         open_cfg_step_lines = config_session_id.sudo()\
             .get_open_step_lines(value_ids).ids
 
+        # if no step is defined or some attribute remains to add in a step
         open_cfg_step_lines = ['%s' % (step) for step in open_cfg_step_lines]
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             product_template_id)
@@ -273,6 +284,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
     def set_config_next_step(self, config_session_id,
                              current_step=False, next_step=False):
+        """Return next step of configuration wizard
+        param: current_step: (string) current step of configuration wizard
+        param: current_step: (string) next step of configuration wizard
+            (in case when someone click on step directly instead
+            of clicking on next button)
+        return: (string) next step """
         config_session_id = config_session_id.sudo()
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id)
@@ -303,6 +320,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 type='json', methods=['POST'], auth="public", website=True)
     def save_configuration(self, form_values, current_step=False,
                            next_step=False):
+        """Save current configuration in related session and
+        next step if exist otherwise create variant using
+        configuration redirect to product page of configured product"""
         result = self.get_session_and_product(form_values)
         config_session_id = result.get('config_session')
         product_template_id = result.get('product_tmpl')
@@ -343,6 +363,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         '<model("product.product"):product_id>',
         type='http', auth="public", website=True)
     def cfg_session(self, cfg_session, product_id, **post):
+        """Render product page of product_id"""
         try:
             product_tmpl = cfg_session.sudo().product_tmpl_id
         except Exception:
