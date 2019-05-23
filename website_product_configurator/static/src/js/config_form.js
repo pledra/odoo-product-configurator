@@ -40,13 +40,24 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var values = data.value;
                 var domains = data.domain;
                 var open_cfg_step_lines = data.open_cfg_step_lines;
+                var attribute_value_lines = values.attribute_value_line_ids;
 
                 _applyDomainOnValues(domains);
-                _handleOpenSteps(open_cfg_step_lines)
+                _handleOpenSteps(open_cfg_step_lines);
+                _setImageUrl(attribute_value_lines);
 
             });
             _handleCustomAttribute(ev)
 		});
+
+        function _setImageUrl(attribute_value_lines) {
+            var images;
+            attribute_value_lines.forEach(function(line){
+                images = "<img id='cfg_image' itemprop='image' class='img img-responsive pull-right'"
+                images += "src='/web/image/product.attribute.value.line/"+line+"/image'/>"
+            })   
+            $('#product_config_image').html(images);
+        };
 
         function _handleCustomAttribute(event) {
             var container = $(event.currentTarget).closest('.tab-pane.container');
