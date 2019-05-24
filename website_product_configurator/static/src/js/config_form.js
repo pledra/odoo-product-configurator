@@ -282,7 +282,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             return {'quantity': quantity, 'max_val': max_val, 'min_val': min_value}
         }
 
-        $('.custom_config_value').change(function(ev) {
+        $('.custom_config_value.js_quantity').change(function(ev) {
             _handleSppinerCustomValue(ev);
         });
 
