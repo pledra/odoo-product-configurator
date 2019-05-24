@@ -130,7 +130,7 @@ class ProductAttribute(models.Model):
         if self.custom_type in ('int', 'float'):
             if self.max_val < self.min_val:
                 raise ValidationError(
-                    _("Maximum value should be greater than Mininum value"))
+                    _("Maximum value should be greater than Minimum value"))
 
 class ProductAttributeLine(models.Model):
     _inherit = 'product.attribute.line'
