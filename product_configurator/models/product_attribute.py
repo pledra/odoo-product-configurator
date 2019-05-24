@@ -26,6 +26,14 @@ class ProductAttribute(models.Model):
     def onchange_custom_type(self):
         if self.custom_type in self._get_nosearch_fields():
             self.search_ok = False
+        if self.custom_type not in ('int', 'float'):
+            self.min_val = False
+            self.max_val = False
+
+    @api.onchange('val_custom')
+    def onchange_val_custom_field(self):
+        if not self.val_custom:
+            self.custom_type = False
 
     CUSTOM_TYPES = [
         ('char', 'Char'),
@@ -127,10 +135,12 @@ class ProductAttribute(models.Model):
 
     @api.constrains('min_val', 'max_val')
     def _check_constraint_min_max_value(self):
-        if self.custom_type in ('int', 'float'):
-            if self.max_val < self.min_val:
-                raise ValidationError(
-                    _("Maximum value should be greater than Minimum value"))
+        if self.custom_type not in ('int', 'float'):
+            return
+        if self.max_val < self.min_val:
+            raise ValidationError(
+                _("Maximum value should be greater than Minimum value"))
+
 
 class ProductAttributeLine(models.Model):
     _inherit = 'product.attribute.line'
