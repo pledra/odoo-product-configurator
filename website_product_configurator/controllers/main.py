@@ -281,7 +281,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_lines'] = open_cfg_step_lines
-        print("updates", updates)
         return updates
 
     def set_config_next_step(self, config_session_id,

@@ -2,14 +2,13 @@
 <odoo>
 
     <template id="config_header" name="Product Configuration Header">
-        <div id="cfg_header" class="form-group text-right">
+        <div id="cfg_header" class="form-group">
           <span id="product_config_image" class="col-xs-12">
             <t t-foreach="attribute_value_line_ids" t-as="line_id">
               <img id="cfg_image" itemprop="image" class="img img-responsive pull-right"
                   t-attf-src="/web/image/product.attribute.value.line/{{line_id}}/image"/>
             </t>
           </span>
-          <t t-esc="attribute_value_line_ids"/>
         </div>
     </template>
 

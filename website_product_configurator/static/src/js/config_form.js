@@ -51,9 +51,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
 		});
 
         function _setImageUrl(attribute_value_lines) {
-            var images;
+            var images = '';
             attribute_value_lines.forEach(function(line){
-                images = "<img id='cfg_image' itemprop='image' class='img img-responsive pull-right'"
+                images += "<img id='cfg_image' itemprop='image' class='img img-responsive pull-right'"
                 images += "src='/web/image/product.attribute.value.line/"+line+"/image'/>"
             })   
             $('#product_config_image').html(images);
