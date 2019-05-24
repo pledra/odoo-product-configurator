@@ -806,16 +806,11 @@ class ProductConfigSession(models.Model):
             custom_vals = self._get_custom_vals_dict()
 
         image = self.get_config_image(value_ids)
-        all_images = tools.image_get_resized_images(
-            image, avoid_resize_medium=True)
         vals = {
             'product_tmpl_id': self.product_tmpl_id.id,
             'attribute_value_ids': [(6, 0, value_ids)],
             'taxes_id': [(6, 0, self.product_tmpl_id.taxes_id.ids)],
             'image': image,
-            'image_variant': image,
-            'image_medium': all_images['image_medium'],
-            'image_small': all_images['image_medium'],
         }
 
         if custom_vals:

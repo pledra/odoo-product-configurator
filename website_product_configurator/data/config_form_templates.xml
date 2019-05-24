@@ -256,8 +256,8 @@
                 </div>
 
                 <div class="col-xs-12 col-md-4">
-                  image will display here
-                  <!-- <img id="cfg_image" itemprop="image" class="img img-responsive img-center" t-att-src="get_config_image(product_tmpl, cfg_session.value_ids.ids)"/> -->
+                    <img id="cfg_image" itemprop="image" class="img img-responsive img-center"
+                        t-attf-src="/web/image/product.product/{{product_id.id}}/image"/>
                 </div>
 
                 <div class="col-xs-12 col-sm-4">
