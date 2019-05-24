@@ -71,7 +71,7 @@ Test Addons:
     # Initialize the database and install all the repository modules
     - addons init -i $ADDON_CATEGORIES
     # Execute coverage tests on the initialized database
-    - qa_coverage
+    - test-coverage
     # Move coverage report
     - mv /qa/artifacts/coverage .
   artifacts:
@@ -85,7 +85,7 @@ Pylint Loose: &pylint
   stage: test
   before_script: []
   script:
-    - qa_pylint
+    - test-pylint
 
 Pylint Strict:
   <<: *pylint
@@ -111,7 +111,7 @@ Flake8:
   stage: test
   before_script: []
   script:
-    - qa_flake8
+    - test-flake8
 
 #deploy_staging:
 #  image: google/cloud-sdk:alpine
