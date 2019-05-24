@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding='UTF-8'?>
+
+<odoo>
+    <record id="cron_delete_sessions_with_no_activity" model="ir.cron">
+        <field name="name">Delete inactive config-sessions</field>
+        <field name="active" eval="True"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="model_id" ref="product_configurator.model_product_config_session"/>
+        <field name="state">code</field>
+        <field name="code">model.remove_inactive_config_sessions()</field>
+    </record>
+</odoo>

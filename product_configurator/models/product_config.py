@@ -768,10 +768,12 @@ class ProductConfigSession(models.Model):
         return domain
 
     @api.multi
-    def get_session_vals(self, product_tmpl_id, parent_id=None):
+    def get_session_vals(self, product_tmpl_id, parent_id=None, user_id=None):
+        if not user_id:
+            user_id = self.env.user.id
         vals = {
             'product_tmpl_id': product_tmpl_id,
-            'user_id': self.env.user.id,
+            'user_id': user_id,
         }
         if parent_id:
             vals.update(parent_id=parent_id)
@@ -1106,18 +1108,21 @@ class ProductConfigSession(models.Model):
             product_tmpl_id=product_tmpl_id,
             parent_id=parent_id
         )
-        session = self.search(domain)
+        session = self.search(domain, order='create_date desc', limit=1)
         return session
 
     @api.model
-    def create_get_session(self, product_tmpl_id, parent_id=None):
-        session = self.search_session(product_tmpl_id=product_tmpl_id,
+    def create_get_session(self, product_tmpl_id, parent_id=None,
+                           force_create=False, user_id=None):
+        if not force_create:
+            session = self.search_session(product_tmpl_id=product_tmpl_id,
                                       parent_id=parent_id)
-        if session:
-            return session[0]
+            if session:
+                return session[0]
         vals = self.get_session_vals(
             product_tmpl_id=product_tmpl_id,
-            parent_id=parent_id
+            parent_id=parent_id,
+            user_id=user_id
         )
         return self.create(vals)
 
