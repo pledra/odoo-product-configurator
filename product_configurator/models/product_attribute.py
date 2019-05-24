@@ -125,6 +125,12 @@ class ProductAttribute(models.Model):
                         (self.name, self.max_val + 1))
                 )
 
+    @api.constrains('min_val', 'max_val')
+    def _check_constraint_min_max_value(self):
+        if self.custom_type in ('int', 'float'):
+            if self.max_val < self.min_val:
+                raise ValidationError(
+                    _("Maximum value should be greater than Mininum value"))
 
 class ProductAttributeLine(models.Model):
     _inherit = 'product.attribute.line'
