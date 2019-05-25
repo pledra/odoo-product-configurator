@@ -111,7 +111,9 @@ Pylint Beta:
 Flake8:
   image: ${CI_IMAGE}:${CI_PIPELINE_ID}
   stage: test
-  before_script: []
+  before_script:
+    # Initialize the qa virtualenvironment
+    - source /qa/venv/bin/activate 
   script:
     - test-flake8
 
