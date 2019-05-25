@@ -1,12 +1,11 @@
 stages:
   - build
   - test
-  - cleanup
+  # - cleanup
 
 variables: &globalvars
     ADDON_CATEGORIES: "--private"
-    CI_IMAGE: "gcr.io/$GCLOUD_PROJECT/$CI_PROJECT_NAME-$ODOO_MINOR"
-    CI_TEST_IMAGE: "gcr.io/$GCLOUD_PROJECT/$CI_PROJECT_NAME-$ODOO_MINOR-test"
+    CI_IMAGE: "gcr.io/pledra-1/product-configurator"
     GIT_DEPTH: "3"
     GIT_STRATEGY: none
     GIT_HOST: "git@gitlab.pledra.com:pledra"
@@ -24,6 +23,7 @@ variables: &globalvars
     POSTGRES_DB: test
     POSTGRES_USER: odoo
     POSTGRES_PASSWORD: "odoopassword"
+    PRIVATE_DIR: "./odoo/custom/src/private"
 
 before_script:
     - eval "$(ssh-agent -s)"
@@ -38,31 +38,40 @@ before_script:
     - echo $GCE_SERVICE_ACCOUNT_JSON > /service_account.json
 
 Build:
- image: google/cloud-sdk:alpine
+ image: google/cloud-sdk:latest
  stage: build
  variables:
    <<: *globalvars
    GIT_STRATEGY: clone
  script:
+   # Authenticate to gain access to gcloud services for this project
    - gcloud auth activate-service-account --key-file=/service_account.json --project=$GCLOUD_PROJECT
-   - git clone $GIT_HOST/$GIT_DOCKER_PROJECT_REPO.git -b ${ODOO_MINOR} --depth=1 /$CI_PROJECT_NAME
-   - cp $CI_PROJECT_DIR/* /$CI_PROJECT_NAME/src/private -R;
-   - gcloud builds submit --config /$CI_PROJECT_NAME/cloudbuild.yaml /$CI_PROJECT_NAME --substitutions _CI_IMAGE=$CI_IMAGE,_CI_TEST_IMAGE=$CI_TEST_IMAGE,_CI_PIPELINE_ID=$CI_PIPELINE_ID
+   # Checkout scaffolding
+   - git fetch origin scaffolding && git checkout scaffolding
+   # Add a worktree for the CI branch and set to private
+   - git worktree add ./odoo/custom/src/private/__ci_project_dir $CI_COMMIT_SHA
+   - cp $PRIVATE_DIR/__ci_project_dir/* $PRIVATE_DIR -R && rm -rf $PRIVATE_DIR/__ci_project_dir
+   # Install yaml dependency
+   - apt install python3-yaml -y
+   # Send source to google cloud builder
+   - ci/image build      
  retry: 1
 
 Test Addons:
   services:
     - name: postgres:10.0-alpine
-  image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
+  image: ${CI_IMAGE}:${CI_PIPELINE_ID}
   stage: test
   before_script: []
   script:
     # Execute entrypoint to wait for db to be ready and other things
     - /opt/odoo/common/entrypoint
+    # Initialize the qa virtualenvironment
+    - source /qa/venv/bin/activate
     # Initialize the database and install all the repository modules
     - addons init -i $ADDON_CATEGORIES
     # Execute coverage tests on the initialized database
-    - qa_coverage
+    - test-coverage
     # Move coverage report
     - mv /qa/artifacts/coverage .
   artifacts:
@@ -72,11 +81,13 @@ Test Addons:
   coverage: /TOTAL.* (\d+)%/
 
 Pylint Loose: &pylint
-  image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
+  image: ${CI_IMAGE}:${CI_PIPELINE_ID}
   stage: test
-  before_script: []
+  before_script:
+     # Initialize the qa virtualenvironment
+    - source /qa/venv/bin/activate
   script:
-    - qa_pylint
+    - test-pylint
 
 Pylint Strict:
   <<: *pylint
@@ -98,12 +109,13 @@ Pylint Beta:
   allow_failure: true
 
 Flake8:
-  image: ${CI_TEST_IMAGE}:${CI_PIPELINE_ID}
+  image: ${CI_IMAGE}:${CI_PIPELINE_ID}
   stage: test
-  before_script: []
+  before_script:
+    # Initialize the qa virtualenvironment
+    - source /qa/venv/bin/activate 
   script:
-    - qa_flake8
-
+    - test-flake8
 
 #deploy_staging:
 #  image: google/cloud-sdk:alpine
@@ -147,4 +159,3 @@ Flake8:
 #     - export OBSOLETE_TEST_IMAGE_DIGESTS=$(gcloud container images list-tags $CI_TEST_IMAGE --filter="timestamp.datetime < $LATEST_TEST_IMG_TAG_DATE" --format='get(digest)')
 #     - for IMG_DIGEST in $OBSOLETE_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_IMAGE@$IMG_DIGEST; done
 #     - for IMG_DIGEST in $OBSOLETE_TEST_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_TEST_IMAGE@$IMG_DIGEST; done
-

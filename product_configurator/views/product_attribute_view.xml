@@ -65,8 +65,8 @@
                             <group>
                                 <!--<field name="type"/> -->
                                 <field name="required"/>
-                                <field name="multi"/>
-                                <field name="val_custom"/>
+                                <field name="multi" attrs="{'readonly': [('val_custom','=',True)]}" force_save="1"/>
+                                <field name="val_custom" attrs="{'readonly': [('multi', '=', True)]}" force_save="1"/>
                             </group>
                             <group>
                                 <field name="uom_id"/>

@@ -34,6 +34,8 @@ class ProductConfigDomain(models.Model):
         computed_domain = []
         for domain in self:
             lines = domain.trans_implied_ids.mapped('domain_line_ids').sorted()
+            if not lines:
+                continue
             for line in lines[:-1]:
                 if line.operator == 'or':
                     computed_domain.append('|')
@@ -226,11 +228,12 @@ class ProductConfigImage(models.Model):
     def _check_value_ids(self):
         cfg_session_obj = self.env['product.config.session']
         for cfg_img in self:
-            valid = cfg_session_obj.validate_configuration(
-                value_ids=cfg_img.value_ids.ids,
-                product_tmpl_id=self.product_tmpl_id.id,
-                final=False)
-            if not valid:
+            try:
+                cfg_session_obj.validate_configuration(
+                    value_ids=cfg_img.value_ids.ids,
+                    product_tmpl_id=self.product_tmpl_id.id,
+                    final=False)
+            except ValidationError:
                 raise ValidationError(
                     _("Values entered for line '%s' generate "
                       "a incompatible configuration" % cfg_img.name)
@@ -438,9 +441,10 @@ class ProductConfigSession(models.Model):
     @api.multi
     def action_confirm(self):
         if self.product_tmpl_id.config_ok:
-            valid = self.validate_configuration()
-            if not valid:
-                return valid
+            try:
+                self.validate_configuration()
+            except Exception:
+                return False
         self.state = 'done'
         return True
 
@@ -534,8 +538,11 @@ class ProductConfigSession(models.Model):
         avail_val_ids = self.values_available(value_ids)
         if set(value_ids) - set(avail_val_ids):
             self.value_ids = [(6, 0, avail_val_ids)]
-        valid = self.validate_configuration(final=False)
-        if not valid:
+        try:
+            self.validate_configuration(final=False)
+        except ValidationError as ex:
+            raise ValidationError(ex.name)
+        except Exception:
             raise ValidationError(_('Invalid Configuration'))
         return res
 
@@ -551,12 +558,16 @@ class ProductConfigSession(models.Model):
             value_ids = vals.get('value_ids')
             if value_ids:
                 default_val_ids += value_ids[0][2]
-            valid_conf = self.validate_configuration(
-                value_ids=default_val_ids, final=False,
-                product_tmpl_id=product_tmpl.id
-            )
-            # TODO: Remove if cond when PR with raise error on github is merged
-            if not valid_conf:
+            try:
+                self.validate_configuration(
+                    value_ids=default_val_ids, final=False,
+                    product_tmpl_id=product_tmpl.id
+                )
+                # TODO: Remove if cond when PR with
+                # raise error on github is merged
+            except ValidationError as ex:
+                raise ValidationError(ex.name)
+            except Exception:
                 raise ValidationError(
                     _('Default values provided generate an invalid '
                       'configuration')
@@ -566,8 +577,9 @@ class ProductConfigSession(models.Model):
 
     @api.multi
     def create_get_variant(self, value_ids=None, custom_vals=None):
-        """ Creates a new product variant with the attributes passed via value_ids
-        and custom_values or retrieves an existing one based on search result
+        """ Creates a new product variant with the attributes passed
+        via value_ids and custom_values or retrieves an existing
+        one based on search result
 
             :param value_ids: list of product.attribute.values ids
             :param custom_vals: dict {product.attribute.id: custom_value}
@@ -581,8 +593,11 @@ class ProductConfigSession(models.Model):
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
 
-        valid = self.validate_configuration()
-        if not valid:
+        try:
+            self.validate_configuration()
+        except ValidationError as ex:
+            raise ValidationError(ex.name)
+        except Exception:
             raise ValidationError(_('Invalid Configuration'))
 
         duplicates = self.search_variant(
@@ -1032,29 +1047,81 @@ class ProductConfigSession(models.Model):
                 custom_val = custom_vals.get(attr.id)
                 if line.required and not common_vals and not custom_val:
                     # TODO: Verify custom value type to be correct
-                    return False
+                    raise ValidationError(_(
+                        "Required attribute '%s' is empty" % (attr.name)))
 
         # Check if all all the values passed are not restricted
         avail_val_ids = self.values_available(
             value_ids, value_ids, product_tmpl_id=product_tmpl_id
         )
         if set(value_ids) - set(avail_val_ids):
-            return False
+            restrict_val = list(set(value_ids) - set(avail_val_ids))
+            product_att_values = self.env['product.attribute.value'].browse(
+                restrict_val)
+            group_by_attr = {}
+            for val in product_att_values:
+                if val.attribute_id in group_by_attr:
+                    group_by_attr[val.attribute_id] += val
+                else:
+                    group_by_attr[val.attribute_id] = val
+
+            message = 'The following values are not available:'
+            for attr, val in group_by_attr.items():
+                message += '\n%s: %s' % (
+                    attr.name, ', '.join(val.mapped('name'))
+                )
+            raise ValidationError(_(message))
 
         # Check if custom values are allowed
         custom_attr_ids = product_tmpl.attribute_line_ids.filtered(
             'custom').mapped('attribute_id').ids
-
         if not set(custom_vals.keys()) <= set(custom_attr_ids):
-            return False
+            custom_attrs_with_error = list(
+                set(custom_vals.keys()) - set(custom_attr_ids))
+            custom_attrs_with_error = self.env['product.attribute'].browse(
+                custom_attrs_with_error)
+            error_message = _(
+                "The following custom values are not permitted "
+                "according to the product template - %s.\n\nIt is possible "
+                "that a change has been made to allowed custom values "
+                "while your configuration was in process. Please reset your "
+                "current session and start over or contact your administrator"
+                " in order to proceed."
+            )
+            message_vals = ""
+            for attr_id in custom_attrs_with_error:
+                message_vals += "\n%s: %s" % (
+                    attr_id.name,
+                    custom_vals.get(attr_id.id)
+                )
+            raise ValidationError(error_message % (message_vals))
 
         # Check if there are multiple values passed for non-multi attributes
         mono_attr_lines = product_tmpl.attribute_line_ids.filtered(
             lambda l: not l.multi)
-
+        attrs_with_error = {}
         for line in mono_attr_lines:
             if len(set(line.value_ids.ids) & set(value_ids)) > 1:
-                return False
+                wrong_vals = self.env['product.attribute.value'].browse(
+                    set(line.value_ids.ids) & set(value_ids)
+                )
+                attrs_with_error[line.attribute_id] = wrong_vals
+        if attrs_with_error:
+            error_message = _(
+                "The following multi values are not permitted "
+                "according to the product template - %s.\n\nIt is possible "
+                "that a change has been made to allowed multi values "
+                "while your configuration was in process. Please reset your "
+                "current session and start over or contact your administrator"
+                " in order to proceed."
+            )
+            message_vals = ""
+            for attr_id, vals in attrs_with_error.items():
+                message_vals += "\n%s: %s" % (
+                    attr_id.name,
+                    ', '.join(vals.mapped('name'))
+                )
+            raise ValidationError(error_message % (message_vals))
         return True
 
     @api.model
