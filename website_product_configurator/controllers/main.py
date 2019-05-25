@@ -72,6 +72,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'prefixes': product_configurator_obj._prefixes,
             'custom_val_id': custom_val_id,
             'extra_attribute_line_ids': extra_attribute_line_ids,
+            'attribute_value_line_ids': cfg_session.attribute_value_line_ids.ids
         }
         return vals
 
