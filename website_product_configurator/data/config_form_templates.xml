@@ -119,8 +119,9 @@
         </t>
         <t t-if="custom_type in ['float','int']">
             <div class="input-group oe_website_spinner css_quantity mt6">
+                <t t-set="custom_val" t-value="float(custom_value.value)"/>
                 <span class="input-group-addon">
-                    <a t-attf-href="#" class="mb8 js_remove_qty">
+                    <a t-attf-href="#" t-att-class="'mb8 js_remove_qty' + (' btn-disabled' if (custom_val and custom_val &lt;= line.attribute_id.min_val) or not custom_val else '')">
                         <i class="fa fa-minus"></i>
                     </a>
                 </span>
@@ -131,9 +132,10 @@
                     t-att-data-oe-id="line.attribute_id.id"
                     t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                     t-att-class="'js_quantity form-control custom_config_value' + (' required_config_attrib' if custom_value else '')"
-                    t-att-value="custom_value and custom_value.value or line.attribute_id.min_val or 1"/>
+                    t-att-value="custom_value and custom_value.value or line.attribute_id.min_val or '0'"
+                    t-att-data-old-value="custom_value and custom_value.value or line.attribute_id.min_val or '0'"/>
                 <span class="input-group-addon">
-                    <a t-attf-href="#" class="mb8 float_left js_add_qty">
+                    <a t-attf-href="#" t-att-class="'mb8 float_left js_add_qty'  + (' btn-disabled' if custom_val and custom_val &gt;= line.attribute_id.max_val else '')">
                         <i class="fa fa-plus"></i>
                     </a>
                 </span>

@@ -145,7 +145,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
         };
         
         function _displayTooltip(config_attribut, message) {
-            $(config_attribut).focus();
             $(config_attribut).tooltip({
                 title: message,
                 placement: "bottom",
@@ -154,8 +153,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 template: "<div class='tooltip'><div class='tooltip-arrow'></div><div class='tooltip-inner'></div></div>"
             }).tooltip('show');
             setTimeout(function(){
-                $(config_attribut).tooltip('hide');
-            }, 2000);
+                $(config_attribut).tooltip('destroy');
+            }, 4000);
         };
 
         function _checkRequiredFields(event) {
@@ -163,16 +162,19 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var config_attr = active_step.find('.form-control.required_config_attrib');
             var flag = true;
             for (var i = 0; i < config_attr.length; i++) {
-               if (!config_attr[i].value) {
+                if (!config_attr[i].value  || config_attr[i].value == '0') {
+                    $(config_attr[i]).addClass('textbox-border-color');
                     flag = false;
-                    if (config_attr[i].tagName == 'SELECT') {
-                        var message = "Please select an item in the list."
-                    } else if (config_attr[i].tagName == 'INPUT') {
-                        var message = "Please enter value."
-                    }
-                    _displayTooltip(config_attr[i], message);
-                    break;
-               };
+                    // if (config_attr[i].tagName == 'SELECT') {
+                    //     var message = "Please select an item in the list."
+                    // } else if (config_attr[i].tagName == 'INPUT') {
+                    //     var message = "Please enter value."
+                    // }
+                    // _displayTooltip(config_attr[i], message);
+                }
+                else if (config_attr[i].value && $(config_attr[i]).hasClass('textbox-border-color')) {
+                    $(config_attr[i]).removeClass('textbox-border-color');
+                };
             };
             return flag;
         };
@@ -230,17 +232,78 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
         });
 
-        $('.js_remove_qty').on('click', function() {
-            var input = document.getElementById("__custom-12").value;
-            var input = input - 1;
-            document.getElementById('__custom-12').value = input;
+        function _disableEnableAddRemoveQtyButton(quantity, max_val, min_val) {
+            if (quantity >= max_val) {
+                $('.js_add_qty').addClass('btn-disabled');
+            } else if (quantity < max_val && $('.js_add_qty').hasClass('btn-disabled')) {
+                $('.js_add_qty').removeClass('btn-disabled');
+            }
+            if (quantity <= min_val) {
+                $('.js_remove_qty').addClass('btn-disabled');
+            } else if (quantity > min_val && $('.js_remove_qty').hasClass('btn-disabled')) {
+                $('.js_remove_qty').removeClass('btn-disabled');
+            }
+        }
+
+        // quantty sppiner
+        function _handleSppinerCustomValue(ev) {
+            var current_target = $(ev.currentTarget);
+            var container = current_target.closest('.custom_field_container');
+            var custom_value = container.find('input.custom_config_value');
+            var quantity = parseFloat(custom_value.val());
+            var max_val = parseFloat(container.find('input.custom_config_value').attr('max'));
+            var min_value = parseFloat(container.find('input.custom_config_value').attr('min'));
+            var old_value = parseFloat(custom_value.attr('data-old-value'));
+            if (isNaN(min_value)) {
+                min_value = 0;
+            }
+            if (isNaN(quantity)) {
+                var message = "You can't leave this blank.";
+                message += " Maximum allowed value is " + max_val;
+                message += " Minimum allowed value is " + min_value;
+                _displayTooltip(custom_value, message);
+                custom_value.val(old_value);
+            }
+            if (current_target.hasClass('js_add_qty')) {
+                quantity = quantity + 1;
+                custom_value.val(quantity);
+                _disableEnableAddRemoveQtyButton(quantity ,max_val ,min_value);
+            } else if (current_target.hasClass('js_remove_qty')) {
+                quantity = quantity - 1;
+                custom_value.val(quantity);
+                _disableEnableAddRemoveQtyButton(quantity ,max_val ,min_value);
+            } else {
+                if (quantity > max_val) {
+                    var message = "Maximum allowed value is " + max_val;
+                    _displayTooltip(custom_value, message);
+                    custom_value.val(old_value);
+                    quantity = parseFloat(old_value);
+                }
+                else if (quantity < min_value) {
+                    var message = "Minimum allowed value is " + min_value;
+                    _displayTooltip(custom_value, message);
+                    custom_value.val(old_value);
+                    quantity = parseFloat(old_value);
+                }
+                else {
+                    custom_value.attr('data-old-value', quantity);
+                }
+            }
+            _disableEnableAddRemoveQtyButton(quantity ,max_val ,min_value)
+            return {'quantity': quantity, 'max_val': max_val, 'min_val': min_value}
+        }
+
+        $('.custom_config_value.js_quantity').change(function(ev) {
+            _handleSppinerCustomValue(ev);
         });
 
-        $('.js_add_qty').on('click', function() {
-            var input= document.getElementById("__custom-12").value;
-            input = parseFloat(input) + 1;
-            document.getElementById('__custom-12').value = input;
+        $('.js_add_qty').on('click', function(ev) {
+            _handleSppinerCustomValue(ev);
         });
-    });
 
-});
+        $('.js_remove_qty').on('click', function(ev) {
+            _handleSppinerCustomValue(ev);
+        });
+	});
+
+})
