@@ -12,7 +12,8 @@
     'data': [
         'security/configurator_security.xml',
         'data/config_form_templates.xml',
-        'views/assets.xml'
+        'data/cron.xml',
+        'views/assets.xml',
     ],
     'demo': [
     ],

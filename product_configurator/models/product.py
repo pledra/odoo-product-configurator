@@ -153,25 +153,27 @@ class ProductTemplate(models.Model):
             lambda l: l.default_val).mapped('default_val').ids
 
         cfg_session_obj = self.env['product.config.session']
-        valid_conf = cfg_session_obj.validate_configuration(
-            value_ids=default_val_ids,
-            product_tmpl_id=self.id,
-            final=False
-        )
-        if not valid_conf:
-            raise ValidationError(_(
-                'Default values provided generate an invalid configuration'
-            ))
+        try:
+            cfg_session_obj.validate_configuration(
+                value_ids=default_val_ids, product_tmpl_id=self.id, final=False
+            )
+        except ValidationError as ex:
+            raise ValidationError(ex.name)
+        except Exception:
+            raise ValidationError(
+                _('Default values provided generate an invalid configuration')
+            )
 
     @api.multi
-    @api.constrains('config_line_ids')
+    @api.constrains('config_line_ids', 'attribute_line_ids')
     def _check_default_value_domains(self):
         try:
             self._check_default_values()
-        except ValidationError:
+        except ValidationError as e:
             raise ValidationError(
                 _('Restrictions added make the current default values '
-                  'generate an invalid configuration')
+                  'generate an invalid configuration.\
+                  \n%s') % (e.name)
             )
 
     @api.multi
