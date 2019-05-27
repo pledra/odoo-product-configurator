@@ -15,7 +15,7 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    @api.one
+    @api.multi
     @api.depends('product_variant_ids.product_tmpl_id')
     def _compute_product_variant_count(self):
         """For configurable products return the number of variants configured or 1
@@ -23,8 +23,10 @@ class ProductTemplate(models.Model):
         variant attached. Since we create them from the template we should have
         access to them always"""
         super(ProductTemplate, self)._compute_product_variant_count()
-        if self.config_ok and not self.product_variant_count:
-            self.product_variant_count = 1
+        for product_tmpl in self:
+            if product_tmpl.config_ok and not \
+                    product_tmpl.product_variant_count:
+                product_tmpl.product_variant_count = 1
 
     @api.multi
     @api.depends('attribute_line_ids.value_ids')
@@ -127,11 +129,12 @@ class ProductTemplate(models.Model):
         standard_products = self - config_products
         super(ProductTemplate, standard_products)._compute_weight()
 
-    @api.one
+    @api.multi
     def _inverse_weight(self):
-        self.weight_dummy = self.weight
-        if not self.config_ok:
-            super(ProductTemplate, self)._inverse_weight()
+        for product_tmpl in self:
+            product_tmpl.weight_dummy = product_tmpl.weight
+            if not product_tmpl.config_ok:
+                super(ProductTemplate, product_tmpl)._inverse_weight()
 
     def _search_weight(self, operator, value):
         return [('weight_dummy', operator, value)]
