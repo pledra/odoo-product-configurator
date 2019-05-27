@@ -218,7 +218,7 @@ class ProductAttributeValue(models.Model):
         else:
             self.weight_extra = 0.0
 
-    def _set_weight_extra(self):
+    def _inverse_weight_extra(self):
         product_tmpl_id = self._context.get('active_id')
         if not product_tmpl_id:
             return
@@ -256,7 +256,7 @@ class ProductAttributeValue(models.Model):
     weight_extra = fields.Float(
         string='Attribute Weight Extra',
         compute='_compute_weight_extra',
-        inverse='_set_weight_extra',
+        inverse='_inverse_weight_extra',
         default=0.0,
         digits=dp.get_precision('Product Weight'),
         help="Weight Extra: Extra weight for the variant with this attribute"

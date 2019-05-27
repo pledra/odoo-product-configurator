@@ -321,7 +321,7 @@ class ProductConfigSession(models.Model):
         return custom_vals
 
     @api.multi
-    def _get_config_step_name(self):
+    def _compute_config_step_name(self):
         """Get the config.step.line name using the string stored in config_step
          field of the session"""
         cfg_step_line_obj = self.env['product.config.step.line']
@@ -387,7 +387,7 @@ class ProductConfigSession(models.Model):
         string='Configuration Step ID'
     )
     config_step_name = fields.Char(
-        compute='_get_config_step_name',
+        compute='_compute_config_step_name',
         string="Configuration Step"
     )
     product_tmpl_id = fields.Many2one(

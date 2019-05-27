@@ -393,7 +393,7 @@ class WebsiteProductConfig(http.Controller):
                     if not isinstance(post[field_name], list):
                         try:
                             post[field_name] = [post[field_name]]
-                        except:
+                        except Exception:
                             continue
                     post_vals = {int(val) for val in post[field_name]}
                     line_vals = set(line.value_ids.ids)
@@ -406,7 +406,7 @@ class WebsiteProductConfig(http.Controller):
                 else:
                     try:
                         val_id = int(post[field_name])
-                    except:
+                    except Exception:
                         val_id = None
                     if val_id not in line.value_ids.ids:
                         values['errors'][field_name] = 'invalid'
@@ -462,7 +462,7 @@ class WebsiteProductConfig(http.Controller):
             if config_step == line:
                 try:
                     next_step = cfg_steps[i + 1]
-                except:
+                except Exception:
                     next_step = None
 
         cfg_session = self.get_cfg_session(product_tmpl, force_create=True)
@@ -698,7 +698,7 @@ class WebsiteProductConfig(http.Controller):
     def cfg_session(self, cfg_session, **post):
         try:
             product_tmpl = cfg_session.product_tmpl_id
-        except:
+        except Exception:
             return request.redirect('/configurator')
         if post:
             custom_vals = {

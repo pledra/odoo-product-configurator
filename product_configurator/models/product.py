@@ -109,7 +109,7 @@ class ProductTemplate(models.Model):
     # product-template so that no need of compute and inverse on this
     weight = fields.Float(
         compute='_compute_weight',
-        inverse='_set_weight',
+        inverse='_inverse_weight',
         search='_search_weight',
         store=False
     )
@@ -128,10 +128,10 @@ class ProductTemplate(models.Model):
         super(ProductTemplate, standard_products)._compute_weight()
 
     @api.one
-    def _set_weight(self):
+    def _inverse_weight(self):
         self.weight_dummy = self.weight
         if not self.config_ok:
-            super(ProductTemplate, self)._set_weight()
+            super(ProductTemplate, self)._inverse_weight()
 
     def _search_weight(self, operator, value):
         return [('weight_dummy', operator, value)]
@@ -369,7 +369,7 @@ class ProductProduct(models.Model):
     def _search_product_weight(self, operator, value):
         return [('weight_dummy', operator, value)]
 
-    def _set_product_weight(self):
+    def _inverse_product_weight(self):
         """Store weight in dummy field"""
         self.weight_dummy = self.weight
 
@@ -400,7 +400,7 @@ class ProductProduct(models.Model):
     )
     weight = fields.Float(
         compute='_compute_product_weight',
-        inverse='_set_product_weight',
+        inverse='_inverse_product_weight',
         search='_search_product_weight',
         store=False
     )
