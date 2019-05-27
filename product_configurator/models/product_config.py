@@ -1,7 +1,7 @@
 from ast import literal_eval
 
 from odoo import api, fields, models, tools, _
-from odoo.exceptions import Warning, ValidationError
+from odoo.exceptions import ValidationError
 from odoo.tools.misc import formatLang
 
 
@@ -290,7 +290,9 @@ class ProductConfigStepLine(models.Model):
         cfg_steps = cfg_step_lines.filtered(
             lambda line: line != self).mapped('config_step_id')
         if self.config_step_id in cfg_steps:
-            raise Warning(_('Cannot have a configuration step defined twice.'))
+            raise ValidationError(_(
+                'Cannot have a configuration step defined twice.'
+            ))
 
 
 class ProductConfigSession(models.Model):
