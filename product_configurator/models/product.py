@@ -18,14 +18,14 @@ class ProductTemplate(models.Model):
     @api.multi
     @api.depends('product_variant_ids.product_tmpl_id')
     def _compute_product_variant_count(self):
-        """For configurable products return the number of variants configured or 1
-        as many views and methods trigger only when a template has at least one
-        variant attached. Since we create them from the template we should have
-        access to them always"""
+        """For configurable products return the number of variants configured or
+        1 as many views and methods trigger only when a template has at least
+        one variant attached. Since we create them from the template we should
+        have access to them always"""
         super(ProductTemplate, self)._compute_product_variant_count()
         for product_tmpl in self:
-            if product_tmpl.config_ok and not \
-                    product_tmpl.product_variant_count:
+            if (product_tmpl.config_ok and not
+                    product_tmpl.product_variant_count):
                 product_tmpl.product_variant_count = 1
 
     @api.multi
@@ -111,7 +111,7 @@ class ProductTemplate(models.Model):
     # product-template so that no need of compute and inverse on this
     weight = fields.Float(
         compute='_compute_weight',
-        inverse='_inverse_weight',
+        inverse='_set_weight',
         search='_search_weight',
         store=False
     )
@@ -130,11 +130,11 @@ class ProductTemplate(models.Model):
         super(ProductTemplate, standard_products)._compute_weight()
 
     @api.multi
-    def _inverse_weight(self):
+    def _set_weight(self):
         for product_tmpl in self:
             product_tmpl.weight_dummy = product_tmpl.weight
             if not product_tmpl.config_ok:
-                super(ProductTemplate, product_tmpl)._inverse_weight()
+                super(ProductTemplate, product_tmpl)._set_weight()
 
     def _search_weight(self, operator, value):
         return [('weight_dummy', operator, value)]
