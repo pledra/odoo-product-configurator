@@ -6,8 +6,9 @@
         <field name="inherit_id" ref="stock.product_template_form_view_procurement_button"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='group_lots_and_weight']" position="attributes">
-            	<attribute name="attrs">{'invisible':['|', ('type', 'not in', ['product', 'consu']), '&amp;', ('product_variant_count', '&gt;', 1), ('config_ok', '=', False)]}</attribute>
+                <attribute name="attrs">{'invisible':['|', ('type', 'not in', ['product', 'consu']), '&amp;', ('product_variant_count', '&gt;', 1), ('config_ok', '=', False)]}</attribute>
             </xpath>
         </field>
     </record>
 </odoo>
+

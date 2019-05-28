@@ -9,7 +9,6 @@ product_configurator_custom_value,Custom Value,model_product_attribute_value_cus
 product_configurator_custom_attribute_value,Attribute Value Line,model_product_attribute_value_line,group_product_configurator,1,0,0,0
 product_configurator_config_session,Config Session,model_product_config_session,group_product_configurator,1,1,1,1
 product_configurator_config_session_custom_value,Config Session Custom Value,model_product_config_session_custom_value,group_product_configurator,1,1,1,1
-,,,,,,,
 user_config_line,User Config Line,model_product_config_line,base.group_user,1,0,0,0
 user_config_image,User Config Image,model_product_config_image,base.group_user,1,0,0,0
 user_config_step,User Config Step,model_product_config_step,base.group_user,1,0,0,0
@@ -20,7 +19,6 @@ user_custom_value,User Custom Value,model_product_attribute_value_custom,base.gr
 user_custom_attribute_value,User Attribute Value Line,model_product_attribute_value_line,base.group_user,1,0,0,0
 user_config_session,User Config Session,model_product_config_session,base.group_user,1,0,0,0
 user_config_session_custom_value,User Config Session Custom Value,model_product_config_session_custom_value,base.group_user,1,0,0,0
-,,,,,,,
 portal_config_image,Portal Config Image,model_product_config_image,base.group_portal,1,0,0,0
 portal_config_custom_value,Portal Custom Value,model_product_attribute_value_custom,base.group_portal,1,0,0,0
 portal_config_step,Portal Config Step,model_product_config_step,base.group_portal,1,0,0,0
@@ -30,7 +28,6 @@ portal_configurator_config_line,Portal Config Line,model_product_config_line,bas
 portal_configurator_config_step_line,Portal Config Step Line,model_product_config_step_line,base.group_portal,1,0,0,0
 portal_configurator_config_domain,Portal Config Domain,model_product_config_domain,base.group_portal,1,0,0,0
 portal_configurator_config_domain_line,Portal Config Domain Line,model_product_config_domain_line,base.group_portal,1,0,0,0
-,,,,,,,
 product_configurator_config_line_manager,Config Line Manager,product_configurator.model_product_config_line,product_configurator.group_product_configurator_manager,1,1,1,1
 product_configurator_config_image_manager,Config Image Manager,product_configurator.model_product_config_image,product_configurator.group_product_configurator_manager,1,1,1,1
 product_configurator_config_step_manager,Config Step Manager,product_configurator.model_product_config_step,product_configurator.group_product_configurator_manager,1,1,1,1
