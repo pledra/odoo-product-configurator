@@ -875,15 +875,13 @@ class ProductConfigurator(models.TransientModel):
 
         adjacent_steps = self.config_session_id.get_adjacent_steps()
         next_step = adjacent_steps.get('next_step')
-        open_step_lines = [
-            '%s' % (line_id)
-            for line_id in self.config_session_id.get_open_step_lines().ids
-        ]
+        open_step_lines = self.config_session_id.get_open_step_lines()
+        open_step_line_ids = [str(line_id) for line_id in open_step_lines.ids]
 
         session_config_step = self.config_session_id.config_step
         if (session_config_step and
                 self.state != session_config_step and
-                session_config_step in open_step_lines):
+                session_config_step in open_step_line_ids):
             next_step = self.config_session_id.config_step
         else:
             next_step = str(next_step.id) if next_step else None
