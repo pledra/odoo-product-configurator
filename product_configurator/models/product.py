@@ -24,8 +24,9 @@ class ProductTemplate(models.Model):
         have access to them always"""
         super(ProductTemplate, self)._compute_product_variant_count()
         for product_tmpl in self:
-            if (product_tmpl.config_ok and not
-                    product_tmpl.product_variant_count):
+            config_ok = product_tmpl.config_ok
+            variant_count = product_tmpl.product_variant_count
+            if config_ok and not variant_count:
                 product_tmpl.product_variant_count = 1
 
     @api.multi
