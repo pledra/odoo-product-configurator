@@ -229,6 +229,50 @@
         </t>
     </template>
 
+    <!-- Default configuration form (radio buttons ) -->
+    <template id="config_form_radio" name="RadioButton configuration form">
+        <t t-set="field_prefix" t-value="prefixes.get('field_prefix')"/>
+        <t t-set="custom_field_prefix" t-value="prefixes.get('custom_field_prefix')"/>
+        <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
+            <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
+            <label class="control-label" t-esc="line.attribute_id.name"></label>
+            <fieldset t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
+                t-att-data-oe-id="line.attribute_id.id"
+                t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
+                t-att-class="'form-control config_attribute' + (line.required and ' required_config_attrib' or '')">
+                <t t-foreach="line.value_ids" t-as="value">
+                    <input
+                        t-att-checked="'checked' if value.id in value_ids.ids else None"
+                        t-att-type="line.multi and 'checkbox' or 'radio'"
+                        t-att-class="'config_attr_value'"
+                        t-att-value="value.id"
+                        t-att-data-oe-id="value.id"
+                        t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
+                        t-att-disabled="value.id not in available_value_ids and True or False"/>
+                        <t t-esc="value.name"/>
+                </t>
+                <t t-if="line.custom">
+                    <input
+                        t-att-checked="'checked' if custom_value else None"
+                        t-att-type="line.multi and 'checkbox' or 'radio'"
+                        t-att-class="'config_attr_value custom_config_attr_value'"
+                        t-att-value="custom_val_id.id"
+                        t-att-data-oe-id="custom_val_id.id"
+                        t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
+                        t-att-disabled="custom_val_id.id not in available_value_ids and True or False"/>
+                        <t t-esc="custom_val_id.name"/>
+                </t>
+            </fieldset>
+            <t t-if="line.custom">
+                <div t-att-class="'custom_field_container' + (' hidden' if not custom_value else '')"
+                    t-att-data-oe-id="line.attribute_id.id">
+                    <t t-call="website_product_configurator.config_custom_field"/>
+                </div>
+            </t>
+            <br />
+        </t>
+    </template>
+
     <!-- Product configurator checkout -->
 
     <template id="cfg_session" name="Configuration Session">
@@ -264,7 +308,6 @@
 
                 <div class="col-xs-12 col-sm-4">
                     <h1 itemprop="name" t-field="product_tmpl.name">Product Name</h1>
-                    <!-- <span itemprop="url" style="display:none;" t-attf-hre="/configurator/#{slug(product)}"/> -->
 
                     <form action="/shop/cart/update" class="js_add_cart_variants" method="post">
                       <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>

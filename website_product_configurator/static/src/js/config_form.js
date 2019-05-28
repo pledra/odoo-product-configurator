@@ -64,7 +64,14 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var attribute_id = $(event.currentTarget).attr('data-oe-id');
             var custom_value = container.find('.custom_config_value[data-oe-id=' + attribute_id + ']');
             var custom_value_container = custom_value.closest('.custom_field_container[data-oe-id=' + attribute_id + ']');
-            if ($(event.currentTarget.selectedOptions[0]).hasClass('custom_config_attr_value') && custom_value_container.hasClass('hidden')) {
+            var custom_config_attr = $(event.currentTarget).find('.custom_config_attr_value');
+            var flag_custom = false;
+            if (custom_config_attr[0].tagName == "OPTION" && custom_config_attr[0].selected) {
+                flag_custom = true;
+            } else if (custom_config_attr[0].tagName == "INPUT" && custom_config_attr[0].checked) {
+                flag_custom = true;
+            };
+            if (flag_custom && custom_value_container.hasClass('hidden')) {
                 custom_value_container.removeClass('hidden');
                 var is_required = $(event.currentTarget).hasClass('required_config_attrib');
                 if (is_required) {
@@ -101,22 +108,26 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var $options = $selection.find('.config_attr_value');
                 _.each($options, function (option) {
                     var condition = domain[0][1];
-                    if (condition == 'in' || config_form == '=') {
+                    if (condition == 'in' || condition == '=') {
                         if ($.inArray(parseInt(option.value), domain[0][2]) < 0) {
                             $(option).attr('disabled', true);
                             if (option.selected) {
                                 option.selected = false;
+                            } else if (option.checked) {
+                                option.checked = false;
                             };
                         } else {
                             $(option).attr('disabled', false);
                         };
-                    } else if (condition == 'not in' || config_form == '!=') {
+                    } else if (condition == 'not in' || condition == '!=') {
                         if ($.inArray(parseInt(option.value), domain[0][2]) < 0) {
                             $(option).attr('disabled', false);
                         } else {
                             $(option).attr('disabled', true);
                             if (option.selected) {
                                 option.selected = false;
+                            } else if (option.checked) {
+                                option.checked = false;
                             };
                         };
                     };

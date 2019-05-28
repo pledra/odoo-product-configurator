@@ -265,6 +265,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         """Capture onchange events in the website and forward data to backend
         onchange method"""
         # config session and product template
+        print("form_valuesform_valuesform_valuesform_valuesform_valuesform_valuesform_values ", form_values, field_name)
         product_configurator_obj = request.env['product.configurator']
         result = self.get_session_and_product(form_values)
         config_session_id = result.get('config_session')
@@ -302,6 +303,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_lines'] = open_cfg_step_lines
+        print("updates ",updates)
         return updates
 
     def set_config_next_step(self, config_session_id,
