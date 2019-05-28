@@ -122,7 +122,7 @@ class ProductConfigurator(models.TransientModel):
                   'configuration will erase reset/clear all values')
             )
 
-    def get_onchange_domains(self, values, cfg_val_ids):
+    def get_onchange_domains(self, values, cfg_val_ids, product_tmpl_id=False, config_session_id=False):
         """Generate domains to be returned by onchange method in order
         to restrict the availble values of dynamically inserted fields
 
@@ -134,9 +134,13 @@ class ProductConfigurator(models.TransientModel):
         """
 
         field_prefix = self._prefixes.get('field_prefix')
+        if not product_tmpl_id:
+            product_tmpl_id = self.product_tmpl_id
+        if not config_session_id:
+            config_session_id = self.config_session_id
 
         domains = {}
-        for line in self.product_tmpl_id.attribute_line_ids.sorted():
+        for line in product_tmpl_id.attribute_line_ids.sorted():
             field_name = field_prefix + str(line.attribute_id.id)
 
             if field_name not in values:
@@ -145,7 +149,7 @@ class ProductConfigurator(models.TransientModel):
             vals = values[field_name]
 
             # get available values
-            avail_ids = self.config_session_id.values_available(
+            avail_ids = config_session_id.values_available(
                 check_val_ids=line.value_ids.ids, value_ids=cfg_val_ids)
             domains[field_name] = [('id', 'in', avail_ids)]
 
@@ -158,11 +162,14 @@ class ProductConfigurator(models.TransientModel):
                     continue
         return domains
 
-    def get_onchange_vals(self, cfg_val_ids):
+    def get_onchange_vals(self, cfg_val_ids, config_session_id=None):
         """Onchange hook to add / modify returned values by onchange method"""
-        product_img = self.config_session_id.get_config_image(cfg_val_ids)
-        price = self.config_session_id.get_cfg_price(cfg_val_ids)
-        weight = self.config_session_id.get_cfg_weight(value_ids=cfg_val_ids)
+        if not config_session_id:
+            config_session_id = self.config_session_id
+
+        product_img = config_session_id.get_config_image(cfg_val_ids)
+        price = config_session_id.get_cfg_price(cfg_val_ids)
+        weight = config_session_id.get_cfg_weight(value_ids=cfg_val_ids)
 
         return {
             'product_img': product_img,
@@ -171,7 +178,8 @@ class ProductConfigurator(models.TransientModel):
             'price': price,
         }
 
-    def get_form_vals(self, dynamic_fields, domains, cfg_val_ids=None):
+    def get_form_vals(self, dynamic_fields, domains, cfg_val_ids=None,
+                      product_tmpl_id=None, config_session_id=None):
         """Generate a dictionary to return new values via onchange method.
         Domains hold the values available, this method enforces these values
         if a selection exists in the view that is not available anymore.
@@ -181,7 +189,6 @@ class ProductConfigurator(models.TransientModel):
 
         :returns vals: Dictionary passed to {'value': vals} by onchange method
         """
-
         vals = {}
         dynamic_fields = {k: v for k, v in dynamic_fields.items() if v}
         for k, v in dynamic_fields.items():
@@ -197,10 +204,12 @@ class ProductConfigurator(models.TransientModel):
             elif v not in available_val_ids:
                 dynamic_fields.update({k: None})
                 vals[k] = None
+            else:
+                vals[k] = v
 
         final_cfg_val_ids = list(dynamic_fields.values())
 
-        vals.update(self.get_onchange_vals(final_cfg_val_ids))
+        vals.update(self.get_onchange_vals(final_cfg_val_ids, config_session_id))
         # To solve the Multi selection problem removing extra []
         if 'value_ids' in vals:
             val_ids = vals['value_ids'][0]
@@ -214,6 +223,27 @@ class ProductConfigurator(models.TransientModel):
         """ Override the onchange wrapper to return domains to dynamic
         fields as onchange isn't triggered for non-db fields
         """
+        # when it is called from controller then
+        product_tmpl_id = self.env['product.template'].browse(
+            values.get('product_tmpl_id', []))
+        if not product_tmpl_id:
+            product_tmpl_id = self.product_tmpl_id
+
+        config_session_id = self.env['product.config.session'].browse(
+            values.get('config_session_id', []))
+        if not config_session_id:
+            config_session_id = self.config_session_id
+
+        state = values.get('state', False)
+        if not state:
+            state = self.state
+
+        cfg_vals = self.env['product.attribute.value']
+        if values.get('value_ids', []):
+            cfg_vals = self.env['product.attribute.value'].browse(
+                values.get('value_ids', [])[0][2])
+        if not cfg_vals:
+            cfg_vals = self.value_ids
 
         field_type = type(field_name)
 
@@ -224,14 +254,13 @@ class ProductConfigurator(models.TransientModel):
                 values, field_name, field_onchange)
             return res
 
-        cfg_vals = self.value_ids
 
         view_val_ids = set()
         view_attribute_ids = set()
 
         try:
-            cfg_step_id = int(self.state)
-            cfg_step = self.product_tmpl_id.config_step_line_ids.filtered(
+            cfg_step_id = int(state)
+            cfg_step = product_tmpl_id.config_step_line_ids.filtered(
                 lambda x: x.id == cfg_step_id)
         except Exception:
             cfg_step = self.env['product.config.step.line']
@@ -266,8 +295,14 @@ class ProductConfigurator(models.TransientModel):
         # Combine database values with wizard values_available
         cfg_val_ids = cfg_vals.ids + list(view_val_ids)
 
-        domains = self.get_onchange_domains(values, cfg_val_ids)
-        vals = self.get_form_vals(dynamic_fields, domains)
+        domains = self.get_onchange_domains(
+            values, cfg_val_ids, product_tmpl_id, config_session_id)
+        vals = self.get_form_vals(
+            dynamic_fields=dynamic_fields,
+            domains=domains,
+            product_tmpl_id=product_tmpl_id,
+            config_session_id=config_session_id,
+        )
         return {'value': vals, 'domain': domains}
 
     config_session_id = fields.Many2one(
@@ -755,65 +790,11 @@ class ProductConfigurator(models.TransientModel):
         """Prevent database storage of dynamic fields and instead write values
         to database persistent value_ids field"""
 
-        # Get current database value_ids (current configuration)
-        field_prefix = self._prefixes.get('field_prefix')
-        custom_field_prefix = self._prefixes.get('custom_field_prefix')
-
-        custom_ext_id = 'product_configurator.custom_attribute_value'
-        custom_val = self.env.ref(custom_ext_id)
-
-        attr_val_dict = {}
-        custom_val_dict = {}
-
-        for attr_line in self.product_tmpl_id.attribute_line_ids:
-            attr_id = attr_line.attribute_id.id
-            field_name = field_prefix + str(attr_id)
-            custom_field_name = custom_field_prefix + str(attr_id)
-
-            if field_name not in vals and custom_field_name not in vals:
-                continue
-
-            # Add attribute values from the client except custom attribute
-            # If a custom value is being written, but field name is not in
-            #   the write dictionary, then it must be a custom value!
-            if vals.get(field_name, custom_val.id) != custom_val.id:
-                if attr_line.multi and isinstance(vals[field_name], list):
-                    if not vals[field_name]:
-                        field_val = None
-                    else:
-                        field_val = vals[field_name][0][2]
-                elif not attr_line.multi and isinstance(vals[field_name], int):
-                    field_val = vals[field_name]
-                else:
-                    raise Warning(
-                        _('An error occursed while parsing value for '
-                          'attribute %s' % attr_line.attribute_id.name)
-                    )
-                attr_val_dict.update({
-                    attr_id: field_val
-                })
-                # Ensure there is no custom value stored if we have switched
-                # from custom value to selected attribute value.
-                if attr_line.custom:
-                    custom_val_dict.update({attr_id: False})
-            elif attr_line.custom:
-                val = vals.get(custom_field_name, False)
-                if attr_line.attribute_id.custom_type == 'binary':
-                    # TODO: Add widget that enables multiple file uploads
-                    val = [{
-                        'name': 'custom',
-                        'datas': vals[custom_field_name]
-                    }]
-                custom_val_dict.update({
-                    attr_id: val
-                })
-                # Ensure there is no standard value stored if we have switched
-                # from selected value to custom value.
-                attr_val_dict.update({attr_id: False})
-
-        self.config_session_id.update_config(attr_val_dict, custom_val_dict)
-
         # Remove all dynamic fields from write values
+        self.config_session_id.update_session_configuration_value(
+            vals=vals,
+            product_tmpl_id=self.product_tmpl_id
+        )
         vals = self._remove_dynamic_fields(vals)
 
         res = super(ProductConfigurator, self).write(vals)
@@ -835,19 +816,7 @@ class ProductConfigurator(models.TransientModel):
         More importantly it sets metadata on the context
         variable so the fields_get and fields_view_get methods can generate the
         appropriate dynamic content"""
-        wizard_action = {
-            'type': 'ir.actions.act_window',
-            'res_model': self._name,
-            'name': 'Configure Product',
-            'view_mode': 'form',
-            'context': dict(
-                self.env.context,
-                wizard_id=self.id,
-                view_cache=False,
-            ),
-            'target': 'new',
-            'res_id': self.id,
-        }
+        wizard_action = self.get_wizard_action()
 
         if not self.product_tmpl_id:
             return wizard_action
@@ -857,37 +826,15 @@ class ProductConfigurator(models.TransientModel):
                 _('Product Template does not have any attribute lines defined')
             )
 
-        cfg_step_lines = self.product_tmpl_id.config_step_line_ids
-        if not cfg_step_lines:
-            if (self.value_ids or self.custom_value_ids)\
-                    and not self.state == 'select':
-                return self.action_config_done()
-            elif not (self.value_ids or self.custom_value_ids)\
-                    and not self.state == 'select':
-                raise Warning(_("You must select at least one\
-                    attribute in order to configure a product"))
-            else:
-                self.state = 'configure'
-                return wizard_action
-
-        adjacent_steps = self.config_session_id.get_adjacent_steps()
-        next_step = adjacent_steps.get('next_step')
-
-        session_config_step = self.config_session_id.config_step
-        if session_config_step and self.state != session_config_step:
-            next_step = self.config_session_id.config_step
-        else:
-            next_step = str(next_step.id) if next_step else None
-        if next_step:
-            self.state = next_step
-            self.config_session_id.config_step = next_step
-        elif not (self.value_ids or self.custom_value_ids):
-            raise Warning(_("You must select at least one\
-                    attribute in order to configure a product"))
-        else:
+        next_step = self.config_session_id.get_next_step(
+            state=self.state,
+            product_tmpl_id=self.product_tmpl_id,
+            value_ids=self.value_ids,
+            custom_value_ids=self.custom_value_ids,
+        )
+        if not next_step:
             return self.action_config_done()
-
-        return wizard_action
+        return self.open_step(step=next_step)
 
     @api.multi
     def action_previous_step(self):
@@ -990,41 +937,13 @@ class ProductConfigurator(models.TransientModel):
         :param step: recordset of product.config.step.line
         """
         wizard_action = self.get_wizard_action()
-        self.state = str(step.id)
-        self.config_session_id.config_step = str(step.id)
+        if not step:
+            return wizard_action
+        if isinstance(step, type(self.env['product.config.step.line'])):
+            step = '%s' %(step.id)
+        self.state = step
+        self.config_session_id.config_step = step
         return wizard_action
-
-    def check_and_open_incomplete_step(self, value_ids=None,
-                                       custom_value_ids=None):
-        """ Check and open incomplete step if any
-        :param value_ids: recordset of product.attribute.value
-        """
-        if not value_ids:
-            value_ids = self.value_ids
-        if not custom_value_ids:
-            custom_value_ids = self.custom_value_ids
-        open_step_lines = self.config_session_id.get_open_step_lines()
-        step_to_open = False
-        custom_attr_selected = custom_value_ids.mapped('attribute_id')
-        for step in open_step_lines:
-            unset_attr_line_value_ids = step.attribute_line_ids.search([
-                ('id', 'in', step.attribute_line_ids.ids),
-                ('required', '=', True),
-                ('value_ids', 'not in', value_ids.ids),
-
-            ])
-            unset_attr_line_custom_vals = step.attribute_line_ids.search([
-                ('id', 'in', unset_attr_line_value_ids.ids),
-                ('custom', '=', True),
-                ('attribute_id', 'in', custom_attr_selected.ids)
-            ])
-
-            if unset_attr_line_value_ids - unset_attr_line_custom_vals:
-                step_to_open = step
-                break
-        if step_to_open:
-            return self.open_step(step_to_open)
-        return False
 
     @api.multi
     def action_config_done(self):
@@ -1037,9 +956,9 @@ class ProductConfigurator(models.TransientModel):
         # In the meantime, at least make sure that a validation
         # error legitimately raised in a nested routine
         # is passed through.
-        res = self.check_and_open_incomplete_step()
-        if res:
-            return res
+        step_to_open = self.config_session_id.check_and_open_incomplete_step()
+        if step_to_open:
+            return self.open_step(step_to_open)
         variant = self.config_session_id.create_get_variant()
         action = {
             'type': 'ir.actions.act_window',

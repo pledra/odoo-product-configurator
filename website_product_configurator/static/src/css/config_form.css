@@ -1,0 +1,19 @@
+#product_config_image {
+    max-width: 1000px;
+    min-height: 480px;
+}
+
+#cfg_image {
+    max-width: 90%;
+    max-height: 480px;
+    text-align: center;
+    text-align: -webkit-center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
