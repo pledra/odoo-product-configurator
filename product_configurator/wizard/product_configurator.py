@@ -122,7 +122,8 @@ class ProductConfigurator(models.TransientModel):
                   'configuration will erase reset/clear all values')
             )
 
-    def get_onchange_domains(self, values, cfg_val_ids, product_tmpl_id=False, config_session_id=False):
+    def get_onchange_domains(self, values, cfg_val_ids,
+                             product_tmpl_id=False, config_session_id=False):
         """Generate domains to be returned by onchange method in order
         to restrict the availble values of dynamically inserted fields
 
@@ -212,7 +213,12 @@ class ProductConfigurator(models.TransientModel):
 
         final_cfg_val_ids = list(dynamic_fields.values())
 
-        vals.update(self.get_onchange_vals(final_cfg_val_ids, config_session_id))
+        vals.update(
+            self.get_onchange_vals(
+                final_cfg_val_ids,
+                config_session_id
+            )
+        )
         # To solve the Multi selection problem removing extra []
         if 'value_ids' in vals:
             val_ids = vals['value_ids'][0]
@@ -256,7 +262,6 @@ class ProductConfigurator(models.TransientModel):
             res = super(ProductConfigurator, self).onchange(
                 values, field_name, field_onchange)
             return res
-
 
         view_val_ids = set()
         view_attribute_ids = set()
@@ -943,7 +948,7 @@ class ProductConfigurator(models.TransientModel):
         if not step:
             return wizard_action
         if isinstance(step, type(self.env['product.config.step.line'])):
-            step = '%s' %(step.id)
+            step = '%s' % (step.id)
         self.state = step
         self.config_session_id.config_step = step
         return wizard_action

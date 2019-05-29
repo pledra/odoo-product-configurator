@@ -81,6 +81,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         extra_attribute_line_ids = self.get_extra_attribute_line_ids(
             cfg_session.product_tmpl_id)
         cfg_session = cfg_session.sudo()
+        attr_val_line_ids = cfg_session.attribute_value_line_ids.ids
         vals = {
             'cfg_session': cfg_session,
             'cfg_step_lines': cfg_step_lines,
@@ -93,7 +94,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'prefixes': product_configurator_obj._prefixes,
             'custom_val_id': custom_val_id,
             'extra_attribute_line_ids': extra_attribute_line_ids,
-            'attribute_value_line_ids': cfg_session.attribute_value_line_ids.ids
+            'attribute_value_line_ids': attr_val_line_ids
         }
         return vals
 
