@@ -207,18 +207,19 @@ class ProductAttributeValue(models.Model):
         product = super(ProductAttributeValue, self).copy(default)
         return product
 
-    @api.one
+    @api.multi
     def _compute_weight_extra(self):
-        product_tmpl_id = self._context.get('active_id')
-        if product_tmpl_id:
-            price = self.price_ids.filtered(
-                lambda price: price.product_tmpl_id.id == product_tmpl_id
-            )
-            self.weight_extra = price.weight_extra
-        else:
-            self.weight_extra = 0.0
+        for product_attribute in self:
+            product_tmpl_id = product_attribute._context.get('active_id')
+            if product_tmpl_id:
+                price = product_attribute.price_ids.filtered(
+                    lambda price: price.product_tmpl_id.id == product_tmpl_id
+                )
+                product_attribute.weight_extra = price.weight_extra
+            else:
+                product_attribute.weight_extra = 0.0
 
-    def _set_weight_extra(self):
+    def _inverse_weight_extra(self):
         product_tmpl_id = self._context.get('active_id')
         if not product_tmpl_id:
             return
@@ -256,7 +257,7 @@ class ProductAttributeValue(models.Model):
     weight_extra = fields.Float(
         string='Attribute Weight Extra',
         compute='_compute_weight_extra',
-        inverse='_set_weight_extra',
+        inverse='_inverse_weight_extra',
         default=0.0,
         digits=dp.get_precision('Product Weight'),
         help="Weight Extra: Extra weight for the variant with this attribute"

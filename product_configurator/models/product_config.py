@@ -1,7 +1,7 @@
 from ast import literal_eval
 
 from odoo import api, fields, models, tools, _
-from odoo.exceptions import Warning, ValidationError
+from odoo.exceptions import ValidationError
 from odoo.tools.misc import formatLang
 
 
@@ -290,7 +290,9 @@ class ProductConfigStepLine(models.Model):
         cfg_steps = cfg_step_lines.filtered(
             lambda line: line != self).mapped('config_step_id')
         if self.config_step_id in cfg_steps:
-            raise Warning(_('Cannot have a configuration step defined twice.'))
+            raise ValidationError(_(
+                'Cannot have a configuration step defined twice.'
+            ))
 
 
 class ProductConfigSession(models.Model):
@@ -321,7 +323,7 @@ class ProductConfigSession(models.Model):
         return custom_vals
 
     @api.multi
-    def _get_config_step_name(self):
+    def _compute_config_step_name(self):
         """Get the config.step.line name using the string stored in config_step
          field of the session"""
         cfg_step_line_obj = self.env['product.config.step.line']
@@ -387,7 +389,7 @@ class ProductConfigSession(models.Model):
         string='Configuration Step ID'
     )
     config_step_name = fields.Char(
-        compute='_get_config_step_name',
+        compute='_compute_config_step_name',
         string="Configuration Step"
     )
     product_tmpl_id = fields.Many2one(

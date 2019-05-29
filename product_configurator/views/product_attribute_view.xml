@@ -35,6 +35,7 @@
     <record model="ir.ui.view" id="product_attribute_form_view">
         <field name="name">product.attribute.form.view</field>
         <field name="model">product.attribute</field>
+        <field name="priority">100</field>
         <field name="inherit_id" ref="product.product_attribute_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//form/group" position="before">

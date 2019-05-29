@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data>
+    <data>
 
-    <record id="product_config_category" model="ir.module.category">
-        <field name="name">Product Configurator</field>
-    </record>
+        <record id="product_config_category" model="ir.module.category">
+            <field name="name">Product Configurator</field>
+        </record>
 
-    <record id="group_product_configurator" model="res.groups">
-        <field name="name">User</field>
-        <field name="category_id" ref="product_config_category"/>
-        <field name="implied_ids" eval="[(4, ref('product.group_product_variant'))]"/>
-        <field name="users" eval="[(4, ref('base.user_root'))]"/>
-    </record>
+        <record id="group_product_configurator" model="res.groups">
+            <field name="name">User</field>
+            <field name="category_id" ref="product_config_category"/>
+            <field name="implied_ids" eval="[(4, ref('product.group_product_variant'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        </record>
 
-    <record id="group_product_configurator_manager" model="res.groups">
-        <field name="name">Manager</field>
-        <field name="category_id" ref="product_configurator.product_config_category"/>
-        <field name="implied_ids" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
-        <field name="users" eval="[(4, ref('base.user_root'))]"/>
-    </record>
+        <record id="group_product_configurator_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="product_configurator.product_config_category"/>
+            <field name="implied_ids" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        </record>
 
-    <!-- Set default to all employees -->
-    <record model="res.groups" id="base.group_user">
-        <field name="implied_ids" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
-    </record>
+        <!-- Set default to all employees -->
+        <record model="res.groups" id="base.group_user">
+            <field name="implied_ids" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
+        </record>
 
-</data>
-	<data noupdate="1">
+    </data>
+    <data noupdate="1">
         <record id="configure_product_template_rule_manager" model="ir.rule">
             <field name="name">Configure Product Template Manager</field>
             <field ref="product.model_product_template" name="model_id"/>
@@ -80,3 +80,4 @@
         </record>
     </data>
 </odoo>
+

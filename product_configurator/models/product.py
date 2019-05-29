@@ -15,16 +15,19 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    @api.one
+    @api.multi
     @api.depends('product_variant_ids.product_tmpl_id')
     def _compute_product_variant_count(self):
-        """For configurable products return the number of variants configured or 1
-        as many views and methods trigger only when a template has at least one
-        variant attached. Since we create them from the template we should have
-        access to them always"""
+        """For configurable products return the number of variants configured or
+        1 as many views and methods trigger only when a template has at least
+        one variant attached. Since we create them from the template we should
+        have access to them always"""
         super(ProductTemplate, self)._compute_product_variant_count()
-        if self.config_ok and not self.product_variant_count:
-            self.product_variant_count = 1
+        for product_tmpl in self:
+            config_ok = product_tmpl.config_ok
+            variant_count = product_tmpl.product_variant_count
+            if config_ok and not variant_count:
+                product_tmpl.product_variant_count = 1
 
     @api.multi
     @api.depends('attribute_line_ids.value_ids')
@@ -127,11 +130,12 @@ class ProductTemplate(models.Model):
         standard_products = self - config_products
         super(ProductTemplate, standard_products)._compute_weight()
 
-    @api.one
+    @api.multi
     def _set_weight(self):
-        self.weight_dummy = self.weight
-        if not self.config_ok:
-            super(ProductTemplate, self)._set_weight()
+        for product_tmpl in self:
+            product_tmpl.weight_dummy = product_tmpl.weight
+            if not product_tmpl.config_ok:
+                super(ProductTemplate, product_tmpl)._set_weight()
 
     def _search_weight(self, operator, value):
         return [('weight_dummy', operator, value)]
@@ -369,7 +373,7 @@ class ProductProduct(models.Model):
     def _search_product_weight(self, operator, value):
         return [('weight_dummy', operator, value)]
 
-    def _set_product_weight(self):
+    def _inverse_product_weight(self):
         """Store weight in dummy field"""
         self.weight_dummy = self.weight
 
@@ -400,7 +404,7 @@ class ProductProduct(models.Model):
     )
     weight = fields.Float(
         compute='_compute_product_weight',
-        inverse='_set_product_weight',
+        inverse='_inverse_product_weight',
         search='_search_product_weight',
         store=False
     )
