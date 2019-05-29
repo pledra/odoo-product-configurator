@@ -27,5 +27,5 @@ class WebsiteProductConfigMrp(WebsiteProductConfig):
             product_tmpl=product_tmpl, active_step=active_step, data=data)
         active_step = res.get('active_step')
         if active_step and active_step.product_tmpl_id != product_tmpl:
-            import pdb;pdb.set_trace()
+            pass
         return res

@@ -4,7 +4,7 @@ from odoo.osv import orm
 from odoo.addons.base.ir.ir_model import FIELD_TYPES
 
 from odoo import models, fields, tools, api, _
-from odoo.exceptions import Warning, ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class FreeSelection(fields.Selection):
@@ -117,7 +117,7 @@ class ProductConfigurator(models.TransientModel):
 
         if self.value_ids:
             # TODO: Add confirmation button an delete cfg session
-            raise Warning(
+            raise UserError(
                 _('Changing the product template while having an active '
                   'configuration will erase reset/clear all values')
             )
@@ -167,9 +167,12 @@ class ProductConfigurator(models.TransientModel):
         if not config_session_id:
             config_session_id = self.config_session_id
 
-        product_img = config_session_id.get_config_image(cfg_val_ids)
-        price = config_session_id.get_cfg_price(cfg_val_ids)
-        weight = config_session_id.get_cfg_weight(value_ids=cfg_val_ids)
+        # Remove None from cfg_val_ids if exist
+        cfg_val_ids = [val for val in cfg_val_ids if val]
+
+        product_img = self.config_session_id.get_config_image(cfg_val_ids)
+        price = self.config_session_id.get_cfg_price(cfg_val_ids)
+        weight = self.config_session_id.get_cfg_weight(value_ids=cfg_val_ids)
 
         return {
             'product_img': product_img,
@@ -534,7 +537,7 @@ class ProductConfigurator(models.TransientModel):
             xml_dynamic_form = xml_view.xpath(
                 "//group[@name='dynamic_form']")[0]
         except Exception:
-            raise Warning(
+            raise UserError(
                 _('There was a problem rendering the view '
                   '(dynamic_form not found)')
             )
