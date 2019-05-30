@@ -198,7 +198,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         product_configurator_obj = request.env['product.configurator']
         field_prefix = product_configurator_obj._prefixes.get('field_prefix')
         custom_field_prefix = product_configurator_obj._prefixes.get(
-           'custom_field_prefix')
+            'custom_field_prefix')
 
         config_vals = {}
         for attr_line in product_tmpl_id.attribute_line_ids.sorted():
