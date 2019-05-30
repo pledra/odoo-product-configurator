@@ -168,22 +168,35 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }, 4000);
         };
 
+        function _checkRequiredFieldsRadio(parent_container) {
+            var radio_inputs = parent_container.find('.config_attr_value:checked');
+            if (radio_inputs.length) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         function _checkRequiredFields(event) {
             var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
             var config_attr = active_step.find('.form-control.required_config_attrib');
             var flag = true;
             for (var i = 0; i < config_attr.length; i++) {
-                if (!config_attr[i].value  || config_attr[i].value == '0') {
+                if (config_attr[i].tagName == 'FIELDSET') {
+                    flag = _checkRequiredFieldsRadio($(config_attr[i]))
+                } else if (!config_attr[i].value.trim()  || config_attr[i].value == '0') {
+                    flag = false
+                };
+
+                if (!flag) {
                     $(config_attr[i]).addClass('textbox-border-color');
-                    flag = false;
                     // if (config_attr[i].tagName == 'SELECT') {
                     //     var message = "Please select an item in the list."
                     // } else if (config_attr[i].tagName == 'INPUT') {
                     //     var message = "Please enter value."
                     // }
                     // _displayTooltip(config_attr[i], message);
-                }
-                else if (config_attr[i].value && $(config_attr[i]).hasClass('textbox-border-color')) {
+                } else if (flag && $(config_attr[i]).hasClass('textbox-border-color')) {
                     $(config_attr[i]).removeClass('textbox-border-color');
                 };
             };
