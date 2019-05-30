@@ -397,6 +397,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
             return sorted(vals, key=lambda obj: obj.attribute_id.sequence)
 
         pricelist = get_pricelist()
+        if request.session['product_config_session'].get(product_tmpl.id):
+            del request.session['product_config_session'][product_tmpl.id]
         values = {
             'get_product_vals': _get_product_vals,
             # 'get_config_image': self.get_config_image,
