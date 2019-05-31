@@ -32,12 +32,13 @@ class ProductConfigWebsiteSale(WebsiteSale):
             {}
         )
         is_public_user = request.env.user.has_group('base.group_public')
-        if product_config_sessions and product_config_sessions.get(product.id):
+        cfg_session_id = product_config_sessions.get(product.id)
+        if cfg_session_id:
             cfg_session = cfg_session_obj.browse(
                 int(product_config_sessions.get(product.id))
             )
 
-        # Retrieve and active configuration session or create a new one
+        # Retrieve an active configuration session or create a new one
         if not cfg_session or not cfg_session.exists():
             cfg_session = cfg_session_obj.sudo().create_get_session(
                 product.id,
@@ -90,7 +91,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'value_ids': cfg_session.value_ids,
             'custom_value_ids': cfg_session.custom_value_ids,
             'available_value_ids': available_value_ids,
-            'main_object': cfg_session.product_tmpl_id,
+            'product_tmpl': cfg_session.product_tmpl_id,
             'prefixes': product_configurator_obj._prefixes,
             'custom_val_id': custom_val_id,
             'extra_attribute_line_ids': extra_attribute_line_ids,

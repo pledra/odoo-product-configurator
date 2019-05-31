@@ -53,7 +53,7 @@
     <!-- Base view for the form view of each configuration step -->
     <template id="config_form" name="Product Configuration Form">
       <div>
-        <input name="product_tmpl_id" t-att-value="main_object.id" class="product_tmpl_id" type="hidden"/>
+        <input name="product_tmpl_id" t-att-value="product_tmpl.id" class="product_tmpl_id" type="hidden"/>
         <input name="config_session_id" t-att-value="cfg_session.id" class="config_session_id" type="hidden"/>
       </div>
       <div class="tab-content">
