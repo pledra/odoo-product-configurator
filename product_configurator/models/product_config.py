@@ -1,6 +1,6 @@
 from ast import literal_eval
 
-from odoo import api, fields, models, tools, _
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.tools.misc import formatLang
 
@@ -464,7 +464,8 @@ class ProductConfigSession(models.Model):
 
         product_configurator_obj = self.env['product.configurator']
         field_prefix = product_configurator_obj._prefixes.get('field_prefix')
-        custom_field_prefix = product_configurator_obj._prefixes.get('custom_field_prefix')
+        custom_field_prefix = product_configurator_obj._prefixes.get(
+            'custom_field_prefix')
 
         custom_ext_id = 'product_configurator.custom_attribute_value'
         custom_val = self.env.ref(custom_ext_id)
@@ -904,7 +905,7 @@ class ProductConfigSession(models.Model):
         else:
             next_step = str(next_step.id) if next_step else None
         if next_step:
-                pass
+            pass
         elif not (value_ids or custom_value_ids):
             raise Warning(_("You must select at least one\
                     attribute in order to configure a product"))
@@ -1342,8 +1343,10 @@ class ProductConfigSession(models.Model):
     def create_get_session(self, product_tmpl_id, parent_id=None,
                            force_create=False, user_id=None):
         if not force_create:
-            session = self.search_session(product_tmpl_id=product_tmpl_id,
-                                      parent_id=parent_id)
+            session = self.search_session(
+                product_tmpl_id=product_tmpl_id,
+                parent_id=parent_id
+            )
             if session:
                 return session[0]
         vals = self.get_session_vals(
