@@ -17,3 +17,41 @@
 
 }
 
+.config_attribute input[type=radio] {
+    position: absolute;
+    z-index: 999;
+}
+
+.config_attribute input:active +.image_config_attr_value_radio {
+    opacity: 90%;
+}
+.config_attribute input:checked +.image_config_attr_value_radio {
+    -webkit-filter: none;
+       -moz-filter: none;
+            filter: none;
+}
+.image_config_attr_value_radio {
+    cursor: pointer;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 150px;
+    height: 110px;
+    -webkit-transition: all 100ms ease-in;
+       -moz-transition: all 100ms ease-in;
+            transition: all 100ms ease-in;
+    -webkit-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(80%);
+       -moz-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(80%);
+            filter: brightness(90%) contrast(110%) grayscale(50%) opacity(80%);
+}
+.image_config_attr_value_radio:hover {
+    -webkit-filter: none;
+       -moz-filter: none;
+            filter: none;
+}
+
+.label_config_attr_value_radio {
+    position: absolute;
+    z-index: 1;
+    margin-left: 20px;
+}
