@@ -1348,7 +1348,7 @@ class ProductConfigSession(models.Model):
                 parent_id=parent_id
             )
             if session:
-                return session[0]
+                return session
         vals = self.get_session_vals(
             product_tmpl_id=product_tmpl_id,
             parent_id=parent_id,
