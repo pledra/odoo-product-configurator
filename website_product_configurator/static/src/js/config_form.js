@@ -40,22 +40,25 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var values = data.value;
                 var domains = data.domain;
                 var open_cfg_step_lines = data.open_cfg_step_lines;
-                var attribute_value_lines = values.attribute_value_line_ids;
+                var config_image_vals = data.config_image_vals;
 
                 _applyDomainOnValues(domains);
                 _handleOpenSteps(open_cfg_step_lines);
-                _setImageUrl(attribute_value_lines);
+                _setImageUrl(config_image_vals);
 
             });
             _handleCustomAttribute(ev)
 		});
 
-        function _setImageUrl(attribute_value_lines) {
+        function _setImageUrl(config_image_vals) {
             var images = '';
-            attribute_value_lines.forEach(function(line){
-                images += "<img id='cfg_image' itemprop='image' class='img img-responsive pull-right'"
-                images += "src='/web/image/product.attribute.value.line/"+line+"/image'/>"
-            })   
+            if (config_image_vals){
+                var model = config_image_vals.name
+                config_image_vals.config_image_ids.forEach(function(line){
+                    images += "<img id='cfg_image' itemprop='image' class='img img-responsive pull-right'"
+                    images += "src='/web/image/"+model+"/"+line+"/image'/>"
+                })
+            }
             $('#product_config_image').html(images);
         };
 
@@ -143,7 +146,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 return false;
             }
         };
-        
+
         function _displayTooltip(config_attribut, message) {
             $(config_attribut).tooltip({
                 title: message,

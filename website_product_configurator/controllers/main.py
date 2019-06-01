@@ -61,6 +61,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
         return config_form
 
+    def get_image_vals(self, config_image):
+        if(isinstance(config_image, list)):
+            config_image_vals = {'config_image_ids': config_image,
+                                 'name': 'product.attribute.value.line'}
+        else:
+            config_image_vals = {'config_image_ids': config_image.ids,
+                                 'name': config_image._name}
+        return config_image_vals
+
     def get_render_vals(self, cfg_session):
         """Return dictionary with values required for website template
         rendering"""
@@ -81,6 +90,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
         extra_attribute_line_ids = self.get_extra_attribute_line_ids(
             cfg_session.product_tmpl_id)
         cfg_session = cfg_session.sudo()
+        config_image = cfg_session._get_config_image(
+            cfg_session.value_ids, cfg_session.custom_value_ids)
+
         vals = {
             'cfg_session': cfg_session,
             'cfg_step_lines': cfg_step_lines,
@@ -93,7 +105,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'prefixes': product_configurator_obj._prefixes,
             'custom_val_id': custom_val_id,
             'extra_attribute_line_ids': extra_attribute_line_ids,
-            'attribute_value_line_ids': cfg_session.attribute_value_line_ids.ids
+            'config_image_vals': self.get_image_vals(config_image),
         }
         return vals
 
@@ -159,6 +171,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
         """Return dictionary of fields and values present
         on configuration wizard"""
         config_session_id = config_session_id.sudo()
+        config_image = config_session_id._get_config_image(
+            config_session_id.value_ids, config_session_id.custom_value_ids)
+
         config_fields = {
             'state': config_session_id.state,
             'config_session_id': config_session_id.id,
@@ -166,10 +181,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'product_preset_id': config_session_id.product_preset_id.id,
             'price': config_session_id.price,
             'value_ids': [[6, False, config_session_id.value_ids.ids]],
-            'attribute_value_line_ids': [
-                [4, line.id, False]
-                for line in config_session_id.attribute_value_line_ids
-            ],
+            'config_image_vals': self.get_image_vals(config_image),
             'attribute_line_ids': [
                 [4, line.id, False]
                 for line in product_tmpl_id.attribute_line_ids
@@ -269,7 +281,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         result = self.get_session_and_product(form_values)
         config_session_id = result.get('config_session')
         product_template_id = result.get('product_tmpl')
-
         # prepare dictionary in formate needed to pass in onchage
         form_values = self.get_dictionary_from_form_vals(
             form_values, config_session_id, product_template_id)
@@ -300,8 +311,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         if extra_attr_line_ids:
             open_cfg_step_lines.append('configure')
 
+        config_image = config_session_id._get_config_image(value_ids)
+
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_lines'] = open_cfg_step_lines
+        updates['config_image_vals'] = self.get_image_vals(config_image)
         return updates
 
     def set_config_next_step(self, config_session_id,
