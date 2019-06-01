@@ -1331,12 +1331,12 @@ class ProductConfigSession(models.Model):
         return products
 
     @api.multi
-    def search_session(self, product_tmpl_id, parent_id=None, limit=1):
+    def search_session(self, product_tmpl_id, parent_id=None):
         domain = self.get_session_search_domain(
             product_tmpl_id=product_tmpl_id,
             parent_id=parent_id
         )
-        session = self.search(domain, order='create_date desc', limit=limit)
+        session = self.search(domain, order='create_date desc', limit=1)
         return session
 
     @api.model

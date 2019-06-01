@@ -35,7 +35,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         cfg_session_id = product_config_sessions.get(product.id)
         if cfg_session_id:
             cfg_session = cfg_session_obj.browse(
-                int(product_config_sessions.get(product.id))
+                int(cfg_session_id)
             )
 
         # Retrieve an active configuration session or create a new one
