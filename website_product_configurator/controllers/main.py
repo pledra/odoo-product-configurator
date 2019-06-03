@@ -196,8 +196,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
         product_tmpl_id = config_session.product_tmpl_id
         values = {}
         for form_val in form_vals:
-            dict_key = form_val['name']
-            dict_value = form_val['value']
+            dict_key = form_val.get('name', False)
+            dict_value = form_val.get('value', False)
             if not dict_key or not dict_value:
                 continue
             if dict_key not in values:
