@@ -258,7 +258,6 @@ class ProductTemplate(models.Model):
         """create product configuration wizard
         - return action to launch wizard
         - click on next step based on value of click_next"""
-
         action = {
             'type': 'ir.actions.act_window',
             'res_model': 'product.configurator',
