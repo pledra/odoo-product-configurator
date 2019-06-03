@@ -39,11 +39,11 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 };
                 var values = data.value;
                 var domains = data.domain;
-                var open_cfg_step_lines = data.open_cfg_step_lines;
+                var open_cfg_step_line_ids = data.open_cfg_step_line_ids;
                 var attribute_value_lines = values.attribute_value_line_ids;
 
                 _applyDomainOnValues(domains);
-                _handleOpenSteps(open_cfg_step_lines);
+                _handleOpenSteps(open_cfg_step_line_ids);
                 _setImageUrl(attribute_value_lines);
 
             });
@@ -78,12 +78,12 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
         }
 
-        function _handleOpenSteps(open_cfg_step_lines) {
+        function _handleOpenSteps(open_cfg_step_line_ids) {
             var $steps = config_form.find('.config_step');
             _.each($steps, function (step) {
                 step = $(step);
                 var step_id = step.attr('data-step-id');
-                if ($.inArray(step_id, open_cfg_step_lines) < 0) {
+                if ($.inArray(step_id, open_cfg_step_line_ids) < 0) {
                     if (!step.hasClass('hidden')) {
                         step.addClass('hidden');
                     };
