@@ -66,10 +66,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var custom_value_container = custom_value.closest('.custom_field_container[data-oe-id=' + attribute_id + ']');
             if ($(event.currentTarget.selectedOptions[0]).hasClass('custom_config_attr_value') && custom_value_container.hasClass('hidden')) {
                 custom_value_container.removeClass('hidden');
-                var is_required = $(event.currentTarget).hasClass('required_config_attrib');
-                if (is_required) {
-                    custom_value.addClass('required_config_attrib');
-                }
+                custom_value.addClass('required_config_attrib');
             } else if (!custom_value_container.hasClass('hidden')){
                 custom_value_container.addClass('hidden');
                 if (custom_value.hasClass('required_config_attrib')) {
@@ -232,6 +229,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
         });
 
+        // quantty sppiner
         function _disableEnableAddRemoveQtyButton(quantity, max_val, min_val) {
             if (quantity >= max_val) {
                 $('.js_add_qty').addClass('btn-disabled');
@@ -245,55 +243,39 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
         }
 
-        // quantty sppiner
         function _handleSppinerCustomValue(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+
             var current_target = $(ev.currentTarget);
-            var container = current_target.closest('.custom_field_container');
-            var custom_value = container.find('input.custom_config_value');
-            var quantity = parseFloat(custom_value.val());
-            var max_val = parseFloat(container.find('input.custom_config_value').attr('max'));
-            var min_value = parseFloat(container.find('input.custom_config_value').attr('min'));
-            var old_value = parseFloat(custom_value.attr('data-old-value'));
-            if (isNaN(min_value)) {
-                min_value = 0;
+            var custom_value = current_target.parent().find('input.custom_config_value');
+            var quantity = parseFloat(custom_value.val() || 0);
+            var max_val = parseFloat(custom_value.attr('max') || Infinity);
+            var min_val = parseFloat(custom_value.attr('min'), 0);
+
+            var new_qty = quantity;
+            if (current_target.has(".fa-minus").length) {
+                new_qty = quantity - 1;
+            } else if (current_target.has(".fa-plus").length) {
+                new_qty = quantity + 1;
             }
-            if (isNaN(quantity)) {
-                var message = "You can't leave this blank.";
-                message += " Maximum allowed value is " + max_val;
-                message += " Minimum allowed value is " + min_value;
+            if (new_qty > max_val) {
+                var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
+                var message = "Selected custom value " + attribute_name.text() + " must be lower than " + (max_val + 1);
                 _displayTooltip(custom_value, message);
-                custom_value.val(old_value);
+                new_qty = max_val;
             }
-            if (current_target.hasClass('js_add_qty')) {
-                quantity = quantity + 1;
-                custom_value.val(quantity);
-                _disableEnableAddRemoveQtyButton(quantity ,max_val ,min_value);
-            } else if (current_target.hasClass('js_remove_qty')) {
-                quantity = quantity - 1;
-                custom_value.val(quantity);
-                _disableEnableAddRemoveQtyButton(quantity ,max_val ,min_value);
-            } else {
-                if (quantity > max_val) {
-                    var message = "Maximum allowed value is " + max_val;
-                    _displayTooltip(custom_value, message);
-                    custom_value.val(old_value);
-                    quantity = parseFloat(old_value);
-                }
-                else if (quantity < min_value) {
-                    var message = "Minimum allowed value is " + min_value;
-                    _displayTooltip(custom_value, message);
-                    custom_value.val(old_value);
-                    quantity = parseFloat(old_value);
-                }
-                else {
-                    custom_value.attr('data-old-value', quantity);
-                }
+            else if (new_qty < min_val) {
+                var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
+                var message = "Selected custom value " + attribute_name.text() + " must be at least " + min_val;
+                _displayTooltip(custom_value, message);
+                new_qty = min_val;
             }
-            _disableEnableAddRemoveQtyButton(quantity ,max_val ,min_value)
-            return {'quantity': quantity, 'max_val': max_val, 'min_val': min_value}
+            custom_value.val(new_qty);
+            _disableEnableAddRemoveQtyButton(new_qty ,max_val ,min_val)
         }
 
-        $('.custom_config_value.js_quantity').change(function(ev) {
+        $('.custom_config_value.quantity').change(function(ev) {
             _handleSppinerCustomValue(ev);
         });
 
