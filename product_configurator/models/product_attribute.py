@@ -137,9 +137,11 @@ class ProductAttribute(models.Model):
     def _check_constraint_min_max_value(self):
         if self.custom_type not in ('int', 'float'):
             return
-        if self.max_val < self.min_val:
+        minv = self.min_val
+        maxv = self.max_val
+        if maxv and minv and maxv < minv:
             raise ValidationError(
-                _("Maximum value should be greater than Minimum value"))
+                _("Maximum value must be greater than Minimum value"))
 
 
 class ProductAttributeLine(models.Model):
