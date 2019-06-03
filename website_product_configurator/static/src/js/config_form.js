@@ -251,7 +251,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var custom_value = current_target.parent().find('input.custom_config_value');
             var quantity = parseFloat(custom_value.val() || 0);
             var max_val = parseFloat(custom_value.attr('max') || Infinity);
-            var min_val = parseFloat(custom_value.attr('min'), 0);
+            var min_val = parseFloat(custom_value.attr('min') || 0);
 
             var new_qty = quantity;
             if (current_target.has(".fa-minus").length) {
