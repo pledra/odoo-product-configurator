@@ -3,6 +3,7 @@ from odoo.http import request
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.tools import safe_eval
+from odoo import models
 
 
 def get_pricelist():
@@ -61,13 +62,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
         return config_form
 
-    def get_image_vals(self, config_image):
-        if(isinstance(config_image, list)):
-            config_image_vals = {'config_image_ids': config_image,
-                                 'name': 'product.attribute.value.line'}
-        else:
-            config_image_vals = {'config_image_ids': config_image.ids,
-                                 'name': config_image._name}
+    def get_image_vals(self, image_line_ids, model_name):
+        if isinstance(image_line_ids[:1], models.Model):
+            model_name = image_line_ids[:1]._name
+            image_line_ids = image_line_ids.ids
+        config_image_vals = {
+            'config_image_ids': image_line_ids,
+            'name': model_name
+        }
         return config_image_vals
 
     def get_render_vals(self, cfg_session):
@@ -90,8 +92,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         extra_attribute_line_ids = self.get_extra_attribute_line_ids(
             cfg_session.product_tmpl_id)
         cfg_session = cfg_session.sudo()
-        config_image = cfg_session._get_config_image(
-            cfg_session.value_ids, cfg_session.custom_value_ids)
+        if cfg_session.value_ids:
+            config_image_ids = cfg_session._get_config_image(
+                cfg_session.value_ids, cfg_session.custom_value_ids)
+        else:
+            config_image_ids = cfg_session.product_tmpl_id
 
         vals = {
             'cfg_session': cfg_session,
@@ -105,7 +110,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'prefixes': product_configurator_obj._prefixes,
             'custom_val_id': custom_val_id,
             'extra_attribute_line_ids': extra_attribute_line_ids,
-            'config_image_vals': self.get_image_vals(config_image),
+            'config_image_vals': self.get_image_vals(
+                image_line_ids=config_image_ids,
+                model_name=config_image_ids[:1]._name),
         }
         return vals
 
@@ -171,8 +178,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         """Return dictionary of fields and values present
         on configuration wizard"""
         config_session_id = config_session_id.sudo()
-        config_image = config_session_id._get_config_image(
-            config_session_id.value_ids, config_session_id.custom_value_ids)
 
         config_fields = {
             'state': config_session_id.state,
@@ -181,7 +186,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'product_preset_id': config_session_id.product_preset_id.id,
             'price': config_session_id.price,
             'value_ids': [[6, False, config_session_id.value_ids.ids]],
-            'config_image_vals': self.get_image_vals(config_image),
             'attribute_line_ids': [
                 [4, line.id, False]
                 for line in product_tmpl_id.attribute_line_ids
@@ -311,11 +315,17 @@ class ProductConfigWebsiteSale(WebsiteSale):
         if extra_attr_line_ids:
             open_cfg_step_lines.append('configure')
 
-        config_image = config_session_id._get_config_image(value_ids)
+        # configuration images
+        config_image_ids = config_session_id._get_config_image(
+            value_ids=value_ids)
 
+        image_vals = self.get_image_vals(
+            image_line_ids=config_image_ids,
+            model_name=config_image_ids[:1]._name
+        )
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_lines'] = open_cfg_step_lines
-        updates['config_image_vals'] = self.get_image_vals(config_image)
+        updates['config_image_vals'] = image_vals
         return updates
 
     def set_config_next_step(self, config_session_id,

@@ -810,15 +810,13 @@ class ProductConfigSession(models.Model):
         """
         Retreive the image object that most closely resembles the configuration
         code sent via value_ids list
-
-        The default image object is the template (self)
-        :param value_ids: a list representing the ids of attribute values
-                         (usually stored in the user's session)
-        :param custom_vals: dictionary of custom attribute values
-        :returns: path to the selected image
+        For more information check _get_config_image
         """
-        config = self._get_config_image(value_ids, custom_vals)
-        return config.image
+        config_image_id = self._get_config_image(
+            value_ids=value_ids,
+            custom_vals=custom_vals
+        )
+        return config_image_id.image
 
     @api.model
     def get_variant_vals(self, value_ids=None, custom_vals=None, **kwargs):
