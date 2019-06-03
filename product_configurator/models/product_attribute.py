@@ -385,7 +385,6 @@ class ProductAttributeValueLine(models.Model):
                 product_tmpl_id=attr_val_line.product_tmpl_id.id,
                 final=False
             )
-            print("\n\n\n\n\n\n\n\n\n\nn\n\nn\n\n\nn\n\n\n", valid)
             if not valid:
                 raise ValidationError(
                     _('Values provided to the attribute value line are '

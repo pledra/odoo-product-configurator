@@ -112,20 +112,17 @@ class ProductAttributes(TransactionCase):
 
     # TODO :: Left to take review of code and functionality
     def test_08_compute_weight_extra(self):
-        pass
-        # self.attribute_3 = self.attribute_3.with_context(active_id=self.template_1.id)
-        # if self.attribute_3:
-        #     self.assertEqual(
-        #         self.attribute_3.weight_extra,
-        #         self.attribute_3.price_ids.weight_extra,
-        #         "weight_extra exsits"
-        #     )
-        # else:
-        #     self.assertEqual(
-        #         self.attribute_3.weight_extra,
-        #         0.0,
-        #         "weight_extra 0.0"
-        #     )
+        self.assertEqual(
+            self.attribute_3.weight_extra,
+            0.0,
+            "weight_extra 0.0"
+        )
+        self.attribute_3 = self.attribute_3.with_context(active_id=self.template_1.id)
+        self.assertEqual(
+            self.attribute_3.weight_extra,
+            self.attribute_3.price_ids.weight_extra,
+            "weight_extra exsits"
+        )
 
     # TODO :: Left to create method
     def test_09__inverse_weight_extra(self):
