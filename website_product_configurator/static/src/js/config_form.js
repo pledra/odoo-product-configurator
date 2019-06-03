@@ -21,6 +21,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             allowInputToggle: true,
             showClose: true,
             format : time.getLangDatetimeFormat(),
+            keyBinds: null,
         };
 
         var datepickers_options = $.extend({}, datetimepickers_options, {format: time.getLangDateFormat()})
