@@ -110,7 +110,6 @@ class ProductAttributes(TransactionCase):
         with self.assertRaises(ValidationError):
             self.attribute_2.default_val = 4
 
-    # TODO :: Left to take review of code and functionality
     def test_08_compute_weight_extra(self):
         self.assertEqual(
             self.attribute_3.weight_extra,
@@ -125,7 +124,7 @@ class ProductAttributes(TransactionCase):
         )
 
     # TODO :: Left to create method
-    def test_09__inverse_weight_extra(self):
+    def test_09_inverse_weight_extra(self):
         pass
 
     # TODO :: Left to create method
@@ -133,5 +132,5 @@ class ProductAttributes(TransactionCase):
         pass
 
     # TODO :: Left to create method
-    def test_11__validate_configuration(self):
+    def test_11_validate_configuration(self):
         pass
