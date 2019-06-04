@@ -162,7 +162,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var config_attr = active_step.find('.form-control.required_config_attrib');
             var flag = true;
             for (var i = 0; i < config_attr.length; i++) {
-                if (!config_attr[i].value  || config_attr[i].value == '0') {
+                var cfg_attr_value = config_attr[i].value.trim()
+                if (!cfg_attr_value  || cfg_attr_value == '0') {
                     $(config_attr[i]).addClass('textbox-border-color');
                     flag = false;
                     // if (config_attr[i].tagName == 'SELECT') {
@@ -172,12 +173,25 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     // }
                     // _displayTooltip(config_attr[i], message);
                 }
-                else if (config_attr[i].value && $(config_attr[i]).hasClass('textbox-border-color')) {
+                else if (cfg_attr_value && $(config_attr[i]).hasClass('textbox-border-color')) {
                     $(config_attr[i]).removeClass('textbox-border-color');
                 };
             };
             return flag;
         };
+
+        config_form.find('.config_attribute').change(function (event) {
+            var attribute = event.currentTarget;
+            if (attribute.value.trim() && attribute.value.trim() != '0' && $(attribute).hasClass('textbox-border-color')) {
+                $(attribute).removeClass('textbox-border-color');
+            };
+        });
+        config_form.find('.custom_config_value').change(function (event) {
+            var attribute = event.currentTarget;
+            if (attribute.value.trim() && attribute.value.trim() != '0' && $(attribute).hasClass('textbox-border-color')) {
+                $(attribute).removeClass('textbox-border-color');
+            };
+        });
 
         config_form.find('.config_step').click(function (event) {
             var next_step = event.currentTarget.getAttribute('data-step-id');
@@ -213,6 +227,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             });
         };
 
+        // Save Values
         config_form.submit(function (event) {
             event.preventDefault();
             event.stopPropagation();
