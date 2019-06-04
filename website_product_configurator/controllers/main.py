@@ -88,6 +88,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
             check_val_ids=check_val_ids.ids)
         if not active_step:
             active_step = cfg_step_lines[:1]
+        # If one remove config steps in middle of session
+        if not cfg_step_lines:
+            active_step = False
         extra_attribute_line_ids = self.get_extra_attribute_line_ids(
             cfg_session.product_tmpl_id)
         cfg_session = cfg_session.sudo()

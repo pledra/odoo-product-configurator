@@ -4,8 +4,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
     var ajax = require('web.ajax');
     var time = require('web.time');
 
-	$(document).ready(function () {
-	    var config_form = $("#product_config_form");
+    $(document).ready(function () {
+        var config_form = $("#product_config_form");
         var datetimepickers_options = {
             calendarWeeks: true,
             icons : {
@@ -28,9 +28,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
         config_form.find('.product_config_datetimepicker').datetimepicker(datetimepickers_options);
         config_form.find('.product_config_datepicker').datetimepicker(datepickers_options);
 
-	 	/* Monitor input changes in the configuration form and call the backend onchange method*/
-	 	config_form.find('.config_attribute').change(function(ev) {
-			ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
+        /* Monitor input changes in the configuration form and call the backend onchange method*/
+        config_form.find('.config_attribute').change(function(ev) {
+            ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
                 form_values: config_form.serializeArray(),
                 field_name: $(this)[0].name,
             }).then(function(data) {
@@ -48,7 +48,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
             });
             _handleCustomAttribute(ev)
-		});
+        });
 
         function _setImageUrl(attribute_value_lines) {
             var images = '';
@@ -304,6 +304,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
         $('.js_remove_qty').on('click', function(ev) {
             _handleSppinerCustomValue(ev);
         });
-	});
+    });
 
 })
