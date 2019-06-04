@@ -30,6 +30,7 @@
         <record id="configure_product_template_rule_manager" model="ir.rule">
             <field name="name">Configure Product Template Manager</field>
             <field ref="product.model_product_template" name="model_id"/>
+            <field name="domain_force">[('config_ok', '=', True), ("sale_ok", "=", True)]</field>
             <field name="groups" eval="[(4, ref('group_product_configurator_manager'))]"/>
             <field eval="1" name="perm_read"></field>
             <field eval="1" name="perm_write"></field>
@@ -40,7 +41,7 @@
         <record id="configure_product_template_rule_user" model="ir.rule">
             <field name="name">Configure Product Template User (Config Product)</field>
             <field ref="product.model_product_template" name="model_id"/>
-            <field name="domain_force">[('config_ok', '=', True)]</field>
+            <field name="domain_force">[('config_ok', '=', True), ('website_published', '=', True), ("sale_ok", "=", True)]</field>
             <field name="groups" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
             <field eval="1" name="perm_read"></field>
             <field eval="0" name="perm_write"></field>
@@ -51,7 +52,7 @@
          <record id="configure_product_template_rule_user_standard_product" model="ir.rule">
             <field name="name">Configure Product Template User (Standard Product)</field>
             <field ref="product.model_product_template" name="model_id"/>
-            <field name="domain_force">[('config_ok', '=', False)]</field>
+            <field name="domain_force">[('config_ok', '=', False), ('website_published', '=', True), ("sale_ok", "=", True)]</field>
             <field name="groups" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
             <field eval="1" name="perm_read"></field>
             <field eval="1" name="perm_write"></field>
@@ -60,8 +61,9 @@
         </record>
 
         <record id="configure_product_product_rule_manager" model="ir.rule">
-            <field name="name">Configure Product Template Manager</field>
+            <field name="name">Configure Product Product Manager</field>
             <field ref="product.model_product_product" name="model_id"/>
+            <field name="domain_force">[('config_ok', '=', True)]</field>
             <field name="groups" eval="[(4, ref('group_product_configurator_manager'))]"/>
             <field eval="1" name="perm_read"></field>
             <field eval="1" name="perm_write"></field>
@@ -70,8 +72,9 @@
         </record>
 
         <record id="configure_product_product_rule_user" model="ir.rule">
-            <field name="name">Configure Product Template User</field>
+            <field name="name">Configure Product Product User</field>
             <field ref="product.model_product_product" name="model_id"/>
+            <field name="domain_force">[('config_ok', '=', True)]</field>
             <field name="groups" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
             <field eval="1" name="perm_read"></field>
             <field eval="1" name="perm_write"></field>
