@@ -75,7 +75,7 @@
                             <field name="description" colspan="4"/>
                         </group>
                     </page>
-                    <page string="Custom Values" attrs="{'invisible': [('val_custom', '!=', True)]}">
+                    <page string="Custom Values" attrs="{'invisible': [('val_custom', '!=', True)]}" groups="product_configurator.group_product_configurator_manager">
                         <group>
                             <group>
                                 <field name="custom_type"/>
