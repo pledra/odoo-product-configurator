@@ -232,11 +232,7 @@
 
     <!-- Product configurator checkout -->
 
-<<<<<<< Updated upstream
     <template id="cfg_product_variant" name="Configured Product Variant">
-=======
-    <template id="cfg_product_variant" name="Configured Product">
->>>>>>> Stashed changes
       <t t-call="website.layout">
           <t t-set="additional_title" t-value="product_tmpl.name"/>
           <div itemscope="itemscope" itemtype="http://schema.org/Product" id="wrap" class="js_sale oe_website_sale">
