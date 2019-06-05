@@ -349,6 +349,12 @@ class ProductAttributePrice(models.Model):
 class ProductAttributeValueLine(models.Model):
     _name = 'product.attribute.value.line'
 
+    def _get_domain_value_id(self):
+
+        template = self.env['product.template'].browse(self._context.get('active_id'))
+        value_list = template.attribute_line_ids.mapped('value_ids')
+        return [('id', 'in', value_list.ids)]
+
     sequence = fields.Integer(string='Sequence', default=10)
     product_tmpl_id = fields.Many2one(
         comodel_name='product.template',
@@ -359,7 +365,8 @@ class ProductAttributeValueLine(models.Model):
     value_id = fields.Many2one(
         comodel_name='product.attribute.value',
         required="True",
-        string="Attribute Value"
+        string="Attribute Value",
+        domain=_get_domain_value_id,
     )
     attribute_id = fields.Many2one(
         comodel_name='product.attribute',
@@ -370,6 +377,7 @@ class ProductAttributeValueLine(models.Model):
         id1="attr_val_line_id",
         id2="attr_val_id",
         string="Values Configuration",
+        domain=_get_domain_value_id,
     )
 
     _order = 'sequence'
