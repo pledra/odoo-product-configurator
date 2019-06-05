@@ -55,7 +55,10 @@ Build:
    - apt install python3-yaml -y
    # Send source to google cloud builder
    - ci/image build      
- retry: 1
+ retry:
+   max: 2
+   when: runner_system_failure
+
 
 Test Addons:
   services:
@@ -79,6 +82,9 @@ Test Addons:
       - coverage
     when: always
   coverage: /TOTAL.* (\d+)%/
+  retry:
+    max: 2
+    when: runner_system_failure
 
 Pylint Loose: &pylint
   image: ${CI_IMAGE}:${CI_PIPELINE_ID}
@@ -88,6 +94,9 @@ Pylint Loose: &pylint
     - source /qa/venv/bin/activate
   script:
     - test-pylint
+  retry:
+    max: 2
+    when: runner_system_failure
 
 Pylint Strict:
   <<: *pylint
@@ -116,6 +125,9 @@ Flake8:
     - source /qa/venv/bin/activate 
   script:
     - test-flake8
+  retry:
+    max: 2
+    when: runner_system_failure
 
 #deploy_staging:
 #  image: google/cloud-sdk:alpine
