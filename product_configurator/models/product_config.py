@@ -777,7 +777,7 @@ class ProductConfigSession(models.Model):
 
         return product_tmpl.list_price + price_extra
 
-    def get_config_image(
+    def _get_config_image(
             self, value_ids=None, custom_vals=None, size=None):
         """
         Retreive the image object that most closely resembles the configuration
@@ -804,7 +804,20 @@ class ProductConfigSession(models.Model):
             if matches > max_matches:
                 img_obj = line
                 max_matches = matches
-        return img_obj.image
+        return img_obj
+
+    def get_config_image(
+            self, value_ids=None, custom_vals=None, size=None):
+        """
+        Retreive the image object that most closely resembles the configuration
+        code sent via value_ids list
+        For more information check _get_config_image
+        """
+        config_image_id = self._get_config_image(
+            value_ids=value_ids,
+            custom_vals=custom_vals
+        )
+        return config_image_id.image
 
     @api.model
     def get_variant_vals(self, value_ids=None, custom_vals=None, **kwargs):

@@ -4,8 +4,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
     var ajax = require('web.ajax');
     var time = require('web.time');
 
-	$(document).ready(function () {
-	    var config_form = $("#product_config_form");
+    $(document).ready(function () {
+        var config_form = $("#product_config_form");
         var datetimepickers_options = {
             calendarWeeks: true,
             icons : {
@@ -29,9 +29,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
         config_form.find('.product_config_datetimepicker').datetimepicker(datetimepickers_options);
         config_form.find('.product_config_datepicker').datetimepicker(datepickers_options);
 
-	 	/* Monitor input changes in the configuration form and call the backend onchange method*/
-	 	config_form.find('.config_attribute').change(function(ev) {
-			ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
+        /* Monitor input changes in the configuration form and call the backend onchange method*/
+        config_form.find('.config_attribute').change(function(ev) {
+            ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
                 form_values: config_form.serializeArray(),
                 field_name: $(this)[0].name,
             }).then(function(data) {
@@ -40,23 +40,26 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 };
                 var values = data.value;
                 var domains = data.domain;
+
                 var open_cfg_step_line_ids = data.open_cfg_step_line_ids;
-                var attribute_value_lines = values.attribute_value_line_ids;
+                var config_image_vals = data.config_image_vals;
 
                 _applyDomainOnValues(domains);
                 _handleOpenSteps(open_cfg_step_line_ids);
-                _setImageUrl(attribute_value_lines);
-
+                _setImageUrl(config_image_vals);
             });
             _handleCustomAttribute(ev)
-		});
+        });
 
-        function _setImageUrl(attribute_value_lines) {
+        function _setImageUrl(config_image_vals) {
             var images = '';
-            attribute_value_lines.forEach(function(line){
-                images += "<img id='cfg_image' itemprop='image' class='img img-responsive pull-right'"
-                images += "src='/web/image/product.attribute.value.line/"+line+"/image'/>"
-            })   
+            if (config_image_vals){
+                var model = config_image_vals.name
+                config_image_vals.config_image_ids.forEach(function(line){
+                    images += "<img id='cfg_image' itemprop='image' class='img img-responsive pull-right'"
+                    images += "src='/web/image/"+model+"/"+line+"/image'/>"
+                })
+            }
             $('#product_config_image').html(images);
         };
 
@@ -144,7 +147,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 return false;
             }
         };
-        
+
         function _displayTooltip(config_attribut, message) {
             $(config_attribut).tooltip({
                 title: message,

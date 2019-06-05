@@ -3,12 +3,13 @@
 
     <template id="config_header" name="Product Configuration Header">
         <div id="cfg_header" class="form-group">
-          <span id="product_config_image" class="col-xs-12">
-            <t t-foreach="attribute_value_line_ids" t-as="line_id">
-              <img id="cfg_image" itemprop="image" class="img img-responsive pull-right"
-                  t-attf-src="/web/image/product.attribute.value.line/{{line_id}}/image"/>
-            </t>
-          </span>
+            <span id="product_config_image" class="col-xs-12">
+                <t t-set="model" t-value="config_image_vals['name']"/>
+                <t t-foreach="config_image_vals['config_image_ids']" t-as="config">
+                    <img id="cfg_image" itemprop="image" class="img img-responsive pull-right"
+                        t-attf-src="/web/image/{{model}}/{{config}}/image"/>
+                </t>
+            </span>
         </div>
     </template>
 
@@ -19,7 +20,7 @@
         <div itemscope="itemscope" itemtype="http://schema.org/Product" id="wrap">
           <div class="container">
 
-            <t t-call="website_product_configurator.config_header"/>  
+            <t t-call="website_product_configurator.config_header"/>
 
             <form id="product_config_form" class="form-horizontal" method="post" enctype="multipart/form-data">
               <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -47,7 +48,7 @@
             </button>
             </div>
         </div>
-    </template>    
+    </template>
 
 
     <!-- Base view for the form view of each configuration step -->
@@ -103,7 +104,7 @@
 
 
 <!-- Configuration forms -->
-    
+
     <template id="config_form_base" name="Base Config Form View"/>
 
     <template id="config_custom_field" name="Custom Configuration Field">
@@ -205,7 +206,7 @@
                         t-att-data-oe-id="value.id"
                         t-att-name="value.id"
                         t-att-disabled="value.id not in available_value_ids and True or False">
-                        <t t-esc="value.name"/>    
+                        <t t-esc="value.name"/>
                     </option>
                   </t>
                   <t t-if="line.custom">
