@@ -423,7 +423,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         pricelist = get_pricelist()
         values = {
             'get_product_vals': _get_product_vals,
-            # 'get_config_image': self.get_config_image,
             'product_id': product_id,
             'product_tmpl': product_tmpl,
             'pricelist': pricelist,
