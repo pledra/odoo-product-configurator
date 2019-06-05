@@ -71,7 +71,7 @@
             <field eval="0" name="perm_create"></field>
         </record>
 
-        <record id="configure_product_product_rule_manager" model="ir.rule">
+       <!--  <record id="configure_product_product_rule_manager" model="ir.rule">
             <field name="name">Configure Product Product Manager</field>
             <field ref="product.model_product_product" name="model_id"/>
             <field name="domain_force">[('config_ok', '=', True)]</field>
@@ -91,7 +91,7 @@
             <field eval="1" name="perm_write"></field>
             <field eval="1" name="perm_unlink"></field>
             <field eval="1" name="perm_create"></field>
-        </record>
+        </record> -->
     </data>
 </odoo>
 
