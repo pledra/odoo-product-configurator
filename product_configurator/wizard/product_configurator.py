@@ -311,7 +311,7 @@ class ProductConfigurator(models.TransientModel):
             product_tmpl_id=product_tmpl_id,
             config_session_id=config_session_id,
         )
-        
+
         return {'value': vals, 'domain': domains}
 
     config_session_id = fields.Many2one(
