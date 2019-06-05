@@ -28,7 +28,7 @@
             <xpath expr='//header' position="inside">
                 <button class="oe_stat_button" name="get_product_attribute_values_action"
                     attrs="{'invisible': ['|', ('attribute_line_ids', '=', []), ('config_ok', '=', False)]}"
-                    groups="product.group_product_variant,product_configurator.group_product_configurator_manager"
+                    groups="product_configurator.group_product_configurator_manager"
                     type="object"
                     string="Variant Prices">
                 </button>
@@ -202,7 +202,7 @@
                 <button string="Variant Prices" type="object"
                     name="get_product_attribute_values_action"
                     attrs="{'invisible': ['|', ('attribute_value_ids', '=', False), ('config_ok', '=', False)]}"
-                    groups="product.group_product_variant,product_configurator.group_product_configurator_manager"/>
+                    groups="product_configurator.group_product_configurator_manager"/>
                 <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
                         class="oe_highlight"
                         type="object"
