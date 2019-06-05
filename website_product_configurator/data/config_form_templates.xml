@@ -54,7 +54,7 @@
     <!-- Base view for the form view of each configuration step -->
     <template id="config_form" name="Product Configuration Form">
       <div>
-        <input name="product_tmpl_id" t-att-value="main_object.id" class="product_tmpl_id" type="hidden"/>
+        <input name="product_tmpl_id" t-att-value="product_tmpl.id" class="product_tmpl_id" type="hidden"/>
         <input name="config_session_id" t-att-value="cfg_session.id" class="config_session_id" type="hidden"/>
       </div>
       <div class="tab-content">
@@ -232,7 +232,7 @@
 
     <!-- Product configurator checkout -->
 
-    <template id="cfg_session" name="Configuration Session">
+    <template id="cfg_product_variant" name="Configured Product Variant">
       <t t-call="website.layout">
           <t t-set="additional_title" t-value="product_tmpl.name"/>
           <div itemscope="itemscope" itemtype="http://schema.org/Product" id="wrap" class="js_sale oe_website_sale">
@@ -240,20 +240,21 @@
               <div class="row">
                 <div class="col-xs-12 col-sm-4">
                     <ul class="mt16 product_vals">
-                      <t t-foreach="get_product_vals(cfg_session)" t-as="val">
+                      <t t-foreach="vals" t-as="val">
                         <li>
                             <strong t-field="val.attribute_id.name"/>:
-                            <t t-if="val._name == 'product.attribute.value'">
-                              <span t-field="val.name"/>
+                            <span t-field="val.name"/>
+                        </li>
+                      </t>
+                      <t t-foreach="custom_vals" t-as="val">
+                        <li>
+                            <strong t-field="val.attribute_id.name"/>:
+                            <span t-field="val.value"/>
+                            <t t-foreach="val.attachment_ids" t-as="attachment">
+                              <br t-if="not attachment_first"/>
+                              <span t-field="attachment.name"/>
                             </t>
-                            <t t-if="val._name == 'product.config.session.custom.value'">
-                              <span t-field="val.value"/>
-                              <t t-foreach="val.attachment_ids" t-as="attachment">
-                                <br t-if="not attachment_first"/>
-                                <span t-field="attachment.name"/>
-                              </t>
-                            </t>
-                          </li>
+                        </li>
                       </t>
                     </ul>
                 </div>
@@ -265,40 +266,35 @@
 
                 <div class="col-xs-12 col-sm-4">
                     <h1 itemprop="name" t-field="product_tmpl.name">Product Name</h1>
-                    <!-- <span itemprop="url" style="display:none;" t-attf-hre="/configurator/#{slug(product)}"/> -->
 
                     <form action="/shop/cart/update" class="js_add_cart_variants" method="post">
                       <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                       <input type="hidden" class="product_id" name="product_id" t-att-value="product_id.id" />
 
                       <div class="js_product">
-                        <t t-placeholder="select">
-                          <input type="hidden" class="cfg_session_id" name="cfg_session_id" t-att-value="cfg_session.id"/>
-                        </t>
-
                         <div itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer" class="product_price mt16">
                             <h4 class="oe_price_h4 css_editable_mode_hidden">
                                 <span class="text-danger oe_default_price" style="text-decoration: line-through; white-space: nowrap;"
-                                  t-field="cfg_session.price"
+                                  t-field="product_id.lst_price"
                                   t-options='{
                                     "widget": "monetary",
-                                    "from_currency": "product_tmpl.currency_id",
-                                    "display_currency": "website.currency_id"
+                                    "from_currency": product_tmpl.currency_id,
+                                    "display_currency": website.currency_id
                                  }'/>
                                 <b class="oe_price" style="white-space: nowrap;"
-                                  t-field="cfg_session.price"
+                                  t-field="product_id.lst_price"
                                   t-options='{
                                      "widget": "monetary",
-                                     "display_currency": "website.currency_id"
+                                     "display_currency": website.currency_id
                                  }'/>
-                                <span itemprop="price" style="display:none;" t-esc="cfg_session.price"/>
+                                <span itemprop="price" style="display:none;" t-esc="product_id.lst_price"/>
                                 <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
                             </h4>
                             <h4 class="css_non_editable_mode_hidden">
-                              <span t-field="cfg_session.price"
+                              <span t-field="product_id.lst_price"
                                     t-options='{
                                        "widget": "monetary",
-                                      "display_currency": "product_tmpl.currency_id"
+                                      "display_currency": product_tmpl.currency_id
                                     }'/>
                             </h4>
                             <h4 class="hidden oe_not_available bg-warning">Product not available</h4>

@@ -18,6 +18,39 @@ def get_pricelist():
 
 class ProductConfigWebsiteSale(WebsiteSale):
 
+    def get_config_session(self, product_tmpl_id):
+        cfg_session_obj = request.env['product.config.session']
+        cfg_session = False
+        product_config_sessions = request.session.get(
+            'product_config_session',
+            {}
+        )
+        is_public_user = request.env.user.has_group('base.group_public')
+        cfg_session_id = product_config_sessions.get(product_tmpl_id.id)
+        if cfg_session_id:
+            cfg_session = cfg_session_obj.browse(int(cfg_session_id))
+
+        # Retrieve an active configuration session or create a new one
+        if not cfg_session or not cfg_session.exists():
+            cfg_session = cfg_session_obj.sudo().create_get_session(
+                product_tmpl_id.id,
+                force_create=is_public_user,
+                user_id=request.env.user.id
+            )
+            if product_config_sessions:
+                request.session['product_config_session'].update({
+                    product_tmpl_id.id: cfg_session.id
+                })
+            else:
+                request.session['product_config_session'] = {
+                    product_tmpl_id.id: cfg_session.id
+                }
+
+        if (cfg_session.user_id.has_group('base.group_public') and not
+                is_public_user):
+            cfg_session.user_id = request.env.user
+        return cfg_session
+
     @http.route()
     def product(self, product, category='', search='', **kwargs):
         # Use parent workflow for regular products
@@ -26,36 +59,13 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 product, category, search, **kwargs
             )
 
-        cfg_session_obj = request.env['product.config.session']
-        cfg_session = False
-        product_config_sessions = request.session.get(
-            'product_config_session',
-            {}
-        )
-        is_public_user = request.env.user.has_group('base.group_public')
-        if product_config_sessions and product_config_sessions.get(product.id):
-            cfg_session = cfg_session_obj.browse(
-                int(product_config_sessions.get(product.id))
-            )
+        cfg_session = self.get_config_session(product_tmpl_id=product)
 
-        # Retrieve and active configuration session or create a new one
-        if not cfg_session or not cfg_session.exists():
-            cfg_session = cfg_session_obj.sudo().create_get_session(
-                product.id,
-                force_create=is_public_user,
-                user_id=request.env.user.id
-            )
-            if product_config_sessions:
-                request.session['product_config_session'].update({
-                    product.id: cfg_session.id
-                })
-            else:
-                request.session['product_config_session'] = {
-                    product.id: cfg_session.id
-                }
-        if (cfg_session.user_id.has_group('base.group_public') and not
-                is_public_user):
-            cfg_session.user_id = request.env.user
+        # Set config-step in config session when it creates from wizard
+        # because select state not exist on website
+        if not cfg_session.config_step:
+            cfg_session.config_step = 'select'
+            self.set_config_next_step(cfg_session)
 
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
@@ -92,11 +102,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
         extra_attribute_line_ids = self.get_extra_attribute_line_ids(
             cfg_session.product_tmpl_id)
         cfg_session = cfg_session.sudo()
+        config_image_ids = cfg_session.product_tmpl_id
         if cfg_session.value_ids:
             config_image_ids = cfg_session._get_config_image(
                 cfg_session.value_ids, cfg_session.custom_value_ids)
-        else:
-            config_image_ids = cfg_session.product_tmpl_id
 
         vals = {
             'cfg_session': cfg_session,
@@ -106,7 +115,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'value_ids': cfg_session.value_ids,
             'custom_value_ids': cfg_session.custom_value_ids,
             'available_value_ids': available_value_ids,
-            'main_object': cfg_session.product_tmpl_id,
+            'product_tmpl': cfg_session.product_tmpl_id,
             'prefixes': product_configurator_obj._prefixes,
             'custom_val_id': custom_val_id,
             'extra_attribute_line_ids': extra_attribute_line_ids,
@@ -138,17 +147,16 @@ class ProductConfigWebsiteSale(WebsiteSale):
             new_values[key] = value
         return new_values
 
-    def get_current_configuration(self, form_values,
-                                  cfg_session, product_tmpl_id):
+    def get_current_configuration(self, form_values, cfg_session):
         """Return list of ids of selected attribute-values
         :param: form_values: dictionary of field name and selected values
             Ex: {
                 __attribute-attr-id: attribute-value,
                 __custom-attr-id: custom-value
             }
-        :param: cfg_session: record set of config session
-        :param: product_tmpl_id: record set of product template"""
+        :param: cfg_session: record set of config session"""
 
+        product_tmpl_id = cfg_session.product_tmpl_id
         product_configurator_obj = request.env['product.configurator']
         field_prefix = product_configurator_obj._prefixes.get('field_prefix')
         # custom_field_prefix = product_configurator_obj._prefixes.get(
@@ -160,10 +168,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
             if attr_line.custom:
                 pass
             else:
-                attr_values = form_values.get(
-                    '%s%s' % (field_prefix, attr_line.attribute_id.id),
-                    False
-                )
+                field_name = '%s%s' % (field_prefix, attr_line.attribute_id.id)
+                attr_values = form_values.get(field_name, False)
+
                 if not attr_values:
                     continue
                 if not isinstance(attr_values, list):
@@ -173,12 +180,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 value_ids += attr_values
         return value_ids
 
-    def _prepare_configurator_values(self, form_vals, config_session_id,
-                                     product_tmpl_id):
+    def _prepare_configurator_values(self, form_vals, config_session_id):
         """Return dictionary of fields and values present
         on configuration wizard"""
         config_session_id = config_session_id.sudo()
-
+        product_tmpl_id = config_session_id.product_tmpl_id
         config_fields = {
             'state': config_session_id.state,
             'config_session_id': config_session_id.id,
@@ -194,26 +200,27 @@ class ProductConfigWebsiteSale(WebsiteSale):
         config_fields.update(form_vals)
         return config_fields
 
-    def get_dictionary_from_form_vals(self, form_vals,
-                                      config_session, product_tmpl_id):
+    def get_orm_form_vals(self, form_vals, config_session):
         """Return dictionary of dynamic field and its values
         :param: form_vals: list of dictionary
             Ex: [{'name': field-name, 'value': field-value},]
-        :param: cfg_session: record set of config session
-        :param: product_tmpl_id: record set of product template"""
+        :param: cfg_session: record set of config session"""
 
+        product_tmpl_id = config_session.product_tmpl_id
         values = {}
         for form_val in form_vals:
-            if form_val['name'] in values and form_val['value']:
-                values[form_val['name']].append(form_val['value'])
-            else:
-                value = form_val['value'] and [form_val['value']] or []
-                values.update({form_val['name']: value})
+            dict_key = form_val.get('name', False)
+            dict_value = form_val.get('value', False)
+            if not dict_key or not dict_value:
+                continue
+            if dict_key not in values:
+                values.update({dict_key: []})
+            values[dict_key].append(dict_value)
 
         product_configurator_obj = request.env['product.configurator']
         field_prefix = product_configurator_obj._prefixes.get('field_prefix')
         custom_field_prefix = product_configurator_obj._prefixes.get(
-           'custom_field_prefix')
+            'custom_field_prefix')
 
         config_vals = {}
         for attr_line in product_tmpl_id.attribute_line_ids.sorted():
@@ -225,13 +232,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
             field_value = [int(s) for s in field_value]
             custom_field_value = values.get(custom_field, False)
 
-            if attr_line.custom:
-                if not custom_field_value:
-                    custom_field_value = False
-                elif attr_line.attribute_id.custom_type in ['int', 'float']:
-                    custom_field_value = safe_eval(custom_field_value[0])
-                else:
-                    custom_field_value = custom_field_value[0]
+            if attr_line.custom and custom_field_value:
+                custom_field_value = custom_field_value[0]
+                if attr_line.attribute_id.custom_type in ['int', 'float']:
+                    custom_field_value = safe_eval(custom_field_value)
 
             if attr_line.multi:
                 field_value = [[6, False, field_value]]
@@ -244,29 +248,22 @@ class ProductConfigWebsiteSale(WebsiteSale):
             })
         return config_vals
 
-    def get_session_and_product(self, form_vals):
-        """Return record set of product template
-        and current config session"""
+    def get_config_product_template(self, form_vals):
+        """Return record set of product template"""
         product_template_id = request.env['product.template']
-        config_session = request.env['product.config.session']
         for val in form_vals:
             if val.get('name') == 'product_tmpl_id':
                 product_tmpl_id = val.get('value')
-            if val.get('name') == 'config_session_id':
-                config_session_id = val.get('value')
 
         if product_tmpl_id:
             product_template_id = product_template_id.browse(
                 int(product_tmpl_id))
-        if config_session_id:
-            config_session = config_session.browse(
-                int(config_session_id))
-        return {
-            'config_session': config_session,
-            'product_tmpl': product_template_id
-        }
+        return product_template_id
 
     def get_extra_attribute_line_ids(self, product_template_id):
+        """Retrieve attribute lines defined on the product_template_id
+        which are not assigned to configuration steps"""
+
         extra_attribute_line_ids = (
             product_template_id.attribute_line_ids -
             product_template_id.config_step_line_ids.mapped(
@@ -282,14 +279,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
         onchange method"""
         # config session and product template
         product_configurator_obj = request.env['product.configurator']
-        result = self.get_session_and_product(form_values)
-        config_session_id = result.get('config_session')
-        product_template_id = result.get('product_tmpl')
+        product_template_id = self.get_config_product_template(form_values)
+        config_session_id = self.get_config_session(
+            product_tmpl_id=product_template_id)
+
         # prepare dictionary in formate needed to pass in onchage
-        form_values = self.get_dictionary_from_form_vals(
-            form_values, config_session_id, product_template_id)
+        form_values = self.get_orm_form_vals(
+            form_values, config_session_id)
         config_vals = self._prepare_configurator_values(
-            form_values, config_session_id, product_template_id)
+            form_values, config_session_id)
 
         # call onchange
         field_prefix = product_configurator_obj._prefixes.get('field_prefix')
@@ -304,16 +302,22 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
         # get open step lines according to current configuation
         value_ids = self.get_current_configuration(
-            form_values, config_session_id, product_template_id)
-        open_cfg_step_lines = config_session_id.sudo()\
-            .get_open_step_lines(value_ids).ids
+            form_values, config_session_id)
+        try:
+            open_cfg_step_line_ids = config_session_id.sudo()\
+                .get_open_step_lines(value_ids).ids
+        except Exception as Ex:
+            return {'error': Ex}
 
         # if no step is defined or some attribute remains to add in a step
-        open_cfg_step_lines = ['%s' % (step) for step in open_cfg_step_lines]
+        open_cfg_step_line_ids = [
+            '%s' % (step_id)
+            for step_id in open_cfg_step_line_ids
+        ]
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             product_template_id)
         if extra_attr_line_ids:
-            open_cfg_step_lines.append('configure')
+            open_cfg_step_line_ids.append('configure')
 
         # configuration images
         config_image_ids = config_session_id._get_config_image(
@@ -324,7 +328,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             model_name=config_image_ids[:1]._name
         )
         updates['value'] = self.remove_recursive_list(updates['value'])
-        updates['open_cfg_step_lines'] = open_cfg_step_lines
+        updates['open_cfg_step_line_ids'] = open_cfg_step_line_ids
         updates['config_image_vals'] = image_vals
         return updates
 
@@ -369,17 +373,20 @@ class ProductConfigWebsiteSale(WebsiteSale):
         """Save current configuration in related session and
         next step if exist otherwise create variant using
         configuration redirect to product page of configured product"""
-        result = self.get_session_and_product(form_values)
-        config_session_id = result.get('config_session')
-        product_template_id = result.get('product_tmpl')
+        product_template_id = self.get_config_product_template(form_values)
+        config_session_id = self.get_config_session(
+            product_tmpl_id=product_template_id)
 
-        form_values = self.get_dictionary_from_form_vals(
-            form_values, config_session_id, product_template_id)
+        form_values = self.get_orm_form_vals(
+            form_values, config_session_id)
         try:
+            # save values
             config_session_id.sudo().update_session_configuration_value(
                 vals=form_values,
                 product_tmpl_id=product_template_id
             )
+
+            # next step
             next_step = self.set_config_next_step(
                 config_session_id=config_session_id,
                 current_step=current_step,
@@ -388,11 +395,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
             if next_step:
                 return {'next_step': next_step}
 
+            # create variant
             product = config_session_id.sudo().create_get_variant()
             if product:
-                config_session_id = config_session_id.sudo()
                 redirect_url = "/website_product_configurator/open_product"
-                redirect_url += '/%s' % (slug(config_session_id))
                 redirect_url += '/%s' % (slug(product))
                 return {
                     'product_id': product.id,
@@ -405,28 +411,29 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
     @http.route(
         '/website_product_configurator/open_product/'
-        '<model("product.config.session"):cfg_session>/'
         '<model("product.product"):product_id>',
         type='http', auth="public", website=True)
-    def cfg_session(self, cfg_session, product_id, **post):
+    def cfg_session(self, product_id, **post):
         """Render product page of product_id"""
-        try:
-            product_tmpl = cfg_session.sudo().product_tmpl_id
-        except Exception:
-            product_tmpl = product_id.product_tmpl_id
+        product_tmpl_id = product_id.product_tmpl_id
 
-        def _get_product_vals(cfg_session):
-            vals = cfg_session.value_ids
-            # vals += cfg_session.custom_value_ids
-            return sorted(vals, key=lambda obj: obj.attribute_id.sequence)
-
+        custom_vals = sorted(
+            product_id.value_custom_ids,
+            key=lambda obj: obj.attribute_id.sequence
+        )
+        vals = sorted(
+            product_id.attribute_value_ids,
+            key=lambda obj: obj.attribute_id.sequence
+        )
         pricelist = get_pricelist()
+        if request.session['product_config_session'].get(product_tmpl_id.id):
+            del request.session['product_config_session'][product_tmpl_id.id]
         values = {
-            'get_product_vals': _get_product_vals,
             'product_id': product_id,
-            'product_tmpl': product_tmpl,
+            'product_tmpl': product_tmpl_id,
             'pricelist': pricelist,
-            'cfg_session': cfg_session,
+            'custom_vals': custom_vals,
+            'vals': vals,
         }
         return request.render(
-            "website_product_configurator.cfg_session", values)
+            "website_product_configurator.cfg_product_variant", values)
