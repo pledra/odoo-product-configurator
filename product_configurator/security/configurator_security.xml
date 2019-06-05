@@ -27,7 +27,7 @@
 
     </data>
     <data noupdate="1">
-        <record id="configure_product_template_rule_user_standard_product" model="ir.rule">
+        <record id="configure_product_template_rule_employee_standard_product" model="ir.rule">
             <field name="name">Configure Product Template Employee (Standard Product)</field>
             <field ref="product.model_product_template" name="model_id"/>
             <field name="domain_force">[('config_ok', '=', False)]</field>
@@ -60,8 +60,8 @@
             <field eval="1" name="perm_create"></field>
         </record>
 
-        <record id="configure_product_template_rule_user_standard_product" model="ir.rule">
-            <field name="name">Configure Product Template Employee (Standard Product)</field>
+        <record id="configure_product_template_rule_employee_config_product" model="ir.rule">
+            <field name="name">Configure Product Template Employee (config Product)</field>
             <field ref="product.model_product_template" name="model_id"/>
             <field name="domain_force">[('config_ok', '=', True)]</field>
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
