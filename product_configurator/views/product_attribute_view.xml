@@ -100,7 +100,7 @@
         <field name="inherit_id" ref="product.product_attribute_value_view_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='price_extra']" position="before">
-                <field name="weight_extra" groups="product_configurator.group_product_configurator"/>
+                <field name="weight_extra" groups="product_configurator.group_product_configurator_manager"/>
             </xpath>
         </field>
     </record>
