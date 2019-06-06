@@ -4,6 +4,7 @@ from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.tools import safe_eval
 from odoo import models
+from odoo.exceptions import ValidationError, UserError
 
 
 def get_pricelist():
@@ -347,9 +348,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
             return next_step
 
         if not next_step:
-            next_step = config_session_id.get_next_step(
-                state=current_step,
-            )
+            try:
+                next_step = config_session_id.get_next_step(
+                    state=current_step,
+                )
+            except (UserError, ValidationError) as Ex:
+                raise Ex
         if (not next_step and
                 extra_attr_line_ids and
                 current_step != 'configure'):
@@ -394,6 +398,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
             if next_step:
                 return {'next_step': next_step}
+
+            if not (config_session_id.value_ids or
+                    config_session_id.custom_value_ids):
+                return {
+                    'error': (
+                        "You must select at least one "
+                        "attribute in order to configure a product"
+                    )
+                }
 
             # create variant
             product = config_session_id.sudo().create_get_variant()
