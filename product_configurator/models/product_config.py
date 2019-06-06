@@ -299,7 +299,10 @@ class ProductConfigSession(models.Model):
     _name = 'product.config.session'
 
     @api.multi
-    @api.depends('value_ids')
+    @api.depends('value_ids', 'product_tmpl_id.list_price',
+                 'product_tmpl_id.attribute_line_ids',
+                 'product_tmpl_id.attribute_line_ids.value_ids',
+                 'product_tmpl_id.attribute_line_ids.value_ids.price_extra')
     def _compute_cfg_price(self):
         for session in self:
             if session.product_tmpl_id:
@@ -377,6 +380,9 @@ class ProductConfigSession(models.Model):
         return product_tmpl.weight + weight_extra
 
     @api.multi
+    @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids',
+                 'product_tmpl_id.attribute_line_ids.value_ids',
+                 'product_tmpl_id.attribute_line_ids.value_ids.weight_extra')
     def _compute_cfg_weight(self):
         for cfg_session in self:
             cfg_session.weight = cfg_session.get_cfg_weight()
