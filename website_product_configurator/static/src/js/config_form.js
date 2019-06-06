@@ -305,6 +305,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
         $('.js_remove_qty').on('click', function(ev) {
             _handleSppinerCustomValue(ev);
         });
-	});
+    });
 
 })

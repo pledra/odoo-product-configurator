@@ -89,7 +89,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         # if no config step exist
         product_configurator_obj = request.env['product.configurator']
         open_cfg_step_lines = cfg_session.get_open_step_lines()
-        active_step = cfg_session.get_active_step()
         cfg_step_lines = cfg_session.get_all_step_lines()
         custom_ext_id = 'product_configurator.custom_attribute_value'
         custom_val_id = request.env.ref(custom_ext_id)
@@ -97,10 +96,16 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'value_ids') + custom_val_id
         available_value_ids = cfg_session.values_available(
             check_val_ids=check_val_ids.ids)
-        if not active_step:
-            active_step = cfg_step_lines[:1]
         extra_attribute_line_ids = self.get_extra_attribute_line_ids(
             cfg_session.product_tmpl_id)
+
+        # If one remove/add config steps in middle of session
+        active_step = False
+        if cfg_step_lines:
+            active_step = cfg_session.get_active_step()
+            if not active_step or active_step not in cfg_step_lines:
+                active_step = cfg_step_lines[:1]
+
         cfg_session = cfg_session.sudo()
         config_image_ids = cfg_session.product_tmpl_id
         if cfg_session.value_ids:
