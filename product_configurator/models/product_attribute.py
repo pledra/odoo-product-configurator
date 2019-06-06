@@ -382,7 +382,8 @@ class ProductAttributeValueLine(models.Model):
     )
 
     @api.multi
-    @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids', 'product_tmpl_id.attribute_line_ids.value_ids')
+    @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids',
+                 'product_tmpl_id.attribute_line_ids.value_ids')
     def _compute_get_value_id(self):
         for attr_val_line in self:
             print("$$$$$$$$$$$$$$$$$$$$$$")
