@@ -349,12 +349,6 @@ class ProductAttributePrice(models.Model):
 class ProductAttributeValueLine(models.Model):
     _name = 'product.attribute.value.line'
 
-    def _get_domain_value_id(self):
-
-        template = self.env['product.template'].browse(self._context.get('active_id'))
-        value_list = template.attribute_line_ids.mapped('value_ids')
-        return [('id', 'in', value_list.ids)]
-
     sequence = fields.Integer(string='Sequence', default=10)
     product_tmpl_id = fields.Many2one(
         comodel_name='product.template',
@@ -366,7 +360,6 @@ class ProductAttributeValueLine(models.Model):
         comodel_name='product.attribute.value',
         required="True",
         string="Attribute Value",
-        domain=_get_domain_value_id,
     )
     attribute_id = fields.Many2one(
         comodel_name='product.attribute',
@@ -374,11 +367,28 @@ class ProductAttributeValueLine(models.Model):
     )
     value_ids = fields.Many2many(
         comodel_name='product.attribute.value',
-        id1="attr_val_line_id",
-        id2="attr_val_id",
+        relation="attr_value_line_attr_values_rel",
+        column1="attr_val_line_id",
+        column2="attr_val_id",
         string="Values Configuration",
-        domain=_get_domain_value_id,
     )
+    product_value_ids = fields.Many2many(
+        comodel_name='product.attribute.value',
+        relation="product_attr_values_attr_values_rel",
+        column1="product_val_id",
+        column2="attr_val_id",
+        compute='_compute_get_value_id',
+        store=True
+    )
+
+    @api.multi
+    @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids', 'product_tmpl_id.attribute_line_ids.value_ids')
+    def _compute_get_value_id(self):
+        for attr_val_line in self:
+            print("$$$$$$$$$$$$$$$$$$$$$$")
+            template = attr_val_line.product_tmpl_id
+            value_list = template.attribute_line_ids.mapped('value_ids')
+            attr_val_line.product_value_ids = [(6, 0, value_list.ids)]
 
     _order = 'sequence'
 
