@@ -1,14 +1,18 @@
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import ValidationError
 
+
 class ProductConfig(TransactionCase):
 
     def setUp(self):
         super(ProductConfig, self).setUp()
-        self.config_product_1 = self.env.ref('product_configurator.product_config_line_gasoline_engines')
-        self.config_product_2 = self.env.ref('product_configurator.2_series_config_step_body')
+        self.config_product_1 = self.env.ref(
+            'product_configurator.product_config_line_gasoline_engines')
+        self.config_product_2 = self.env.ref(
+            'product_configurator.2_series_config_step_body')
         self.config_session_1 = self.env['product.config.session']
-        self.config_step_1 = self.env.ref('product_configurator.config_step_extras')
+        self.config_step_1 = self.env.ref(
+            'product_configurator.config_step_extras')
         self.ProductConfWizard = self.env['product.configurator']
         self.config_product = self.env.ref('product_configurator.bmw_2_series')
         self.product_category = self.env.ref('product.product_category_5')
@@ -72,7 +76,7 @@ class ProductConfig(TransactionCase):
         with self.assertRaises(ValidationError):
             self.config_product_2.config_step_id = 4
 
-    def test_02__compute_config_step_name(self):
+    def test_02_compute_config_step_name(self):
         product_config_wizard = self.ProductConfWizard.create({
             'product_tmpl_id': self.config_product.id,
         })
@@ -116,7 +120,8 @@ class ProductConfig(TransactionCase):
         })
         product_config_wizard.action_next_step()
         self.config_session_1._compute_config_step_name()
-        config_session_id = self.config_session_1.search([('product_tmpl_id', '=', self.config_product.id)])
+        config_session_id = self.config_session_1.search([(
+            'product_tmpl_id', '=', self.config_product.id)])
         self.assertEqual(
             self.config_step_1.name,
             config_session_id.config_step_name,
