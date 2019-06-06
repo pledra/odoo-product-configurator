@@ -386,7 +386,6 @@ class ProductAttributeValueLine(models.Model):
                  'product_tmpl_id.attribute_line_ids.value_ids')
     def _compute_get_value_id(self):
         for attr_val_line in self:
-            print("$$$$$$$$$$$$$$$$$$$$$$")
             template = attr_val_line.product_tmpl_id
             value_list = template.attribute_line_ids.mapped('value_ids')
             attr_val_line.product_value_ids = [(6, 0, value_list.ids)]
