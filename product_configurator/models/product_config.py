@@ -380,7 +380,8 @@ class ProductConfigSession(models.Model):
         return product_tmpl.weight + weight_extra
 
     @api.multi
-    @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids',
+    @api.depends('value_ids', 'product_tmpl_id',
+                 'product_tmpl_id.attribute_line_ids',
                  'product_tmpl_id.attribute_line_ids.value_ids',
                  'product_tmpl_id.attribute_line_ids.value_ids.weight_extra')
     def _compute_cfg_weight(self):
