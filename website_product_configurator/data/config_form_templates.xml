@@ -253,6 +253,7 @@
                             t-att-disabled="value.id not in available_value_ids and True or False"/>
                         <label class="image_config_attr_value_radio"
                           for="'%s%s' % (field_prefix, line.attribute_id.id)"
+                          t-att-data-val-id="value.id"
                           t-attf-style="background-image:url(/web/image/product.product/{{value.product_id.id}}/image_medium);"></label>
                 </t>
                 <t t-if="line.custom">
@@ -267,6 +268,7 @@
                         t-att-disabled="custom_val_id.id not in available_value_ids and True or False"/>
                     <label class="image_config_attr_value_radio"
                       for="'%s%s' % (field_prefix, line.attribute_id.id)"
+                      t-att-data-val-id="custom_val_id.id"
                       t-attf-style="background-image:url(/web/image/product.product/{{custom_val_id.product_id.id}}/image_medium);"></label>
                 </t>
             </fieldset>
