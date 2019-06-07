@@ -9,9 +9,6 @@ class Stock(ProductConfiguratorTestCases):
         super(Stock, self).setUp()
         self.StockPickingType = self.env['stock.picking.type']
         self.stockPicking = self.env['stock.picking']
-        # self.stockPicking = self.env['stock.move']
-        # self.ProductTemplate = self.env.ref('product_configurator.product_attribute_line_2_series_fuel')
-        # self.ProductConfWizard = self.env['product.configurator.picking']
         self.stockLocation = self.env.ref('stock.stock_location_locations')
         self.stockLocation2 = self.env.ref('stock.stock_location_locations_partner')
         self.sequence_id = self.env.ref('stock.sequence_mrp_op')
@@ -32,34 +29,22 @@ class Stock(ProductConfiguratorTestCases):
             'location_dest_id': self.stockLocation2.id,
             
         })
-        # product_config_wizard = self.ProductConfWizard.create({
-        #     'product_tmpl_id': self.ProductTemplate.id,
-        # })
-        
         context = dict(
                 default_picking_id=stockPickingId.id,
                 wizard_model='product.configurator.picking',
         )
-        # ProductTemplate = self.ProductTemplate.create({
-        #     'name': self.ProductTemplate,
-        #     'product_tmpl_id': self.ProductTemplate.id,
-        # })
-
         self.ProductConfWizard = self.env['product.configurator.picking'].with_context(context)
-        action = stockPickingId.action_config_start()
-        print("-----------action----------------------",action)
-        self.productConfigure = self._configure_product_nxt_step()
-        reconfig_action = stockPickingId.move_lines.reconfigure_product()
-        reconfig_action.get('res_id')
-        self.assertTrue(
-            stockPickingId.id,
-            'picking id not exsits'
+        stockPickingId.action_config_start()
+        self._configure_product_nxt_step()
+        stock_configure_line = stockPickingId.move_lines
+        stockPickingId.move_lines.reconfigure_product()
+        self.assertEqual(
+            stock_configure_line,
+            stockPickingId.move_lines,
+            'Line Not Equal'
         )
-        self.assertTrue(
-            stockPickingId.move_lines.id,
-            'move id not exsits'
-        )
-        self.assertTrue(
+        self.assertEqual(
+            stock_configure_line.product_id,
             stockPickingId.move_lines.product_id,
-            'product id not exsits'
+            'Product not exsits'
         )
