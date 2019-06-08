@@ -6,6 +6,7 @@ class ProductConfig(TransactionCase):
 
     def setUp(self):
         super(ProductConfig, self).setUp()
+        self.productConfigDomain = self.env['product.config.domain']
         self.config_product_1 = self.env.ref(
             'product_configurator.product_config_line_gasoline_engines')
         self.config_product_2 = self.env.ref(
@@ -119,11 +120,55 @@ class ProductConfig(TransactionCase):
                 [6, 0, [self.value_options_1.id, self.value_options_2.id]]]
         })
         product_config_wizard.action_next_step()
+        
         self.config_session_1._compute_config_step_name()
         config_session_id = self.config_session_1.search([(
             'product_tmpl_id', '=', self.config_product.id)])
+
+        self.value_gasoline.price_ids.weight_extra = 34
+        self.config_session_1.get_cfg_weight()
+        self.value_gasoline = self.value_gasoline.with_context(active_id=self.config_product.id)
+        self.config_session_1.flatten_val_ids(config_session_id.value_ids)
+        self.assertEqual(
+            self.value_gasoline.price_ids.weight_extra,
+            self.value_gasoline.weight_extra,
+            'values not set'
+        )
+
+        self.value_gasoline.price_ids.price_extra = 35
+        self.config_session_1.get_cfg_price()
+        self.value_gasoline = self.value_gasoline.with_context(active_id=self.config_product.id)
+        self.config_session_1.flatten_val_ids(config_session_id.value_ids)
+        self.assertEqual(
+            self.value_gasoline.price_ids.price_extra,
+            self.value_gasoline.price_extra,
+            'values not set'
+        )
+
         self.assertEqual(
             self.config_step_1.name,
             config_session_id.config_step_name,
             'Names are Equal'
         )
+        productConfigDomainId = self.productConfigDomain.create({
+            'name': 'Restriction1'
+        })
+        self.domainConfigDomainLine = self.env['product.config.domain.line'].create({
+            'attribute_id': self.attr_color.id,
+            'condition': 'in',
+            'value_ids': [(6, 0, [self.value_red.id])],
+            'operator': 'and',
+            'domain_id': productConfigDomainId.id,
+        })
+        self.productConfigLine = self.env['product.config.line'].create({
+            'product_tmpl_id': self.config_product.id,
+            'attribute_id': self.attr_engine.id,
+            'attribute_line_id': self.env.ref('product_configurator.product_attribute_line_2_series_engine').id,
+            'value_ids': [(6, 0, [
+                self.env.ref('product_configurator.product_attribute_value_218i').id,
+                self.env.ref('product_configurator.product_attribute_value_220i').id,
+                self.env.ref('product_configurator.product_attribute_value_228i').id,
+                self.env.ref('product_configurator.product_attribute_value_m235i').id,
+                self.env.ref('product_configurator.product_attribute_value_m235i_xdrive').id])],
+            'domain_id': productConfigDomainId.id,
+        })
