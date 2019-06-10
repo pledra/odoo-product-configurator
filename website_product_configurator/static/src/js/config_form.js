@@ -47,9 +47,17 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 _applyDomainOnValues(domains);
                 _handleOpenSteps(open_cfg_step_line_ids);
                 _setImageUrl(config_image_vals);
+                _setWeightPrice(values.weight, values.price);
             });
             _handleCustomAttribute(ev)
         });
+
+        function _setWeightPrice(weight, price) {
+            var formatted_price = _.str.sprintf('%.2f', price);
+            var formatted_weight = _.str.sprintf('%.1f', weight);
+            $('.config_product_weight').text(formatted_weight);
+            $('.config_product_price').find('.oe_currency_value').text(formatted_price);
+        }
 
         function _setImageUrl(config_image_vals) {
             var images = '';
