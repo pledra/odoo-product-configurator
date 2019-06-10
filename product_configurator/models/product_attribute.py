@@ -359,7 +359,7 @@ class ProductAttributeValueLine(models.Model):
     value_id = fields.Many2one(
         comodel_name='product.attribute.value',
         required="True",
-        string="Attribute Value"
+        string="Attribute Value",
     )
     attribute_id = fields.Many2one(
         comodel_name='product.attribute',
@@ -367,10 +367,28 @@ class ProductAttributeValueLine(models.Model):
     )
     value_ids = fields.Many2many(
         comodel_name='product.attribute.value',
-        id1="attr_val_line_id",
-        id2="attr_val_id",
+        relation="attr_value_line_attr_values_rel",
+        column1="attr_val_line_id",
+        column2="attr_val_id",
         string="Values Configuration",
     )
+    product_value_ids = fields.Many2many(
+        comodel_name='product.attribute.value',
+        relation="product_attr_values_attr_values_rel",
+        column1="product_val_id",
+        column2="attr_val_id",
+        compute='_compute_get_value_id',
+        store=True
+    )
+
+    @api.multi
+    @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids',
+                 'product_tmpl_id.attribute_line_ids.value_ids')
+    def _compute_get_value_id(self):
+        for attr_val_line in self:
+            template = attr_val_line.product_tmpl_id
+            value_list = template.attribute_line_ids.mapped('value_ids')
+            attr_val_line.product_value_ids = [(6, 0, value_list.ids)]
 
     _order = 'sequence'
 
