@@ -359,6 +359,7 @@ class ProductProduct(models.Model):
             for attribute_price in attr_prices:
                 if attribute_price.product_tmpl_id == product.product_tmpl_id:
                     weight_extra += attribute_price.weight_extra
+
             product.weight_extra = weight_extra
 
     def _compute_product_weight(self):
