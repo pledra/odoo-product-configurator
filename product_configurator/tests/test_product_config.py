@@ -17,6 +17,9 @@ class ProductConfig(TransactionCase):
         self.ProductConfWizard = self.env['product.configurator']
         self.config_product = self.env.ref('product_configurator.bmw_2_series')
         self.product_category = self.env.ref('product.product_category_5')
+        self.config_custom_val = self.env['product.config.session.custom.value']
+        self.res_user_id = self.env.ref('base.user_demo')
+        self.AttachmentId = self.env.ref('product_configurator.attachment_1')
 
         # attributes
         self.attr_fuel = self.env.ref(
@@ -172,3 +175,39 @@ class ProductConfig(TransactionCase):
                 self.env.ref('product_configurator.product_attribute_value_m235i_xdrive').id])],
             'domain_id': productConfigDomainId.id,
         })
+
+        config_session = self.config_session_1.create({
+            'product_tmpl_id': self.config_product.id,
+            'user_id': self.res_user_id.id,
+            'state': 'draft',
+        })
+        config_custom_values = self.config_custom_val.create({
+            'attribute_id': self.attr_engine.id,
+            'cfg_session_id': config_session.id,
+            'value': 'car',
+        })
+        # self.attr_engine.custom_type = 'int'
+        # update_val = config_custom_values.update({'value': 123})
+        # config_val = config_session._get_custom_vals_dict()
+        # self.assertEqual(
+        #     config_custom_values.value,
+        #     config_val,
+        #     'not equal'
+        # )
+        # self.attr_engine.custom_type = 'binary'
+        # 'attachment_ids': [(6, 0, [self.AttachmentId.id])],
+        # config_custom_values.update({'attachment_ids': [(6, 0, [self.AttachmentId.id])]})
+        # config_session._get_custom_vals_dict()
+        # self.assertEqual(
+        #     config_custom_values.attachment_ids,
+        #     0,
+        #     'not equal'
+        # )
+        # self.attr_engine.custom_type = 'char'
+        # config_custom_values.update({'value': 'abc'})
+        # config_session._get_custom_vals_dict()
+        # self.assertEqual(
+        #     config_custom_values.value,
+        #     abc,
+        #     'not equal'
+        # )
