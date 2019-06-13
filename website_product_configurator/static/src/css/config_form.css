@@ -17,3 +17,13 @@
 
 }
 
+.config_weight {
+    width: 20%;
+    float: left;
+    padding: 10px 10px 10px 0px;
+}
+.config_price {
+    width: 80%;
+    float: left;
+    padding: 10px 10px 10px 0px;
+}
