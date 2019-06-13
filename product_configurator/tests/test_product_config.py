@@ -7,6 +7,7 @@ class ProductConfig(TransactionCase):
     def setUp(self):
         super(ProductConfig, self).setUp()
         self.productConfigDomain = self.env['product.config.domain']
+        self.config_image_red = self.env.ref('product_configurator.config_image_1')
         self.config_product_1 = self.env.ref(
             'product_configurator.product_config_line_gasoline_engines')
         self.config_product_2 = self.env.ref(
@@ -16,7 +17,6 @@ class ProductConfig(TransactionCase):
             'product_configurator.config_step_extras')
         self.ProductConfWizard = self.env['product.configurator']
         self.config_product = self.env.ref('product_configurator.bmw_2_series')
-        self.product_category = self.env.ref('product.product_category_5')
         self.config_custom_val = self.env['product.config.session.custom.value']
         self.res_user_id = self.env.ref('base.user_demo')
         self.AttachmentId = self.env.ref('product_configurator.attachment_1')
@@ -42,6 +42,8 @@ class ProductConfig(TransactionCase):
         # values
         self.value_gasoline = self.env.ref(
             'product_configurator.product_attribute_value_gasoline')
+        self.value_diesel = self.env.ref(
+            'product_configurator.product_attribute_value_diesel')
         self.value_218i = self.env.ref(
             'product_configurator.product_attribute_value_218i')
         self.value_220i = self.env.ref(
@@ -211,3 +213,9 @@ class ProductConfig(TransactionCase):
         #     abc,
         #     'not equal'
         # )
+        with self.assertRaises(ValidationError):
+            self.config_image_red.write({
+                'value_ids': [(6, 0, [
+                    self.value_gasoline.id,
+                    self.value_diesel.id])]
+            })
