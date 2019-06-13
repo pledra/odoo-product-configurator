@@ -30,8 +30,6 @@ class TestProduct(ProductConfiguratorTestCases):
             'type': 'consu',
             'categ_id': self.product_category.id,
         })
-        # self.productId = self.env.ref(
-        #     'product_configurator.product_bmw_sport_line')
 
     def test_00_template_vals(self):
         # create attribute line 1
