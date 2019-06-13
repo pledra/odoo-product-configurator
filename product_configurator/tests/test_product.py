@@ -30,6 +30,8 @@ class TestProduct(ProductConfiguratorTestCases):
             'type': 'consu',
             'categ_id': self.product_category.id,
         })
+        # self.productId = self.env.ref(
+        #     'product_configurator.product_bmw_sport_line')
 
     def test_00_template_vals(self):
         # create attribute line 1
@@ -361,8 +363,10 @@ class TestProduct(ProductConfiguratorTestCases):
             'Error: If different product config_name\
             Method: _compute_name()'
         )
+        
         # reconfigure product
         product_product.reconfigure_product()
+        
         # configure product
         product_config_wizard = self.ProductConfWizard.create({
             'product_tmpl_id':  self.product_tmpl_id.id,
@@ -380,8 +384,7 @@ class TestProduct(ProductConfiguratorTestCases):
         value_ids = self.value_gasoline + self.value_218d + self.value_silver
         new_variant = self.product_tmpl_id.product_variant_ids.filtered(
             lambda variant:
-            variant.attribute_value_ids
-            == value_ids
+            variant.attribute_value_ids == value_ids
         )
         self.assertTrue(
             new_variant.id,
@@ -389,3 +392,14 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: reconfigure_product()'
         )
 
+        # _compute_product_weight_extra
+        productAttPrice = self.env['product.attribute.price'].create({
+            'product_tmpl_id': self.product_tmpl_id.id,
+            'value_id': self.value_gasoline.id,
+            'weight_extra': 45
+        })
+        self.assertEqual(
+            productAttPrice.weight_extra,
+            new_variant.weight_extra,
+            'weight_extra not equal'
+        )
