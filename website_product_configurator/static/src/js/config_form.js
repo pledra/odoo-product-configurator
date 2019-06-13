@@ -54,7 +54,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         function _setWeightPrice(weight, price) {
             var formatted_price = _.str.sprintf('%.2f', price);
-            var formatted_weight = _.str.sprintf('%.1f', weight);
+            var formatted_weight = _.str.sprintf('%.2f', weight);
             $('.config_product_weight').text(formatted_weight);
             $('.config_product_price').find('.oe_currency_value').text(formatted_price);
         }
