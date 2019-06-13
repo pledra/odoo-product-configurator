@@ -7,7 +7,8 @@ class ProductConfig(TransactionCase):
     def setUp(self):
         super(ProductConfig, self).setUp()
         self.productConfigDomain = self.env['product.config.domain']
-        self.config_image_red = self.env.ref('product_configurator.config_image_1')
+        self.config_image_red = \
+            self.env.ref('product_configurator.config_image_1')
         self.config_product_1 = self.env.ref(
             'product_configurator.product_config_line_gasoline_engines')
         self.config_product_2 = self.env.ref(
@@ -16,10 +17,13 @@ class ProductConfig(TransactionCase):
         self.config_step_1 = self.env.ref(
             'product_configurator.config_step_extras')
         self.ProductConfWizard = self.env['product.configurator']
-        self.config_product = self.env.ref('product_configurator.bmw_2_series')
-        self.config_custom_val = self.env['product.config.session.custom.value']
+        self.config_product = self.env.ref(
+            'product_configurator.bmw_2_series')
+        self.config_custom_val = self.env[
+            'product.config.session.custom.value']
         self.res_user_id = self.env.ref('base.user_demo')
-        self.AttachmentId = self.env.ref('product_configurator.attachment_1')
+        self.AttachmentId = self.env.ref(
+            'product_configurator.attachment_1')
 
         # attributes
         self.attr_fuel = self.env.ref(
@@ -125,14 +129,14 @@ class ProductConfig(TransactionCase):
                 [6, 0, [self.value_options_1.id, self.value_options_2.id]]]
         })
         product_config_wizard.action_next_step()
-        
         self.config_session_1._compute_config_step_name()
         config_session_id = self.config_session_1.search([(
             'product_tmpl_id', '=', self.config_product.id)])
 
         self.value_gasoline.price_ids.weight_extra = 34
         self.config_session_1.get_cfg_weight()
-        self.value_gasoline = self.value_gasoline.with_context(active_id=self.config_product.id)
+        self.value_gasoline = \
+            self.value_gasoline.with_context(active_id=self.config_product.id)
         self.config_session_1.flatten_val_ids(config_session_id.value_ids)
         self.assertEqual(
             self.value_gasoline.price_ids.weight_extra,
@@ -142,7 +146,8 @@ class ProductConfig(TransactionCase):
 
         self.value_gasoline.price_ids.price_extra = 35
         self.config_session_1.get_cfg_price()
-        self.value_gasoline = self.value_gasoline.with_context(active_id=self.config_product.id)
+        self.value_gasoline = \
+            self.value_gasoline.with_context(active_id=self.config_product.id)
         self.config_session_1.flatten_val_ids(config_session_id.value_ids)
         self.assertEqual(
             self.value_gasoline.price_ids.price_extra,
@@ -158,17 +163,19 @@ class ProductConfig(TransactionCase):
         productConfigDomainId = self.productConfigDomain.create({
             'name': 'Restriction1'
         })
-        self.domainConfigDomainLine = self.env['product.config.domain.line'].create({
-            'attribute_id': self.attr_color.id,
-            'condition': 'in',
-            'value_ids': [(6, 0, [self.value_red.id])],
-            'operator': 'and',
-            'domain_id': productConfigDomainId.id,
-        })
+        self.domainConfigDomainLine = self.env[
+            'product.config.domain.line'].create({
+                'attribute_id': self.attr_color.id,
+                'condition': 'in',
+                'value_ids': [(6, 0, [self.value_red.id])],
+                'operator': 'and',
+                'domain_id': productConfigDomainId.id,
+            })
         self.productConfigLine = self.env['product.config.line'].create({
             'product_tmpl_id': self.config_product.id,
             'attribute_id': self.attr_engine.id,
-            'attribute_line_id': self.env.ref('product_configurator.product_attribute_line_2_series_engine').id,
+            'attribute_line_id': self.env.ref(
+                'product_configurator.product_attribute_line_2_series_engine').id,
             'value_ids': [(6, 0, [
                 self.env.ref('product_configurator.product_attribute_value_218i').id,
                 self.env.ref('product_configurator.product_attribute_value_220i').id,
@@ -198,7 +205,8 @@ class ProductConfig(TransactionCase):
         # )
         # self.attr_engine.custom_type = 'binary'
         # 'attachment_ids': [(6, 0, [self.AttachmentId.id])],
-        # config_custom_values.update({'attachment_ids': [(6, 0, [self.AttachmentId.id])]})
+        # config_custom_values.update(
+        # {'attachment_ids': [(6, 0, [self.AttachmentId.id])]})
         # config_session._get_custom_vals_dict()
         # self.assertEqual(
         #     config_custom_values.attachment_ids,
@@ -213,9 +221,24 @@ class ProductConfig(TransactionCase):
         #     abc,
         #     'not equal'
         # )
+        
+        # _check_value_ids
         with self.assertRaises(ValidationError):
             self.config_image_red.write({
                 'value_ids': [(6, 0, [
                     self.value_gasoline.id,
                     self.value_diesel.id])]
+            })
+            
+        # unique_attribute
+        with self.assertRaises(ValidationError):
+            self.env['product.config.session.custom.value'].create({
+                'cfg_session_id': config_session.id,
+                'attribute_id': self.attr_engine.id,
+                'value': '1234'
+            })
+            self.env['product.config.session.custom.value'].create({
+                'cfg_session_id': config_session.id,
+                'attribute_id': self.attr_engine.id,
+                'value': '1234'
             })

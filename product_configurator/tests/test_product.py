@@ -1,6 +1,5 @@
 from odoo.addons.product_configurator.tests.\
     product_configurator_test_cases import ProductConfiguratorTestCases
-from odoo.tests.common import TransactionCase
 from odoo.exceptions import ValidationError, UserError
 
 
@@ -10,7 +9,7 @@ class TestProduct(ProductConfiguratorTestCases):
         super(TestProduct, self).setUp()
         self.productTemplate = self.env['product.template']
         self.productAttributeLine = self.env['product.attribute.line']
-        self.productConfigStepLine = self.env['product.config.step.line'] 
+        self.productConfigStepLine = self.env['product.config.step.line']
         self.product_category = self.env.ref('product.product_category_5')
         self.value_diesel = self.env.ref(
             'product_configurator.product_attribute_value_diesel')
@@ -85,7 +84,8 @@ class TestProduct(ProductConfiguratorTestCases):
         )
 
         # # create attribute value line 1
-        # self.productConfigDomainLineId = self.env['product.config.domain.line'].create({
+        # self.productConfigDomainLineId = self.env[
+        # 'product.config.domain.line'].create({
         #     'domain_id': self.productConfigDomainId.id,
         #     'attribute_id': self.attr_fuel.id,
         #     'condition': 'in',
@@ -110,7 +110,7 @@ class TestProduct(ProductConfiguratorTestCases):
         # self.product_tmpl_id.write({
         #     'config_line_ids': [(0, 0, [])],
         # })
-        self.product_tmpl_id.weight=120
+        self.product_tmpl_id.weight = 120
         self.assertEqual(
             self.product_tmpl_id.weight,
             self.product_tmpl_id.weight_dummy,
@@ -125,7 +125,8 @@ class TestProduct(ProductConfiguratorTestCases):
             'Error: If set diffrent value for weight\
             Method: _compute_weight()'
         )
-        attribute_value_action = self.product_tmpl_id.get_product_attribute_values_action()
+        attribute_value_action = \
+            self.product_tmpl_id.get_product_attribute_values_action()
         contextValue = attribute_value_action.get('context')
         self.assertEqual(
             contextValue['active_id'],
@@ -361,10 +362,10 @@ class TestProduct(ProductConfiguratorTestCases):
             'Error: If different product config_name\
             Method: _compute_name()'
         )
-        
+
         # reconfigure product
         product_product.reconfigure_product()
-        
+
         # configure product
         product_config_wizard = self.ProductConfWizard.create({
             'product_tmpl_id':  self.product_tmpl_id.id,
