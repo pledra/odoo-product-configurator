@@ -11,10 +11,8 @@
                 <attribute name="attrs">{'invisible': ['|', ('config_ok','=',True), ('product_variant_count', '&lt;=', 1)]}</attribute>
             </xpath>
             <div name="button_box" position="inside">
-                <!-- <button class="oe_stat_button" name="toggle_config"
-                    type="object" icon="fa-wrench" groups="product_configurator.group_product_configurator_manager"> -->
                 <button class="oe_stat_button" name="toggle_config"
-                    type="object" icon="fa-wrench">
+                    type="object" icon="fa-wrench" groups="product_configurator.group_product_configurator_manager">
                     <field name="config_ok" widget="boolean_button" options='{"terminology": "config"}'/>
                 </button>
             </div>
