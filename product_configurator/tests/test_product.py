@@ -1,5 +1,6 @@
 from odoo.addons.product_configurator.tests.\
     product_configurator_test_cases import ProductConfiguratorTestCases
+from odoo.tests.common import TransactionCase
 from odoo.exceptions import ValidationError, UserError
 
 
@@ -9,7 +10,7 @@ class TestProduct(ProductConfiguratorTestCases):
         super(TestProduct, self).setUp()
         self.productTemplate = self.env['product.template']
         self.productAttributeLine = self.env['product.attribute.line']
-        self.productConfigStepLine = self.env['product.config.step.line']
+        self.productConfigStepLine = self.env['product.config.step.line'] 
         self.product_category = self.env.ref('product.product_category_5')
         self.value_diesel = self.env.ref(
             'product_configurator.product_attribute_value_diesel')
@@ -83,34 +84,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _compute_template_attr_vals() '
         )
 
-        # # create attribute value line 1
-        # self.productConfigDomainLineId = self.env[
-        # 'product.config.domain.line'].create({
-        #     'domain_id': self.productConfigDomainId.id,
-        #     'attribute_id': self.attr_fuel.id,
-        #     'condition': 'in',
-        #     'value_ids': [(6, 0, [self.value_gasoline.id])],
-        #     'operator': 'and',
-        # })
-        # self.productConfigLine = self.env['product.config.line'].create({
-        #     'product_tmpl_id': self.product_tmpl_id.id,
-        #     'attribute_line_id': self.attr_engine.id,
-        #     'value_ids': [(6, 0, [
-        #         self.value_218i.id,
-        #         self.value_220i.id])],
-        #     'domain_id': self.productConfigDomainLineId.id,
-        # })
-        # self.attribute_value_line_1 = self.productAttributeValueLine.create({
-        #     'product_tmpl_id': self.product_tmpl_id.id,
-        #     'value_id': self.attribute_vals_1.id,
-        #     'value_ids': [(6, 0, [
-        #                     self.attribute_vals_1.id,
-        #                     self.attribute_vals_3.id])],
-        # })
-        # self.product_tmpl_id.write({
-        #     'config_line_ids': [(0, 0, [])],
-        # })
-        self.product_tmpl_id.weight = 120
+        self.product_tmpl_id.weight=120
         self.assertEqual(
             self.product_tmpl_id.weight,
             self.product_tmpl_id.weight_dummy,
@@ -125,8 +99,7 @@ class TestProduct(ProductConfiguratorTestCases):
             'Error: If set diffrent value for weight\
             Method: _compute_weight()'
         )
-        attribute_value_action = \
-            self.product_tmpl_id.get_product_attribute_values_action()
+        attribute_value_action = self.product_tmpl_id.get_product_attribute_values_action()
         contextValue = attribute_value_action.get('context')
         self.assertEqual(
             contextValue['active_id'],
@@ -147,14 +120,6 @@ class TestProduct(ProductConfiguratorTestCases):
             'Error: If its return none\
             Method: create_variant_ids()'
         )
-        # self.product_tmpl_id.config = True
-        #  varient_value2 = self.product_tmpl_id.toggle_config()
-        # self.assertTrue(
-        #     varient_value2,
-        #     'Error: If its return True\
-        #     Method: create_variant_ids()'
-        # )
-        # self.product_tmpl_id.toggle_config()
         product_config_wizard = self.ProductConfWizard.create({
             'product_tmpl_id': self.product_tmpl_id.id,
         })
@@ -176,6 +141,39 @@ class TestProduct(ProductConfiguratorTestCases):
             'Error: if record are not unlink\
             Method: unlink()'
         )
+        # create domain
+        self.productConfigDomainId = self.env['product.config.domain'].create({
+            'name': 'restriction 1'
+        })
+        # create attribute value line 1
+        self.productConfigDomainLineId = self.env['product.config.domain.line'].create({
+            'domain_id': self.productConfigDomainId.id,
+            'attribute_id': self.attr_fuel.id,
+            'condition': 'in',
+            'value_ids': [(6, 0, [self.value_gasoline.id])],
+            'operator': 'and',
+        })
+        self.productConfigLine = self.env['product.config.line'].create({
+            'product_tmpl_id': self.product_tmpl_id.id,
+            'attribute_line_id': self.attr_engine.id,
+            'value_ids': [(6, 0, [
+                self.value_218i.id,
+                self.value_220i.id])],
+            'domain_id': self.productConfigDomainId.id,
+        })
+        # check for validation of default value
+        with self.assertRaises(ValidationError):
+            self.attributeLine1.write({
+                'default_val': self.value_diesel.id,
+            })
+            self.attributeLine2.write({
+                'default_val': self.value_218i.id,
+            })
+            self.product_tmpl_id.write({
+                'attribute_line_ids': [(6, 0, [
+                                        self.attributeLine1.id,
+                                        self.attributeLine2.id])],
+            })
 
     def test_01_configure_product(self):
         # configure product
@@ -362,10 +360,8 @@ class TestProduct(ProductConfiguratorTestCases):
             'Error: If different product config_name\
             Method: _compute_name()'
         )
-
         # reconfigure product
         product_product.reconfigure_product()
-
         # configure product
         product_config_wizard = self.ProductConfWizard.create({
             'product_tmpl_id':  self.product_tmpl_id.id,
@@ -383,51 +379,15 @@ class TestProduct(ProductConfiguratorTestCases):
         value_ids = self.value_gasoline + self.value_218d + self.value_silver
         new_variant = self.product_tmpl_id.product_variant_ids.filtered(
             lambda variant:
-            variant.attribute_value_ids == value_ids
+            variant.attribute_value_ids
+            == value_ids
         )
         self.assertTrue(
             new_variant.id,
             'Error: if varient id not exists\
             Method: reconfigure_product()'
         )
-        self._configure_product_nxt_step()
-        variant_id = self.config_product.product_variant_ids
-        print("\n\n\n\n================", variant_id)
-        new_variant.write({
-            'attribute_value_ids': [(6, 0, [self.value_gasoline.id, self.value_silver.id])]
-        })
-        variant_id.write({
-            'attribute_value_ids': [(6, 0, [self.value_gasoline.id, self.value_silver.id])]
-        })
 
-
-    # def test_03_check_duplicate_product(self):
-    #     self._configure_product_nxt_step()
-    #     variant_id = self.config_product.product_variant_ids
-    #     # ?new = self.product_tmpl_id.product_variant_ids
-    #     print("$$$$$$$$$$$$$$$$$$$$$$", [vr.name for vr in variant_id])
-    #     # with self.assertRaises(ValidationError):
-    #     #     self.attributeLine1 = self.productAttributeLine.create({
-    #     #         'product_tmpl_id': self.product_tmpl_id.id,
-    #     #         'attribute_id': self.attr_fuel.id,
-    #     #         'value_ids': [(6, 0, [
-    #     #                        self.value_gasoline.id,])],
-    #     #         'required': True,
-    #     #     })
-    #     #     self.attributeLine2 = self.productAttributeLine.create({
-    #     #         'product_tmpl_id': self.product_tmpl_id.id,
-    #     #         'attribute_id': self.attr_engine.id,
-    #     #         'value_ids': [(6, 0, [
-    #     #                        self.value_218i.id,
-            #                    self.value_218i.id,])],
-            #     'required': True,
-            # })
-
-            # self.product_tmpl_id.write({
-            #     'attribute_line_ids': [(6, 0, [
-            #                             self.attributeLine1.id,
-            #                             self.attributeLine2.id,])]
-            #     })
         # _compute_product_weight_extra
         productAttPrice = self.env['product.attribute.price'].create({
             'product_tmpl_id': self.product_tmpl_id.id,
@@ -437,5 +397,6 @@ class TestProduct(ProductConfiguratorTestCases):
         self.assertEqual(
             productAttPrice.weight_extra,
             new_variant.weight_extra,
-            'weight_extra not equal'
+            'Error: If weight_extra not equal\
+            Method: _compute_product_weight_extra()'
         )

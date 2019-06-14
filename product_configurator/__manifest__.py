@@ -26,7 +26,6 @@
         'demo/product_config_lines.xml',
         'demo/product_config_step.xml',
         'demo/config_image_ids.xml',
-        'demo/ir_attachment_data.xml',
     ],
     'images': [
         'static/description/cover.png'
