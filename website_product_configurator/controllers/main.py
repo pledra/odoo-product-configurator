@@ -82,11 +82,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         }
         return config_image_vals
 
-    def get_custom_value_id(self):
-        custom_ext_id = 'product_configurator.custom_attribute_value'
-        custom_val_id = request.env.ref(custom_ext_id)
-        return custom_val_id
-
     def get_render_vals(self, cfg_session):
         """Return dictionary with values required for website template
         rendering"""
@@ -95,7 +90,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         product_configurator_obj = request.env['product.configurator']
         open_cfg_step_lines = cfg_session.get_open_step_lines()
         cfg_step_lines = cfg_session.get_all_step_lines()
-        custom_val_id = self.get_custom_value_id()
+        custom_val_id = cfg_session.get_custom_value_id()
         check_val_ids = cfg_session.product_tmpl_id.attribute_line_ids.mapped(
             'value_ids') + custom_val_id
         available_value_ids = cfg_session.values_available(
@@ -172,7 +167,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         field_prefix = product_configurator_obj._prefixes.get('field_prefix')
         # custom_field_prefix = product_configurator_obj._prefixes.get(
         #    'custom_field_prefix')
-        custom_val_id = self.get_custom_value_id()
+        custom_val_id = cfg_session.get_custom_value_id()
 
         product_attribute_lines = product_tmpl_id.attribute_line_ids
         value_ids = []

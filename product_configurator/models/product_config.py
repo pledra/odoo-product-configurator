@@ -308,6 +308,11 @@ class ProductConfigSession(models.Model):
                 price = 0.00
             session.price = price
 
+    def get_custom_value_id(self):
+        custom_ext_id = 'product_configurator.custom_attribute_value'
+        custom_val_id = request.env.ref(custom_ext_id)
+        return custom_val_id
+
     @api.model
     def _get_custom_vals_dict(self):
         """Retrieve session custom values as a dictionary of the form
@@ -467,8 +472,7 @@ class ProductConfigSession(models.Model):
         custom_field_prefix = product_configurator_obj._prefixes.get(
             'custom_field_prefix')
 
-        custom_ext_id = 'product_configurator.custom_attribute_value'
-        custom_val = self.env.ref(custom_ext_id)
+        custom_val = self.get_custom_value_id()
 
         attr_val_dict = {}
         custom_val_dict = {}
