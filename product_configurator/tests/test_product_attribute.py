@@ -167,11 +167,3 @@ class ProductAttributes(TransactionCase):
             14,
             "weight_extra not exsits"
         )
-
-    # TODO :: Left to create method
-    def test_10_name_search(self):
-        pass
-
-    # TODO :: Left to create method
-    def test_11_validate_configuration(self):
-        pass

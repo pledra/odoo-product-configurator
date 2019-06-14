@@ -128,7 +128,7 @@ class ProductConfig(ProductConfiguratorTestCases):
     #             [6, 0, [self.value_options_1.id, self.value_options_2.id]]]
     #     })
     #     product_config_wizard.action_next_step()
-        
+
     #     self.config_session_1._compute_config_step_name()
     #     config_session_id = self.config_session_1.search([(
     #         'product_tmpl_id', '=', self.config_product.id)])
@@ -237,6 +237,8 @@ class ProductConfig(ProductConfiguratorTestCases):
         self.attr_fuel.custom_type = 'int'
         productConfigSessionCustVals.update({'value': 154})
         checkIntval = session_id._get_custom_vals_dict()
+
+        # _compute_config_step_name
         self.assertEqual(
             list(checkIntval.values())[0],
             literal_eval(productConfigSessionCustVals.value),
@@ -272,7 +274,7 @@ class ProductConfig(ProductConfiguratorTestCases):
         )
         with self.assertRaises(ValidationError):
             session_id._compute_config_step_name()
-        
+
         # unlink custom value
         productConfigSessionCustVals.unlink()
         productConfigSessionCustVals1.unlink()
@@ -286,7 +288,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             'Error: If not config step name\
             Method: _compute_config_step_name()'
         )
-        
+
 
         # # check for _compute_cfg_weight
         # config_session._compute_cfg_weight()
@@ -304,6 +306,39 @@ class ProductConfig(ProductConfiguratorTestCases):
         #     'values not set'
         # )
         #
+        # compute_domain
+        productConfigDomainId = self.productConfigDomain.create({
+            'name': 'Restriction1'
+            'condition': 'in',
+            'value_ids': [(6, 0, [self.value_red.id])],
+            'operator': 'and',
+            'domain_id': productConfigDomainId.id,
+        })
+        self.productConfigLine = self.env['product.config.line'].create({
+            'product_tmpl_id': self.config_product.id,
+            'attribute_id': self.attr_engine.id,
+            'attribute_line_id': self.env.ref('product_configurator.product_attribute_line_2_series_engine').id,
+            'value_ids': [(6, 0, [
+                self.env.ref('product_configurator.product_attribute_value_218i').id,
+                self.env.ref('product_configurator.product_attribute_value_220i').id,
+                self.env.ref('product_configurator.product_attribute_value_228i').id,
+                self.env.ref('product_configurator.product_attribute_value_m235i').id,
+                self.env.ref('product_configurator.product_attribute_value_m235i_xdrive').id])],
+            'domain_id': productConfigDomainId.id,
+        })
+
+        productConfigDomainId.compute_domain()
+        self.assertTrue(
+           self.domainConfigDomainLine,
+           'Exsits'
+        )
+
+        # _check_value_ids
+        config_session = self.config_session_1.create({
+            'product_tmpl_id': self.config_product.id,
+            'user_id': self.res_user_id.id,
+            'state': 'draft',
+        })
         with self.assertRaises(ValidationError):
             self.env['product.config.session'].search_variant()
 
@@ -384,3 +419,62 @@ class ProductConfig(ProductConfiguratorTestCases):
             'value': 'Coke'
         })
         config_session_1.create_get_variant()
+
+        total_included = base_prices['total_included']
+        total_excluded = base_prices['total_excluded']
+
+        prices = {
+            'vals': [
+                ('Base', self.config_product.name, total_excluded)
+            ],
+            'total': total_included,
+            'taxes': total_included - total_excluded,
+            'currency': currency.name
+        }
+        # print("-----------------prices------------------",prices)
+        component_prices = config_session_id.get_components_prices(
+            prices, pricelist, self.config_session_1.value_ids)
+
+        # print("-----------component_prices-------------",component_prices)
+        self.assertTrue(prices)
+
+
+    # def test_06_get_config_image(self):
+    #     ProductId = self.config_product.id
+    #     print("-------ProductId",ProductId)
+    #     ProductImageId = self.config_product.config_image_ids
+    #     print("-------ProductImageId",ProductImageId.ids)
+    #     ValueIds = self.config_session_1.value_ids.ids
+    #     print("-------ValueIds",ValueIds)
+    #     aaa = self.value_gasoline.custom_vals
+    #     print("------------aaa------------------",aaa)
+    #     check = self.config_session_1.get_config_image()
+    #     print("--------------check---------------------",check)
+    #     self.assertFalse(self.config_session_1.value_ids.ids)
+    #     self.assertFalse(self.value_gasoline.custom_vals)
+
+    # def test_07_get_option_values(self):
+    #     productConfigDomainId = self.productConfigDomain.create({
+    #         'name': 'Restriction1',
+    #         })
+    #     self.domainConfigDomainLine = self.env['product.config.domain.line'].create({
+    #         'attribute_id': self.attr_color.id,
+    #         'condition': 'in',
+    #         'value_ids': [(6, 0, [self.value_red.id])],
+    #         'operator': 'and',
+    #         'domain_id': productConfigDomainId.id,
+    #     })
+    #     config_session_id = self.config_session_1.search([(
+    #         'product_tmpl_id', '=', self.config_product.id)])
+    #     test1 = self.domainConfigDomainLine.value_ids
+    #     pricelist = self.env.user.partner_id.property_product_pricelist
+    #     test = self.config_product.with_context({'pricelist': pricelist.id})
+    #     component_prices = config_session_id._get_option_values(
+    #         pricelist, value_ids)
+
+        # self.assertFalse(self.domainConfigDomainLine.value_ids)
+
+
+        # test = pricelist.sudo().browse(self.config_session_1.value_ids).filtered(
+        #     lambda x: x.product_id.price)
+        # print("-----------test-----------------",test)

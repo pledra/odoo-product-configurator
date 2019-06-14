@@ -641,6 +641,7 @@ class ProductConfigSession(models.Model):
         price set to them"""
         if not value_ids:
             value_ids = self.value_ids.ids
+
         value_obj = self.env['product.attribute.value'].with_context({
             'pricelist': pricelist.id})
         values = value_obj.sudo().browse(value_ids).filtered(
@@ -1211,7 +1212,6 @@ class ProductConfigSession(models.Model):
             for v in prices['vals']
         ]
         return prices
-
 
     @api.multi
     def encode_custom_values(self, custom_vals):
