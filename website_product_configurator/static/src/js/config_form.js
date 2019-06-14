@@ -276,27 +276,32 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
             var current_target = $(ev.currentTarget);
             var custom_value = current_target.parent().find('input.custom_config_value');
-            var quantity = parseFloat(custom_value.val() || 0);
             var max_val = parseFloat(custom_value.attr('max') || Infinity);
             var min_val = parseFloat(custom_value.attr('min') || 0);
-
-            var new_qty = quantity;
-            if (current_target.has(".fa-minus").length) {
-                new_qty = quantity - 1;
-            } else if (current_target.has(".fa-plus").length) {
-                new_qty = quantity + 1;
-            }
-            if (new_qty > max_val) {
-                var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
-                var message = "Selected custom value " + attribute_name.text() + " must be lower than " + (max_val + 1);
+            var new_qty = min_val;
+            if (isNaN(parseFloat(custom_value.val()))) {
+                var message = "Characters are not allowed. Please enter a number.";
                 _displayTooltip(custom_value, message);
-                new_qty = max_val;
-            }
-            else if (new_qty < min_val) {
-                var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
-                var message = "Selected custom value " + attribute_name.text() + " must be at least " + min_val;
-                _displayTooltip(custom_value, message);
-                new_qty = min_val;
+            } else {
+                var quantity = parseFloat(custom_value.val() || 0);
+                new_qty = quantity;
+                if (current_target.has(".fa-minus").length) {
+                    new_qty = quantity - 1;
+                } else if (current_target.has(".fa-plus").length) {
+                    new_qty = quantity + 1;
+                }
+                if (new_qty > max_val) {
+                    var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
+                    var message = "Selected custom value " + attribute_name.text() + " must be lower than " + (max_val + 1);
+                    _displayTooltip(custom_value, message);
+                    new_qty = max_val;
+                }
+                else if (new_qty < min_val) {
+                    var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
+                    var message = "Selected custom value " + attribute_name.text() + " must be at least " + min_val;
+                    _displayTooltip(custom_value, message);
+                    new_qty = min_val;
+                }
             }
             custom_value.val(new_qty);
             _disableEnableAddRemoveQtyButton(new_qty ,max_val ,min_val)
