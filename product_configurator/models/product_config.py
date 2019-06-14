@@ -1,7 +1,7 @@
 from ast import literal_eval
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from odoo.tools.misc import formatLang
 
 
@@ -492,7 +492,7 @@ class ProductConfigSession(models.Model):
                 elif not attr_line.multi and isinstance(vals[field_name], int):
                     field_val = vals[field_name]
                 else:
-                    raise Warning(
+                    raise UserError(
                         _('An error occursed while parsing value for '
                           'attribute %s' % attr_line.attribute_id.name)
                     )
@@ -898,8 +898,10 @@ class ProductConfigSession(models.Model):
                 return False
             elif not (value_ids or custom_value_ids)\
                     and not state == 'select':
-                raise Warning(_("You must select at least one\
-                    attribute in order to configure a product"))
+                raise UserError(_(
+                    "You must select at least one "
+                    "attribute in order to configure a product"
+                ))
             else:
                 return 'configure'
 
@@ -920,8 +922,10 @@ class ProductConfigSession(models.Model):
         if next_step:
             pass
         elif not (value_ids or custom_value_ids):
-            raise Warning(_("You must select at least one\
-                    attribute in order to configure a product"))
+            raise UserError(_(
+                "You must select at least one "
+                "attribute in order to configure a product"
+            ))
         else:
             return False
         return next_step
