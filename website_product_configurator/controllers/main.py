@@ -82,6 +82,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         }
         return config_image_vals
 
+    def get_custom_value_id(self):
+        custom_ext_id = 'product_configurator.custom_attribute_value'
+        custom_val_id = request.env.ref(custom_ext_id)
+        return custom_val_id
+
     def get_render_vals(self, cfg_session):
         """Return dictionary with values required for website template
         rendering"""
@@ -90,8 +95,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         product_configurator_obj = request.env['product.configurator']
         open_cfg_step_lines = cfg_session.get_open_step_lines()
         cfg_step_lines = cfg_session.get_all_step_lines()
-        custom_ext_id = 'product_configurator.custom_attribute_value'
-        custom_val_id = request.env.ref(custom_ext_id)
+        custom_val_id = self.get_custom_value_id()
         check_val_ids = cfg_session.product_tmpl_id.attribute_line_ids.mapped(
             'value_ids') + custom_val_id
         available_value_ids = cfg_session.values_available(
@@ -168,16 +172,16 @@ class ProductConfigWebsiteSale(WebsiteSale):
         field_prefix = product_configurator_obj._prefixes.get('field_prefix')
         # custom_field_prefix = product_configurator_obj._prefixes.get(
         #    'custom_field_prefix')
+        custom_val_id = self.get_custom_value_id()
 
         product_attribute_lines = product_tmpl_id.attribute_line_ids
         value_ids = []
         for attr_line in product_attribute_lines:
-            if attr_line.custom:
+            field_name = '%s%s' % (field_prefix, attr_line.attribute_id.id)
+            attr_values = form_values.get(field_name, False)
+            if attr_line.custom and attr_values == custom_val_id.id:
                 pass
             else:
-                field_name = '%s%s' % (field_prefix, attr_line.attribute_id.id)
-                attr_values = form_values.get(field_name, False)
-
                 if not attr_values:
                     continue
                 if not isinstance(attr_values, list):
