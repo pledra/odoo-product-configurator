@@ -22,6 +22,9 @@ class ProductConfiguratorMrp(models.TransientModel):
     @api.multi
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
+        res = self.check_and_open_incomplete_step()
+        if res:
+            return res
         try:
             custom_vals = {
                 l.attribute_id.id:
