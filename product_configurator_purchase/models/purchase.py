@@ -41,13 +41,11 @@ class PurchaseOrderLine(models.Model):
         template and variant in order to re-configure a existing product. It is
         esetially a shortcut to pre-fill configuration data of a variant"""
         wizard_model = 'product.configurator.purchase'
-
         extra_vals = {
             'order_id': self.order_id.id,
             'order_line_id': self.id,
             'product_id': self.product_id.id,
         }
-
         self = self.with_context({
             'default_order_id': self.order_id.id,
             'default_order_line_id': self.id

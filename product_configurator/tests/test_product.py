@@ -390,7 +390,44 @@ class TestProduct(ProductConfiguratorTestCases):
             'Error: if varient id not exists\
             Method: reconfigure_product()'
         )
+        self._configure_product_nxt_step()
+        variant_id = self.config_product.product_variant_ids
+        print("\n\n\n\n================", variant_id)
+        new_variant.write({
+            'attribute_value_ids': [(6, 0, [self.value_gasoline.id, self.value_silver.id])]
+        })
+        variant_id.write({
+            'attribute_value_ids': [(6, 0, [self.value_gasoline.id, self.value_silver.id])]
+        })
 
+
+    # def test_03_check_duplicate_product(self):
+    #     self._configure_product_nxt_step()
+    #     variant_id = self.config_product.product_variant_ids
+    #     # ?new = self.product_tmpl_id.product_variant_ids
+    #     print("$$$$$$$$$$$$$$$$$$$$$$", [vr.name for vr in variant_id])
+    #     # with self.assertRaises(ValidationError):
+    #     #     self.attributeLine1 = self.productAttributeLine.create({
+    #     #         'product_tmpl_id': self.product_tmpl_id.id,
+    #     #         'attribute_id': self.attr_fuel.id,
+    #     #         'value_ids': [(6, 0, [
+    #     #                        self.value_gasoline.id,])],
+    #     #         'required': True,
+    #     #     })
+    #     #     self.attributeLine2 = self.productAttributeLine.create({
+    #     #         'product_tmpl_id': self.product_tmpl_id.id,
+    #     #         'attribute_id': self.attr_engine.id,
+    #     #         'value_ids': [(6, 0, [
+    #     #                        self.value_218i.id,
+            #                    self.value_218i.id,])],
+            #     'required': True,
+            # })
+
+            # self.product_tmpl_id.write({
+            #     'attribute_line_ids': [(6, 0, [
+            #                             self.attributeLine1.id,
+            #                             self.attributeLine2.id,])]
+            #     })
         # _compute_product_weight_extra
         productAttPrice = self.env['product.attribute.price'].create({
             'product_tmpl_id': self.product_tmpl_id.id,
