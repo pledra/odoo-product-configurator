@@ -66,7 +66,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         # because select state not exist on website
         if not cfg_session.config_step:
             cfg_session.config_step = 'select'
-            self.set_config_next_step(cfg_session)
+            res = self.set_config_next_step(cfg_session)
+            if res.get('error', False):
+                return super(ProductConfigWebsiteSale, self).product(
+                    product, category, search, **kwargs
+                )
 
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
@@ -345,7 +349,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id)
         if extra_attr_line_ids and current_step == 'configure':
-            return next_step
+            return {'next_step': next_step}
 
         if not next_step:
             try:
@@ -353,7 +357,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     state=current_step,
                 )
             except (UserError, ValidationError) as Ex:
-                raise Ex
+                return {'error': Ex}
         if (not next_step and
                 extra_attr_line_ids and
                 current_step != 'configure'):
@@ -368,7 +372,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             next_step = '%s' % (next_step.id)
         if next_step:
             config_session_id.config_step = next_step
-        return next_step
+        return {'next_step': next_step}
 
     @http.route('/website_product_configurator/save_configuration',
                 type='json', methods=['POST'], auth="public", website=True)
@@ -391,14 +395,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
 
             # next step
-            next_step = self.set_config_next_step(
+            result = self.set_config_next_step(
                 config_session_id=config_session_id,
                 current_step=current_step,
                 next_step=next_step
             )
-            if next_step:
-                return {'next_step': next_step}
-
+            if result.get('next_step', False):
+                return {'next_step': result.get('next_step')}
+            elif result.get('error', False):
+                return {'error': result.get('error')}
             if not (config_session_id.value_ids or
                     config_session_id.custom_value_ids):
                 return {
