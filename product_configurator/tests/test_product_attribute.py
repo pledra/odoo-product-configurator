@@ -94,6 +94,7 @@ class ProductAttributes(TransactionCase):
         self.ProductAttributeFuel.custom_type = 'int'
         with self.assertRaises(ValidationError):
             self.ProductAttributeFuel.min_val = 110
+            self.ProductAttributeFuel.max_val = 100
 
     def test_06_onchange_attribute(self):
         self.ProductAttributeLineFuel.onchange_attribute()
@@ -145,7 +146,6 @@ class ProductAttributes(TransactionCase):
             "values are not equal"
         )
 
-    # TODO :: Left to create method
     def test_09_inverse_weight_extra(self):
         self.ProductAttributePrice = self.ProductAttributePrice.create({
             'product_tmpl_id': self.ProductTemplate.id,

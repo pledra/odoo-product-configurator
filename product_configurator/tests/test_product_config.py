@@ -14,18 +14,28 @@ class ProductConfig(ProductConfiguratorTestCases):
         self.productAttributeVals = self.env['product.attribute.value']
         self.productAttributeLine = self.env['product.attribute.line']
         self.productConfigSession = self.env['product.config.session']
-
+        self.productConfigDomain = self.env['product.config.domain']
+        self.config_product = self.env.ref('product_configurator.bmw_2_series')
+        self.attr_engine = self.env.ref(
+            'product_configurator.product_attribute_engine')
         self.config_product_1 = self.env.ref(
             'product_configurator.product_config_line_gasoline_engines')
         self.config_product_2 = self.env.ref(
             'product_configurator.2_series_config_step_body')
-
         # domain
         self.domain_gasolin = self.env.ref(
             'product_configurator.product_config_domain_gasoline')
         self.domain_engine = self.env.ref(
             'product_configurator.product_config_domain_diesel')
-
+        self.config_image_red = self.env.ref(
+            'product_configurator.config_image_1')
+        # value
+        self.value_gasoline = self.env.ref(
+             'product_configurator.product_attribute_value_gasoline')
+        self.value_diesel = self.env.ref(
+            'product_configurator.product_attribute_value_diesel')
+        self.value_red = self.env.ref(
+            'product_configurator.product_attribute_value_red')
         # config_step
         self.config_step_engine = self.env.ref(
             'product_configurator.config_step_engine')
@@ -40,9 +50,9 @@ class ProductConfig(ProductConfiguratorTestCases):
             'product_configurator.product_attribute_line_2_series_rims')
         self.attribute_line_2_series_tapistry = self.env.ref(
             'product_configurator.product_attribute_line_2_series_tapistry')
-        self.attribute_value_tapistry_oyster_black = self.env.ref(
-            'product_configurator.product_attribute_value_tapistry_oyster_black'
-        )
+        self.attribute_value_tapistry_oyster_black = \
+            self.env.ref(
+                'product_configurator.product_attribute_value_tapistry_oyster_black')
         self.attribute_line_2_series_transmission = self.env.ref(
             'product_configurator.product_attribute_line_2_series_transmission'
         )
@@ -295,3 +305,61 @@ class ProductConfig(ProductConfiguratorTestCases):
             'value': 'Coke'
         })
         config_session_1.create_get_variant()
+
+    def test_12_check_value_ids(self):
+        with self.assertRaises(ValidationError):
+            self.config_image_red.write({
+                'value_ids': [(6, 0, [
+                    self.value_gasoline.id,
+                    self.value_diesel.id])]
+            })
+
+    def test_13_unique_attribute(self):
+        with self.assertRaises(ValidationError):
+            self.env['product.config.session.custom.value'].create({
+                'cfg_session_id': self.config_session.id,
+                'attribute_id': self.attr_engine.id,
+                'value': '1234'
+            })
+            self.env['product.config.session.custom.value'].create({
+                'cfg_session_id': self.config_session.id,
+                'attribute_id': self.attr_engine.id,
+                'value': '1234'
+            })
+
+    def test_14_compute_domain(self):
+        productConfigDomainId = self.productConfigDomain.create({
+            'name': 'Restriction1'
+        })
+        self.productConfigDomainLine = self.env[
+            'product.config.domain.line'].create({
+                'attribute_id': self.attr_color.id,
+                'condition': 'in',
+                'value_ids': [(6, 0, [self.value_red.id])],
+                'operator': 'and',
+                'domain_id': productConfigDomainId.id,
+            })
+        self.productConfigLine = self.env['product.config.line'].create({
+            'product_tmpl_id': self.config_product.id,
+            'attribute_id': self.attr_engine.id,
+            'attribute_line_id': self.env.ref(
+                'product_configurator.product_attribute_line_2_series_engine'
+            ).id,
+            'value_ids': [(6, 0, [
+                self.env.ref(
+                    'product_configurator.product_attribute_value_218i').id,
+                self.env.ref(
+                    'product_configurator.product_attribute_value_220i').id,
+                self.env.ref(
+                    'product_configurator.product_attribute_value_228i').id,
+                self.env.ref(
+                    'product_configurator.product_attribute_value_m235i').id,
+                self.env.ref(
+                    'product_configurator.product_attribute_value_m235i_xdrive'
+                ).id])],
+            'domain_id': productConfigDomainId.id,
+        })
+        self.assertTrue(
+            self.productConfigDomainLine,
+            'Exsits'
+        )
