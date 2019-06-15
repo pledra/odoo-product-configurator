@@ -310,7 +310,7 @@ class ProductConfigSession(models.Model):
 
     def get_custom_value_id(self):
         custom_ext_id = 'product_configurator.custom_attribute_value'
-        custom_val_id = request.env.ref(custom_ext_id)
+        custom_val_id = self.env.ref(custom_ext_id)
         return custom_val_id
 
     @api.model
