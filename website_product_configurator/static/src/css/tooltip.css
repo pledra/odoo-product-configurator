@@ -1,0 +1,16 @@
+.tooltip-inner {
+    max-width: 250px;
+    padding: 8px 12px;
+}
+
+.tooltip {
+    font-weight: bolder;
+}
+
+.btn-disabled {
+	pointer-events: none;
+}
+
+.textbox-border-color {
+	border-color: red;
+}

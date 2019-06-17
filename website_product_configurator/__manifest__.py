@@ -10,18 +10,16 @@
     'depends': ['website_sale', 'product_configurator'],
 
     'data': [
-        'security/ir.model.access.csv',
-        'data/config_layout.xml',
-        'views/product_config_view.xml',
-        'views/templates.xml',
+        'security/configurator_security.xml',
+        'data/config_form_templates.xml',
+        'data/cron.xml',
+        'views/assets.xml',
     ],
     'demo': [
-        'demo/product_template.xml',
-        'demo/product_config_step.xml'
     ],
     'images': [
         'static/description/cover.png'
     ],
     'application': True,
-    'installable': False,
+    'installable': True,
 }

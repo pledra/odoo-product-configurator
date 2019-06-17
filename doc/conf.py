@@ -208,7 +208,7 @@ latex_documents = [(
     u'Pledra Product Configurator Documentation',
     u'Paul Catinean',
     'manual'
-),]
+), ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -259,7 +259,7 @@ texinfo_documents = [(
     'PledraProductConfigurator',
     'One line description of project.',
     'Miscellaneous'
-),]
+), ]
 
 # Documents to append as an appendix to all manuals.
 # texinfo_appendices = []

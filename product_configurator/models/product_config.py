@@ -1,7 +1,7 @@
 from ast import literal_eval
 
-from odoo import api, fields, models, tools, _
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError, UserError
 from odoo.tools.misc import formatLang
 
 
@@ -311,6 +311,11 @@ class ProductConfigSession(models.Model):
                 price = 0.00
             session.price = price
 
+    def get_custom_value_id(self):
+        custom_ext_id = 'product_configurator.custom_attribute_value'
+        custom_val_id = self.env.ref(custom_ext_id)
+        return custom_val_id
+
     @api.model
     def _get_custom_vals_dict(self):
         """Retrieve session custom values as a dictionary of the form
@@ -456,6 +461,75 @@ class ProductConfigSession(models.Model):
                 return False
         self.state = 'done'
         return True
+
+    @api.multi
+    def update_session_configuration_value(self, vals, product_tmpl_id=None):
+        """Update value of configuration in current session
+
+        :param: vals: Dictionary of fields(of configution wizard) and values
+        :param: product_tmpl_id: record set of preoduct template
+        :return: True/False
+        """
+        self.ensure_one()
+        if not product_tmpl_id:
+            product_tmpl_id = self.product_tmpl_id
+
+        product_configurator_obj = self.env['product.configurator']
+        field_prefix = product_configurator_obj._prefixes.get('field_prefix')
+        custom_field_prefix = product_configurator_obj._prefixes.get(
+            'custom_field_prefix')
+
+        custom_val = self.get_custom_value_id()
+
+        attr_val_dict = {}
+        custom_val_dict = {}
+        for attr_line in product_tmpl_id.attribute_line_ids:
+            attr_id = attr_line.attribute_id.id
+            field_name = field_prefix + str(attr_id)
+            custom_field_name = custom_field_prefix + str(attr_id)
+
+            if field_name not in vals and custom_field_name not in vals:
+                continue
+
+            # Add attribute values from the client except custom attribute
+            # If a custom value is being written, but field name is not in
+            #   the write dictionary, then it must be a custom value!
+            if vals.get(field_name, custom_val.id) != custom_val.id:
+                if attr_line.multi and isinstance(vals[field_name], list):
+                    if not vals[field_name]:
+                        field_val = None
+                    else:
+                        field_val = vals[field_name][0][2]
+                elif not attr_line.multi and isinstance(vals[field_name], int):
+                    field_val = vals[field_name]
+                else:
+                    raise UserError(
+                        _('An error occursed while parsing value for '
+                          'attribute %s' % attr_line.attribute_id.name)
+                    )
+                attr_val_dict.update({
+                    attr_id: field_val
+                })
+                # Ensure there is no custom value stored if we have switched
+                # from custom value to selected attribute value.
+                if attr_line.custom:
+                    custom_val_dict.update({attr_id: False})
+            elif attr_line.custom:
+                val = vals.get(custom_field_name, False)
+                if attr_line.attribute_id.custom_type == 'binary':
+                    # TODO: Add widget that enables multiple file uploads
+                    val = [{
+                        'name': 'custom',
+                        'datas': vals[custom_field_name]
+                    }]
+                custom_val_dict.update({
+                    attr_id: val
+                })
+                # Ensure there is no standard value stored if we have switched
+                # from selected value to custom value.
+                attr_val_dict.update({attr_id: False})
+
+        self.update_config(attr_val_dict, custom_val_dict)
 
     @api.multi
     def update_config(self, attr_val_dict=None, custom_val_dict=None):
@@ -714,7 +788,7 @@ class ProductConfigSession(models.Model):
 
         return product_tmpl.list_price + price_extra
 
-    def get_config_image(
+    def _get_config_image(
             self, value_ids=None, custom_vals=None, size=None):
         """
         Retreive the image object that most closely resembles the configuration
@@ -741,7 +815,20 @@ class ProductConfigSession(models.Model):
             if matches > max_matches:
                 img_obj = line
                 max_matches = matches
-        return img_obj.image
+        return img_obj
+
+    def get_config_image(
+            self, value_ids=None, custom_vals=None, size=None):
+        """
+        Retreive the image object that most closely resembles the configuration
+        code sent via value_ids list
+        For more information check _get_config_image
+        """
+        config_image_id = self._get_config_image(
+            value_ids=value_ids,
+            custom_vals=custom_vals
+        )
+        return config_image_id.image
 
     @api.model
     def get_variant_vals(self, value_ids=None, custom_vals=None, **kwargs):
@@ -761,16 +848,11 @@ class ProductConfigSession(models.Model):
             custom_vals = self._get_custom_vals_dict()
 
         image = self.get_config_image(value_ids)
-        all_images = tools.image_get_resized_images(
-            image, avoid_resize_medium=True)
         vals = {
             'product_tmpl_id': self.product_tmpl_id.id,
             'attribute_value_ids': [(6, 0, value_ids)],
             'taxes_id': [(6, 0, self.product_tmpl_id.taxes_id.ids)],
             'image': image,
-            'image_variant': image,
-            'image_medium': all_images['image_medium'],
-            'image_small': all_images['image_medium'],
         }
 
         if custom_vals:
@@ -792,14 +874,74 @@ class ProductConfigSession(models.Model):
         return domain
 
     @api.multi
-    def get_session_vals(self, product_tmpl_id, parent_id=None):
+    def get_session_vals(self, product_tmpl_id, parent_id=None, user_id=None):
+        if not user_id:
+            user_id = self.env.user.id
         vals = {
             'product_tmpl_id': product_tmpl_id,
-            'user_id': self.env.user.id,
+            'user_id': user_id,
         }
         if parent_id:
             vals.update(parent_id=parent_id)
         return vals
+
+    @api.multi
+    def get_next_step(self, state, product_tmpl_id=False,
+                      value_ids=False, custom_value_ids=False):
+        """Find and return next step if exit. This usually
+        implies the next configuration step (if any) defined via the
+        config_step_line_ids on the product.template.
+        """
+
+        if not product_tmpl_id:
+            product_tmpl_id = self.product_tmpl_id
+        if not value_ids:
+            value_ids = self.value_ids
+        if not custom_value_ids:
+            custom_value_ids = self.custom_value_ids
+        if not state:
+            state = self.config_step
+
+        cfg_step_lines = product_tmpl_id.config_step_line_ids
+        if not cfg_step_lines:
+            if (value_ids or custom_value_ids)\
+                    and not state == 'select':
+                return False
+            elif not (value_ids or custom_value_ids)\
+                    and not state == 'select':
+                raise UserError(_(
+                    "You must select at least one "
+                    "attribute in order to configure a product"
+                ))
+            else:
+                return 'configure'
+
+        adjacent_steps = self.get_adjacent_steps()
+        next_step = adjacent_steps.get('next_step')
+        open_step_lines = list(map(
+            lambda x: '%s' % (x),
+            self.get_open_step_lines().ids
+        ))
+
+        session_config_step = self.config_step
+        if (session_config_step and
+                state != session_config_step and
+                session_config_step in open_step_lines):
+            next_step = self.config_step
+        else:
+            next_step = str(next_step.id) if next_step else None
+        if next_step:
+            pass
+        elif not (value_ids or custom_value_ids):
+            raise UserError(_(
+                "You must select at least one "
+                "attribute in order to configure a product"
+            ))
+        else:
+            return False
+        return next_step
+
+    # TODO: Should be renamed to get_active_step_line
 
     @api.model
     def get_active_step(self):
@@ -850,6 +992,20 @@ class ProductConfigSession(models.Model):
         return open_step_lines.sorted()
 
     @api.model
+    def get_all_step_lines(self, product_tmpl_id=None):
+        """
+        Returns a recordset of configuration step lines of product_tmpl_id
+
+        :param product_tmpl_id: record-set of product.template
+        :returns: recordset of all configuration steps
+        """
+        if not product_tmpl_id:
+            product_tmpl_id = self.product_tmpl_id
+
+        open_step_lines = product_tmpl_id.config_step_line_ids
+        return open_step_lines.sorted()
+
+    @api.model
     def get_adjacent_steps(self, value_ids=None, active_step_line_id=None):
         """Returns the previous and next steps given the configuration passed
         via value_ids and the active step line passed via cfg_step_line_id."""
@@ -887,6 +1043,35 @@ class ProductConfigSession(models.Model):
                     'previous_step': None if i == 0 else open_step_lines[i - 1]
                 })
         return adjacent_steps
+
+    def check_and_open_incomplete_step(self, value_ids=None,
+                                       custom_value_ids=None):
+        """ Check and open incomplete step if any
+        :param value_ids: recordset of product.attribute.value
+        """
+        if not value_ids:
+            value_ids = self.value_ids
+        if not custom_value_ids:
+            custom_value_ids = self.custom_value_ids
+        custom_attr_selected = custom_value_ids.mapped('attribute_id')
+        open_step_lines = self.get_open_step_lines()
+        step_to_open = False
+        for step in open_step_lines:
+            unset_attr_line = step.attribute_line_ids.filtered(
+                lambda attr_line:
+                attr_line.required and
+                not any([value in value_ids for value in attr_line.value_ids])
+                and not (
+                    attr_line.custom and
+                    attr_line.attribute_id in custom_attr_selected
+                )
+            )
+            if unset_attr_line:
+                step_to_open = step
+                break
+        if step_to_open:
+            return '%s' % (step_to_open.id)
+        return False
 
     @api.model
     def get_variant_search_domain(
@@ -965,7 +1150,7 @@ class ProductConfigSession(models.Model):
 
     @api.model
     def values_available(
-            self, check_val_ids, value_ids=None,
+            self, check_val_ids=None, value_ids=None,
             custom_vals=None, product_tmpl_id=None):
         """Determines whether the attr_values from the product_template
         are available for selection given the configuration ids and the
@@ -978,6 +1163,9 @@ class ProductConfigSession(models.Model):
 
         :returns: list of available attribute values
         """
+
+        if not check_val_ids:
+            check_val_ids = self.value_ids.ids
 
         if not self.product_tmpl_id:
             product_tmpl = self.env['product.template'].browse(product_tmpl_id)
@@ -1176,18 +1364,23 @@ class ProductConfigSession(models.Model):
             product_tmpl_id=product_tmpl_id,
             parent_id=parent_id
         )
-        session = self.search(domain)
+        session = self.search(domain, order='create_date desc', limit=1)
         return session
 
     @api.model
-    def create_get_session(self, product_tmpl_id, parent_id=None):
-        session = self.search_session(product_tmpl_id=product_tmpl_id,
-                                      parent_id=parent_id)
-        if session:
-            return session[0]
+    def create_get_session(self, product_tmpl_id, parent_id=None,
+                           force_create=False, user_id=None):
+        if not force_create:
+            session = self.search_session(
+                product_tmpl_id=product_tmpl_id,
+                parent_id=parent_id
+            )
+            if session:
+                return session
         vals = self.get_session_vals(
             product_tmpl_id=product_tmpl_id,
-            parent_id=parent_id
+            parent_id=parent_id,
+            user_id=user_id
         )
         return self.create(vals)
 
