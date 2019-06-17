@@ -50,7 +50,9 @@ class ProductConfiguratorLot(models.TransientModel):
                 ),
                 'res_id': prod_lot.id,
             }
-
+        res = self.check_and_open_incomplete_step()
+        if res:
+            return res
         custom_vals = self.config_session_id._get_custom_vals_dict()
         # This try except is too generic.
         # The create_get_variant routine could effectively fail for
