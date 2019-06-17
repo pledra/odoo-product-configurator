@@ -156,7 +156,7 @@ class ProductConfigurator(models.TransientModel):
 
             # Include custom value in the domain if attr line permits it
             if line.custom:
-                custom_val = self.get_custom_value_id()
+                custom_val = config_session_id.get_custom_value_id()
                 domains[field_name][0][2].append(custom_val.id)
                 if line.multi and vals and custom_val.id in vals[0][2]:
                     continue
@@ -441,7 +441,7 @@ class ProductConfigurator(models.TransientModel):
             # If attribute lines allows custom values add the
             # generic "Custom" attribute.value to the list of options
             if line.custom:
-                custom_val = self.get_custom_value_id()
+                custom_val = self.env['product.config.session'].get_custom_value_id()
                 value_ids.append(custom_val.id)
 
                 # Set default field type
@@ -657,7 +657,7 @@ class ProductConfigurator(models.TransientModel):
 
             if attr_line.custom and custom_field in dynamic_fields:
                 widget = ''
-                custom_option_id = self.get_custom_value_id().id
+                custom_option_id = self.env['product.config.session'].get_custom_value_id().id
 
                 if field_type == 'many2many':
                     field_val = [(6, False, [custom_option_id])]
@@ -731,7 +731,7 @@ class ProductConfigurator(models.TransientModel):
         dynamic_fields = attr_vals + custom_attr_vals
         fields = self._remove_dynamic_fields(fields)
 
-        custom_val = self.get_custom_value_id()
+        custom_val = self.env['product.config.session'].get_custom_value_id()
         dynamic_vals = {}
 
         res = super(ProductConfigurator, self).read(fields=fields, load=load)
