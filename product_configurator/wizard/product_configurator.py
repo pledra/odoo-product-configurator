@@ -441,7 +441,8 @@ class ProductConfigurator(models.TransientModel):
             # If attribute lines allows custom values add the
             # generic "Custom" attribute.value to the list of options
             if line.custom:
-                custom_val = self.env['product.config.session'].get_custom_value_id()
+                config_session_obj = self.env['product.config.session']
+                custom_val = config_session_obj.get_custom_value_id()
                 value_ids.append(custom_val.id)
 
                 # Set default field type
@@ -657,7 +658,8 @@ class ProductConfigurator(models.TransientModel):
 
             if attr_line.custom and custom_field in dynamic_fields:
                 widget = ''
-                custom_option_id = self.env['product.config.session'].get_custom_value_id().id
+                config_session_obj = self.env['product.config.session']
+                custom_option_id = config_session_obj.get_custom_value_id().id
 
                 if field_type == 'many2many':
                     field_val = [(6, False, [custom_option_id])]
