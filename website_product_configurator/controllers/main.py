@@ -95,8 +95,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         product_configurator_obj = request.env['product.configurator']
         open_cfg_step_lines = cfg_session.get_open_step_lines()
         cfg_step_lines = cfg_session.get_all_step_lines()
-        custom_ext_id = 'product_configurator.custom_attribute_value'
-        custom_val_id = request.env.ref(custom_ext_id)
+        custom_val_id = cfg_session.get_custom_value_id()
         check_val_ids = cfg_session.product_tmpl_id.attribute_line_ids.mapped(
             'value_ids') + custom_val_id
         available_value_ids = cfg_session.values_available(
@@ -112,10 +111,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 active_step = cfg_step_lines[:1]
 
         cfg_session = cfg_session.sudo()
-        config_image_ids = cfg_session.product_tmpl_id
+        config_image_ids = False
         if cfg_session.value_ids:
             config_image_ids = cfg_session._get_config_image(
                 cfg_session.value_ids, cfg_session.custom_value_ids)
+        if not config_image_ids:
+            config_image_ids = cfg_session.product_tmpl_id
 
         vals = {
             'cfg_session': cfg_session,
@@ -171,16 +172,16 @@ class ProductConfigWebsiteSale(WebsiteSale):
         field_prefix = product_configurator_obj._prefixes.get('field_prefix')
         # custom_field_prefix = product_configurator_obj._prefixes.get(
         #    'custom_field_prefix')
+        custom_val_id = cfg_session.get_custom_value_id()
 
         product_attribute_lines = product_tmpl_id.attribute_line_ids
         value_ids = []
         for attr_line in product_attribute_lines:
-            if attr_line.custom:
+            field_name = '%s%s' % (field_prefix, attr_line.attribute_id.id)
+            attr_values = form_values.get(field_name, False)
+            if attr_line.custom and attr_values == custom_val_id.id:
                 pass
             else:
-                field_name = '%s%s' % (field_prefix, attr_line.attribute_id.id)
-                attr_values = form_values.get(field_name, False)
-
                 if not attr_values:
                     continue
                 if not isinstance(attr_values, list):
@@ -332,6 +333,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
         # configuration images
         config_image_ids = config_session_id._get_config_image(
             value_ids=value_ids)
+        if not config_image_ids:
+            config_image_ids = product_template_id
 
         image_vals = self.get_image_vals(
             image_line_ids=config_image_ids,
