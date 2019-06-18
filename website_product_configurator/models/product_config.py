@@ -16,7 +16,7 @@ class ProductConfigStepLine(models.Model):
 
     def get_website_template(self):
         """Return the external id of the qweb template linked to this step"""
-        default_view_id = 'website_product_configurator.config_form_select'
+        default_view_id = 'website_product_configurator.config_form_radio'
         return self.website_tmpl_id.get_xml_id() or default_view_id
 
 
