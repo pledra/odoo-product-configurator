@@ -72,6 +72,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     product, category, search, **kwargs
                 )
 
+        # Set config-step in config session when it creates from wizard
+        # because select state not exist on website
+        if not cfg_session.config_step:
+            cfg_session.config_step = 'select'
+            self.set_config_next_step(cfg_session)
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
 

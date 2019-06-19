@@ -33,9 +33,8 @@ class ProductConfiguratorSale(models.TransientModel):
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
         res = super(ProductConfiguratorSale, self).action_config_done()
-        if res['res_model'] == self._name:
+        if res.get('res_model') == self._name:
             return res
-
         line_vals = self._get_order_line_vals(res['res_id'])
 
         # To call onchange explicite as write and create

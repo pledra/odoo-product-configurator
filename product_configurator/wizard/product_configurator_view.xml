@@ -30,7 +30,8 @@
                                 required="True" options="{'no_create': True}"/> -->
                             <field name="product_tmpl_id"
                                 readonly="context.get('product_tmpl_id_readonly', False)"
-                                required="True" options="{'no_create': True}"/>
+                                required="True" options="{'no_create': True}"
+                                force_save="1"/>
                             <field name="product_preset_id" invisible="context.get('wizard_id')" options="{'no_create': True}"/>
                             <label string="To reset/change the Preset Please close and start the configuration again"  invisible="not context.get('wizard_id')" colspan="4"/>
                             <field attrs="{'invisible': [('attribute_line_ids', '=', [])]}" name="attribute_line_ids">

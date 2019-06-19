@@ -99,6 +99,6 @@
     <record id="product_configurator.product_paint_silver" model="product.product">
         <field name="type">product</field>
     </record>
-
+    
 </data>
 </openerp>
