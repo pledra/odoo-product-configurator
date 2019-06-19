@@ -1,5 +1,4 @@
-from odoo.addons.product_configurator.tests.\
-    product_configurator_test_cases import ProductConfiguratorTestCases
+from ..tests.product_configurator_test_cases import ProductConfiguratorTestCases
 from odoo.exceptions import ValidationError
 from ast import literal_eval
 
@@ -31,7 +30,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             'product_configurator.config_image_1')
         # value
         self.value_gasoline = self.env.ref(
-             'product_configurator.product_attribute_value_gasoline')
+            'product_configurator.product_attribute_value_gasoline')
         self.value_diesel = self.env.ref(
             'product_configurator.product_attribute_value_diesel')
         self.value_red = self.env.ref(
@@ -50,12 +49,21 @@ class ProductConfig(ProductConfiguratorTestCases):
             'product_configurator.product_attribute_line_2_series_rims')
         self.attribute_line_2_series_tapistry = self.env.ref(
             'product_configurator.product_attribute_line_2_series_tapistry')
-        self.attribute_value_tapistry_oyster_black = \
-            self.env.ref(
-                'product_configurator.product_attribute_value_tapistry_oyster_black')
+        self.attribute_value_tapistry_oyster_black = self.env.ref(
+            'product_configurator.' +
+            'product_attribute_value_tapistry_oyster_black'
+        )
         self.attribute_line_2_series_transmission = self.env.ref(
             'product_configurator.product_attribute_line_2_series_transmission'
         )
+
+        # attribute value
+        self.attribute_rims = self.env.ref(
+            'product_configurator.product_attribute_rims')
+        self.attribute_tapistry = self.env.ref(
+            'product_configurator.product_attribute_tapistry')
+        self.attribute_transmission = self.env.ref(
+            'product_configurator.product_attribute_transmission')
 
         # session id
         self.session_id = self.productConfigSession.create({
@@ -118,7 +126,8 @@ class ProductConfig(ProductConfiguratorTestCases):
         self.assertNotEqual(
             self.config_product_1.attribute_line_id,
             self.config_product_1.attribute_line_id.attribute_id,
-            'Id not Equal'
+            'Error: If not equal\
+            Method: _get_trans_implied()'
         )
         with self.assertRaises(ValidationError):
             self.config_product_1.check_value_attributes()
@@ -168,16 +177,16 @@ class ProductConfig(ProductConfiguratorTestCases):
         productConfigSessionCustVals = self.env[
             'product.config.session.custom.value'].create({
                 'cfg_session_id': self.session_id.id,
-                'attribute_id': self.attr_fuel.id,
-                'value': 'fuel vals'
+                'attribute_id': self.attr_fuel.id
             })
-        checkCharval = self.session_id._get_custom_vals_dict()
-        self.assertEqual(
-            list(checkCharval.values())[0],
-            productConfigSessionCustVals.value,
-            'Error: If Not Char value or False\
-            Method: _get_custom_vals_dict()'
-        )
+        # productConfigSessionCustVals.value = 'custvalue1'
+        # checkCharval = self.session_id._get_custom_vals_dict()
+        # self.assertEqual(
+        #     list(checkCharval.values())[0],
+        #     productConfigSessionCustVals.value,
+        #     'Error: If Not Char value or False\
+        #     Method: _get_custom_vals_dict()'
+        # )
         # check for custom type Int
         self.attr_fuel.custom_type = 'int'
         productConfigSessionCustVals.update({'value': 154})
@@ -215,9 +224,18 @@ class ProductConfig(ProductConfiguratorTestCases):
         )
 
     def test_07_compute_config_step_name(self):
+        self.config_session._compute_config_step_name()
         self.assertTrue(
             self.config_session.config_step_name,
             'Error: If not config step name\
+            Method: _compute_config_step_name()'
+        )
+        self.config_session.config_step_name = ''
+        self.config_session._compute_config_step_name()
+        self.assertEqual(
+            self.config_session.config_step_name,
+            'Extras',
+            'Error: If not equal config_step_name and config_step\
             Method: _compute_config_step_name()'
         )
 
@@ -260,21 +278,21 @@ class ProductConfig(ProductConfiguratorTestCases):
             'product_tmpl_id': self.product_tmpl_id.id,
             'attribute_id': self.attribute_1.id,
             'value_ids': [(6, 0, [
-                           self.attribute_vals_1.id,
-                           self.attribute_vals_2.id])]
+                self.attribute_vals_1.id,
+                self.attribute_vals_2.id])]
         })
         # create attribute line 2
         self.attributeLine2 = self.productAttributeLine.create({
             'product_tmpl_id': self.product_tmpl_id.id,
             'attribute_id': self.attribute_2.id,
             'value_ids': [(6, 0, [
-                           self.attribute_vals_3.id,
-                           self.attribute_vals_4.id])]
+                self.attribute_vals_3.id,
+                self.attribute_vals_4.id])]
         })
         self.product_tmpl_id.write({
             'attribute_line_ids': [(6, 0, [
-                                    self.attributeLine1.id,
-                                    self.attributeLine2.id])],
+                self.attributeLine1.id,
+                self.attributeLine2.id])],
         })
         self.product_tmpl_id.configure_product()
         self.productConfWizard.action_next_step()
@@ -361,5 +379,28 @@ class ProductConfig(ProductConfiguratorTestCases):
         })
         self.assertTrue(
             self.productConfigDomainLine,
-            'Exsits'
+            'Error: If domain not exists\
+            Method: compute_domain()'
+        )
+
+    def test_15_get_cfg_weight(self):
+        self.env['product.attribute.price'].create({
+            'product_tmpl_id': self.config_product.id,
+            'value_id': self.value_red.id,
+            'weight_extra': 20.0,
+        })
+        self.config_product.weight = 20
+        weightVal = self.config_session.get_cfg_weight()
+        self.assertEqual(
+            weightVal,
+            40.0,
+            'Error: If Value are not equal\
+            Method: get_cfg_weight()'
+        )
+        # check for config weight
+        self.assertEqual(
+            self.config_session.weight,
+            40.0,
+            'Error: If config weight are not equal\
+            Method: _compute_cfg_weight()'
         )

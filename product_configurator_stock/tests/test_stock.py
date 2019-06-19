@@ -1,7 +1,5 @@
 from odoo.addons.product_configurator.tests.\
     product_configurator_test_cases import ProductConfiguratorTestCases
-from odoo.tests.common import TransactionCase
-from datetime import datetime
 
 
 class Stock(ProductConfiguratorTestCases):
@@ -9,10 +7,14 @@ class Stock(ProductConfiguratorTestCases):
         super(Stock, self).setUp()
         self.StockPickingType = self.env['stock.picking.type']
         self.stockPicking = self.env['stock.picking']
-        self.stockLocation = self.env.ref('stock.stock_location_locations')
-        self.stockLocation2 = self.env.ref('stock.stock_location_locations_partner')
-        self.sequence_id = self.env.ref('stock.sequence_mrp_op')
-        self.resPartner = self.env.ref('product_configurator_purchase.partenr1')
+        self.stockLocation = self.env.ref(
+            'stock.stock_location_locations')
+        self.stockLocation2 = self.env.ref(
+            'stock.stock_location_locations_partner')
+        self.sequence_id = self.env.ref(
+            'stock.sequence_mrp_op')
+        self.resPartner = self.env.ref(
+            'product_configurator_purchase.partenr1')
 
     def test_00_action_config_start(self):
 
@@ -27,13 +29,14 @@ class Stock(ProductConfiguratorTestCases):
             'picking_type_id': stock_picking_type_id.id,
             'location_id': self.stockLocation.id,
             'location_dest_id': self.stockLocation2.id,
-            
+
         })
         context = dict(
-                default_picking_id=stockPickingId.id,
-                wizard_model='product.configurator.picking',
+            default_picking_id=stockPickingId.id,
+            wizard_model='product.configurator.picking',
         )
-        self.ProductConfWizard = self.env['product.configurator.picking'].with_context(context)
+        self.ProductConfWizard = self.env['product.configurator.picking'].\
+            with_context(context)
         stockPickingId.action_config_start()
         self._configure_product_nxt_step()
         stock_configure_line = stockPickingId.move_lines

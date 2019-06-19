@@ -77,8 +77,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         if not cfg_session.config_step:
             cfg_session.config_step = 'select'
             self.set_config_next_step(cfg_session)
-
-
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
 
@@ -296,7 +294,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         """Capture onchange events in the website and forward data to backend
         onchange method"""
         # config session and product template
-        print("form_valuesform_valuesform_valuesform_valuesform_valuesform_valuesform_values ", form_values, field_name)
         product_configurator_obj = request.env['product.configurator']
         product_template_id = self.get_config_product_template(form_values)
         config_session_id = self.get_config_session(

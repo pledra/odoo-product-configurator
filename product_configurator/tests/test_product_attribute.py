@@ -16,7 +16,14 @@ class ProductAttributes(TransactionCase):
             self.ProductAttributeValueGasoline.attribute_id.id
         self.ProductTemplate = self.env.ref(
             'product_configurator.bmw_2_series')
+        self.product_category = self.env.ref('product.product_category_5')
         self.ProductAttributePrice = self.env['product.attribute.price']
+        self.value_diesel = self.env.ref(
+            'product_configurator.product_attribute_value_diesel')
+        self.value_gasoline = self.env.ref(
+            'product_configurator.product_attribute_value_diesel')
+        self.value_218i = self.env.ref(
+            'product_configurator.product_attribute_value_218i')
 
     def test_01_onchange_custome_type(self):
         self.ProductAttributeFuel.min_val = 20
@@ -63,6 +70,13 @@ class ProductAttributes(TransactionCase):
             "Max value is equal to existing max value \
             when type is changed to integer to float"
         )
+        self.ProductAttributeFuel.custom_type = 'binary'
+        self.ProductAttributeFuel.onchange_custom_type()
+        self.assertFalse(
+            self.ProductAttributeFuel.search_ok,
+            'Error: if search true\
+            Method: onchange_custom_type()'
+        )
 
     def test_02_onchange_val_custom(self):
         self.ProductAttributeFuel.val_custom = False
@@ -87,14 +101,27 @@ class ProductAttributes(TransactionCase):
         with self.assertRaises(ValidationError):
             self.ProductAttributeFuel.validate_custom_val(5)
 
+        self.ProductAttributeFuel.write({
+            'min_val': 10
+        })
+        self.ProductAttributeFuel.custom_type = 'int'
         with self.assertRaises(ValidationError):
-            self.ProductAttributeFuel.validate_custom_val(30)
+            self.ProductAttributeFuel.validate_custom_val(5)
+
+        self.ProductAttributeFuel.write({
+            'min_val': 20
+        })
+        self.ProductAttributeFuel.custom_type = 'int'
+        with self.assertRaises(ValidationError):
+            self.ProductAttributeFuel.validate_custom_val(25)
 
     def test_05_check_constraint_min_max_value(self):
         self.ProductAttributeFuel.custom_type = 'int'
         with self.assertRaises(ValidationError):
-            self.ProductAttributeFuel.min_val = 110
-            self.ProductAttributeFuel.max_val = 100
+            self.ProductAttributeFuel.write({
+                'max_val': 10,
+                'min_val': 20
+            })
 
     def test_06_onchange_attribute(self):
         self.ProductAttributeLineFuel.onchange_attribute()
@@ -146,6 +173,7 @@ class ProductAttributes(TransactionCase):
             "values are not equal"
         )
 
+    # TODO :: Left to create method
     def test_09_inverse_weight_extra(self):
         self.ProductAttributePrice = self.ProductAttributePrice.create({
             'product_tmpl_id': self.ProductTemplate.id,
@@ -167,3 +195,34 @@ class ProductAttributes(TransactionCase):
             14,
             "weight_extra not exsits"
         )
+
+    def test_10_copy_attribute(self):
+        copyAttribute = self.ProductAttributeFuel.copy()
+        self.assertEqual(
+            copyAttribute.name,
+            'Fuel (copy)',
+            'Error: If not copy attribute\
+            Method: copy()'
+        )
+
+    def test_11_compute_get_value_id(self):
+        attrvalline = self.env[
+            'product.attribute.value.line'].create({
+                'product_tmpl_id': self.ProductTemplate.id,
+                'value_id': self.value_gasoline.id
+            })
+        self.assertTrue(
+            attrvalline.product_value_ids,
+            'Error: If product_value_ids not exists\
+            Method: _compute_get_value_id()'
+        )
+
+    def test_12_validate_configuration(self):
+        with self.assertRaises(ValidationError):
+            self.env['product.attribute.value.line'].create({
+                'product_tmpl_id': self.ProductTemplate.id,
+                'value_id': self.value_diesel.id,
+                'value_ids': [(6, 0, [
+                    self.value_218i.id]
+                )]
+            })

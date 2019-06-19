@@ -1,5 +1,4 @@
-from odoo.addons.product_configurator.tests.\
-    product_configurator_test_cases import ProductConfiguratorTestCases
+from ..tests.product_configurator_test_cases import ProductConfiguratorTestCases
 from odoo.exceptions import ValidationError
 
 
@@ -89,10 +88,18 @@ class TestProduct(ProductConfiguratorTestCases):
 
     def test_01_set_weight(self):
         self.product_tmpl_id.weight = 120
+        self.product_tmpl_id._set_weight()
         self.assertEqual(
             self.product_tmpl_id.weight,
             self.product_tmpl_id.weight_dummy,
             'Error: If set diffrent value for dummy_weight\
+            Method: _set_weight()'
+        )
+        self.product_tmpl_id.config_ok = False
+        set_weight = self.product_tmpl_id._set_weight()
+        self.assertIsNone(
+            set_weight,
+            'Error: If Value none\
             Method: _set_weight()'
         )
 
@@ -236,8 +243,9 @@ class TestProduct(ProductConfiguratorTestCases):
         })
         self.product_tmpl_id.write({
             'config_step_line_ids': [(6, 0, [
-                                    self.configStepLine1.id,
-                                    self.configStepLine2.id])],
+                self.configStepLine1.id,
+                self.configStepLine2.id]
+            )],
         })
 
         # configure product
@@ -323,9 +331,9 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: get_product_attribute_values_action()'
         )
 
-    def test_11_unlink(self):
+    def test_11_compute_name(self):
         product_product = self._get_product_id()
-        # product_product.unlink()
+        product_product.config_ok = False
         product_product._compute_name()
         self.assertEqual(
             product_product.config_name,
@@ -383,6 +391,7 @@ class TestProduct(ProductConfiguratorTestCases):
 
     def test_13_compute_product_weight_extra(self):
         product_product = self._get_product_id()
+        # _compute_product_weight_extra
         productAttPrice = self.env['product.attribute.price'].create({
             'product_tmpl_id': self.config_product.id,
             'value_id': self.value_gasoline.id,
@@ -395,23 +404,25 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _compute_product_weight_extra()'
         )
 
-    def test_13_check_duplicate_product(self):
-        self._configure_product_nxt_step()
-        variant_id = self.config_product.product_variant_ids
-        new = self.product_tmpl_id.product_variant_ids
-        with self.assertRaises(ValidationError):
-            self.attributeLine1 = self.productAttributeLine.create({
-                'product_tmpl_id': self.product_tmpl_id.id,
-                'attribute_id': self.attr_fuel.id,
-                'value_ids': [(6, 0, [
-                               self.value_gasoline.id])],
-                'required': True,
-            })
-            self.attributeLine2 = self.productAttributeLine.create({
-                'product_tmpl_id': self.product_tmpl_id.id,
-                'attribute_id': self.attr_engine.id,
-                'value_ids': [(6, 0, [
-                               self.value_218i.id,
-                               self.value_218i.id])],
-                'required': True,
-            })
+    def test_14_unlink(self):
+        product_product = self._get_product_id()
+        unlinkVals = product_product.unlink()
+        self.assertTrue(
+            unlinkVals,
+            'Error: If unlink record true\
+            Method: unlink()'
+        )
+
+    def test_15_copy(self):
+        vals = self.product_tmpl_id.copy()
+        self.assertEqual(
+            vals.name,
+            'Test Configuration (copy)',
+            'Error: If not equal\
+            Method: copy()'
+        )
+        self.assertTrue(
+            vals.attribute_line_ids,
+            'Error: If attribute_line_ids not exists\
+            Method: copy()'
+        )

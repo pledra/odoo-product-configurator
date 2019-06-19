@@ -25,8 +25,8 @@ class SaleOrder(ProductConfiguratorTestCases):
             'pricelist_id': pricelist_id.id
         })
         context = dict(
-                default_order_id=sale_order_id.id,
-                wizard_model='product.configurator.sale',
+            default_order_id=sale_order_id.id,
+            wizard_model='product.configurator.sale',
         )
 
         self.ProductConfWizard = self.env[

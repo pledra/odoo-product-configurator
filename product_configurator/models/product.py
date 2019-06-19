@@ -283,7 +283,6 @@ class ProductTemplate(models.Model):
         return action
 
 
-
 class ProductProduct(models.Model):
     _inherit = 'product.product'
     _rec_name = 'config_name'
