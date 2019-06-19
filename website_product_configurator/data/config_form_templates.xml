@@ -211,7 +211,7 @@
                         t-att-data-oe-id="value.id"
                         t-att-name="value.id"
                         t-att-disabled="value.id not in available_value_ids and True or False">
-                        <t t-esc="value.name"/>
+                        <t t-esc="value.with_context({'show_price_extra': True, 'active_id': product_tmpl.id, 'show_attribute': False,}).name_get()[0][1]"/>
                     </option>
                   </t>
                   <t t-if="line.custom">
