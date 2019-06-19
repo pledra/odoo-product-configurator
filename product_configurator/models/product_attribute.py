@@ -145,7 +145,7 @@ class ProductAttribute(models.Model):
 
 
 class ProductAttributeLine(models.Model):
-    _inherit = 'product.attribute.line'
+    _inherit = 'product.template.attribute.line'
 
     @api.onchange('attribute_id')
     def onchange_attribute(self):
@@ -210,6 +210,15 @@ class ProductAttributeValue(models.Model):
         return product
 
     @api.multi
+    def _compute_price_ids(self):
+        for value in self:
+            att_line = self.env['product.template.attribute.line']
+            att_line_val = att_line.search([('value_ids', '=', value.id)])
+            value.price_ids = att_line_val.product_template_value_ids
+
+    price_ids = fields.Many2many('product.template.attribute.value', compute="_compute_price_ids")
+
+    @api.multi
     def _compute_weight_extra(self):
         for product_attribute in self:
             product_tmpl_id = product_attribute._context.get('active_id')
@@ -253,7 +262,7 @@ class ProductAttributeValue(models.Model):
         string='Related Product'
     )
     attribute_line_ids = fields.Many2many(
-        comodel_name='product.attribute.line',
+        comodel_name='product.template.attribute.line',
         string="Attribute Lines"
     )
     weight_extra = fields.Float(
@@ -265,6 +274,7 @@ class ProductAttributeValue(models.Model):
         help="Weight Extra: Extra weight for the variant with this attribute"
         "value on sale price. eg. 200 price extra, 1000 + 200 = 1200."
     )
+    price_extra = fields.Float()
 
     @api.multi
     def name_get(self):
@@ -336,7 +346,7 @@ class ProductAttributeValue(models.Model):
 
 
 class ProductAttributePrice(models.Model):
-    _inherit = "product.attribute.price"
+    _inherit = "product.template.attribute.value"
     # Leverage product.attribute.price to compute the extra weight each
     # attribute adds
 

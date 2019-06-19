@@ -1,7 +1,7 @@
 from lxml import etree
 
 from odoo.osv import orm
-from odoo.addons.base.ir.ir_model import FIELD_TYPES
+from odoo.addons.base.models.ir_model import FIELD_TYPES
 
 from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError
@@ -321,7 +321,7 @@ class ProductConfigurator(models.TransientModel):
         string='Configuration Session'
     )
     attribute_line_ids = fields.One2many(
-        comodel_name='product.attribute.line',
+        comodel_name='product.template.attribute.line',
         compute='_compute_attr_lines',
         string="Attributes",
         readonly=True,

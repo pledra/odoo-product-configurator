@@ -158,7 +158,7 @@ class ProductConfigLine(models.Model):
     )
 
     attribute_line_id = fields.Many2one(
-        comodel_name='product.attribute.line',
+        comodel_name='product.template.attribute.line',
         string='Attribute Line',
         ondelete='cascade',
         required=True
@@ -265,7 +265,7 @@ class ProductConfigStepLine(models.Model):
         required=True
     )
     attribute_line_ids = fields.Many2many(
-        comodel_name='product.attribute.line',
+        comodel_name='product.template.attribute.line',
         relation='config_step_line_attr_id_rel',
         column1='cfg_line_id',
         column2='attr_id',
@@ -301,8 +301,8 @@ class ProductConfigSession(models.Model):
     @api.multi
     @api.depends('value_ids', 'product_tmpl_id.list_price',
                  'product_tmpl_id.attribute_line_ids',
-                 'product_tmpl_id.attribute_line_ids.value_ids',
-                 'product_tmpl_id.attribute_line_ids.value_ids.price_extra')
+                 'product_tmpl_id.attribute_line_ids.value_ids',)
+                 #'product_tmpl_id.attribute_line_ids.value_ids.price_extra')
     def _compute_cfg_price(self):
         for session in self:
             if session.product_tmpl_id:

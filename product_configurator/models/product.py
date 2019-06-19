@@ -351,8 +351,8 @@ class ProductProduct(models.Model):
                     self.display_name)
         return self.display_name
 
-    @api.depends('attribute_value_ids.price_ids.weight_extra',
-                 'attribute_value_ids.price_ids.product_tmpl_id')
+    #@api.depends('attribute_value_ids.price_ids.weight_extra',
+    #             'attribute_value_ids.price_ids.product_tmpl_id')
     def _compute_product_weight_extra(self):
         for product in self:
             weight_extra = 0.0

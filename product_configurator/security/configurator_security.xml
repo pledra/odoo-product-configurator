@@ -30,7 +30,7 @@
         <record id="configure_product_template_rule_user_config" model="ir.rule">
             <field name="name">Configure Product Template User (config)</field>
             <field ref="product.model_product_template" name="model_id"/>
-            <field name="domain_force">[('config_ok', '=', True), ('website_published', '=', True), ("sale_ok", "=", True)]</field>
+            <field name="domain_force">[('config_ok', '=', True),  ("sale_ok", "=", True)]</field>
             <field name="groups" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
             <field eval="1" name="perm_read"></field>
             <field eval="0" name="perm_write"></field>
@@ -40,7 +40,7 @@
         <record id="configure_product_template_rule_user_standard" model="ir.rule">
             <field name="name">Configure Product Template User (standard)</field>
             <field ref="product.model_product_template" name="model_id"/>
-            <field name="domain_force">[('config_ok', '!=', True), ('website_published', '=', True), ("sale_ok", "=", True)]</field>
+            <field name="domain_force">[('config_ok', '!=', True), ("sale_ok", "=", True)]</field>
             <field name="groups" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
             <field eval="1" name="perm_read"></field>
             <field eval="1" name="perm_write"></field>

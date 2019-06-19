@@ -11,7 +11,7 @@ odoo.define('product_configurator.DataManager', function (require) {
         * dynamic content.
         */
         load_views: function (params, options) {
-            if (params.context.eval()['view_cache'] == false) {
+            if (params.context['view_cache'] == false) {
                 this.invalidate();
             }
             return this._super(params, options);
