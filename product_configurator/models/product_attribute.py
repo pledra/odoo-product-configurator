@@ -367,9 +367,9 @@ class ProductAttributeValueLine(models.Model):
     )
     value_ids = fields.Many2many(
         comodel_name='product.attribute.value',
-        relation="attr_value_line_attr_values_rel",
-        column1="attr_val_line_id",
-        column2="attr_val_id",
+        relation="product_attribute_value_product_attribute_value_line_rel",
+        column1="product_attribute_value_line_id",
+        column2="product_attribute_value_id",
         string="Values Configuration",
     )
     product_value_ids = fields.Many2many(
