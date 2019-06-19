@@ -26,16 +26,6 @@ variables: &globalvars
     PRIVATE_DIR: "./odoo/custom/src/private"
 
 before_script:
-    - eval "$(ssh-agent -s)"
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan github.com >> ~/.ssh/known_hosts
-    - ssh-keyscan gitlab.pledra.com >> ~/.ssh/known_hosts
-    - echo "$SSH_CONFIG" > ~/.ssh/config
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add  - > /dev/null
-    - echo "$SSH_ENTERPRISE_PRIVATE_KEY" | tr -d '\r' | ssh-add  - > /dev/null
-    - chmod 600 ~/.ssh/ -R
-    - echo $GCE_SERVICE_ACCOUNT_JSON > /service_account.json
 
 Build:
  image: google/cloud-sdk:latest
@@ -44,6 +34,8 @@ Build:
    <<: *globalvars
    GIT_STRATEGY: clone
  script:
+   # Login to gcloud
+   - echo $GCE_SERVICE_ACCOUNT_JSON > /service_account.json
    # Authenticate to gain access to gcloud services for this project
    - gcloud auth activate-service-account --key-file=/service_account.json --project=$GCLOUD_PROJECT
    # Checkout scaffolding
