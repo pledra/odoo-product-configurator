@@ -27,7 +27,7 @@
     float: left;
     padding: 10px 10px 10px 0px;
 }
-.config_attribute input[type=radio] {
+.config_attribute input[type=radio], .config_attribute input[type=checkbox] {
     position: absolute;
     z-index: 999;
 }

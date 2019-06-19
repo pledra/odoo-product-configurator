@@ -145,7 +145,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
         }
 
         function _onChangeConfigStep(event, next_step) {
-            var flag = _checkRequiredFields(event)
+            var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
+            var config_attr = active_step.find('.form-control.required_config_attrib');
+            var flag = _checkRequiredFields(config_attr)
             var config_step_header = config_form.find('.nav.nav-tabs');
             var current_config_step = config_step_header.find('.nav-item.config_step.active').attr('data-step-id');
             if (flag) {
@@ -186,11 +188,10 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
         }
 
-        function _checkRequiredFields(event) {
-            var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
-            var config_attr = active_step.find('.form-control.required_config_attrib');
-            var flag = true;
+        function _checkRequiredFields(config_attr) {
+            var flag_all = true;
             for (var i = 0; i < config_attr.length; i++) {
+                var flag = true;
                 if (config_attr[i].tagName == 'FIELDSET') {
                     flag = _checkRequiredFieldsRadio($(config_attr[i]))
                 } else if (!config_attr[i].value.trim()  || config_attr[i].value == '0') {
@@ -199,30 +200,22 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
                 if (!flag) {
                     $(config_attr[i]).addClass('textbox-border-color');
-                    // if (config_attr[i].tagName == 'SELECT') {
-                    //     var message = "Please select an item in the list."
-                    // } else if (config_attr[i].tagName == 'INPUT') {
-                    //     var message = "Please enter value."
-                    // }
-                    // _displayTooltip(config_attr[i], message);
                 } else if (flag && $(config_attr[i]).hasClass('textbox-border-color')) {
                     $(config_attr[i]).removeClass('textbox-border-color');
                 };
+                flag_all &= flag;
             };
-            return flag;
+            return flag_all;
         };
 
         config_form.find('.config_attribute').change(function (event) {
-            var attribute = event.currentTarget;
-            if (attribute.value.trim() && attribute.value.trim() != '0' && $(attribute).hasClass('textbox-border-color')) {
-                $(attribute).removeClass('textbox-border-color');
-            };
+            var attribute = [event.currentTarget];
+            _checkRequiredFields(attribute);
         });
+
         config_form.find('.custom_config_value').change(function (event) {
-            var attribute = event.currentTarget;
-            if (attribute.value.trim() && attribute.value.trim() != '0' && $(attribute).hasClass('textbox-border-color')) {
-                $(attribute).removeClass('textbox-border-color');
-            };
+            var attribute = [event.currentTarget];
+            _checkRequiredFields(attribute);
         });
 
         config_form.find('.config_step').click(function (event) {
@@ -279,6 +272,16 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
         });
 
+        // Radio button work with image click
+        $('.image_config_attr_value_radio').on("click", function(event) {
+            var val_id = $(this).data('val-id');
+            var value_input = $('.config_attr_value[data-oe-id="' + val_id + '"]');
+            if (value_input.length) {
+                value_input.prop('checked', 'checked');
+                value_input.change();
+            }
+        });
+
         // quantty sppiner
         function _disableEnableAddRemoveQtyButton(quantity, max_val, min_val) {
             if (quantity >= max_val) {
@@ -328,6 +331,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
             custom_value.val(new_qty);
             _disableEnableAddRemoveQtyButton(new_qty ,max_val ,min_val)
+            return custom_value;
         }
 
         $('.custom_config_value.quantity').change(function(ev) {
@@ -335,11 +339,13 @@ odoo.define('website_product_configurator.config_form', function (require) {
         });
 
         $('.js_add_qty').on('click', function(ev) {
-            _handleSppinerCustomValue(ev);
+            var custom_value = _handleSppinerCustomValue(ev);
+            _checkRequiredFields(custom_value);
         });
 
         $('.js_remove_qty').on('click', function(ev) {
-            _handleSppinerCustomValue(ev);
+            var custom_value = _handleSppinerCustomValue(ev);
+            _checkRequiredFields(custom_value);
         });
     });
 

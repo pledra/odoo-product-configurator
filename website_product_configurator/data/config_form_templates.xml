@@ -260,7 +260,7 @@
                         <label class="image_config_attr_value_radio"
                           for="'%s%s' % (field_prefix, line.attribute_id.id)"
                           t-att-data-val-id="value.id"
-                          t-attf-style="background-image:url(/web/image/product.product/{{value.product_id.id}}/image_medium);"></label>
+                          t-attf-style="background-image:url(/web/image/product.attribute.value/{{value.id}}/image_medium);"></label>
                 </t>
                 <t t-if="line.custom">
                     <span t-esc="custom_val_id.name" class="label_config_attr_value_radio"/>
@@ -275,7 +275,7 @@
                     <label class="image_config_attr_value_radio"
                       for="'%s%s' % (field_prefix, line.attribute_id.id)"
                       t-att-data-val-id="custom_val_id.id"
-                      t-attf-style="background-image:url(/web/image/product.product/{{custom_val_id.product_id.id}}/image_medium);"></label>
+                      t-attf-style="background-image:url(/web/image/product.attribute.value/{{custom_val_id.id}}/image_medium);"></label>
                 </t>
             </fieldset>
             <t t-if="line.custom">
