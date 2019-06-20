@@ -52,7 +52,7 @@
 
 .image_config_attr_value_radio {
     cursor: pointer;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
     display: inline-block;
     width: 150px;
