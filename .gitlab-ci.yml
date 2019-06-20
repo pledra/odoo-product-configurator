@@ -25,8 +25,6 @@ variables: &globalvars
     POSTGRES_PASSWORD: "odoopassword"
     PRIVATE_DIR: "./odoo/custom/src/private"
 
-before_script:
-
 Build:
  image: google/cloud-sdk:latest
  stage: build
@@ -57,7 +55,9 @@ Test Addons:
     - name: postgres:10.0-alpine
   image: ${CI_IMAGE}:${CI_PIPELINE_ID}
   stage: test
-  before_script: []
+  variables:
+    <<: *globalvars
+    ODOO_CFG_WITHOUT_DEMO: False
   script:
     # Execute entrypoint to wait for db to be ready and other things
     - /opt/odoo/common/entrypoint
