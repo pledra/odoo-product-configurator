@@ -248,6 +248,7 @@
                 t-att-class="'form-control config_attribute' + (line.required and ' required_config_attrib' or '')"
                 style="height: unset;">
                 <t t-foreach="line.value_ids" t-as="value">
+                    <div class="radio-card-container">
                         <span t-esc="value.name" class="label_config_attr_value_radio"/>
                         <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                             t-att-checked="'checked' if value.id in value_ids.ids else None"
@@ -261,21 +262,24 @@
                           for="'%s%s' % (field_prefix, line.attribute_id.id)"
                           t-att-data-val-id="value.id"
                           t-attf-style="background-image:url(/web/image/product.attribute.value/{{value.id}}/image_medium);"></label>
+                    </div>
                 </t>
                 <t t-if="line.custom">
-                    <span t-esc="custom_val_id.name" class="label_config_attr_value_radio"/>
-                    <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
-                        t-att-checked="'checked' if custom_value else None"
-                        t-att-type="line.multi and 'checkbox' or 'radio'"
-                        t-att-class="'config_attr_value custom_config_attr_value'"
-                        t-att-value="custom_val_id.id"
-                        t-att-data-oe-id="custom_val_id.id"
-                        t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                        t-att-disabled="custom_val_id.id not in available_value_ids and True or False"/>
-                    <label class="image_config_attr_value_radio"
-                      for="'%s%s' % (field_prefix, line.attribute_id.id)"
-                      t-att-data-val-id="custom_val_id.id"
-                      t-attf-style="background-image:url(/web/image/product.attribute.value/{{custom_val_id.id}}/image_medium);"></label>
+                    <div>
+                        <span t-esc="custom_val_id.name" class="label_config_attr_value_radio"/>
+                        <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
+                            t-att-checked="'checked' if custom_value else None"
+                            t-att-type="line.multi and 'checkbox' or 'radio'"
+                            t-att-class="'config_attr_value custom_config_attr_value'"
+                            t-att-value="custom_val_id.id"
+                            t-att-data-oe-id="custom_val_id.id"
+                            t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
+                            t-att-disabled="custom_val_id.id not in available_value_ids and True or False"/>
+                        <label class="image_config_attr_value_radio"
+                          for="'%s%s' % (field_prefix, line.attribute_id.id)"
+                          t-att-data-val-id="custom_val_id.id"
+                          t-attf-style="background-image:url(/web/image/product.attribute.value/{{custom_val_id.id}}/image_medium);"></label>
+                    </div>
                 </t>
             </fieldset>
             <t t-if="line.custom">

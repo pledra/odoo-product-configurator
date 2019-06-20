@@ -78,9 +78,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var custom_value_container = custom_value.closest('.custom_field_container[data-oe-id=' + attribute_id + ']');
             var custom_config_attr = $(event.currentTarget).find('.custom_config_attr_value');
             var flag_custom = false;
-            if (custom_config_attr[0].tagName == "OPTION" && custom_config_attr[0].selected) {
+            if (custom_config_attr.length && custom_config_attr[0].tagName == "OPTION" && custom_config_attr[0].selected) {
                 flag_custom = true;
-            } else if (custom_config_attr[0].tagName == "INPUT" && custom_config_attr[0].checked) {
+            } else if (custom_config_attr.length && custom_config_attr[0].tagName == "INPUT" && custom_config_attr[0].checked) {
                 flag_custom = true;
             };
             if (flag_custom && custom_value_container.hasClass('hidden')) {
@@ -180,6 +180,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
         };
 
         function _checkRequiredFieldsRadio(parent_container) {
+            if (!parent_container.hasClass('required_config_attrib')) {
+                return true;
+            }
             var radio_inputs = parent_container.find('.config_attr_value:checked');
             if (radio_inputs.length) {
                 return true;
@@ -277,7 +280,11 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var val_id = $(this).data('val-id');
             var value_input = $('.config_attr_value[data-oe-id="' + val_id + '"]');
             if (value_input.length) {
-                value_input.prop('checked', 'checked');
+                if (value_input.attr('type') == 'checkbox' && value_input.prop('checked')) {
+                    value_input.prop('checked', false);
+                } else {
+                    value_input.prop('checked', 'checked');
+                }
                 value_input.change();
             }
         });

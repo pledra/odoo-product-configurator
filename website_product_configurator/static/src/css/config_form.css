@@ -30,19 +30,29 @@
 .config_attribute input[type=radio], .config_attribute input[type=checkbox] {
     position: absolute;
     z-index: 999;
+    display: none;
 }
 
 .config_attribute input:active +.image_config_attr_value_radio {
     opacity: 90%;
 }
-.config_attribute input:checked +.image_config_attr_value_radio {
+.config_attribute input[type=radio]:checked +.image_config_attr_value_radio {
     -webkit-filter: none;
        -moz-filter: none;
             filter: none;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
+
+.config_attribute input[type=checkbox]:checked +.image_config_attr_value_radio {
+    -webkit-filter: none;
+       -moz-filter: none;
+            filter: none;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
 .image_config_attr_value_radio {
     cursor: pointer;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     display: inline-block;
     width: 150px;
@@ -58,10 +68,18 @@
     -webkit-filter: none;
        -moz-filter: none;
             filter: none;
+    border: solid silver 1px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .label_config_attr_value_radio {
     position: absolute;
     z-index: 1;
-    margin-left: 20px;
+    margin: 5px auto auto 5px;
+}
+
+.radio-card-container {
+    margin: 5px 10px 5px 10px;
+    float: left;
 }
