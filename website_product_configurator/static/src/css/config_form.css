@@ -14,7 +14,6 @@
     right: 0;
     margin-left: auto;
     margin-right: auto;
-
 }
 
 .config_weight {
@@ -30,7 +29,7 @@
 .config_attribute input[type=radio], .config_attribute input[type=checkbox] {
     position: absolute;
     z-index: 999;
-    display: none;
+    margin: 5px auto auto 5px;
 }
 
 .config_attribute input:active +.image_config_attr_value_radio {
@@ -86,7 +85,7 @@
 .label_config_attr_value_radio {
     position: absolute;
     z-index: 1;
-    margin: 5px auto auto 5px;
+    margin: 5px auto auto 25px;
 }
 
 .radio-card-container {

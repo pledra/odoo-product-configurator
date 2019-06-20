@@ -180,9 +180,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
         };
 
         function _checkRequiredFieldsRadio(parent_container) {
-            if (!parent_container.hasClass('required_config_attrib')) {
-                return true;
-            }
             var radio_inputs = parent_container.find('.config_attr_value:checked');
             if (radio_inputs.length) {
                 return true;
@@ -195,10 +192,12 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var flag_all = true;
             for (var i = 0; i < config_attr.length; i++) {
                 var flag = true;
-                if (config_attr[i].tagName == 'FIELDSET') {
-                    flag = _checkRequiredFieldsRadio($(config_attr[i]))
+                if (!$(config_attr[i]).hasClass('required_config_attrib')) {
+                    flag = true;
+                } else if (config_attr[i].tagName == 'FIELDSET') {
+                    flag = _checkRequiredFieldsRadio($(config_attr[i]));
                 } else if (!config_attr[i].value.trim()  || config_attr[i].value == '0') {
-                    flag = false
+                    flag = false;
                 };
 
                 if (!flag) {
