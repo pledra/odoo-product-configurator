@@ -278,6 +278,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
         $('.image_config_attr_value_radio').on("click", function(event) {
             var val_id = $(this).data('val-id');
             var value_input = $('.config_attr_value[data-oe-id="' + val_id + '"]');
+            if (value_input.prop('disabled')) {
+                return
+            }
             if (value_input.length) {
                 if (value_input.attr('type') == 'checkbox' && value_input.prop('checked')) {
                     value_input.prop('checked', false);

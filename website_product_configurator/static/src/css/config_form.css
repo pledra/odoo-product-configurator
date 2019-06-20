@@ -50,13 +50,14 @@
 }
 
 .config_attribute input[type=radio][disabled] +.image_config_attr_value_radio {
-    cursor: not-allowed;
     -webkit-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
        -moz-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
             filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
     border: none;
     border-radius: none;
     box-shadow: none;
+    pointer-events: none;
+    cursor: not-allowed;
 }
 
 .image_config_attr_value_radio {
