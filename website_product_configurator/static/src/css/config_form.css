@@ -60,6 +60,17 @@
     cursor: not-allowed;
 }
 
+.config_attribute input[type=checkbox][disabled] +.image_config_attr_value_radio {
+    -webkit-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+       -moz-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+            filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+    border: none;
+    border-radius: none;
+    box-shadow: none;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
 .image_config_attr_value_radio {
     cursor: pointer;
     background-size: contain;
