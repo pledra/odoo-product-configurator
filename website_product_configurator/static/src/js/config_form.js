@@ -28,6 +28,14 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         config_form.find('.product_config_datetimepicker').datetimepicker(datetimepickers_options);
         config_form.find('.product_config_datepicker').datetimepicker(datepickers_options);
+        config_form.find('.product_config_datepicker').on('dp.change', function (event) {
+            var attribute = [event.currentTarget];
+            _checkRequiredFields(attribute);
+        });
+        config_form.find('.product_config_datetimepicker').on('dp.change', function (event) {
+            var attribute = [event.currentTarget];
+            _checkRequiredFields(attribute);
+        });
 
         /* Monitor input changes in the configuration form and call the backend onchange method*/
         config_form.find('.config_attribute').change(function(ev) {
