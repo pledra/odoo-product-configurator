@@ -57,7 +57,7 @@ Test Addons:
   stage: test
   variables:
     <<: *globalvars
-    ODOO_CFG_WITHOUT_DEMO: False
+    ODOO_CFG_WITHOUT_DEMO: "False"
   script:
     # Execute entrypoint to wait for db to be ready and other things
     - /opt/odoo/common/entrypoint
