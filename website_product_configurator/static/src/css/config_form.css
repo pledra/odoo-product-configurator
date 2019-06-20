@@ -50,6 +50,16 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+.config_attribute input[type=radio][disabled] +.image_config_attr_value_radio {
+    cursor: not-allowed;
+    -webkit-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+       -moz-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+            filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+    border: none;
+    border-radius: none;
+    box-shadow: none;
+}
+
 .image_config_attr_value_radio {
     cursor: pointer;
     background-size: contain;
@@ -60,9 +70,9 @@
     -webkit-transition: all 100ms ease-in;
        -moz-transition: all 100ms ease-in;
             transition: all 100ms ease-in;
-    -webkit-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(80%);
-       -moz-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(80%);
-            filter: brightness(90%) contrast(110%) grayscale(50%) opacity(80%);
+    -webkit-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(90%);
+       -moz-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(90%);
+            filter: brightness(90%) contrast(110%) grayscale(50%) opacity(90%);
 }
 .image_config_attr_value_radio:hover {
     -webkit-filter: none;
