@@ -31,8 +31,13 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         /* Monitor input changes in the configuration form and call the backend onchange method*/
         config_form.find('.config_attribute').change(function(ev) {
+            var form_data = config_form.serializeArray();
+            var fields_attachment = _getAttachmentFieldsData();
+            if (fields_attachment.length) {
+                form_data = form_data.concat(fields_attachment)
+            }
             ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
-                form_values: config_form.serializeArray(),
+                form_values: form_data,
                 field_name: $(this)[0].name,
             }).then(function(data) {
                 if (data.error) {
@@ -51,6 +56,27 @@ odoo.define('website_product_configurator.config_form', function (require) {
             });
             _handleCustomAttribute(ev)
         });
+
+        function _getAttachmentFieldsData() {
+            var files_data = []
+            var fr = new FileReader();
+            var input_fields = config_form.find('input[type="file"]');
+            for (var i=0; i<input_fields.length; i++) {
+                for (var j=0; j<input_fields[i].files.length; j++) {
+                    var file = input_fields[i].files[j];
+                    // fr.onload = function () {
+                    //     files_data.push({'name': input_fields[i].name, 'value': fr.result});
+                    // };
+                    fr.readAsDataURL(file);
+                    files_data.push({'name': input_fields[i].name, 'value': fr.result});
+                }
+            }
+            // _.each(config_form.find('input[type="file"]'), function(fields_attach) {
+            //     _.each(fields_attach.files, function(file) {
+            //     });
+            // });
+            return files_data;
+        }
 
         function _setWeightPrice(weight, price) {
             var formatted_price = _.str.sprintf('%.2f', price);
@@ -148,9 +174,14 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var flag = _checkRequiredFields(event)
             var config_step_header = config_form.find('.nav.nav-tabs');
             var current_config_step = config_step_header.find('.nav-item.config_step.active').attr('data-step-id');
+            var form_data = config_form.serializeArray();
+            var fields_attachment = _getAttachmentFieldsData();
+            if (fields_attachment.length) {
+                form_data = form_data.concat(fields_attachment)
+            }
             if (flag) {
                 return ajax.jsonRpc("/website_product_configurator/save_configuration", 'call', {
-                    form_values: config_form.serializeArray(),
+                    form_values: form_data,
                     next_step: next_step || false,
                     current_step: current_config_step || false,
                 }).then(function(data) {
