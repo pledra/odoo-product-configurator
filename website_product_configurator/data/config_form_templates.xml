@@ -160,8 +160,7 @@
                 t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-data-oe-id="line.attribute_id.id"
-                t-att-class="'form-control custom_config_value' + (' required_config_attrib' if custom_value and not custom_value.attachment_ids else '')"
-                t-att-multiple="'multiple' if line.multi else ''"/>
+                t-att-class="'form-control custom_config_value' + (' required_config_attrib' if custom_value and not custom_value.attachment_ids else '')"/>
         </t>
         <t t-if="custom_type == 'text'">
             <textarea t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
