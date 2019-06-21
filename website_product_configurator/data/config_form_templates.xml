@@ -26,7 +26,7 @@
               <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
               <div class="config_weight">
                 <span><b>Weight: </b></span>
-                <span class="config_product_weight" t-esc="'{0:,.2f}'.format(cfg_session.weight)"/>
+                <span class="config_product_weight" t-esc="('{0:,.%sf}' % (weight_prec)).format(cfg_session.weight)"/>
                 <span>kg</span>
               </div>
                <div class="config_price">

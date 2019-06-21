@@ -133,6 +133,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'config_image_vals': self.get_image_vals(
                 image_line_ids=config_image_ids,
                 model_name=config_image_ids[:1]._name),
+            'weight_prec': request.env['decimal.precision'].precision_get('Stock Weight'),
         }
         return vals
 
@@ -343,6 +344,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_line_ids'] = open_cfg_step_line_ids
         updates['config_image_vals'] = image_vals
+        updates['decimal_precision'] = {
+            'weight': request.env['decimal.precision'].precision_get('Stock Weight'),
+            'price': request.env['decimal.precision'].precision_get('Product Price'),
+        }
         return updates
 
     def set_config_next_step(self, config_session_id,
