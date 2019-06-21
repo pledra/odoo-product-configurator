@@ -1114,7 +1114,7 @@ class ProductConfigSession(models.Model):
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
 
-        if not value_ids:
+        if not value_ids and not isinstance(value_ids, list):
             value_ids = self.value_ids.ids
 
         # process domains as shown in this wikipedia pseudocode:
@@ -1170,7 +1170,7 @@ class ProductConfigSession(models.Model):
 
         product_tmpl.ensure_one()
 
-        if not value_ids:
+        if not value_ids and not isinstance(value_ids, list):
             value_ids = self.value_ids.ids
 
         if not custom_vals:
@@ -1178,12 +1178,10 @@ class ProductConfigSession(models.Model):
 
         avail_val_ids = []
         for attr_val_id in check_val_ids:
-
             config_lines = product_tmpl.config_line_ids.filtered(
                 lambda l: attr_val_id in l.value_ids.ids
             )
             domains = config_lines.mapped('domain_id').compute_domain()
-
             avail = self.validate_domains_against_sels(
                 domains, value_ids, custom_vals
             )
