@@ -1,7 +1,7 @@
 from odoo import api, fields, models
 
 
-class ProductConfiguratorSale(models.TransientModel):
+class ProductConfiguratorPicking(models.TransientModel):
 
     _name = 'product.configurator.picking'
     _inherit = 'product.configurator'

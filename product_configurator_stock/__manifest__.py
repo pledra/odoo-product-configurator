@@ -6,7 +6,7 @@
     'author': 'Pledra',
     'license': 'AGPL-3',
     'website': 'http://www.pledra.com/',
-    'depends': ['stock'],
+    'depends': ['stock', 'product_configurator'],
     "data": [
         'views/stock_picking_view.xml',
         'views/stock_move_view.xml',
