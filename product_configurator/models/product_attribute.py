@@ -276,6 +276,7 @@ class ProductAttributeValue(models.Model):
         help="Weight Extra: Extra weight for the variant with this attribute"
         "value on sale price. eg. 200 price extra, 1000 + 200 = 1200."
     )
+    price_extra = fields.Float()
     # prevent to add new attr-value from adding
     # in already created template
     product_ids = fields.Many2many(
