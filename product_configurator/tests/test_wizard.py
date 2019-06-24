@@ -1,4 +1,4 @@
-from ..tests.product_configurator_test_cases import \
+from ..tests.test_product_configurator_test_cases import \
     ProductConfiguratorTestCases
 from odoo.exceptions import ValidationError, UserError
 
@@ -38,33 +38,6 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
         self.attr_val_ext_ids = {
             v: k for k, v in attribute_vals.get_external_id().items()
         }
-
-    def get_attr_val_ids(self, ext_ids):
-        """Return a list of database ids using the external_ids
-        passed via ext_ids argument"""
-
-        value_ids = []
-
-        attr_val_prefix = 'product_configurator.product_attribute_value_%s'
-
-        for ext_id in ext_ids:
-            if ext_id in self.attr_val_ext_ids:
-                value_ids.append(self.attr_val_ext_ids[ext_id])
-            elif attr_val_prefix % ext_id in self.attr_val_ext_ids:
-                value_ids.append(
-                    self.attr_val_ext_ids[attr_val_prefix % ext_id]
-                )
-
-        return value_ids
-
-    def create_wizard(self, product_tmpl=None):
-        if not product_tmpl:
-            product_tmpl = self.cfg_tmpl
-        wizard_vals = {
-            'product_tmpl_id': product_tmpl.id
-        }
-        wizard = self.env['product.configurator'].create(vals=wizard_vals)
-        return wizard
 
     def _check_wizard_nxt_step(self):
         self.ProductConfWizard.action_next_step()
@@ -306,3 +279,40 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
             'Error: If not config step selection\
             Method: get_state_selection()'
         )
+
+    def test_05_compute_cfg_image(self):
+        product_config_wizard = self._check_wizard_nxt_step()
+        product_config_wizard._compute_cfg_image()
+        self.assertFalse(
+            product_config_wizard.product_img,
+            'Error: If product_img exists\
+            Method: _compute_cfg_image()'
+        )
+
+    def test_06_onchange_product_tmpl(self):
+        product_config_wizard = self._check_wizard_nxt_step()
+        product_config_wizard.write({
+            'product_tmpl_id': self.config_product.id,
+        })
+        with self.assertRaises(UserError):
+            product_config_wizard.onchange_product_tmpl()
+
+    def test_07_get_onchange_domains(self):
+        product_config_wizard = self._check_wizard_nxt_step()
+        conf = [
+            'gasoline', '228i', 'model_luxury_line', 'silver', 'rims_384',
+            'tapistry_black', 'steptronic', 'smoker_package', 'tow_hook'
+        ]
+        values = [
+            'gasoline', '228i', 'model_luxury_line', 'silver', 'rims_384',
+            'tapistry_black', 'steptronic', 'smoker_package', 'tow_hook'
+        ]
+        product_config_wizard.get_onchange_domains(values, conf)
+
+    def test_08_onchange_state(self):
+        product_config_wizard = self._check_wizard_nxt_step()
+        product_config_wizard._onchange_state()
+
+    def test_09_onchange_product_preset(self):
+        product_config_wizard = self._check_wizard_nxt_step()
+        product_config_wizard._onchange_product_preset()

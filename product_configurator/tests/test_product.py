@@ -1,4 +1,4 @@
-from ..tests.product_configurator_test_cases import \
+from ..tests.test_product_configurator_test_cases import \
     ProductConfiguratorTestCases
 from odoo.exceptions import ValidationError
 
@@ -199,6 +199,9 @@ class TestProduct(ProductConfiguratorTestCases):
                                         self.attributeLine2.id])],
             })
 
+        with self.assertRaises(ValidationError):
+            self.product_tmpl_id._check_default_values()
+
     def test_07_configure_product(self):
         # configure product
         self.product_tmpl_id.configure_product()
@@ -343,6 +346,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _compute_name()'
         )
         product_product.config_ok = True
+        product_product._compute_name()
         self.assertEqual(
             product_product.config_name,
             '2 Series',
@@ -415,10 +419,10 @@ class TestProduct(ProductConfiguratorTestCases):
         )
 
     def test_15_copy(self):
-        vals = self.product_tmpl_id.copy()
+        vals = self.config_product.copy()
         self.assertEqual(
             vals.name,
-            'Test Configuration (copy)',
+            '2 Series (copy)',
             'Error: If not equal\
             Method: copy()'
         )
@@ -427,3 +431,140 @@ class TestProduct(ProductConfiguratorTestCases):
             'Error: If attribute_line_ids not exists\
             Method: copy()'
         )
+
+    def test_16_validate_unique_config(self):
+        self.product_tmpl_id.write({
+            'attribute_value_line_ids': [(0, 0, {
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'value_id': self.value_gasoline.id,
+                'value_ids': [(6, 0, [
+                    self.value_218i.id
+                ])]
+            })]
+        })
+        with self.assertRaises(ValidationError):
+            self.product_tmpl_id.write({
+                'attribute_value_line_ids': [(0, 0, {
+                    'product_tmpl_id': self.product_tmpl_id.id,
+                    'value_id': self.value_gasoline.id,
+                    'value_ids': [(6, 0, [
+                        self.value_218i.id
+                    ])]
+                })]
+            })
+
+    def test_17_check_attr_value_ids(self):
+        self.product_tmpl_id.write({
+            'attribute_value_line_ids': [(0, 0, {
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'value_id': self.value_gasoline.id,
+                'value_ids': [(6, 0, [
+                    self.value_gasoline.id
+                ])]
+            })]
+        })
+        self.product_tmpl_id.write({
+            'attribute_value_line_ids': [(0, 0, {
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'value_id': self.value_diesel.id,
+                'value_ids': [(6, 0, [
+                    self.value_diesel.id
+                ])]
+            })]
+        })
+        self.product_tmpl_id.write({
+            'attribute_value_line_ids': [(0, 0, {
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'value_id': self.value_218i.id,
+                'value_ids': [(6, 0, [
+                    self.value_218i.id
+                ])]
+            })]
+        })
+        self.product_tmpl_id.write({
+            'attribute_value_line_ids': [(0, 0, {
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'value_id': self.value_220i.id,
+                'value_ids': [(6, 0, [
+                    self.value_220i.id
+                ])]
+            })]
+        })
+        self.product_tmpl_id.write({
+            'attribute_value_line_ids': [(0, 0, {
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'value_id': self.value_218d.id,
+                'value_ids': [(6, 0, [
+                    self.value_218d.id
+                ])]
+            })]
+        })
+        self.product_tmpl_id.write({
+            'attribute_value_line_ids': [(0, 0, {
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'value_id': self.value_220d.id,
+                'value_ids': [(6, 0, [
+                    self.value_220d.id
+                ])]
+            })]
+        })
+        self.product_tmpl_id.write({
+            'attribute_value_line_ids': [(0, 0, {
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'value_id': self.value_red.id,
+                'value_ids': [(6, 0, [
+                    self.value_red.id
+                ])]
+            })]
+        })
+        self.product_tmpl_id.write({
+            'attribute_value_line_ids': [(0, 0, {
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'value_id': self.value_silver.id,
+                'value_ids': [(6, 0, [
+                    self.value_silver.id
+                ])]
+            })]
+        })
+        with self.assertRaises(ValidationError):
+            self.product_tmpl_id.write({
+                'attribute_value_line_ids': [(0, 0, {
+                    'product_tmpl_id': self.product_tmpl_id.id,
+                    'value_id': self.value_rims_378.id,
+                    'value_ids': [(6, 0, [
+                        self.value_rims_378.id
+                    ])]
+                })]
+            })
+
+    def test_18_check_duplicate_product(self):
+        self.product_tmpl_id.configure_product()
+        product_config_wizard = self.ProductConfWizard.create({
+            'product_tmpl_id':  self.product_tmpl_id.id,
+        })
+        product_config_wizard.action_next_step()
+        product_config_wizard.write({
+            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id,
+            '__attribute-{}'.format(self.attr_engine.id): self.value_218i.id,
+            '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
+        })
+        product_config_wizard.action_next_step()
+        with self.assertRaises(ValidationError):
+            self.env['product.product'].create({
+                'name': 'Test Configuration',
+                'product_tmpl_id': self.product_tmpl_id.id,
+                'attribute_value_ids': [(6, 0, [
+                    self.value_gasoline.id,
+                    self.value_218i.id,
+                    self.value_red.id
+                ])]
+            })
+
+    def test_19_fields_view_get(self):
+        product_product = self._get_product_id()
+        product_product.with_context({
+            'default_config_ok': True}).fields_view_get()
+
+    def test_20_get_conversions_dict(self):
+        product_product = self._get_product_id()
+        product_product._get_conversions_dict()

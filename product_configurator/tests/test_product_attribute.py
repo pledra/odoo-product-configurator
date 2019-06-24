@@ -102,6 +102,7 @@ class ProductAttributes(TransactionCase):
             self.ProductAttributeFuel.validate_custom_val(5)
 
         self.ProductAttributeFuel.write({
+            'max_val': 0,
             'min_val': 10
         })
         self.ProductAttributeFuel.custom_type = 'int'
@@ -109,7 +110,8 @@ class ProductAttributes(TransactionCase):
             self.ProductAttributeFuel.validate_custom_val(5)
 
         self.ProductAttributeFuel.write({
-            'min_val': 20
+            'min_val': 0,
+            'max_val': 20
         })
         self.ProductAttributeFuel.custom_type = 'int'
         with self.assertRaises(ValidationError):

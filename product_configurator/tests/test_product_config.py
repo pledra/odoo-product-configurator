@@ -1,7 +1,6 @@
-from ..tests.product_configurator_test_cases import \
+from ..tests.test_product_configurator_test_cases import \
     ProductConfiguratorTestCases
-from odoo.exceptions import ValidationError
-from ast import literal_eval
+from odoo.exceptions import ValidationError, UserError
 
 
 class ProductConfig(ProductConfiguratorTestCases):
@@ -44,7 +43,7 @@ class ProductConfig(ProductConfiguratorTestCases):
         self.value_silver = self.env.ref(
             'product_configurator.product_attribute_value_silver')
         self.value_rims_387 = self.env.ref(
-            'product_configurator.product_attribute_value_rims_387'),
+            'product_configurator.product_attribute_value_rims_387')
         # attribute line
         self.attribute_line_2_series_rims = self.env.ref(
             'product_configurator.product_attribute_line_2_series_rims')
@@ -180,21 +179,14 @@ class ProductConfig(ProductConfiguratorTestCases):
                 'cfg_session_id': self.session_id.id,
                 'attribute_id': self.attr_fuel.id
             })
-        # productConfigSessionCustVals.value = 'custvalue1'
-        # checkCharval = self.session_id._get_custom_vals_dict()
-        # self.assertEqual(
-        #     list(checkCharval.values())[0],
-        #     productConfigSessionCustVals.value,
-        #     'Error: If Not Char value or False\
-        #     Method: _get_custom_vals_dict()'
-        # )
         # check for custom type Int
         self.attr_fuel.custom_type = 'int'
         productConfigSessionCustVals.update({'value': 154})
         checkIntval = self.session_id._get_custom_vals_dict()
+        attr_id = productConfigSessionCustVals.attribute_id.id
         self.assertEqual(
-            list(checkIntval.values())[0],
-            literal_eval(productConfigSessionCustVals.value),
+            checkIntval.get(attr_id),
+            154,
             'Error: If Not Integer value or False\
             Method: _get_custom_vals_dict()'
         )
@@ -202,9 +194,10 @@ class ProductConfig(ProductConfiguratorTestCases):
         self.attr_fuel.custom_type = 'float'
         productConfigSessionCustVals.update({'value': 94.5})
         checkFloatval = self.session_id._get_custom_vals_dict()
+        attr_id = productConfigSessionCustVals.attribute_id.id
         self.assertEqual(
-            list(checkFloatval.values())[0],
-            literal_eval(productConfigSessionCustVals.value),
+            checkFloatval.get(attr_id),
+            94.5,
             'Error: If Not Float value or False\
             Method: _get_custom_vals_dict()'
         )
@@ -217,8 +210,9 @@ class ProductConfig(ProductConfiguratorTestCases):
                 'attachment_ids': [(6, 0, [self.irAttachement.id])]
             })
         checkBinaryval = self.session_id._get_custom_vals_dict()
+        attr_id = productConfigSessionCustVals1.attribute_id.id
         self.assertEqual(
-            list(checkBinaryval.values())[1],
+            checkBinaryval.get(attr_id),
             productConfigSessionCustVals1.attachment_ids,
             'Error: If Not attachement\
             Method: _get_custom_vals_dict()'
@@ -231,7 +225,6 @@ class ProductConfig(ProductConfiguratorTestCases):
             'Error: If not config step name\
             Method: _compute_config_step_name()'
         )
-        self.config_session.config_step_name = ''
         self.config_session._compute_config_step_name()
         self.assertEqual(
             self.config_session.config_step_name,
@@ -239,6 +232,19 @@ class ProductConfig(ProductConfiguratorTestCases):
             'Error: If not equal config_step_name and config_step\
             Method: _compute_config_step_name()'
         )
+        session = self.productConfigSession.create({
+            'product_tmpl_id': self.config_product.id,
+            'value_ids': [(6, 0, [
+                self.value_gasoline.id,
+                self.value_transmission.id]
+            )],
+            'user_id': self.env.user.id,
+        })
+        session._compute_config_step_name()
+        self.assertFalse(
+            session.config_step_name,
+            'Error: If config_step_name not False\
+            Method: _compute_config_step_name()')
 
     def test_09_search_variant(self):
         with self.assertRaises(ValidationError):
@@ -347,42 +353,38 @@ class ProductConfig(ProductConfiguratorTestCases):
             })
 
     def test_14_compute_domain(self):
-        productConfigDomainId = self.productConfigDomain.create({
-            'name': 'Restriction1'
+        # create domain
+        self.productConfigDomainId = self.env['product.config.domain'].create({
+            'name': 'restriction 1'
         })
-        self.productConfigDomainLine = self.env[
-            'product.config.domain.line'].create({
-                'attribute_id': self.attr_color.id,
-                'condition': 'in',
-                'value_ids': [(6, 0, [self.value_red.id])],
-                'operator': 'and',
-                'domain_id': productConfigDomainId.id,
-            })
-        self.productConfigLine = self.env['product.config.line'].create({
-            'product_tmpl_id': self.config_product.id,
-            'attribute_id': self.attr_engine.id,
-            'attribute_line_id': self.env.ref(
-                'product_configurator.product_attribute_line_2_series_engine'
-            ).id,
+        self.productConfigDomainId.compute_domain()
+        # create attribute value line 1
+        domain_line_1 = self.env['product.config.domain.line'].create({
+            'domain_id': self.productConfigDomainId.id,
+            'attribute_id': self.attr_fuel.id,
+            'condition': 'in',
+            'value_ids': [(6, 0, [self.value_gasoline.id])],
+            'operator': 'and',
+        })
+        domain_line_2 = self.env['product.config.domain.line'].create({
+            'domain_id': self.productConfigDomainId.id,
+            'attribute_id': self.attr_color.id,
+            'condition': 'in',
+            'value_ids': [(6, 0, [self.value_red.id])],
+            'operator': 'and',
+        })
+        self.productConfigDomainId.compute_domain()
+        domain_line_1.operator = 'or'
+        domain_line_2.operator = 'or'
+        self.productConfigDomainId.compute_domain()
+        self.env['product.config.line'].create({
+            'product_tmpl_id': self.product_tmpl_id.id,
+            'attribute_line_id': self.attr_engine.id,
             'value_ids': [(6, 0, [
-                self.env.ref(
-                    'product_configurator.product_attribute_value_218i').id,
-                self.env.ref(
-                    'product_configurator.product_attribute_value_220i').id,
-                self.env.ref(
-                    'product_configurator.product_attribute_value_228i').id,
-                self.env.ref(
-                    'product_configurator.product_attribute_value_m235i').id,
-                self.env.ref(
-                    'product_configurator.product_attribute_value_m235i_xdrive'
-                ).id])],
-            'domain_id': productConfigDomainId.id,
+                self.value_218i.id,
+                self.value_220i.id])],
+            'domain_id': self.productConfigDomainId.id,
         })
-        self.assertTrue(
-            self.productConfigDomainLine,
-            'Error: If domain not exists\
-            Method: compute_domain()'
-        )
 
     def test_15_get_cfg_weight(self):
         self.env['product.attribute.price'].create({
@@ -405,3 +407,128 @@ class ProductConfig(ProductConfiguratorTestCases):
             'Error: If config weight are not equal\
             Method: _compute_cfg_weight()'
         )
+
+    def test_16_update_session_configuration_value(self):
+        # configure new product to check for search not dublicate variant
+        self.custom_vals = self.productConfigSession.get_custom_value_id()
+        self.attributeLine1 = self.productAttributeLine.create({
+            'product_tmpl_id': self.product_tmpl_id.id,
+            'attribute_id': self.attribute_1.id,
+            'value_ids': [(6, 0, [
+                self.attribute_vals_1.id,
+                self.attribute_vals_2.id])],
+            'custom': True,
+            'required': True,
+        })
+        # create attribute line 2
+        self.attributeLine2 = self.productAttributeLine.create({
+            'product_tmpl_id': self.product_tmpl_id.id,
+            'attribute_id': self.attribute_2.id,
+            'value_ids': [(6, 0, [
+                self.attribute_vals_3.id,
+                self.attribute_vals_4.id])],
+            'custom': True,
+            'required': True,
+        })
+        self.product_tmpl_id.write({
+            'attribute_line_ids': [(6, 0, [
+                self.attributeLine1.id,
+                self.attributeLine2.id])],
+        })
+        self.attribute_1.custom_type = 'binary'
+        self.product_tmpl_id.configure_product()
+        self.productConfWizard.action_next_step()
+        product_config_wizard = self.productConfWizard.create({
+            'product_tmpl_id':  self.product_tmpl_id.id,
+        })
+        product_config_wizard.action_next_step()
+        product_config_wizard.write({
+            '__attribute-{}'.format(self.attribute_1.id): self.custom_vals.id,
+            '__custom-{}'.format(self.attribute_1.id): self.irAttachement.id,
+            '__attribute-{}'.format(self.attribute_1.id): self.custom_vals.id,
+            '__custom-{}'.format(self.attribute_1.id): 'Test',
+        })
+        product_config_wizard.action_next_step()
+
+    def test_17_get_cfg_price(self):
+        self.env['product.attribute.price'].create({
+            'product_tmpl_id': self.config_product.id,
+            'value_id': self.value_red.id,
+            'weight_extra': 20.0,
+            'price_extra': 20.0,
+        })
+        price_extra_val = self.session_id.get_cfg_price()
+        self.assertEqual(
+            price_extra_val,
+            25020.0,
+            'Error: If not equal price extra\
+            Method: get_cfg_price()'
+        )
+
+    def test_18_get_next_step(self):
+        self.session_id.get_next_step(state=None)
+        self.session_id.get_next_step(state='draft')
+        with self.assertRaises(UserError):
+            self.productConfigSession.get_next_step(
+                state='draft',
+                value_ids=False,
+                custom_value_ids=False
+            )
+
+    def test_19_get_all_step_lines(self):
+        step_line_value_1 = self.productConfigSession.get_all_step_lines()
+        self.assertFalse(
+            step_line_value_1,
+            'Error: If return True\
+            Method: get_all_step_lines()'
+        )
+        step_line_value_2 = self.session_id.get_all_step_lines()
+        self.assertTrue(
+            step_line_value_2,
+            'Error: If return True\
+            Method: get_all_step_lines()'
+        )
+
+    def test_20_custom_value_validate_configuration(self):
+        self.custom_vals = self.productConfigSession.get_custom_value_id()
+        self.attributeLine1 = self.productAttributeLine.create({
+            'product_tmpl_id': self.product_tmpl_id.id,
+            'attribute_id': self.attribute_1.id,
+            'value_ids': [(6, 0, [
+                self.attribute_vals_1.id,
+                self.attribute_vals_2.id])],
+            'custom': True,
+            'required': True,
+        })
+        # create attribute line 2
+        self.attributeLine2 = self.productAttributeLine.create({
+            'product_tmpl_id': self.product_tmpl_id.id,
+            'attribute_id': self.attribute_2.id,
+            'value_ids': [(6, 0, [
+                self.attribute_vals_3.id,
+                self.attribute_vals_4.id])],
+            'custom': True,
+            'required': True,
+        })
+        self.product_tmpl_id.write({
+            'attribute_line_ids': [(6, 0, [
+                self.attributeLine1.id,
+                self.attributeLine2.id])],
+        })
+        self.attribute_1.custom_type = 'binary'
+        self.product_tmpl_id.configure_product()
+        self.productConfWizard.action_next_step()
+        product_config_wizard = self.productConfWizard.create({
+            'product_tmpl_id':  self.product_tmpl_id.id,
+        })
+        product_config_wizard.action_next_step()
+        product_config_wizard.write({
+            '__attribute-{}'.format(self.attribute_1.id): self.custom_vals.id,
+            '__custom-{}'.format(self.attribute_1.id): self.irAttachement.id,
+            '__attribute-{}'.format(self.attribute_1.id): self.custom_vals.id,
+            '__custom-{}'.format(self.attribute_1.id): 'Test',
+        })
+        self.attributeLine1.custom = False
+        self.attributeLine2.custom = False
+        with self.assertRaises(ValidationError):
+            self.product_tmpl_id.configure_product()
