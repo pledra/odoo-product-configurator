@@ -4,6 +4,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
     var ajax = require('web.ajax');
     var time = require('web.time');
 
+    var image_dict = {}
+
     $(document).ready(function () {
         var config_form = $("#product_config_form");
         var datetimepickers_options = {
@@ -31,8 +33,12 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         /* Monitor input changes in the configuration form and call the backend onchange method*/
         config_form.find('.config_attribute').change(function(ev) {
+            var form_data = config_form.serializeArray();
+            for (var field_name in image_dict) {
+                form_data.push({'name': field_name, 'value': image_dict[field_name]});
+            }
             ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
-                form_values: config_form.serializeArray(),
+                form_values: form_data,
                 field_name: $(this)[0].name,
             }).then(function(data) {
                 if (data.error) {
@@ -50,6 +56,21 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 _setWeightPrice(values.weight, values.price);
             });
             _handleCustomAttribute(ev)
+        });
+
+        config_form.find('.custom_config_value').change(function (ev) {
+            var file = ev.target.files[0];
+            var loaded = false;
+            var files_data = '';
+            var BinaryReader = new FileReader();
+            // file read as DataURL
+            BinaryReader.readAsDataURL(file);
+            BinaryReader.onloadend = function (upload) {
+                var buffer = upload.target.result;
+                buffer = buffer.split(',')[1];
+                files_data = buffer;
+                image_dict[ev.target.name]= files_data;
+            }
         });
 
         function _setWeightPrice(weight, price) {
@@ -148,9 +169,13 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var flag = _checkRequiredFields(event)
             var config_step_header = config_form.find('.nav.nav-tabs');
             var current_config_step = config_step_header.find('.nav-item.config_step.active').attr('data-step-id');
+            var form_data = config_form.serializeArray();
+            for (var field_name in image_dict) {
+                form_data.push({'name': field_name, 'value': image_dict[field_name]});
+            }
             if (flag) {
                 return ajax.jsonRpc("/website_product_configurator/save_configuration", 'call', {
-                    form_values: config_form.serializeArray(),
+                    form_values: form_data,
                     next_step: next_step || false,
                     current_step: current_config_step || false,
                 }).then(function(data) {
