@@ -205,6 +205,8 @@ class ProductAttributeValue(models.Model):
 
     @api.multi
     def copy(self, default=None):
+        if not default:
+            default = {}
         default.update({'name': self.name + " (copy)"})
         product = super(ProductAttributeValue, self).copy(default)
         return product
