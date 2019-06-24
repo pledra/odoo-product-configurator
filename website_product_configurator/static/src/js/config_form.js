@@ -285,7 +285,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
         // Radio button work with image click
         $('.image_config_attr_value_radio').on("click", function(event) {
             var val_id = $(this).data('val-id');
-            var value_input = $('.config_attr_value[data-oe-id="' + val_id + '"]');
+            var value_input = $(this).closest('fieldset').find('.config_attr_value[data-oe-id="' + val_id + '"]');
             if (value_input.prop('disabled')) {
                 return
             }
