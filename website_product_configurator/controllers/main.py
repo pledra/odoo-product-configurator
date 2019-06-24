@@ -306,7 +306,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             form_values, config_session_id)
 
         # call onchange
-        field_prefix = product_configurator_obj._prefixes.get('field_prefix')
         specs = product_configurator_obj._onchange_spec()
         updates = {}
         try:
