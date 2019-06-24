@@ -12,10 +12,11 @@ class ProductAttribute(models.Model):
     def copy(self, default=None):
         if not default:
             default = {}
+        new_attrs = self.env['product.attribute']
         for attr in self:
             default.update({'name': attr.name + " (copy)"})
-            attr = super(ProductAttribute, attr).copy(default)
-            return attr
+            new_attrs += super(ProductAttribute, attr).copy(default)
+        return new_attrs
 
     @api.model
     def _get_nosearch_fields(self):
