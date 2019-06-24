@@ -544,9 +544,12 @@ class TestProduct(ProductConfiguratorTestCases):
         })
         product_config_wizard.action_next_step()
         product_config_wizard.write({
-            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id,
-            '__attribute-{}'.format(self.attr_engine.id): self.value_218i.id,
-            '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
+            '__attribute-{}'.format(self.attr_fuel.id):
+            self.value_gasoline.id,
+            '__attribute-{}'.format(self.attr_engine.id):
+            self.value_218i.id,
+            '__attribute-{}'.format(self.attr_color.id):
+            self.value_red.id,
         })
         product_config_wizard.action_next_step()
         with self.assertRaises(ValidationError):
@@ -576,29 +579,43 @@ class TestProduct(ProductConfiguratorTestCases):
             'type': 'consu',
             'categ_id': self.product_category.id,
         })
-        product_variant_count = self.product_tmpl_id.product_variant_count
+        product_variant_count = \
+            self.product_tmpl_id.product_variant_count
         self.assertEqual(
             product_variant_count,
             1,
-            'not equal'
-            )
+            'Error: If not equal\
+            Method: _compute_product_variant_count()'
+        )
 
     def test_23_get_config_name(self):
         product_product = self._get_product_id()
         product_product._get_config_name()
-        self.assertTrue(product_product.name)
+        self.assertTrue(
+            product_product.name,
+            'Error: If value False\
+            Method: _get_config_name()'
+        )
 
-    def test_18_search_product_weight(self):
+    def test_24_search_product_weight(self):
         product_product = self._get_product_id()
         operator = 'and'
         value = 10
-        search_product_weight = product_product._search_product_weight(operator, value)
-        self.assertTrue(search_product_weight)
+        search_product_weight = \
+            product_product._search_product_weight(operator, value)
+        self.assertTrue(
+            search_product_weight,
+            'Error: If value False\
+            Method: _search_product_weight()'
+        )
 
-    def test_24_search_weight(self):
+    def test_25_search_weight(self):
         operator = 'and'
         value = 10
-        weight_dummy = 50
-        search_weight = self.product_tmpl_id._search_weight(operator,value)
-        self.assertTrue(search_weight)
-
+        search_weight = \
+            self.product_tmpl_id._search_weight(operator, value)
+        self.assertTrue(
+            search_weight,
+            'Error: If value False\
+            Method: _search_weight()'
+        )

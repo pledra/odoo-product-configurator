@@ -597,39 +597,53 @@ class ProductConfig(ProductConfiguratorTestCases):
             'Error: If value_ids True\
             Method: onchange_attribute()'
         )
-        
-    def test_16_eval(self):
+
+    def test_22_eval(self):
+        self.attr_color.custom_type = 'binary'
+        productConfigSessionCustVals1 = self.env[
+            'product.config.session.custom.value'].create({
+                'cfg_session_id': self.session_id.id,
+                'attribute_id': self.attr_color.id,
+                'attachment_ids': [(6, 0, [self.irAttachement.id])]
+            })
+        checkBinary = productConfigSessionCustVals1.eval()
+        self.assertTrue(
+            checkBinary,
+            'Error: If value False\
+            Method: eval()'
+        )
+
         productConfigSessionCustVals = self.env[
             'product.config.session.custom.value'].create({
                 'cfg_session_id': self.session_id.id,
                 'attribute_id': self.attr_fuel.id
             })
-
-        self.attr_color.custom_type = 'binary'
-        productConfigSessionCustVals1 = self.env[
-            'product.config.session.custom.value'].create({
-                'cfg_session_id': self.session_id.id,
-                'attribute_id': self.attr_color.id,
-                'attachment_ids': [(6, 0, [self.irAttachement.id])]
-            })
-        checkIntval = productConfigSessionCustVals1.eval()
-
         self.attr_fuel.custom_type = 'int'
         productConfigSessionCustVals.update({'value': 154})
         checkIntval = productConfigSessionCustVals.eval()
+        self.assertEqual(
+            154,
+            checkIntval,
+            'Error: If Value not equal\
+            Method: eval()'
+        )
 
         self.attr_fuel.custom_type = 'float'
         productConfigSessionCustVals.update({'value': 15.4})
-        checkIntval = productConfigSessionCustVals.eval()
+        checkfloat = productConfigSessionCustVals.eval()
+        self.assertEqual(
+            15.4,
+            checkfloat,
+            'Error: If Value not equal\
+            Method: eval()'
+        )
 
-
-    def test_17_encode_custom_values(self):
+    def test_23_encode_custom_values(self):
         self.attr_color.custom_type = 'binary'
-        productConfigSessionCustVals1 = self.env[
-            'product.config.session.custom.value'].create({
-                'cfg_session_id': self.session_id.id,
-                'attribute_id': self.attr_color.id,
-                'attachment_ids': [(6, 0, [self.irAttachement.id])]
-            })
+        self.env['product.config.session.custom.value'].create({
+            'cfg_session_id': self.session_id.id,
+            'attribute_id': self.attr_color.id,
+            'attachment_ids': [(6, 0, [self.irAttachement.id])]
+        })
         custom_vals = self.session_id._get_custom_vals_dict()
         self.productConfigSession.encode_custom_values(custom_vals)

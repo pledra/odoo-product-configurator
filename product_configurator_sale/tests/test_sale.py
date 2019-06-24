@@ -1,5 +1,5 @@
-from ..tests.test_product_configurator_test_cases import \
-    ProductConfiguratorTestCases
+from odoo.addons.product_configurator.tests.\
+    test_product_configurator_test_cases import ProductConfiguratorTestCases
 
 
 class SaleOrder(ProductConfiguratorTestCases):
