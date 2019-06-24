@@ -532,3 +532,67 @@ class ProductConfig(ProductConfiguratorTestCases):
         self.attributeLine2.custom = False
         with self.assertRaises(ValidationError):
             self.product_tmpl_id.configure_product()
+
+    def test_21_onchange_attribute(self):
+        # create domain
+        self.productConfigDomainId = self.env['product.config.domain'].create({
+            'name': 'restriction 1'
+        })
+        self.productConfigDomainId.compute_domain()
+        # create attribute value line 1
+        self.env['product.config.domain.line'].create({
+            'domain_id': self.productConfigDomainId.id,
+            'attribute_id': self.attr_fuel.id,
+            'condition': 'in',
+            'value_ids': [(6, 0, [self.value_gasoline.id])],
+            'operator': 'and',
+        })
+        self.env['product.config.domain.line'].create({
+            'domain_id': self.productConfigDomainId.id,
+            'attribute_id': self.attr_color.id,
+            'condition': 'in',
+            'value_ids': [(6, 0, [self.value_red.id])],
+            'operator': 'and',
+        })
+        self.attributeLine1 = self.productAttributeLine.create({
+            'product_tmpl_id': self.product_tmpl_id.id,
+            'attribute_id': self.attribute_1.id,
+            'value_ids': [(6, 0, [
+                self.attribute_vals_1.id,
+                self.attribute_vals_2.id])],
+            'custom': True,
+            'required': True,
+        })
+        # create attribute line 2
+        self.attributeLine2 = self.productAttributeLine.create({
+            'product_tmpl_id': self.product_tmpl_id.id,
+            'attribute_id': self.attribute_2.id,
+            'value_ids': [(6, 0, [
+                self.attribute_vals_3.id,
+                self.attribute_vals_4.id])],
+            'custom': True,
+            'required': True,
+        })
+        self.product_tmpl_id.write({
+            'attribute_line_ids': [(6, 0, [
+                self.attributeLine1.id,
+                self.attributeLine2.id])],
+        })
+        self.productConfigDomainId.compute_domain()
+        # create attribute value line 1
+        config_line = self.env['product.config.line'].create({
+            'product_tmpl_id': self.product_tmpl_id.id,
+            'attribute_line_id': self.attributeLine1.id,
+            'value_ids': [(6, 0, [
+                self.attribute_vals_1.id,
+                self.attribute_vals_2.id])],
+            'domain_id': self.productConfigDomainId.id
+        })
+        with self.assertRaises(ValidationError):
+            config_line.onchange_attribute()
+
+        self.assertFalse(
+            config_line.value_ids,
+            'Error: If value_ids True\
+            Method: onchange_attribute()'
+        )

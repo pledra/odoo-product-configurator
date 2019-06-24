@@ -1,9 +1,8 @@
-from odoo.addons.product_configurator.tests. \
-    product_configurator_test_cases import ProductConfiguratorTestCases
+from ..tests.test_product_configurator_test_cases import \
+    ProductConfiguratorTestCases
 
 
 class SaleOrder(ProductConfiguratorTestCases):
-
     def setUp(self):
         super(SaleOrder, self).setUp()
         self.SaleOrderId = self.env['sale.order']
