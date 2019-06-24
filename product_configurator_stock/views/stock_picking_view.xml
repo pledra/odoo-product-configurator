@@ -16,7 +16,7 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='move_lines']" position="before">
+            <xpath expr="//field[@name='move_ids_without_package']" position="before">
                 <field name="allow_configuration" invisible="1"/>
                 <button name="action_config_start"
                         attrs="{'invisible': ['|', ('state', 'not in', ['draft','waiting','confirmed','assigned']), ('allow_configuration', '=', False)]}"
@@ -27,7 +27,7 @@
                         groups="product_configurator.group_product_configurator"/>
             </xpath>
 
-            <xpath expr="//field[@name='move_lines']/tree//field[@name='product_id']" position="after">
+            <xpath expr="//field[@name='move_ids_without_package']/tree//field[@name='product_id']" position="after">
                     <field name="allow_configuration" invisible="1"/>
                     <field name="config_ok" invisible="1"/>
                     <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
