@@ -17,6 +17,7 @@ class FreeSelection(fields.Selection):
 class ProductConfigurator(models.TransientModel):
     _name = 'product.configurator'
     _inherits = {'product.config.session': 'config_session_id'}
+    _description = "Product configuration Wizard"
 
     @property
     def _prefixes(self):
@@ -983,6 +984,7 @@ class ProductConfigurator(models.TransientModel):
 
 class ProductConfiguratorCustomValue(models.TransientModel):
     _name = 'product.configurator.custom.value'
+    _description = "Product Configurator Custom Value"
 
     attachment_ids = fields.Many2many(
         comodel_name='ir.attachment',

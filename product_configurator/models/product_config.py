@@ -7,6 +7,7 @@ from odoo.tools.misc import formatLang
 
 class ProductConfigDomain(models.Model):
     _name = 'product.config.domain'
+    _description = "Domain for Config Restrictions"
 
     @api.multi
     @api.depends('implied_ids')
@@ -83,6 +84,7 @@ class ProductConfigDomain(models.Model):
 class ProductConfigDomainLine(models.Model):
     _name = 'product.config.domain.line'
     _order = 'sequence'
+    _description = "Domain Line for Config Restrictions"
 
     def _get_domain_conditions(self):
         operators = [
@@ -140,6 +142,7 @@ class ProductConfigDomainLine(models.Model):
 
 class ProductConfigLine(models.Model):
     _name = 'product.config.line'
+    _description = "Product Config Restrictions"
 
     # TODO: Prevent config lines having dependencies that are not set in other
     # config lines
@@ -202,6 +205,7 @@ class ProductConfigLine(models.Model):
 
 class ProductConfigImage(models.Model):
     _name = 'product.config.image'
+    _description = "Product Config Image"
 
     name = fields.Char('Name', size=128, required=True, translate=True)
 
@@ -242,6 +246,7 @@ class ProductConfigImage(models.Model):
 
 class ProductConfigStep(models.Model):
     _name = 'product.config.step'
+    _description = "Product Config Steps"
 
     # TODO: Prevent values which have dependencies to be set in a
     #       step with higher sequence than the dependency
@@ -256,6 +261,7 @@ class ProductConfigStep(models.Model):
 
 class ProductConfigStepLine(models.Model):
     _name = 'product.config.step.line'
+    _description = "Product Config Step Lines"
 
     name = fields.Char(related='config_step_id.name')
 
@@ -297,6 +303,7 @@ class ProductConfigStepLine(models.Model):
 
 class ProductConfigSession(models.Model):
     _name = 'product.config.session'
+    _description = "Product Config Session"
 
     @api.multi
     @api.depends('value_ids', 'product_tmpl_id.list_price',
@@ -1449,6 +1456,7 @@ class ProductConfigSession(models.Model):
 class ProductConfigSessionCustomValue(models.Model):
     _name = 'product.config.session.custom.value'
     _rec_name = 'attribute_id'
+    _description = "Product Config Session Custom Value"
 
     attribute_id = fields.Many2one(
         comodel_name='product.attribute',

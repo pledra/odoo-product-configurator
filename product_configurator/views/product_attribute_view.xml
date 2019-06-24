@@ -44,8 +44,11 @@
                 </div>
             </xpath>
 
+            <xpath expr="//field[@name='create_variant']" position="attributes">
+                <attribte name="groups">base.group_no_one</attribte>
+            </xpath>
+
             <xpath expr="//field[@name='name']" position="after">
-                <field name="create_variant" groups="base.group_no_one"/>
                 <field name="active"/>
             </xpath>
 
