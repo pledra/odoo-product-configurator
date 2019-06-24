@@ -565,6 +565,40 @@ class TestProduct(ProductConfiguratorTestCases):
         product_product.with_context({
             'default_config_ok': True}).fields_view_get()
 
-    def test_20_get_conversions_dict(self):
+    def test_21_get_conversions_dict(self):
         product_product = self._get_product_id()
         product_product._get_conversions_dict()
+
+    def test_22_compute_product_variant_count(self):
+        self.product_tmpl_id = self.env['product.template'].create({
+            'name': 'Test Configuration',
+            'config_ok': True,
+            'type': 'consu',
+            'categ_id': self.product_category.id,
+        })
+        product_variant_count = self.product_tmpl_id.product_variant_count
+        self.assertEqual(
+            product_variant_count,
+            1,
+            'not equal'
+            )
+
+    def test_23_get_config_name(self):
+        product_product = self._get_product_id()
+        product_product._get_config_name()
+        self.assertTrue(product_product.name)
+
+    def test_18_search_product_weight(self):
+        product_product = self._get_product_id()
+        operator = 'and'
+        value = 10
+        search_product_weight = product_product._search_product_weight(operator, value)
+        self.assertTrue(search_product_weight)
+
+    def test_24_search_weight(self):
+        operator = 'and'
+        value = 10
+        weight_dummy = 50
+        search_weight = self.product_tmpl_id._search_weight(operator,value)
+        self.assertTrue(search_weight)
+

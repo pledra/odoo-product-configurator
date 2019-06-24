@@ -316,3 +316,9 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
     def test_09_onchange_product_preset(self):
         product_config_wizard = self._check_wizard_nxt_step()
         product_config_wizard._onchange_product_preset()
+
+    def test_05_open_step(self):
+        wizard = self.env['product.configurator']
+        step_to_open = wizard.config_session_id.check_and_open_incomplete_step()
+        check = wizard.open_step(step_to_open)
+        # print("-------",check)
