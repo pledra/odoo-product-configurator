@@ -14,7 +14,8 @@ class ProductConfigStepLine(models.Model):
         string='Website Template',
         comodel_name='ir.ui.view',
         domain=lambda s: [(
-            'id', 'in', [s.env.ref(xml_id).id for xml_id in s.CONFIG_FORM]
+            'inherit_id', '=', s.env.ref(
+                'website_product_configurator.config_form_base').id
         )],
     )
 

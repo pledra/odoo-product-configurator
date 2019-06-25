@@ -71,7 +71,8 @@
               <div t-attf-id="cfg_step_{{cfg_step_line.id}}"
                 t-att-data-step-id="cfg_step_line.id"
                 t-att-class="'tab-pane container fade' + (cfg_step_line.id == active_step.id and ' active in' or '')">
-                <t t-call="{{cfg_step_line.get_website_template()}}">
+                <t t-set="configuration_template_id" t-value="cfg_step_line.get_website_template()"/>
+                <t t-call="{{configuration_template_id}}">
                     <t t-set="cfg_step_attribute_line_ids" t-value="cfg_step_line.attribute_line_ids"/>
                 </t>
               </div>
@@ -189,106 +190,114 @@
     </template>
 
     <!-- Default configuration form (selectboxes ) -->
-    <template id="config_form_select" name="Selectbox configuration form">
-        <t t-set="field_prefix" t-value="prefixes.get('field_prefix')"/>
-        <t t-set="custom_field_prefix" t-value="prefixes.get('custom_field_prefix')"/>
-        <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
-            <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
-            <label class="control-label" t-esc="line.attribute_id.name" t-att-data-oe-id="line.attribute_id.id"></label>
-            <select t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
-                      t-att-data-oe-id="line.attribute_id.id"
-                      t-att-multiple="'multiple' if line.multi else None"
-                      t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                      t-att-class="'form-control config_attribute' + (line.required and ' required_config_attrib' or '')">
-                      <!-- t-att-disabled="'disabled' if not available_val_ids and not line.custom else None" -->
-                <option name=""/>
-                <t t-foreach="line.value_ids" t-as="value">
-                    <option
-                        t-att-selected="'selected' if value.id in value_ids.ids else None"
-                        t-att-class="'config_attr_value' + (' disabled' if value.id not in available_value_ids else '')"
-                        t-att-value="value.id"
-                        t-att-data-oe-id="value.id"
-                        t-att-name="value.id"
-                        t-att-disabled="value.id not in available_value_ids and True or False">
-                        <t t-esc="value.with_context({'show_price_extra': True, 'active_id': product_tmpl.id, 'show_attribute': False,}).name_get()[0][1]"/>
-                    </option>
-                  </t>
-                  <t t-if="line.custom">
-                      <option
-                          t-att-selected="'selected' if custom_value else None"
-                          t-att-class="'config_attr_value custom_config_attr_value' + (' disabled' if custom_val_id.id not in available_value_ids else '')"
-                          t-att-value="custom_val_id.id"
-                          t-att-data-oe-id="custom_val_id.id"
-                          t-att-name="custom_val_id.id"
-                          t-att-disabled="custom_val_id.id not in available_value_ids and True or False">
-                          <t t-esc="custom_val_id.name"/>
-                      </option>
-                  </t>
-            </select>
-            <t t-if="line.custom">
-                <div t-att-class="'custom_field_container' + (' hidden' if not custom_value else '')"
-                    t-att-data-oe-id="line.attribute_id.id">
-                    <t t-call="website_product_configurator.config_custom_field"/>
-                </div>
+    <template id="config_form_select" name="Selectbox configuration form" inherit_id="website_product_configurator.config_form_base">
+        <xpath expr="." position="inside">
+            <t t-if="configuration_template_id == 'website_product_configurator.config_form_select'">
+                <t t-set="field_prefix" t-value="prefixes.get('field_prefix')"/>
+                <t t-set="custom_field_prefix" t-value="prefixes.get('custom_field_prefix')"/>
+                <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
+                    <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
+                    <label class="control-label" t-esc="line.attribute_id.name" t-att-data-oe-id="line.attribute_id.id"></label>
+                    <select t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
+                              t-att-data-oe-id="line.attribute_id.id"
+                              t-att-multiple="'multiple' if line.multi else None"
+                              t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
+                              t-att-class="'form-control config_attribute' + (line.required and ' required_config_attrib' or '')">
+                              <!-- t-att-disabled="'disabled' if not available_val_ids and not line.custom else None" -->
+                        <option name=""/>
+                        <t t-foreach="line.value_ids" t-as="value">
+                            <option
+                                t-att-selected="'selected' if value.id in value_ids.ids else None"
+                                t-att-class="'config_attr_value' + (' disabled' if value.id not in available_value_ids else '')"
+                                t-att-value="value.id"
+                                t-att-data-oe-id="value.id"
+                                t-att-name="value.id"
+                                t-att-disabled="value.id not in available_value_ids and True or False">
+                                <t t-esc="value.with_context({'show_price_extra': True, 'active_id': product_tmpl.id, 'show_attribute': False,}).name_get()[0][1]"/>
+                            </option>
+                          </t>
+                          <t t-if="line.custom">
+                              <option
+                                  t-att-selected="'selected' if custom_value else None"
+                                  t-att-class="'config_attr_value custom_config_attr_value' + (' disabled' if custom_val_id.id not in available_value_ids else '')"
+                                  t-att-value="custom_val_id.id"
+                                  t-att-data-oe-id="custom_val_id.id"
+                                  t-att-name="custom_val_id.id"
+                                  t-att-disabled="custom_val_id.id not in available_value_ids and True or False">
+                                  <t t-esc="custom_val_id.name"/>
+                              </option>
+                          </t>
+                    </select>
+                    <t t-if="line.custom">
+                        <div t-att-class="'custom_field_container' + (' hidden' if not custom_value else '')"
+                            t-att-data-oe-id="line.attribute_id.id">
+                            <t t-call="website_product_configurator.config_custom_field"/>
+                        </div>
+                    </t>
+                </t>
             </t>
-        </t>
+        </xpath>
     </template>
 
     <!-- Default configuration form (radio buttons ) -->
-    <template id="config_form_radio" name="RadioButton configuration form">
-        <t t-set="field_prefix" t-value="prefixes.get('field_prefix')"/>
-        <t t-set="custom_field_prefix" t-value="prefixes.get('custom_field_prefix')"/>
-        <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
-            <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
-            <label class="control-label" t-esc="line.attribute_id.name"></label>
-            <fieldset t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
-                t-att-data-oe-id="line.attribute_id.id"
-                t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                t-att-class="'form-control config_attribute' + (line.required and ' required_config_attrib' or '')"
-                style="height: unset;">
-                <t t-foreach="line.value_ids" t-as="value">
-                    <div class="radio-card-container">
-                        <span t-esc="value.name" class="label_config_attr_value_radio"/>
-                        <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
-                            t-att-checked="'checked' if value.id in value_ids.ids else None"
-                            t-att-type="line.multi and 'checkbox' or 'radio'"
-                            t-att-class="'config_attr_value'"
-                            t-att-value="value.id"
-                            t-att-data-oe-id="value.id"
-                            t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                            t-att-disabled="value.id not in available_value_ids and True or False"/>
-                        <label class="image_config_attr_value_radio"
-                          for="'%s%s' % (field_prefix, line.attribute_id.id)"
-                          t-att-data-val-id="value.id"
-                          t-attf-style="background-image:url(/web/image/product.attribute.value/{{value.id}}/image_medium);"></label>
-                    </div>
+    <template id="config_form_radio" name="RadioButton configuration form" inherit_id="website_product_configurator.config_form_base">
+        <xpath expr="." position="inside">
+            <t t-if="configuration_template_id == 'website_product_configurator.config_form_radio'">
+                <t t-set="field_prefix" t-value="prefixes.get('field_prefix')"/>
+                <t t-set="custom_field_prefix" t-value="prefixes.get('custom_field_prefix')"/>
+                <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
+                    <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
+                    <label class="control-label" t-esc="line.attribute_id.name"></label>
+                    <fieldset t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
+                        t-att-data-oe-id="line.attribute_id.id"
+                        t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
+                        t-att-class="'form-control config_attribute' + (line.required and ' required_config_attrib' or '')"
+                        style="height: unset;">
+                        <t t-foreach="line.value_ids" t-as="value">
+                            <div class="radio-card-container">
+                                <span t-esc="value.name" class="label_config_attr_value_radio"/>
+                                <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
+                                    t-att-checked="'checked' if value.id in value_ids.ids else None"
+                                    t-att-type="line.multi and 'checkbox' or 'radio'"
+                                    t-att-class="'config_attr_value'"
+                                    t-att-value="value.id"
+                                    t-att-data-oe-id="value.id"
+                                    t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
+                                    t-att-disabled="value.id not in available_value_ids and True or False"/>
+                                <label class="image_config_attr_value_radio"
+                                  for="'%s%s' % (field_prefix, line.attribute_id.id)"
+                                  t-att-data-val-id="value.id"
+                                  t-attf-style="background-image:url(/web/image/product.attribute.value/{{value.id}}/image_medium);"></label>
+                            </div>
+                        </t>
+                        <t t-if="line.custom">
+                            <div>
+                                <span t-esc="custom_val_id.name" class="label_config_attr_value_radio"/>
+                                <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
+                                    t-att-checked="'checked' if custom_value else None"
+                                    t-att-type="line.multi and 'checkbox' or 'radio'"
+                                    t-att-class="'config_attr_value custom_config_attr_value'"
+                                    t-att-value="custom_val_id.id"
+                                    t-att-data-oe-id="custom_val_id.id"
+                                    t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
+                                    t-att-disabled="custom_val_id.id not in available_value_ids and True or False"/>
+                                <label class="image_config_attr_value_radio"
+                                  for="'%s%s' % (field_prefix, line.attribute_id.id)"
+                                  t-att-data-val-id="custom_val_id.id"
+                                  t-attf-style="background-image:url(/web/image/product.attribute.value/{{custom_val_id.id}}/image_medium);"></label>
+                            </div>
+                        </t>
+                    </fieldset>
+                    <t t-if="line.custom">
+                        <div t-att-class="'custom_field_container' + (' hidden' if not custom_value else '')"
+                            t-att-data-oe-id="line.attribute_id.id">
+                            <t t-call="website_product_configurator.config_custom_field"/>
+                        </div>
+                    </t>
+                    <br />
                 </t>
-                <t t-if="line.custom">
-                    <div>
-                        <span t-esc="custom_val_id.name" class="label_config_attr_value_radio"/>
-                        <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
-                            t-att-checked="'checked' if custom_value else None"
-                            t-att-type="line.multi and 'checkbox' or 'radio'"
-                            t-att-class="'config_attr_value custom_config_attr_value'"
-                            t-att-value="custom_val_id.id"
-                            t-att-data-oe-id="custom_val_id.id"
-                            t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                            t-att-disabled="custom_val_id.id not in available_value_ids and True or False"/>
-                        <label class="image_config_attr_value_radio"
-                          for="'%s%s' % (field_prefix, line.attribute_id.id)"
-                          t-att-data-val-id="custom_val_id.id"
-                          t-attf-style="background-image:url(/web/image/product.attribute.value/{{custom_val_id.id}}/image_medium);"></label>
-                    </div>
-                </t>
-            </fieldset>
-            <t t-if="line.custom">
-                <div t-att-class="'custom_field_container' + (' hidden' if not custom_value else '')"
-                    t-att-data-oe-id="line.attribute_id.id">
-                    <t t-call="website_product_configurator.config_custom_field"/>
-                </div>
             </t>
-            <br />
-        </t>
+        </xpath>
     </template>
 
     <!-- Product configurator checkout -->
