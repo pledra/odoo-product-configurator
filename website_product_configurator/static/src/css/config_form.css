@@ -14,7 +14,6 @@
     right: 0;
     margin-left: auto;
     margin-right: auto;
-
 }
 
 .config_weight {
@@ -27,19 +26,51 @@
     float: left;
     padding: 10px 10px 10px 0px;
 }
-.config_attribute input[type=radio] {
+.config_attribute input[type=radio], .config_attribute input[type=checkbox] {
     position: absolute;
     z-index: 999;
+    margin: 5px auto auto 5px;
 }
 
 .config_attribute input:active +.image_config_attr_value_radio {
     opacity: 90%;
 }
-.config_attribute input:checked +.image_config_attr_value_radio {
+.config_attribute input[type=radio]:checked +.image_config_attr_value_radio {
     -webkit-filter: none;
        -moz-filter: none;
             filter: none;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
+
+.config_attribute input[type=checkbox]:checked +.image_config_attr_value_radio {
+    -webkit-filter: none;
+       -moz-filter: none;
+            filter: none;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.config_attribute input[type=radio][disabled] +.image_config_attr_value_radio {
+    -webkit-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+       -moz-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+            filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+    border: none;
+    border-radius: none;
+    box-shadow: none;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.config_attribute input[type=checkbox][disabled] +.image_config_attr_value_radio {
+    -webkit-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+       -moz-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+            filter: brightness(90%) contrast(110%) grayscale(50%) opacity(50%);
+    border: none;
+    border-radius: none;
+    box-shadow: none;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
 .image_config_attr_value_radio {
     cursor: pointer;
     background-size: contain;
@@ -50,18 +81,26 @@
     -webkit-transition: all 100ms ease-in;
        -moz-transition: all 100ms ease-in;
             transition: all 100ms ease-in;
-    -webkit-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(80%);
-       -moz-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(80%);
-            filter: brightness(90%) contrast(110%) grayscale(50%) opacity(80%);
+    -webkit-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(90%);
+       -moz-filter: brightness(90%) contrast(110%) grayscale(50%) opacity(90%);
+            filter: brightness(90%) contrast(110%) grayscale(50%) opacity(90%);
 }
 .image_config_attr_value_radio:hover {
     -webkit-filter: none;
        -moz-filter: none;
             filter: none;
+    border: solid silver 1px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .label_config_attr_value_radio {
     position: absolute;
     z-index: 1;
-    margin-left: 20px;
+    margin: 5px auto auto 25px;
+}
+
+.radio-card-container {
+    margin: 5px 10px 5px 10px;
+    float: left;
 }

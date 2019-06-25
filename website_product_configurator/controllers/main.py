@@ -142,6 +142,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 image_line_ids=config_image_ids,
                 model_name=config_image_ids[:1]._name),
             'weight_prec': weight_prec,
+            'main_object': cfg_session.product_tmpl_id,
         }
         return vals
 
@@ -310,8 +311,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             form_values, config_session_id)
 
         # call onchange
-        field_prefix = product_configurator_obj._prefixes.get('field_prefix')
-        field_name = '%s%s' % (field_prefix, field_name)
         specs = product_configurator_obj._onchange_spec()
         updates = {}
         try:

@@ -1,6 +1,6 @@
 from ast import literal_eval
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api, _, tools
 from odoo.exceptions import ValidationError
 from odoo.addons import decimal_precision as dp
 
@@ -269,12 +269,33 @@ class ProductAttributeValue(models.Model):
         help="Weight Extra: Extra weight for the variant with this attribute"
         "value on sale price. eg. 200 price extra, 1000 + 200 = 1200."
     )
+    image = fields.Binary(
+        string='Image',
+        attachment=True,
+        help="Attribute value image (Display on website for radio buttons)"
+    )
+    image_medium = fields.Binary(
+        string="Medium Image",
+        attachment=True,
+        help="Attribute value medium size image"
+        " (Display on website for radio buttons)"
+    )
     # prevent to add new attr-value from adding
     # in already created template
     product_ids = fields.Many2many(
         comodel_name='product.product',
         copy=False
     )
+
+    @api.model
+    def create(self, vals):
+        tools.image_resize_images(vals)
+        return super(ProductAttributeValue, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        tools.image_resize_images(vals)
+        return super(ProductAttributeValue, self).write(vals)
 
     @api.multi
     def name_get(self):
