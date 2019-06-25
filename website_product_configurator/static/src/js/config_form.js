@@ -53,7 +53,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 _applyDomainOnValues(domains);
                 _handleOpenSteps(open_cfg_step_line_ids);
                 _setImageUrl(config_image_vals);
-                _setWeightPrice(values.weight, values.price);
+                _setWeightPrice(values.weight, values.price, data.decimal_precision);
             });
             _handleCustomAttribute(ev)
         });
@@ -73,9 +73,10 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
         });
 
-        function _setWeightPrice(weight, price) {
-            var formatted_price = _.str.sprintf('%.2f', price);
-            var formatted_weight = _.str.sprintf('%.2f', weight);
+        function _setWeightPrice(weight, price, decimal_precisions) {
+            var formatted_price = _.str.sprintf('%.'+decimal_precisions.price+'f', price);
+            var formatted_weight = _.str.sprintf('%.'+decimal_precisions.weight+'f', weight);
+
             $('.config_product_weight').text(formatted_weight);
             $('.config_product_price').find('.oe_currency_value').text(formatted_price);
         }
