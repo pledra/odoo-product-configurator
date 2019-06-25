@@ -34,6 +34,7 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
             'type': 'consu',
             'categ_id': self.product_category.id,
         })
+        self.custom_vals = self.productConfigSession.get_custom_value_id()
         self.cfg_tmpl = self.env.ref('product_configurator.bmw_2_series')
 
         attribute_vals = self.cfg_tmpl.attribute_line_ids.mapped('value_ids')
@@ -330,9 +331,7 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
     def test_11_onchange(self):
         field_name = ''
         values = {
-            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id,
-            '__attribute-{}'.format(self.attr_fuel.id): self.value_218i.id,
-            '__attribute-{}'.format(self.attr_fuel.id): self.value_red.id
+            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id
         }
         product_config_wizard = self._check_wizard_nxt_step()
         field_prefix = product_config_wizard._prefixes.get('field_prefix')
@@ -345,10 +344,8 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
             'custom': True,
         })
         values2 = {
-            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id,
+            '__attribute-{}'.format(self.attr_fuel.id): self.custom_vals.id,
             '__custom-{}'.format(self.attr_fuel.id): 'Test1',
-            '__attribute-{}'.format(self.attr_fuel.id): self.value_218i.id,
-            '__attribute-{}'.format(self.attr_fuel.id): self.value_red.id
         }
         product_config_wizard.onchange(values2, field_name, specs)
 
@@ -472,3 +469,121 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
             'Error: If not unlink record\
             Method: unlink()'
         )
+
+    def test_15_read(self):
+        product_config_wizard = self._check_wizard_nxt_step()
+        values = {
+            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id,
+            '__attribute-{}'.format(self.attr_engine.id): self.value_218i.id,
+            '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
+        }
+        product_config_wizard.read(values)
+        product_tmpl = self.env['product.template'].create({
+            'name': 'Test Custom',
+            'config_ok': True,
+            'type': 'consu',
+            'categ_id': self.product_category.id,
+        })
+        self.ProductConfWizard.action_next_step()
+        product_config_wizard_1 = self.ProductConfWizard.create({
+            'product_tmpl_id': product_tmpl.id,
+        })
+        # create attribute line 1
+        self.attributeLine1 = self.productAttributeLine.create({
+            'product_tmpl_id': product_tmpl.id,
+            'attribute_id': self.attr_fuel.id,
+            'value_ids': [(6, 0, [
+                           self.value_gasoline.id,
+                           self.value_diesel.id])],
+            'required': True,
+            'custom': True,
+        })
+        # create attribute line 2
+        self.attributeLine2 = self.productAttributeLine.create({
+            'product_tmpl_id': product_tmpl.id,
+            'attribute_id': self.attr_engine.id,
+            'value_ids': [(6, 0, [
+                           self.value_218i.id,
+                           self.value_220i.id])],
+            'required': True,
+            'custom': True,
+        })
+        # create attribute line 2
+        self.attributeLine3 = self.productAttributeLine.create({
+            'product_tmpl_id': product_tmpl.id,
+            'attribute_id': self.attr_engine.id,
+            'value_ids': [(6, 0, [
+                           self.value_218d.id,
+                           self.value_220d.id])],
+            'required': True,
+        })
+        # configure product creating config step
+        self.configStepLine1 = self.productConfigStepLine.create({
+            'product_tmpl_id': product_tmpl.id,
+            'config_step_id': self.config_step_engine.id,
+            'attribute_line_ids': [(6, 0, [
+                self.attributeLine1.id,
+                self.attributeLine2.id])]
+        })
+        # create config_step_line 2
+        self.configStepLine2 = self.productConfigStepLine.create({
+            'product_tmpl_id': product_tmpl.id,
+            'config_step_id': self.config_step_body.id,
+            'attribute_line_ids': [(6, 0, [
+                self.attributeLine3.id])]
+        })
+        product_tmpl.write({
+            'config_step_line_ids': [(6, 0, [
+                self.configStepLine1.id,
+                self.configStepLine2.id]
+            )],
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(self.attr_fuel.id): self.custom_vals.id,
+            '__custom-{}'.format(self.attr_fuel.id): "#DEFSRE",
+            '__attribute-{}'.format(self.attr_engine.id): self.custom_vals.id,
+            '__custom-{}'.format(self.attr_engine.id): "#FERDFGR",
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
+        })
+        # check for custom value
+        custom_vals = {
+            '__attribute-{}'.format(self.attr_fuel.id): self.custom_vals.id,
+            '__custom-{}'.format(self.attr_fuel.id): "#DEFSRE",
+            '__attribute-{}'.format(self.attr_engine.id): self.custom_vals.id,
+            '__custom-{}'.format(self.attr_engine.id): "#FERDFGR",
+            '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
+        }
+        product_config_wizard_1.read(custom_vals)
+        session = self.productConfigSession.search([
+            ('product_tmpl_id', '=', product_tmpl.id)])
+        session.unlink()
+        self.attributeLine1.custom = False
+        self.attributeLine1.multi = True
+        self.ProductConfWizard.action_next_step()
+        product_config_wizard_2 = self.ProductConfWizard.create({
+            'product_tmpl_id': product_tmpl.id,
+        })
+        product_config_wizard_2.action_next_step()
+        product_config_wizard_2.write({
+            '__attribute-{}'.format(self.attr_fuel.id): [(6, 0, [
+                self.value_diesel.id, self.value_gasoline.id])],
+            '__attribute-{}'.format(self.attr_engine.id): self.custom_vals.id,
+            '__custom-{}'.format(self.attr_engine.id): "#FERDFGR",
+        })
+        product_config_wizard_2.action_next_step()
+        product_config_wizard_2.write({
+            '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
+        })
+        # check for multi value
+        multi_vals = {
+            '__attribute-{}'.format(self.attr_fuel.id): [(6, 0, [
+                self.value_diesel.id, self.value_gasoline.id])],
+            '__attribute-{}'.format(self.attr_engine.id): self.custom_vals.id,
+            '__custom-{}'.format(self.attr_engine.id): "#FERDFGR",
+            '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
+        }
+        product_config_wizard_2.read(multi_vals)

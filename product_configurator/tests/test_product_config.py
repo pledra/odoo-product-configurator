@@ -561,7 +561,6 @@ class ProductConfig(ProductConfiguratorTestCases):
             'value_ids': [(6, 0, [
                 self.attribute_vals_1.id,
                 self.attribute_vals_2.id])],
-            'custom': True,
             'required': True,
         })
         # create attribute line 2
@@ -571,7 +570,6 @@ class ProductConfig(ProductConfiguratorTestCases):
             'value_ids': [(6, 0, [
                 self.attribute_vals_3.id,
                 self.attribute_vals_4.id])],
-            'custom': True,
             'required': True,
         })
         self.product_tmpl_id.write({

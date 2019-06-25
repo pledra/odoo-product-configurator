@@ -232,32 +232,12 @@ class ProductAttributes(TransactionCase):
                 )]
             })
 
-    # def test_13_onchange_values(self):
-    #     product_tmpl_id = self.env['product.template'].create({
-    #         'name': 'Test Configuration',
-    #         'config_ok': True,
-    #         'type': 'consu',
-    #         'categ_id': self.product_category.id,
-    #     })
-    #     self.attributeLine1 = self.productAttributeLine.create({
-    #         'product_tmpl_id': product_tmpl_id.id,
-    #         'attribute_id': self.attr_fuel.id,
-    #         'value_ids': [(6, 0, [
-    #            self.value_gasoline.id,
-    #            self.value_diesel.id]
-    #         )],
-    #         'default_val': self.value_gasoline.id,
-    #         'required': True,
-    #     })
-    #     self.attributeLine1.attribute_id = self.attr_engine.id
-    #     self.attributeLine1.onchange_values()
-
-    # def test_14_copy(self):
-    #     default = {}
-    #     productattribute= self.value_gasoline.copy(default)
-    #     self.assertEqual(
-    #         productattribute.name,
-    #         self.value_gasoline.name + " (copy)",
-    #         'Error: If not equal productattribute name\
-    #         Method: copy()'
-    #     )
+    def test_14_copy(self):
+        default = {}
+        productattribute = self.value_gasoline.copy(default)
+        self.assertEqual(
+            productattribute.name,
+            self.value_gasoline.name + " (copy)",
+            'Error: If not equal productattribute name\
+            Method: copy()'
+        )
