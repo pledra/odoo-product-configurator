@@ -4,6 +4,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
     var ajax = require('web.ajax');
     var time = require('web.time');
 
+    var image_dict = {}
+
     $(document).ready(function () {
         var config_form = $("#product_config_form");
         var datetimepickers_options = {
@@ -31,8 +33,12 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         /* Monitor input changes in the configuration form and call the backend onchange method*/
         config_form.find('.config_attribute').change(function(ev) {
+            var form_data = config_form.serializeArray();
+            for (var field_name in image_dict) {
+                form_data.push({'name': field_name, 'value': image_dict[field_name]});
+            }
             ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
-                form_values: config_form.serializeArray(),
+                form_values: form_data,
                 field_name: $(this)[0].name,
             }).then(function(data) {
                 if (data.error) {
@@ -52,9 +58,25 @@ odoo.define('website_product_configurator.config_form', function (require) {
             _handleCustomAttribute(ev)
         });
 
+        config_form.find('.custom_config_value').change(function (ev) {
+            var file = ev.target.files[0];
+            var loaded = false;
+            var files_data = '';
+            var BinaryReader = new FileReader();
+            // file read as DataURL
+            BinaryReader.readAsDataURL(file);
+            BinaryReader.onloadend = function (upload) {
+                var buffer = upload.target.result;
+                buffer = buffer.split(',')[1];
+                files_data = buffer;
+                image_dict[ev.target.name]= files_data;
+            }
+        });
+
         function _setWeightPrice(weight, price, decimal_precisions) {
             var formatted_price = _.str.sprintf('%.'+decimal_precisions.price+'f', price);
             var formatted_weight = _.str.sprintf('%.'+decimal_precisions.weight+'f', weight);
+
             $('.config_product_weight').text(formatted_weight);
             $('.config_product_price').find('.oe_currency_value').text(formatted_price);
         }
@@ -76,7 +98,14 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var attribute_id = $(event.currentTarget).attr('data-oe-id');
             var custom_value = container.find('.custom_config_value[data-oe-id=' + attribute_id + ']');
             var custom_value_container = custom_value.closest('.custom_field_container[data-oe-id=' + attribute_id + ']');
-            if ($(event.currentTarget.selectedOptions[0]).hasClass('custom_config_attr_value') && custom_value_container.hasClass('hidden')) {
+            var custom_config_attr = $(event.currentTarget).find('.custom_config_attr_value');
+            var flag_custom = false;
+            if (custom_config_attr[0].tagName == "OPTION" && custom_config_attr[0].selected) {
+                flag_custom = true;
+            } else if (custom_config_attr[0].tagName == "INPUT" && custom_config_attr[0].checked) {
+                flag_custom = true;
+            };
+            if (flag_custom && custom_value_container.hasClass('hidden')) {
                 custom_value_container.removeClass('hidden');
                 custom_value.addClass('required_config_attrib');
             } else if (!custom_value_container.hasClass('hidden')){
@@ -110,22 +139,26 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var $options = $selection.find('.config_attr_value');
                 _.each($options, function (option) {
                     var condition = domain[0][1];
-                    if (condition == 'in' || config_form == '=') {
+                    if (condition == 'in' || condition == '=') {
                         if ($.inArray(parseInt(option.value), domain[0][2]) < 0) {
                             $(option).attr('disabled', true);
                             if (option.selected) {
                                 option.selected = false;
+                            } else if (option.checked) {
+                                option.checked = false;
                             };
                         } else {
                             $(option).attr('disabled', false);
                         };
-                    } else if (condition == 'not in' || config_form == '!=') {
+                    } else if (condition == 'not in' || condition == '!=') {
                         if ($.inArray(parseInt(option.value), domain[0][2]) < 0) {
                             $(option).attr('disabled', false);
                         } else {
                             $(option).attr('disabled', true);
                             if (option.selected) {
                                 option.selected = false;
+                            } else if (option.checked) {
+                                option.checked = false;
                             };
                         };
                     };
@@ -137,9 +170,13 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var flag = _checkRequiredFields(event)
             var config_step_header = config_form.find('.nav.nav-tabs');
             var current_config_step = config_step_header.find('.nav-item.config_step.active').attr('data-step-id');
+            var form_data = config_form.serializeArray();
+            for (var field_name in image_dict) {
+                form_data.push({'name': field_name, 'value': image_dict[field_name]});
+            }
             if (flag) {
                 return ajax.jsonRpc("/website_product_configurator/save_configuration", 'call', {
-                    form_values: config_form.serializeArray(),
+                    form_values: form_data,
                     next_step: next_step || false,
                     current_step: current_config_step || false,
                 }).then(function(data) {
@@ -166,23 +203,35 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }, 4000);
         };
 
+        function _checkRequiredFieldsRadio(parent_container) {
+            var radio_inputs = parent_container.find('.config_attr_value:checked');
+            if (radio_inputs.length) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         function _checkRequiredFields(event) {
             var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
             var config_attr = active_step.find('.form-control.required_config_attrib');
             var flag = true;
             for (var i = 0; i < config_attr.length; i++) {
-                var cfg_attr_value = config_attr[i].value.trim()
-                if (!cfg_attr_value  || cfg_attr_value == '0') {
+                if (config_attr[i].tagName == 'FIELDSET') {
+                    flag = _checkRequiredFieldsRadio($(config_attr[i]))
+                } else if (!config_attr[i].value.trim()  || config_attr[i].value == '0') {
+                    flag = false
+                };
+
+                if (!flag) {
                     $(config_attr[i]).addClass('textbox-border-color');
-                    flag = false;
                     // if (config_attr[i].tagName == 'SELECT') {
                     //     var message = "Please select an item in the list."
                     // } else if (config_attr[i].tagName == 'INPUT') {
                     //     var message = "Please enter value."
                     // }
                     // _displayTooltip(config_attr[i], message);
-                }
-                else if (cfg_attr_value && $(config_attr[i]).hasClass('textbox-border-color')) {
+                } else if (flag && $(config_attr[i]).hasClass('textbox-border-color')) {
                     $(config_attr[i]).removeClass('textbox-border-color');
                 };
             };

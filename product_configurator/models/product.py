@@ -258,7 +258,6 @@ class ProductTemplate(models.Model):
         """create product configuration wizard
         - return action to launch wizard
         - click on next step based on value of click_next"""
-
         action = {
             'type': 'ir.actions.act_window',
             'res_model': 'product.configurator',
@@ -270,7 +269,6 @@ class ProductTemplate(models.Model):
                 wizard_model='product.configurator',
             ),
         }
-
         wizard_obj = self.env[model_name]
         wizard_vals = {
             'product_tmpl_id': self.id
@@ -317,7 +315,6 @@ class ProductProduct(models.Model):
                 value_ids=self.attribute_value_ids.ids,
                 custom_vals=custom_vals
             ).filtered(lambda p: p.id != self.id)
-
             if duplicates:
                 raise ValidationError(
                     _("Configurable Products cannot have duplicates "
@@ -360,6 +357,7 @@ class ProductProduct(models.Model):
             for attribute_price in attr_prices:
                 if attribute_price.product_tmpl_id == product.product_tmpl_id:
                     weight_extra += attribute_price.weight_extra
+
             product.weight_extra = weight_extra
 
     def _compute_product_weight(self):

@@ -1,4 +1,5 @@
 from odoo.tests.common import TransactionCase
+from odoo.exceptions import ValidationError
 from odoo import SUPERUSER_ID
 
 
@@ -57,10 +58,9 @@ class ConfigurationRules(TransactionCase):
             'tapistry_black', 'steptronic', 'smoker_package', 'tow_hook'
         ]
 
-        attr_val_ids = self.get_attr_val_ids(conf)
-        validation = self.cfg_session.validate_configuration(attr_val_ids)
-        self.assertFalse(validation, "Incompatible values (Diesel Fuel -> "
-                         "Gasoline Engine) configuration passed validation")
+        with self.assertRaises(ValidationError):
+            attr_val_ids = self.get_attr_val_ids(conf)
+            self.cfg_session.validate_configuration(attr_val_ids)
 
     def test_missing_val_configuration(self):
         conf = [
@@ -68,10 +68,9 @@ class ConfigurationRules(TransactionCase):
             'tapistry_black', 'steptronic', 'smoker_package', 'tow_hook'
         ]
 
-        attr_val_ids = self.get_attr_val_ids(conf)
-        validation = self.cfg_session.validate_configuration(attr_val_ids)
-        self.assertFalse(validation, "Configuration with missing required "
-                         "values passed validation")
+        with self.assertRaises(ValidationError):
+            attr_val_ids = self.get_attr_val_ids(conf)
+            self.cfg_session.validate_configuration(attr_val_ids)
 
     def test_invalid_multi_configuration(self):
         conf = [
@@ -80,10 +79,9 @@ class ConfigurationRules(TransactionCase):
             'tow_hook'
         ]
 
-        attr_val_ids = self.get_attr_val_ids(conf)
-        validation = self.cfg_session.validate_configuration(attr_val_ids)
-        self.assertFalse(validation, "Configuration with multiple values for "
-                         "attribute color passed validation")
+        with self.assertRaises(ValidationError):
+            attr_val_ids = self.get_attr_val_ids(conf)
+            self.cfg_session.validate_configuration(attr_val_ids)
 
     def test_invalid_custom_value_configuration(self):
         conf = [
@@ -99,11 +97,9 @@ class ConfigurationRules(TransactionCase):
             attr_color_id: {'value': '#fefefe'}
         }
 
-        attr_val_ids = self.get_attr_val_ids(conf)
-        validation = self.cfg_session.validate_configuration(
-            attr_val_ids, custom_vals)
-
-        self.assertFalse(validation, "Custom value accepted for fixed "
-                         "attribute color")
+        with self.assertRaises(ValidationError):
+            attr_val_ids = self.get_attr_val_ids(conf)
+            self.cfg_session.validate_configuration(
+                attr_val_ids, custom_vals)
 
     # TODO: Test configuration with disallowed custom type value
