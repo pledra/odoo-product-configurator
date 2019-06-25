@@ -96,17 +96,29 @@
     </record>
 
     <!-- Product Attribute Value -->
-
-    <!--record id="product_attribute_value_view_tree" model="ir.ui.view">
-        <field name="name">product.config.attribute.value.tree.view</field>
-        <field name="model">product.attribute.value</field>
-        <field name="inherit_id" ref="product.product_attribute_value_view_tree"/>
+    <record id="product_template_attribute_value_view_tree_weight_extra" model="ir.ui.view">
+        <field name="name">product.template.attribute.value.view.tree.weight.extra</field>
+        <field name="model">product.template.attribute.value</field>
+        <field name="inherit_id" ref="product.product_template_attribute_value_view_tree"/>
+        <field name="type">tree</field>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='price_extra']" position="before">
-                <field name="weight_extra" groups="product_configurator.group_product_configurator_manager"/>
+            <xpath expr="//field[@name='price_extra']" position="after">
+                <field name="weight_extra"/>
             </xpath>
         </field>
-    </record-->
+    </record>
+
+    <record id="product_template_attribute_value_view_form_weight_extra" model="ir.ui.view">
+        <field name="name">product.template.attribute.value.view.form.weight.extra</field>
+        <field name="model">product.template.attribute.value</field>
+        <field name="inherit_id" ref="product.product_template_attribute_value_view_form"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_extra']" position="after">
+                <field name="weight_extra"/>
+            </xpath>
+        </field>
+    </record>
 
     <record id="product_attribute_value_tree_view" model="ir.ui.view">
         <field name="name">product.config.attribute.value.tree</field>
@@ -118,7 +130,6 @@
             </xpath>
         </field>
     </record>
-
 
     <record model="ir.ui.view" id="product_attribute_value_form_view">
         <field name="name">product.config.product.attribute.value.form.view</field>

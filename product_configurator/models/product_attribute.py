@@ -210,48 +210,6 @@ class ProductAttributeValue(models.Model):
         product = super(ProductAttributeValue, self).copy(default)
         return product
 
-    @api.multi
-    def _compute_price_ids(self):
-        for value in self:
-            att_line = self.env['product.template.attribute.line']
-            att_line_val = att_line.search([('value_ids', '=', value.id)])
-            value.price_ids = att_line_val.product_template_value_ids
-
-    price_ids = fields.Many2many('product.template.attribute.value', compute="_compute_price_ids")
-
-    @api.multi
-    def _compute_weight_extra(self):
-        for product_attribute in self:
-            product_tmpl_id = product_attribute._context.get('active_id')
-            if product_tmpl_id:
-                price = product_attribute.price_ids.filtered(
-                    lambda price: price.product_tmpl_id.id == product_tmpl_id
-                )
-                product_attribute.weight_extra = price.weight_extra
-            else:
-                product_attribute.weight_extra = 0.0
-
-    def _inverse_weight_extra(self):
-        product_tmpl_id = self._context.get('active_id')
-        if not product_tmpl_id:
-            return
-
-        AttributePrice = self.env['product.attribute.price']
-        prices = AttributePrice.search([
-            ('value_id', 'in', self.ids),
-            ('product_tmpl_id', '=', product_tmpl_id)
-        ])
-        updated = prices.mapped('value_id')
-        if prices:
-            prices.write({'weight_extra': self.weight_extra})
-        else:
-            for value in self - updated:
-                AttributePrice.create({
-                    'product_tmpl_id': product_tmpl_id,
-                    'value_id': value.id,
-                    'weight_extra': self.weight_extra,
-                })
-
     active = fields.Boolean(
         string='Active',
         default=True,
@@ -267,16 +225,6 @@ class ProductAttributeValue(models.Model):
         string="Attribute Lines",
         copy=False
     )
-    weight_extra = fields.Float(
-        string='Attribute Weight Extra',
-        compute='_compute_weight_extra',
-        inverse='_inverse_weight_extra',
-        default=0.0,
-        digits=dp.get_precision('Product Weight'),
-        help="Weight Extra: Extra weight for the variant with this attribute"
-        "value on sale price. eg. 200 price extra, 1000 + 200 = 1200."
-    )
-    price_extra = fields.Float()
     # prevent to add new attr-value from adding
     # in already created template
     product_ids = fields.Many2many(
@@ -289,11 +237,17 @@ class ProductAttributeValue(models.Model):
         res = super(ProductAttributeValue, self).name_get()
         if not self._context.get('show_price_extra'):
             return res
-
+        product_template_id = self.env.context.get('active_id', False)
+        template_value_obj = self.env['product.template.attribute.value']
+        product_template_value_ids = template_value_obj.search([
+            ('product_tmpl_id', '=', product_template_id),
+            ('product_attribute_value_id', 'in', self.ids)]
+        )
         extra_prices = {
-            av.id: av.price_extra for av in self if av.price_extra
+            av.product_attribute_value_id.id: av.price_extra
+            for av in product_template_value_ids
+            if av.price_extra
         }
-        print("extra_prices ",extra_prices)
 
         res_prices = []
 
@@ -356,8 +310,8 @@ class ProductAttributeValue(models.Model):
 
 class ProductAttributePrice(models.Model):
     _inherit = "product.template.attribute.value"
-    # Leverage product.attribute.price to compute the extra weight each
-    # attribute adds
+    # Leverage product.template.attribute.value to compute the extra weight
+    # each attribute adds
 
     weight_extra = fields.Float(
         string="Weight",
@@ -368,6 +322,7 @@ class ProductAttributePrice(models.Model):
 class ProductAttributeValueLine(models.Model):
     _name = 'product.attribute.value.line'
     _description = "Product Attribute Value Line"
+    _order = 'sequence'
 
     sequence = fields.Integer(string='Sequence', default=10)
     product_tmpl_id = fields.Many2one(
@@ -409,8 +364,6 @@ class ProductAttributeValueLine(models.Model):
             template = attr_val_line.product_tmpl_id
             value_list = template.attribute_line_ids.mapped('value_ids')
             attr_val_line.product_value_ids = [(6, 0, value_list.ids)]
-
-    _order = 'sequence'
 
     @api.multi
     @api.constrains('value_ids')

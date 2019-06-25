@@ -306,10 +306,12 @@ class ProductConfigSession(models.Model):
     _description = "Product Config Session"
 
     @api.multi
-    @api.depends('value_ids', 'product_tmpl_id.list_price',
-                 'product_tmpl_id.attribute_line_ids',
-                 'product_tmpl_id.attribute_line_ids.value_ids',)
-                 #'product_tmpl_id.attribute_line_ids.value_ids.price_extra')
+    @api.depends(
+        'value_ids', 'product_tmpl_id.list_price',
+        'product_tmpl_id.attribute_line_ids',
+        'product_tmpl_id.attribute_line_ids.value_ids',
+        'product_tmpl_id.attribute_line_ids.product_template_value_ids',
+        'product_tmpl_id.attribute_line_ids.product_template_value_ids.price_extra')
     def _compute_cfg_price(self):
         for session in self:
             if session.product_tmpl_id:
@@ -382,20 +384,25 @@ class ProductConfigSession(models.Model):
         self = self.with_context({'active_id': product_tmpl.id})
 
         value_ids = self.flatten_val_ids(value_ids)
-        vals = self.env['product.attribute.value'].browse(value_ids)
 
         weight_extra = 0.0
-        for attribute_price in vals.mapped('price_ids'):
-            if attribute_price.product_tmpl_id == product_tmpl:
-                weight_extra += attribute_price.weight_extra
+        product_attr_val_obj = self.env['product.template.attribute.value']
+        product_tmpl_attr_values = product_attr_val_obj.search([
+            ('product_tmpl_id', 'in', product_tmpl.ids),
+            ('product_attribute_value_id', 'in', value_ids)
+        ])
+        for product_tmpl_attr_val in product_tmpl_attr_values:
+            weight_extra += product_tmpl_attr_val.weight_extra
 
         return product_tmpl.weight + weight_extra
 
     @api.multi
-    @api.depends('value_ids', 'product_tmpl_id',
-                 'product_tmpl_id.attribute_line_ids',
-                 'product_tmpl_id.attribute_line_ids.value_ids',
-                 'product_tmpl_id.attribute_line_ids.value_ids.weight_extra')
+    @api.depends(
+        'value_ids', 'product_tmpl_id',
+        'product_tmpl_id.attribute_line_ids',
+        'product_tmpl_id.attribute_line_ids.value_ids',
+        'product_tmpl_id.attribute_line_ids.product_template_value_ids',
+        'product_tmpl_id.attribute_line_ids.product_template_value_ids.weight_extra')
     def _compute_cfg_weight(self):
         for cfg_session in self:
             cfg_session.weight = cfg_session.get_cfg_weight()
@@ -786,12 +793,15 @@ class ProductConfigSession(models.Model):
         self = self.with_context({'active_id': product_tmpl.id})
 
         value_ids = self.flatten_val_ids(value_ids)
-        vals = self.env['product.attribute.value'].browse(value_ids)
 
         price_extra = 0.0
-        for attribute_price in vals.mapped('price_ids'):
-            if attribute_price.product_tmpl_id == product_tmpl:
-                price_extra += attribute_price.price_extra
+        product_attr_val_obj = self.env['product.template.attribute.value']
+        product_tmpl_attr_values = product_attr_val_obj.search([
+            ('product_tmpl_id', 'in', product_tmpl.ids),
+            ('product_attribute_value_id', 'in', value_ids)
+        ])
+        for product_tmpl_attr_val in product_tmpl_attr_values:
+            price_extra += product_tmpl_attr_val.price_extra
 
         return product_tmpl.list_price + price_extra
 

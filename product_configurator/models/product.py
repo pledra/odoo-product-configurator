@@ -145,7 +145,8 @@ class ProductTemplate(models.Model):
         self.ensure_one()
         action = self.env.ref(
             'product.product_attribute_value_action').read()[0]
-        value_ids = self.attribute_line_ids.mapped('value_ids').ids
+        value_ids = self.attribute_line_ids.mapped(
+            'product_template_value_ids').ids
         action['domain'] = [('id', 'in', value_ids)]
         context = safe_eval(action['context'], {'active_id': self.id})
         context.update({'active_id': self.id})
@@ -351,16 +352,23 @@ class ProductProduct(models.Model):
                     self.display_name)
         return self.display_name
 
-    #@api.depends('attribute_value_ids.price_ids.weight_extra',
-    #             'attribute_value_ids.price_ids.product_tmpl_id')
+    @api.depends('product_template_attribute_value_ids.price_extra')
+    def _compute_product_price_extra(self):
+        for product in self:
+            product.price_extra = sum(
+                product.mapped(
+                    'product_template_attribute_value_ids.price_extra'
+                )
+            )
+
+    @api.depends('product_template_attribute_value_ids.weight_extra')
     def _compute_product_weight_extra(self):
         for product in self:
-            weight_extra = 0.0
-            attr_prices = product.mapped('attribute_value_ids.price_ids')
-            for attribute_price in attr_prices:
-                if attribute_price.product_tmpl_id == product.product_tmpl_id:
-                    weight_extra += attribute_price.weight_extra
-            product.weight_extra = weight_extra
+            product.weight_extra = sum(
+                product.mapped(
+                    'product_template_attribute_value_ids.weight_extra'
+                )
+            )
 
     def _compute_product_weight(self):
         for product in self:
@@ -418,7 +426,7 @@ class ProductProduct(models.Model):
         self.ensure_one()
         action = self.env.ref(
             'product.product_attribute_value_action').read()[0]
-        value_ids = self.attribute_value_ids.ids
+        value_ids = self.product_template_attribute_value_ids.ids
         action['domain'] = [('id', 'in', value_ids)]
         context = safe_eval(
             action['context'],

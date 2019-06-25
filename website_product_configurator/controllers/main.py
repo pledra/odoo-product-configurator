@@ -133,6 +133,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'config_image_vals': self.get_image_vals(
                 image_line_ids=config_image_ids,
                 model_name=config_image_ids[:1]._name),
+            'main_object': cfg_session.product_tmpl_id,
         }
         return vals
 
