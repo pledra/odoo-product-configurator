@@ -29,7 +29,7 @@
     <data>
         <record id="configure_product_template_rule_user_config" model="ir.rule">
             <field name="name">Configure Product Product User (config)</field>
-            <field ref="product.model_product_template" name="model_id"/>
+            <field ref="product.model_product_product" name="model_id"/>
             <field name="domain_force">[('config_ok', '=', True)]</field>
             <field name="groups" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
             <field eval="1" name="perm_read"></field>
@@ -39,7 +39,7 @@
         </record>
         <record id="configure_product_template_rule_user_standard" model="ir.rule">
             <field name="name">Configure Product Product User (standard)</field>
-            <field ref="product.model_product_template" name="model_id"/>
+            <field ref="product.model_product_product" name="model_id"/>
             <field name="domain_force">[('config_ok', '!=', True)]</field>
             <field name="groups" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
             <field eval="1" name="perm_read"></field>
