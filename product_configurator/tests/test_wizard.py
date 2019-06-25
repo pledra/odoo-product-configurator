@@ -12,6 +12,10 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
         self.productConfigStepLine = self.env['product.config.step.line']
         self.productConfigSession = self.env['product.config.session']
         self.product_category = self.env.ref('product.product_category_5')
+        self.attr_line_fuel = self.env.ref(
+            'product_configurator.product_attribute_line_2_series_fuel')
+        self.attr_line_engine = self.env.ref(
+            'product_configurator.product_attribute_line_2_series_engine')
         self.value_diesel = self.env.ref(
             'product_configurator.product_attribute_value_diesel')
         self.value_218d = self.env.ref(
@@ -322,3 +326,149 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
         step_to_open = wizard.config_session_id.\
             check_and_open_incomplete_step()
         wizard.open_step(step_to_open)
+
+    def test_11_onchange(self):
+        field_name = ''
+        values = {
+            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id,
+            '__attribute-{}'.format(self.attr_fuel.id): self.value_218i.id,
+            '__attribute-{}'.format(self.attr_fuel.id): self.value_red.id
+        }
+        product_config_wizard = self._check_wizard_nxt_step()
+        field_prefix = product_config_wizard._prefixes.get('field_prefix')
+        field_name = '%s%s' % (field_prefix, field_name)
+        specs = product_config_wizard._onchange_spec()
+        product_config_wizard.onchange(values, field_name, specs)
+
+        product_config_wizard.attribute_line_ids.update({
+            'attribute_id': self.attr_fuel.id,
+            'custom': True,
+        })
+        values2 = {
+            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id,
+            '__custom-{}'.format(self.attr_fuel.id): 'Test1',
+            '__attribute-{}'.format(self.attr_fuel.id): self.value_218i.id,
+            '__attribute-{}'.format(self.attr_fuel.id): self.value_red.id
+        }
+        product_config_wizard.onchange(values2, field_name, specs)
+
+    def test_12_fields_get(self):
+        product_config_wizard = self._check_wizard_nxt_step()
+        product_config_wizard.fields_get()
+        product_config_wizard.with_context({
+            'wizard_id': product_config_wizard.id}).fields_get()
+
+        # custom value
+        self.attr_line_fuel.custom = True
+        self.attr_line_engine.custom = True
+        product_config_wizard_1 = self.ProductConfWizard.create({
+            'product_tmpl_id': self.config_product.id,
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id,
+            '__custom-{}'.format(self.attr_fuel.id): 'Test1',
+            '__attribute-{}'.format(self.attr_engine.id): self.value_218i.id,
+            '__custom-{}'.format(self.attr_engine.id): 'Test2',
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
+            '__attribute-{}'.format(self.attr_rims.id): self.value_rims_378.id
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(
+                self.attr_model_line.id): self.value_sport_line.id,
+        })
+        product_config_wizard_1.action_previous_step()
+        product_config_wizard_1.action_previous_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(self.attr_engine.id): self.value_220i.id,
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(
+                self.attr_model_line.id): self.value_model_sport_line.id,
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(
+                self.attr_tapistry.id): self.value_tapistry.id,
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(
+                self.attr_transmission.id): self.value_transmission.id,
+            '__attribute-{}'.format(
+                self.attr_options.id): [[6, 0, [self.value_options_2.id]]],
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.with_context({
+            'wizard_id': product_config_wizard_1.id}).fields_get()
+
+    def test_13_fields_view_get(self):
+        product_config_wizard = self._check_wizard_nxt_step()
+        product_config_wizard.fields_view_get()
+        product_config_wizard.with_context({
+            'wizard_id': product_config_wizard.id}).fields_view_get()
+        # custom value
+        # custom value
+        self.attr_line_fuel.custom = True
+        self.attr_line_engine.custom = True
+        product_config_wizard_1 = self.ProductConfWizard.create({
+            'product_tmpl_id': self.config_product.id,
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id,
+            '__custom-{}'.format(self.attr_fuel.id): 'Test1',
+            '__attribute-{}'.format(self.attr_engine.id): self.value_218i.id,
+            '__custom-{}'.format(self.attr_engine.id): 'Test2',
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
+            '__attribute-{}'.format(self.attr_rims.id): self.value_rims_378.id
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(
+                self.attr_model_line.id): self.value_sport_line.id,
+        })
+        product_config_wizard_1.action_previous_step()
+        product_config_wizard_1.action_previous_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(self.attr_engine.id): self.value_220i.id,
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(
+                self.attr_model_line.id): self.value_model_sport_line.id,
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(
+                self.attr_tapistry.id): self.value_tapistry.id,
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.write({
+            '__attribute-{}'.format(
+                self.attr_transmission.id): self.value_transmission.id,
+            '__attribute-{}'.format(
+                self.attr_options.id): [[6, 0, [self.value_options_2.id]]],
+        })
+        product_config_wizard_1.action_next_step()
+        product_config_wizard_1.with_context({
+            'wizard_id': product_config_wizard_1.id}).fields_view_get()
+
+    def test_14_unlink(self):
+        product_config_wizard = self._check_wizard_nxt_step()
+        unlinkWizard = product_config_wizard.unlink()
+        self.assertTrue(
+            unlinkWizard,
+            'Error: If not unlink record\
+            Method: unlink()'
+        )
