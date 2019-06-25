@@ -4,12 +4,8 @@
         <record model="res.groups" id="base.group_public">
             <field name="implied_ids" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
         </record>
-
-        <record id="product_configurator.configure_product_template_rule_user_config" model="ir.rule">
-            <field name="domain_force">[('config_ok', '=', True), ('website_published', '=', True), ("sale_ok", "=", True)]</field>
-        </record>
-        <record id="product_configurator.configure_product_template_rule_user_standard" model="ir.rule">
-            <field name="domain_force">[('config_ok', '!=', True), ('website_published', '=', True), ("sale_ok", "=", True)]</field>
+        <record model="res.groups" id="base.group_portal">
+            <field name="implied_ids" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
         </record>
     </data>
 </odoo>
