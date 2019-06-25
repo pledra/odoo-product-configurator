@@ -1114,7 +1114,7 @@ class ProductConfigSession(models.Model):
         if not custom_vals:
             custom_vals = self._get_custom_vals_dict()
 
-        if not value_ids and not isinstance(value_ids, list):
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         # process domains as shown in this wikipedia pseudocode:
@@ -1170,7 +1170,7 @@ class ProductConfigSession(models.Model):
 
         product_tmpl.ensure_one()
 
-        if not value_ids and not isinstance(value_ids, list):
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         if not custom_vals:
