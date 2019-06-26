@@ -57,6 +57,7 @@ class MrpBomLine(models.Model):
 
 class MrpBomLineConfigurationSet(models.Model):
     _name = 'mrp.bom.line.configuration.set'
+    _description ="Mrp Bom Line Configuration Set"
 
     name = fields.Char(
         string="Configuration",
@@ -77,6 +78,7 @@ class MrpBomLineConfigurationSet(models.Model):
 
 class MrpBomLineConfiguration(models.Model):
     _name = 'mrp.bom.line.configuration'
+    _description ="Mrp Bom Line Configuration"
 
     config_set_id = fields.Many2one(
         comodel_name='mrp.bom.line.configuration.set',
