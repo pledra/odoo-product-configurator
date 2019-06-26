@@ -14,6 +14,7 @@
         'data/config_form_templates.xml',
         'data/cron.xml',
         'views/assets.xml',
+        'views/product_view.xml',
     ],
     'demo': [
     ],
