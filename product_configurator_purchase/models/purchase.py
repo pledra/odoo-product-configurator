@@ -35,7 +35,7 @@ class PurchaseOrderLine(models.Model):
     )
 
     @api.onchange('product_id')
-    def onchange_product_id(self):
+    def onchange_config_product_id(self):
         self.config_ok = self.product_id.config_ok
 
     @api.multi

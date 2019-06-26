@@ -30,7 +30,7 @@ class MrpBom(models.Model):
     )
 
     @api.onchange('product_tmpl_id')
-    def onchange_product_id(self):
+    def onchange_config_product_tmpl_id(self):
         self.config_ok = self.product_tmpl_id.config_ok
 
 
