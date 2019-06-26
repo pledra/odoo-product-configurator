@@ -1,6 +1,6 @@
 from ast import literal_eval
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api, _, tools
 from odoo.exceptions import ValidationError
 from odoo.addons import decimal_precision as dp
 
@@ -12,10 +12,11 @@ class ProductAttribute(models.Model):
     def copy(self, default=None):
         if not default:
             default = {}
+        new_attrs = self.env['product.attribute']
         for attr in self:
             default.update({'name': attr.name + " (copy)"})
-            attr = super(ProductAttribute, attr).copy(default)
-            return attr
+            new_attrs += super(ProductAttribute, attr).copy(default)
+        return new_attrs
 
     @api.model
     def _get_nosearch_fields(self):
@@ -205,6 +206,8 @@ class ProductAttributeValue(models.Model):
 
     @api.multi
     def copy(self, default=None):
+        if not default:
+            default = {}
         default.update({'name': self.name + " (copy)"})
         product = super(ProductAttributeValue, self).copy(default)
         return product
@@ -254,7 +257,8 @@ class ProductAttributeValue(models.Model):
     )
     attribute_line_ids = fields.Many2many(
         comodel_name='product.attribute.line',
-        string="Attribute Lines"
+        string="Attribute Lines",
+        copy=False
     )
     weight_extra = fields.Float(
         string='Attribute Weight Extra',
@@ -265,6 +269,33 @@ class ProductAttributeValue(models.Model):
         help="Weight Extra: Extra weight for the variant with this attribute"
         "value on sale price. eg. 200 price extra, 1000 + 200 = 1200."
     )
+    image = fields.Binary(
+        string='Image',
+        attachment=True,
+        help="Attribute value image (Display on website for radio buttons)"
+    )
+    image_medium = fields.Binary(
+        string="Medium Image",
+        attachment=True,
+        help="Attribute value medium size image"
+        " (Display on website for radio buttons)"
+    )
+    # prevent to add new attr-value from adding
+    # in already created template
+    product_ids = fields.Many2many(
+        comodel_name='product.product',
+        copy=False
+    )
+
+    @api.model
+    def create(self, vals):
+        tools.image_resize_images(vals)
+        return super(ProductAttributeValue, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        tools.image_resize_images(vals)
+        return super(ProductAttributeValue, self).write(vals)
 
     @api.multi
     def name_get(self):
