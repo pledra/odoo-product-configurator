@@ -299,31 +299,32 @@ class ProductProduct(models.Model):
 
     @api.constrains('attribute_value_ids')
     def _check_duplicate_product(self):
-        if not self.config_ok:
-            return None
+        for product in self:
+            if not product.config_ok:
+                continue
 
-        # At the moment, I don't have enough confidence with my understanding
-        # of binary attributes, so will leave these as not matching...
-        # In theory, they should just work, if they are set to "non search"
-        # in custom field def!
-        # TODO: Check the logic with binary attributes
-        if not self.value_custom_ids.filtered(lambda cv: cv.attachment_ids):
-            config_session_obj = self.env['product.config.session']
-            custom_vals = {
-                cv.attribute_id.id: cv.value
-                for cv in self.value_custom_ids
-            }
-            duplicates = config_session_obj.search_variant(
-                product_tmpl_id=self.product_tmpl_id.id,
-                value_ids=self.attribute_value_ids.ids,
-                custom_vals=custom_vals
-            ).filtered(lambda p: p.id != self.id)
+            # At the moment, I don't have enough confidence with my understanding
+            # of binary attributes, so will leave these as not matching...
+            # In theory, they should just work, if they are set to "non search"
+            # in custom field def!
+            # TODO: Check the logic with binary attributes
+            if not product.value_custom_ids.filtered(lambda cv: cv.attachment_ids):
+                config_session_obj = product.env['product.config.session']
+                custom_vals = {
+                    cv.attribute_id.id: cv.value
+                    for cv in product.value_custom_ids
+                }
+                duplicates = config_session_obj.search_variant(
+                    product_tmpl_id=product.product_tmpl_id.id,
+                    value_ids=product.attribute_value_ids.ids,
+                    custom_vals=custom_vals
+                ).filtered(lambda p: p.id != product.id)
 
-            if duplicates:
-                raise ValidationError(
-                    _("Configurable Products cannot have duplicates "
-                      "(identical attribute values)")
-                )
+                if duplicates:
+                    raise ValidationError(
+                        _("Configurable Products cannot have duplicates "
+                          "(identical attribute values)")
+                    )
 
     @api.model
     def _get_config_name(self):
@@ -351,15 +352,6 @@ class ProductProduct(models.Model):
                     _("Error while calculating mako product name: %s") %
                     self.display_name)
         return self.display_name
-
-    @api.depends('product_template_attribute_value_ids.price_extra')
-    def _compute_product_price_extra(self):
-        for product in self:
-            product.price_extra = sum(
-                product.mapped(
-                    'product_template_attribute_value_ids.price_extra'
-                )
-            )
 
     @api.depends('product_template_attribute_value_ids.weight_extra')
     def _compute_product_weight_extra(self):

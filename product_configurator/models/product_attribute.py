@@ -182,9 +182,15 @@ class ProductAttributeLine(models.Model):
     )
 
     sequence = fields.Integer(string='Sequence', default=10)
-
+    product_template_value_ids = fields.Many2many(
+        comodel_name='product.template.attribute.value',
+        search="_search_product_template_value_ids"
+    )
     # TODO: Constraint not allowing introducing dependencies that do not exist
     # on the product.template
+
+    def _search_product_template_value_ids(self, operator, value):
+        return [('id', operator, value)]
 
     @api.multi
     @api.constrains('value_ids', 'default_val')
