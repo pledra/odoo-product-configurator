@@ -25,8 +25,13 @@ class MrpBom(models.Model):
     _inherit = 'mrp.bom'
 
     config_ok = fields.Boolean(
-        related='product_tmpl_id.config_ok', store=True, readonly=True
+        string="Configurable",
+        readonly=True
     )
+
+    @api.onchange('product_tmpl_id')
+    def onchange_product_id(self):
+        self.config_ok = self.product_tmpl_id.config_ok
 
 
 class MrpBomLine(models.Model):

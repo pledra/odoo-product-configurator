@@ -11,13 +11,16 @@ class StockMove(models.Model):
         string="Custom Values"
     )
     config_ok = fields.Boolean(
-        related='product_id.config_ok',
         string="Configurable"
     )
 
     allow_configuration = fields.Boolean(
         related='picking_id.allow_configuration',
         string="Allow configuration")
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        self.config_ok = self.product_id.config_ok
 
     @api.multi
     def reconfigure_product(self):
