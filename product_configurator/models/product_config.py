@@ -235,7 +235,7 @@ class ProductConfigImage(models.Model):
             try:
                 cfg_session_obj.validate_configuration(
                     value_ids=cfg_img.value_ids.ids,
-                    product_tmpl_id=self.product_tmpl_id.id,
+                    product_tmpl_id=cfg_img.product_tmpl_id.id,
                     final=False)
             except ValidationError:
                 raise ValidationError(
@@ -292,13 +292,14 @@ class ProductConfigStepLine(models.Model):
 
     @api.constrains('config_step_id')
     def _check_config_step(self):
-        cfg_step_lines = self.product_tmpl_id.config_step_line_ids
-        cfg_steps = cfg_step_lines.filtered(
-            lambda line: line != self).mapped('config_step_id')
-        if self.config_step_id in cfg_steps:
-            raise ValidationError(_(
-                'Cannot have a configuration step defined twice.'
-            ))
+        for config_step in self:
+            cfg_step_lines = config_step.product_tmpl_id.config_step_line_ids
+            cfg_steps = cfg_step_lines.filtered(
+                lambda line: line != config_step).mapped('config_step_id')
+            if config_step.config_step_id in cfg_steps:
+                raise ValidationError(_(
+                    'Cannot have a configuration step defined twice.'
+                ))
 
 
 class ProductConfigSession(models.Model):
@@ -1507,11 +1508,12 @@ class ProductConfigSessionCustomValue(models.Model):
 
     @api.constrains('cfg_session_id', 'attribute_id')
     def unique_attribute(self):
-        if len(self.cfg_session_id.custom_value_ids.filtered(
-                lambda x: x.attribute_id == self.attribute_id)) > 1:
-            raise ValidationError(
-                _("Configuration cannot have the same value inserted twice")
-            )
+        for custom_val in self:
+            if len(custom_val.cfg_session_id.custom_value_ids.filtered(
+                    lambda x: x.attribute_id == custom_val.attribute_id)) > 1:
+                raise ValidationError(
+                    _("Configuration cannot have the same value inserted twice")
+                )
 
     # @api.constrains('cfg_session_id.value_ids')
     # def custom_only(self):
@@ -1526,14 +1528,15 @@ class ProductConfigSessionCustomValue(models.Model):
 
     @api.constrains('attachment_ids', 'value')
     def check_custom_type(self):
-        custom_type = self.attribute_id.custom_type
-        if self.value and custom_type == 'binary':
-            raise ValidationError(
-                _("Attribute custom type is binary, attachments are the only "
-                  "accepted values with this custom field type")
-            )
-        if self.attachment_ids and custom_type != 'binary':
-            raise ValidationError(
-                _("Attribute custom type must be 'binary' for saving "
-                  "attachments to custom value")
-            )
+        for custom_val in self:
+            custom_type = custom_val.attribute_id.custom_type
+            if custom_val.value and custom_type == 'binary':
+                raise ValidationError(
+                    _("Attribute custom type is binary, attachments are the only "
+                      "accepted values with this custom field type")
+                )
+            if custom_val.attachment_ids and custom_type != 'binary':
+                raise ValidationError(
+                    _("Attribute custom type must be 'binary' for saving "
+                      "attachments to custom value")
+                )

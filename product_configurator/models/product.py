@@ -54,17 +54,18 @@ class ProductTemplate(models.Model):
     @api.constrains('attribute_value_line_ids')
     def _validate_unique_config(self):
         """Check for duplicate configurations for the same attribute value"""
-        attr_val_line_vals = self.attribute_value_line_ids.read(
-            ['value_id', 'value_ids'], load=False
-        )
-        attr_val_line_vals = [
-            (l['value_id'], tuple(l['value_ids'])) for l in attr_val_line_vals
-        ]
-        if len(set(attr_val_line_vals)) != len(attr_val_line_vals):
-            raise ValidationError(
-                _('You cannot have a duplicate configuration for the '
-                  'same value')
+        for template in self:
+            attr_val_line_vals = template.attribute_value_line_ids.read(
+                ['value_id', 'value_ids'], load=False
             )
+            attr_val_line_vals = [
+                (l['value_id'], tuple(l['value_ids'])) for l in attr_val_line_vals
+            ]
+            if len(set(attr_val_line_vals)) != len(attr_val_line_vals):
+                raise ValidationError(
+                    _('You cannot have a duplicate configuration for the '
+                      'same value')
+                )
 
     config_ok = fields.Boolean(string='Can be Configured')
 
@@ -172,14 +173,15 @@ class ProductTemplate(models.Model):
     @api.multi
     @api.constrains('config_line_ids', 'attribute_line_ids')
     def _check_default_value_domains(self):
-        try:
-            self._check_default_values()
-        except ValidationError as e:
-            raise ValidationError(
-                _('Restrictions added make the current default values '
-                  'generate an invalid configuration.\
-                  \n%s') % (e.name)
-            )
+        for template in self:
+            try:
+                template._check_default_values()
+            except ValidationError as e:
+                raise ValidationError(
+                    _('Restrictions added make the current default values '
+                      'generate an invalid configuration.\
+                      \n%s') % (e.name)
+                )
 
     @api.multi
     def toggle_config(self):
@@ -457,9 +459,8 @@ class ProductProduct(models.Model):
                 if xml_label:
                     xml_label[0].attrib['for'] = 'config_name'
                 view_obj = self.env['ir.ui.view']
-                xarch, xfields = view_obj.postprocess_and_fields(self._name,
-                                                                 xml_view,
-                                                                 view_id)
+                xarch, xfields = view_obj.postprocess_and_fields(
+                    self._name, xml_view, view_id)
                 res['arch'] = xarch
                 res['fields'] = xfields
         return res

@@ -59,10 +59,10 @@ class ProductConfigurator(models.TransientModel):
     @api.depends('product_tmpl_id', 'value_ids', 'custom_value_ids')
     def _compute_cfg_image(self):
         # TODO: Update when allowing custom values to influence image
-
-        cfg_sessions = self.config_session_id.with_context(bin_size=False)
-        image = cfg_sessions.get_config_image()
-        self.product_img = image
+        for configurator in self:
+            cfg_sessions = configurator.config_session_id.with_context(bin_size=False)
+            image = cfg_sessions.get_config_image()
+            configurator.product_img = image
 
     @api.multi
     @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids')

@@ -101,12 +101,13 @@ class ProductAttribute(models.Model):
 
     @api.constrains('custom_type', 'search_ok')
     def check_searchable_field(self):
-        nosearch_fields = self._get_nosearch_fields()
-        if self.custom_type in nosearch_fields and self.search_ok:
-            raise ValidationError(
-                _("Selected custom field type '%s' is not searchable" %
-                  self.custom_type)
-            )
+        for attribute in self:
+            nosearch_fields = attribute._get_nosearch_fields()
+            if attribute.custom_type in nosearch_fields and attribute.search_ok:
+                raise ValidationError(
+                    _("Selected custom field type '%s' is not searchable" %
+                      attribute.custom_type)
+                )
 
     def validate_custom_val(self, val):
         """ Pass in a desired custom value and ensure it is valid.
@@ -135,13 +136,14 @@ class ProductAttribute(models.Model):
 
     @api.constrains('min_val', 'max_val')
     def _check_constraint_min_max_value(self):
-        if self.custom_type not in ('int', 'float'):
-            return
-        minv = self.min_val
-        maxv = self.max_val
-        if maxv and minv and maxv < minv:
-            raise ValidationError(
-                _("Maximum value must be greater than Minimum value"))
+        for attribute in self:
+            if attribute.custom_type not in ('int', 'float'):
+                return
+            minv = attribute.min_val
+            maxv = attribute.max_val
+            if maxv and minv and maxv < minv:
+                raise ValidationError(
+                    _("Maximum value must be greater than Minimum value"))
 
 
 class ProductAttributeLine(models.Model):
@@ -341,7 +343,7 @@ class ProductAttributePrice(models.Model):
     # each attribute adds
 
     weight_extra = fields.Float(
-        string="Weight",
+        string="Attribute Weight Extra",
         digits=dp.get_precision('Product Weight')
     )
 
