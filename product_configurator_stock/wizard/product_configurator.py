@@ -1,7 +1,7 @@
 from odoo import api, fields, models
 
 
-class ProductConfiguratorSale(models.TransientModel):
+class ProductConfiguratorPicking(models.TransientModel):
 
     _name = 'product.configurator.picking'
     _inherit = 'product.configurator'
@@ -39,7 +39,7 @@ class ProductConfiguratorSale(models.TransientModel):
     @api.multi
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
-        res = super(ProductConfiguratorSale, self).action_config_done()
+        res = super(ProductConfiguratorPicking, self).action_config_done()
         if res.get('res_model') == self._name:
             return res
 

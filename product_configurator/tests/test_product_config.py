@@ -1,7 +1,6 @@
 from ..tests.product_configurator_test_cases import \
     ProductConfiguratorTestCases
 from odoo.exceptions import ValidationError
-from ast import literal_eval
 
 
 class ProductConfig(ProductConfiguratorTestCases):
@@ -180,21 +179,14 @@ class ProductConfig(ProductConfiguratorTestCases):
                 'cfg_session_id': self.session_id.id,
                 'attribute_id': self.attr_fuel.id
             })
-        # productConfigSessionCustVals.value = 'custvalue1'
-        # checkCharval = self.session_id._get_custom_vals_dict()
-        # self.assertEqual(
-        #     list(checkCharval.values())[0],
-        #     productConfigSessionCustVals.value,
-        #     'Error: If Not Char value or False\
-        #     Method: _get_custom_vals_dict()'
-        # )
         # check for custom type Int
         self.attr_fuel.custom_type = 'int'
         productConfigSessionCustVals.update({'value': 154})
         checkIntval = self.session_id._get_custom_vals_dict()
+        attr_id = productConfigSessionCustVals.attribute_id.id
         self.assertEqual(
-            list(checkIntval.values())[0],
-            literal_eval(productConfigSessionCustVals.value),
+            checkIntval.get(attr_id),
+            154,
             'Error: If Not Integer value or False\
             Method: _get_custom_vals_dict()'
         )
@@ -202,9 +194,10 @@ class ProductConfig(ProductConfiguratorTestCases):
         self.attr_fuel.custom_type = 'float'
         productConfigSessionCustVals.update({'value': 94.5})
         checkFloatval = self.session_id._get_custom_vals_dict()
+        attr_id = productConfigSessionCustVals.attribute_id.id
         self.assertEqual(
-            list(checkFloatval.values())[0],
-            literal_eval(productConfigSessionCustVals.value),
+            checkFloatval.get(attr_id),
+            94.5,
             'Error: If Not Float value or False\
             Method: _get_custom_vals_dict()'
         )
@@ -217,8 +210,9 @@ class ProductConfig(ProductConfiguratorTestCases):
                 'attachment_ids': [(6, 0, [self.irAttachement.id])]
             })
         checkBinaryval = self.session_id._get_custom_vals_dict()
+        attr_id = productConfigSessionCustVals1.attribute_id.id
         self.assertEqual(
-            list(checkBinaryval.values())[1],
+            checkBinaryval.get(attr_id),
             productConfigSessionCustVals1.attachment_ids,
             'Error: If Not attachement\
             Method: _get_custom_vals_dict()'
