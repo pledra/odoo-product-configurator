@@ -900,8 +900,11 @@ class ProductConfigurator(models.TransientModel):
         ctx = dict(self._context)
         try:
             session = self.config_session_id
-            while session.parent_id:
-                session = session.parent_id
+            # Field parent_id(of session) defind in
+            # product_configurator_subconfig, so this code should
+            # be moved in product_configurator_subconfig
+            # while session.parent_id:
+            #     session = session.parent_id
             ctx.update(default_product_tmpl_id=session.product_tmpl_id.id)
             session.unlink()
         except Exception:

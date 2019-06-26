@@ -1,6 +1,6 @@
 from ast import literal_eval
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api, _, tools
 from odoo.exceptions import ValidationError
 from odoo.addons import decimal_precision as dp
 
@@ -225,12 +225,33 @@ class ProductAttributeValue(models.Model):
         string="Attribute Lines",
         copy=False
     )
+    image = fields.Binary(
+        string='Image',
+        attachment=True,
+        help="Attribute value image (Display on website for radio buttons)"
+    )
+    image_medium = fields.Binary(
+        string="Medium Image",
+        attachment=True,
+        help="Attribute value medium size image"
+        " (Display on website for radio buttons)"
+    )
     # prevent to add new attr-value from adding
     # in already created template
     product_ids = fields.Many2many(
         comodel_name='product.product',
         copy=False
     )
+
+    @api.model
+    def create(self, vals):
+        tools.image_resize_images(vals)
+        return super(ProductAttributeValue, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        tools.image_resize_images(vals)
+        return super(ProductAttributeValue, self).write(vals)
 
     @api.multi
     def name_get(self):
@@ -342,9 +363,9 @@ class ProductAttributeValueLine(models.Model):
     )
     value_ids = fields.Many2many(
         comodel_name='product.attribute.value',
-        relation="attr_value_line_attr_values_rel",
-        column1="attr_val_line_id",
-        column2="attr_val_id",
+        relation="product_attribute_value_product_attribute_value_line_rel",
+        column1="product_attribute_value_line_id",
+        column2="product_attribute_value_id",
         string="Values Configuration",
     )
     product_value_ids = fields.Many2many(
