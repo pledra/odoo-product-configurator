@@ -282,6 +282,13 @@ class ProductTemplate(models.Model):
             action.update({'res_id': wizard.id})
         return action
 
+    @api.model
+    def create(self, vals):
+        print("########################## ",vals)
+        config_ok = vals.get('config_ok', False)
+        config_manager = self.env.user.has_group('group_product_configurator_manager')
+        return super(ProductTemplate, self).create(vals)
+
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
