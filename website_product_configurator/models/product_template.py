@@ -7,9 +7,8 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     def _website_price(self):
-        """Set website_price of configurable product
-        Uses formula ::
-        website_price = list_price + sum(extra price of default attr values)"""
+        """Set website_price of configurable product-templates
+        as list_price"""
         config_products = self.filtered('config_ok')
         super(ProductTemplate, self - config_products)._website_price()
         for template in config_products:
