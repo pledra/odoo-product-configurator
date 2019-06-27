@@ -19,10 +19,19 @@ class ProductConfiguratorMrp(models.TransientModel):
             vals.update(order_id=int(order_id))
         return super(ProductConfiguratorMrp, self).create(vals)
 
+    def _get_order_vals(self, product_id):
+        """ Hook to allow custom line values to be put on the newly
+        created or edited lines."""
+
+        line_vals = {
+            'product_id': product_id,
+        }
+        return line_vals
+
     @api.multi
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
-        res = self.check_and_open_incomplete_step()
+        res = self.config_session_id.check_and_open_incomplete_step()
         if res:
             return res
         try:
@@ -30,7 +39,7 @@ class ProductConfiguratorMrp(models.TransientModel):
                 l.attribute_id.id:
                     l.value or l.attachment_ids for l in self.custom_value_ids
             }
-            variant = self.product_tmpl_id.create_get_variant(
+            variant = self.config_session_id.create_get_variant(
                 self.value_ids.ids, custom_vals)
         except ValidationError:
             raise
@@ -46,14 +55,20 @@ class ProductConfiguratorMrp(models.TransientModel):
             'name': "Manufacturing Order",
             'view_mode': 'form',
             'context': self.env.context,
-            'res_id': self.order_id.id,
+            'res_id': variant.id,
         }
 
-        self.order_id.product_id = variant.id
-        onchange_vals = self.order_id.product_id_change(variant.id).get(
-            'value')
-        if onchange_vals:
-            onchange_vals.update(self._convert_to_write(onchange_vals))
-            self.order_id.write(onchange_vals)
+        line_vals = self._get_order_vals(action['res_id'])
+
+        mrpProduction = self.env['mrp.production']
+        specs = mrpProduction._onchange_spec()
+        updates = mrpProduction.onchange(line_vals, ['product_id'], specs)
+        values = updates.get('value', {})
+        for name, val in values.items():
+            if isinstance(val, tuple):
+                values[name] = val[0]
+        if values:
+            line_vals.update(values)
+            self.order_id.write(line_vals)
         self.unlink()
         return action
