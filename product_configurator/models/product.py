@@ -286,7 +286,15 @@ class ProductTemplate(models.Model):
             action.update({'res_id': wizard.id})
         return action
 
+    def check_config_manager_rights(self):
+        ICPSudo = self.env['ir.config_parameter'].sudo()
+        manager_product_configuration_settings = ICPSudo.get_param(
+            'product_configurator.manager_product_configuration_settings')
+        return manager_product_configuration_settings
+
     def check_config_user_access(self, config_ok):
+        if not self.check_config_manager_rights():
+            return True
         config_manager = self.env.user.has_group(
             'product_configurator.group_product_configurator_manager')
         if (config_ok and config_manager) or not config_ok:
@@ -306,7 +314,7 @@ class ProductTemplate(models.Model):
     @api.multi
     def write(self, vals):
         change_config_ok = ('config_ok' in vals)
-        if change_config_ok or (not change_config_ok and self.config_ok):
+        if change_config_ok or self.config_ok:
             config_ok = change_config_ok or self.config_ok
             self.check_config_user_access(config_ok)
 
