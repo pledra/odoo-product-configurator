@@ -198,15 +198,15 @@ class ProductTemplate(models.Model):
     def unlink(self):
         """ Prevent the removal of configurable product templates
             from variants"""
-        self2 = self
-        for template in self:
-            if template.config_ok:
-                template.check_config_user_access(template.config_ok)
-            variant_unlink = template.env.context.get(
+        configurable_templates = self.filtered(
+            lambda template: template.config_ok)
+        for config_template in configurable_templates:
+            config_template.check_config_user_access(config_template.config_ok)
+            variant_unlink = config_template.env.context.get(
                 'unlink_from_variant', False)
-            if template.config_ok and variant_unlink:
-                self2 -= template
-        res = super(ProductTemplate, self2).unlink()
+            if variant_unlink:
+                self -= config_template
+        res = super(ProductTemplate, self).unlink()
         return res
 
     @api.multi
@@ -305,7 +305,7 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def write(self, vals):
-        change_config_ok = ('config_ok' in vals.keys())
+        change_config_ok = ('config_ok' in vals)
         if change_config_ok or (not change_config_ok and self.config_ok):
             config_ok = change_config_ok or self.config_ok
             self.check_config_user_access(config_ok)
@@ -496,10 +496,8 @@ class ProductProduct(models.Model):
     def unlink(self):
         """ Signal unlink from product variant through context so
             removal can be stopped for configurable templates """
-        for product in self:
-            if not product.config_ok:
-                continue
-            self.check_config_user_access(product.config_ok, 'delete')
+        for product in self.filtered(lambda p: p.config_ok):
+            product.check_config_user_access(product.config_ok, 'delete')
         ctx = dict(self.env.context, unlink_from_variant=True)
         self.env.context = ctx
         return super(ProductProduct, self).unlink()
@@ -550,7 +548,7 @@ class ProductProduct(models.Model):
 
     @api.multi
     def write(self, vals):
-        change_config_ok = ('config_ok' in vals.keys())
+        change_config_ok = ('config_ok' in vals)
         if change_config_ok or (not change_config_ok and self.config_ok):
             config_ok = change_config_ok or self.config_ok
             self.check_config_user_access(config_ok, 'write')
