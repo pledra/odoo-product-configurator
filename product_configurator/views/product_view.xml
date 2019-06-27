@@ -115,8 +115,8 @@
                     <tree editable="bottom" string="Configuration Images">
                         <field name="sequence" widget="handle"/>
                         <field name="name"/>
-                        <field name="image" widget="image" height="30px"/>
                         <field name="value_ids" widget="many2many_tags" context="{'_cfg_product_tmpl_id': parent.id}"/>
+                        <field name="image" widget="image" height="30px"/>
                     </tree>
                 </field>
                 <field name="attribute_line_val_ids" invisible="1"/>
