@@ -17,6 +17,8 @@ class ProductConfig(ProductConfiguratorTestCases):
         self.config_product = self.env.ref('product_configurator.bmw_2_series')
         self.attr_engine = self.env.ref(
             'product_configurator.product_attribute_engine')
+        self.config_step_engine = self.env.ref(
+            'product_configurator.config_step_engine')
         self.config_product_1 = self.env.ref(
             'product_configurator.product_config_line_gasoline_engines')
         self.config_product_2 = self.env.ref(
@@ -122,16 +124,10 @@ class ProductConfig(ProductConfiguratorTestCases):
 
     # TODO :: Left to take review of code
     def test_00_check_value_attributes(self):
-        self.config_product_1.attribute_line_id = 6
-        self.config_product_1.attribute_line_id.attribute_id = 9
-        self.assertNotEqual(
-            self.config_product_1.attribute_line_id,
-            self.config_product_1.attribute_line_id.attribute_id,
-            'Error: If not equal\
-            Method: _get_trans_implied()'
-        )
         with self.assertRaises(ValidationError):
-            self.config_product_1.check_value_attributes()
+            self.config_product_1.write({
+                'value_ids': [(6, 0, [self.value_gasoline.id])]
+            })
 
     def test_01_check_config_step(self):
         with self.assertRaises(ValidationError):
@@ -149,14 +145,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             Method: _get_trans_implied()'
         )
 
-    def test_03_check_value_attributes(self):
-        with self.assertRaises(ValidationError):
-            self.config_product.config_line_ids.write({
-                'attribute_line_id': self.attr_engine.id,
-                'value_ids': [(6, 0, [self.value_gasoline.id])]
-            })
-
-    def test_04_check_config_step(self):
+    def test_03_check_config_step(self):
         with self.assertRaises(ValidationError):
             self.env['product.config.step.line'].create({
                 'product_tmpl_id': self.config_product.id,
@@ -164,7 +153,7 @@ class ProductConfig(ProductConfiguratorTestCases):
                 'attribute_line_ids': [(6, 0, [self.attribute_line.id])]
             })
 
-    def test_05_compute_cfg_price(self):
+    def test_04_compute_cfg_price(self):
         # check for _compute_cfg_price
         self.assertEqual(
             self.session_id.price,
@@ -173,7 +162,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             Method: _compute_cfg_price'
         )
 
-    def test_06_get_custom_vals_dict(self):
+    def test_05_get_custom_vals_dict(self):
         # check for _get_custom_vals_dict
         productConfigSessionCustVals = self.env[
             'product.config.session.custom.value'].create({
@@ -219,7 +208,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             Method: _get_custom_vals_dict()'
         )
 
-    def test_07_compute_config_step_name(self):
+    def test_06_compute_config_step_name(self):
         self.config_session._compute_config_step_name()
         self.assertTrue(
             self.config_session.config_step_name,
@@ -247,7 +236,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             'Error: If config_step_name not False\
             Method: _compute_config_step_name()')
 
-    def test_09_search_variant(self):
+    def test_07_search_variant(self):
         with self.assertRaises(ValidationError):
             self.env['product.config.session'].search_variant()
 
@@ -261,7 +250,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             Method: search_variant()'
         )
 
-    def test_10_check_custom_type(self):
+    def test_08_check_custom_type(self):
         # check for check_custom_type
         with self.assertRaises(ValidationError):
             self.env['product.config.session.custom.value'].create({
@@ -280,7 +269,7 @@ class ProductConfig(ProductConfiguratorTestCases):
                 'attachment_ids': [(6, 0, [self.irAttachement.id])],
             })
 
-    def test_11_create_get_variant(self):
+    def test_09_create_get_variant(self):
         # configure new product to check for search not dublicate variant
         self.attributeLine1 = self.productAttributeLine.create({
             'product_tmpl_id': self.product_tmpl_id.id,
@@ -332,7 +321,7 @@ class ProductConfig(ProductConfiguratorTestCases):
         })
         config_session_1.create_get_variant()
 
-    def test_12_check_value_ids(self):
+    def test_10_check_value_ids(self):
         with self.assertRaises(ValidationError):
             self.config_image_red.write({
                 'value_ids': [(6, 0, [
@@ -340,7 +329,7 @@ class ProductConfig(ProductConfiguratorTestCases):
                     self.value_diesel.id])]
             })
 
-    def test_13_unique_attribute(self):
+    def test_11_unique_attribute(self):
         with self.assertRaises(ValidationError):
             self.env['product.config.session.custom.value'].create({
                 'cfg_session_id': self.config_session.id,
@@ -353,41 +342,7 @@ class ProductConfig(ProductConfiguratorTestCases):
                 'value': '1234'
             })
 
-    def test_14_compute_domain(self):
-        # create domain
-        self.productConfigDomainId = self.env['product.config.domain'].create({
-            'name': 'restriction 1'
-        })
-        self.productConfigDomainId.compute_domain()
-        # create attribute value line 1
-        domain_line_1 = self.env['product.config.domain.line'].create({
-            'domain_id': self.productConfigDomainId.id,
-            'attribute_id': self.attr_fuel.id,
-            'condition': 'in',
-            'value_ids': [(6, 0, [self.value_gasoline.id])],
-            'operator': 'and',
-        })
-        domain_line_2 = self.env['product.config.domain.line'].create({
-            'domain_id': self.productConfigDomainId.id,
-            'attribute_id': self.attr_color.id,
-            'condition': 'in',
-            'value_ids': [(6, 0, [self.value_red.id])],
-            'operator': 'and',
-        })
-        self.productConfigDomainId.compute_domain()
-        domain_line_1.operator = 'or'
-        domain_line_2.operator = 'or'
-        self.productConfigDomainId.compute_domain()
-        self.env['product.config.line'].create({
-            'product_tmpl_id': self.product_tmpl_id.id,
-            'attribute_line_id': self.attr_engine.id,
-            'value_ids': [(6, 0, [
-                self.value_218i.id,
-                self.value_220i.id])],
-            'domain_id': self.productConfigDomainId.id,
-        })
-
-    def test_15_get_cfg_weight(self):
+    def test_13_get_cfg_weight(self):
         self.env['product.attribute.price'].create({
             'product_tmpl_id': self.config_product.id,
             'value_id': self.value_red.id,
@@ -409,7 +364,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             Method: _compute_cfg_weight()'
         )
 
-    def test_16_update_session_configuration_value(self):
+    def test_14_update_session_configuration_value(self):
         # configure new product to check for search not dublicate variant
         self.custom_vals = self.productConfigSession.get_custom_value_id()
         self.attributeLine1 = self.productAttributeLine.create({
@@ -451,7 +406,7 @@ class ProductConfig(ProductConfiguratorTestCases):
         })
         product_config_wizard.action_next_step()
 
-    def test_17_get_cfg_price(self):
+    def test_15_get_cfg_price(self):
         self.env['product.attribute.price'].create({
             'product_tmpl_id': self.config_product.id,
             'value_id': self.value_red.id,
@@ -466,7 +421,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             Method: get_cfg_price()'
         )
 
-    def test_18_get_next_step(self):
+    def test_16_get_next_step(self):
         self.session_id.get_next_step(state=None)
         self.session_id.get_next_step(state='draft')
         with self.assertRaises(UserError):
@@ -476,7 +431,7 @@ class ProductConfig(ProductConfiguratorTestCases):
                 custom_value_ids=False
             )
 
-    def test_19_get_all_step_lines(self):
+    def test_17_get_all_step_lines(self):
         step_line_value_1 = self.productConfigSession.get_all_step_lines()
         self.assertFalse(
             step_line_value_1,
@@ -490,7 +445,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             Method: get_all_step_lines()'
         )
 
-    def test_20_custom_value_validate_configuration(self):
+    def test_18_custom_value_validate_configuration(self):
         self.custom_vals = self.productConfigSession.get_custom_value_id()
         self.attributeLine1 = self.productAttributeLine.create({
             'product_tmpl_id': self.product_tmpl_id.id,
@@ -534,7 +489,7 @@ class ProductConfig(ProductConfiguratorTestCases):
         with self.assertRaises(ValidationError):
             self.product_tmpl_id.configure_product()
 
-    def test_21_onchange_attribute(self):
+    def test_19_onchange_attribute(self):
         # create domain
         self.productConfigDomainId = self.env['product.config.domain'].create({
             'name': 'restriction 1'
@@ -596,7 +551,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             Method: onchange_attribute()'
         )
 
-    def test_22_eval(self):
+    def test_20_eval(self):
         self.attr_color.custom_type = 'binary'
         productConfigSessionCustVals1 = self.env[
             'product.config.session.custom.value'].create({
@@ -636,7 +591,7 @@ class ProductConfig(ProductConfiguratorTestCases):
             Method: eval()'
         )
 
-    def test_23_encode_custom_values(self):
+    def test_21_encode_custom_values(self):
         self.attr_color.custom_type = 'binary'
         self.env['product.config.session.custom.value'].create({
             'cfg_session_id': self.session_id.id,

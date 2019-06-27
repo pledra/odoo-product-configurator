@@ -11,6 +11,10 @@ class TestProduct(ProductConfiguratorTestCases):
         self.productAttributeLine = self.env['product.attribute.line']
         self.productConfigStepLine = self.env['product.config.step.line']
         self.product_category = self.env.ref('product.product_category_5')
+        self.attributelinefuel = self.env.ref(
+            'product_configurator.product_attribute_line_2_series_fuel')
+        self.attributelineengine = self.env.ref(
+            'product_configurator.product_attribute_line_2_series_engine')
         self.value_diesel = self.env.ref(
             'product_configurator.product_attribute_value_diesel')
         self.value_218d = self.env.ref(
@@ -34,8 +38,8 @@ class TestProduct(ProductConfiguratorTestCases):
             'product_tmpl_id': self.product_tmpl_id.id,
             'attribute_id': self.attr_fuel.id,
             'value_ids': [(6, 0, [
-                           self.value_gasoline.id,
-                           self.value_diesel.id])],
+                self.value_gasoline.id,
+                self.value_diesel.id])],
             'required': True,
         })
         # create attribute line 2
@@ -43,34 +47,20 @@ class TestProduct(ProductConfiguratorTestCases):
             'product_tmpl_id': self.product_tmpl_id.id,
             'attribute_id': self.attr_engine.id,
             'value_ids': [(6, 0, [
-                           self.value_218i.id,
-                           self.value_220i.id])],
+                self.value_218i.id,
+                self.value_220i.id,
+                self.value_218d.id,
+                self.value_220d.id])],
             'required': True,
         })
-        # create attribute line 2
+        # create attribute line 3
         self.attributeLine3 = self.productAttributeLine.create({
-            'product_tmpl_id': self.product_tmpl_id.id,
-            'attribute_id': self.attr_engine.id,
-            'value_ids': [(6, 0, [
-                           self.value_218d.id,
-                           self.value_220d.id])],
-            'required': True,
-        })
-        # create attribute line 1
-        self.attributeLine4 = self.productAttributeLine.create({
             'product_tmpl_id': self.product_tmpl_id.id,
             'attribute_id': self.attr_color.id,
             'value_ids': [(6, 0, [
-                           self.value_red.id,
-                           self.value_silver.id])],
+                self.value_red.id,
+                self.value_silver.id])],
             'required': True,
-        })
-        self.product_tmpl_id.write({
-            'attribute_line_ids': [(6, 0, [
-                                    self.attributeLine1.id,
-                                    self.attributeLine2.id,
-                                    self.attributeLine3.id,
-                                    self.attributeLine4.id])],
         })
 
     def _get_product_id(self):
@@ -164,43 +154,10 @@ class TestProduct(ProductConfiguratorTestCases):
         )
 
     def test_06_check_default_values(self):
-        # create domain
-        self.productConfigDomainId = self.env['product.config.domain'].create({
-            'name': 'restriction 1'
-        })
-        # create attribute value line 1
-        self.productConfigDomainLineId = self.env[
-            'product.config.domain.line'].create({
-                'domain_id': self.productConfigDomainId.id,
-                'attribute_id': self.attr_fuel.id,
-                'condition': 'in',
-                'value_ids': [(6, 0, [self.value_gasoline.id])],
-                'operator': 'and',
-            })
-        self.productConfigLine = self.env['product.config.line'].create({
-            'product_tmpl_id': self.product_tmpl_id.id,
-            'attribute_line_id': self.attr_engine.id,
-            'value_ids': [(6, 0, [
-                self.value_218i.id,
-                self.value_220i.id])],
-            'domain_id': self.productConfigDomainId.id,
-        })
-        # check for validation of default value
+        self.attributelinefuel.default_val = self.value_gasoline.id,
+        self.attributelineengine.default_val = self.value_218d.id
         with self.assertRaises(ValidationError):
-            self.attributeLine1.write({
-                'default_val': self.value_diesel.id,
-            })
-            self.attributeLine2.write({
-                'default_val': self.value_218i.id,
-            })
-            self.product_tmpl_id.write({
-                'attribute_line_ids': [(6, 0, [
-                                        self.attributeLine1.id,
-                                        self.attributeLine2.id])],
-            })
-
-        with self.assertRaises(ValidationError):
-            self.product_tmpl_id._check_default_values()
+            self.config_product._check_default_values()
 
     def test_07_configure_product(self):
         # configure product

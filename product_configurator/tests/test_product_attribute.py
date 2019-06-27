@@ -152,7 +152,7 @@ class ProductAttributes(TransactionCase):
     def test_07_check_default_values(self):
         with self.assertRaises(ValidationError):
             self.ProductAttributeLineFuel.default_val = \
-                self.ProductAttributeValueFuel
+                self.value_218i.id
 
     def test_08_compute_weight_extra(self):
         self.assertEqual(
@@ -182,7 +182,7 @@ class ProductAttributes(TransactionCase):
     def test_09_inverse_weight_extra(self):
         self.ProductAttributePrice = self.ProductAttributePrice.create({
             'product_tmpl_id': self.ProductTemplate.id,
-            'value_id': 10,
+            'value_id': self.value_218i.id,
             'weight_extra': 12,
         })
         self.value_gasoline = \
