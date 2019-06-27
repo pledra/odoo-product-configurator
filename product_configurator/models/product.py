@@ -557,7 +557,7 @@ class ProductProduct(models.Model):
     @api.multi
     def write(self, vals):
         change_config_ok = ('config_ok' in vals)
-        if change_config_ok or (not change_config_ok and self.config_ok):
+        if change_config_ok or self.config_ok:
             config_ok = change_config_ok or self.config_ok
             self.check_config_user_access(config_ok, 'write')
 

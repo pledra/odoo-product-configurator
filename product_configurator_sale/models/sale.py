@@ -31,12 +31,10 @@ class SaleOrderLine(models.Model):
         string="Custom Values"
     )
     config_ok = fields.Boolean(
+        related="product_id.config_ok",
         string="Configurable",
+        readonly=True
     )
-
-    @api.onchange('product_id')
-    def onchange_product_id(self):
-        self.config_ok = self.product_id.config_ok
 
     @api.multi
     def reconfigure_product(self):
