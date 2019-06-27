@@ -200,8 +200,10 @@ class ProductTemplate(models.Model):
             from variants"""
         configurable_templates = self.filtered(
             lambda template: template.config_ok)
+        if configurable_templates:
+            configurable_templates[:1].check_config_user_access(
+                configurable_templates[:1].config_ok)
         for config_template in configurable_templates:
-            config_template.check_config_user_access(config_template.config_ok)
             variant_unlink = config_template.env.context.get(
                 'unlink_from_variant', False)
             if variant_unlink:
@@ -504,8 +506,10 @@ class ProductProduct(models.Model):
     def unlink(self):
         """ Signal unlink from product variant through context so
             removal can be stopped for configurable templates """
-        for product in self.filtered(lambda p: p.config_ok):
-            product.check_config_user_access(product.config_ok, 'delete')
+        config_product = self.filtered(lambda p: p.config_ok):
+        if config_product:
+            config_product[:1].check_config_user_access(
+                config_product[:1].config_ok, 'delete')
         ctx = dict(self.env.context, unlink_from_variant=True)
         self.env.context = ctx
         return super(ProductProduct, self).unlink()
@@ -533,6 +537,7 @@ class ProductProduct(models.Model):
         return self.product_tmpl_id.create_config_wizard(
             extra_vals=extra_vals)
 
+    @api.model
     def check_config_user_access(self, config_ok, mode):
         config_manager = self.env.user.has_group(
             'product_configurator.group_product_configurator_manager')
