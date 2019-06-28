@@ -83,12 +83,12 @@ class TestMrp(ProductConfiguratorTestCases):
             'date_planned_start': datetime.now()
         })
         context = dict(
-                self.env.context,
-                default_order_id=self.id,
-                wizard_model='product.configurator.mrp',
+            self.env.context,
+            default_order_id=self.id,
+            wizard_model='product.configurator.mrp',
         )
         mrpProduction.with_context(context)
-        vals = mrpProduction.action_config_start()
+        mrpProduction.action_config_start()
         self._configure_product_nxt_step()
         mrpProductionId = mrpProduction.move_raw_ids
         self.assertEqual(
