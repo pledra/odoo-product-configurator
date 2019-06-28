@@ -198,7 +198,7 @@ class ProductTemplate(models.Model):
     def unlink(self):
         """ Prevent the removal of configurable product templates
             from variants"""
-       configurable_templates = self.filtered(
+        configurable_templates = self.filtered(
             lambda template: template.config_ok)
         if configurable_templates:
             configurable_templates[:1].check_config_user_access(
@@ -564,7 +564,7 @@ class ProductProduct(models.Model):
         change_config_ok = ('config_ok' in vals)
         if change_config_ok or self.config_ok:
             self.check_config_user_access(
-                mode='write'
+                mode='write',
                 config_ok=(change_config_ok or self.config_ok),
             )
 
