@@ -288,6 +288,7 @@ class ProductTemplate(models.Model):
             action.update({'res_id': wizard.id})
         return action
 
+    @api.model
     def check_config_manager_rights(self):
         ICPSudo = self.env['ir.config_parameter'].sudo()
         manager_product_configuration_settings = ICPSudo.get_param(
@@ -295,11 +296,11 @@ class ProductTemplate(models.Model):
         return manager_product_configuration_settings
 
     def check_config_user_access(self, config_ok=True):
-        if not self.check_config_manager_rights():
+        if not self.check_config_manager_rights() or not config_ok:
             return True
         config_manager = self.env.user.has_group(
             'product_configurator.group_product_configurator_manager')
-        if (config_ok and config_manager) or not config_ok:
+        if config_manager:
             return True
         raise ValidationError(_(
             "Sorry, you are not allowed to create/change this kind of "
@@ -539,12 +540,13 @@ class ProductProduct(models.Model):
 
     @api.model
     def check_config_user_access(self, mode, config_ok=True):
+        if (not self.product_tmpl_id.check_config_manager_rights()
+                or not config_ok):
+            return True
         config_manager = self.env.user.has_group(
             'product_configurator.group_product_configurator_manager')
         config_user = self.env.user.has_group(
             'product_configurator.group_product_configurator_manager')
-        if not config_ok:
-            return True
         if (config_manager or (config_user and mode not in ['delete'])):
             return True
         raise ValidationError(_(
