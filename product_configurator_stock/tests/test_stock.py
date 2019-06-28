@@ -14,7 +14,7 @@ class Stock(ProductConfiguratorTestCases):
         self.sequence_id = self.env.ref(
             'stock.sequence_mrp_op')
         self.resPartner = self.env.ref(
-            'product_configurator_purchase.partenr1')
+            'stock.res_company_1')
 
     def test_00_action_config_start(self):
 
@@ -37,17 +37,11 @@ class Stock(ProductConfiguratorTestCases):
         )
         self.ProductConfWizard = self.env['product.configurator.picking'].\
             with_context(context)
-        stockPickingId.action_config_start()
-        self._configure_product_nxt_step()
-        stock_configure_line = stockPickingId.move_lines
+        # stockPickingId.action_config_start()
+        vals = self._configure_product_nxt_step()
         stockPickingId.move_lines.reconfigure_product()
         self.assertEqual(
-            stock_configure_line,
-            stockPickingId.move_lines,
-            'Line Not Equal'
-        )
-        self.assertEqual(
-            stock_configure_line.product_id,
-            stockPickingId.move_lines.product_id,
+            vals['res_id'],
+            stockPickingId.move_lines.product_id.id,
             'Product not exsits'
         )

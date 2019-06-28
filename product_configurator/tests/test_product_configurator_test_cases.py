@@ -96,4 +96,5 @@ class ProductConfiguratorTestCases(TransactionCase):
                 self.attr_options.id): [[6, 0, [self.value_options_2.id]]],
         })
 
-        product_config_wizard.action_next_step()
+        return product_config_wizard.action_next_step()
+
