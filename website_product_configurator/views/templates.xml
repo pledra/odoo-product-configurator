@@ -18,4 +18,43 @@
         </xpath>
     </template>
 
+    <template id="error_page">
+        <t t-call="web.layout">
+            <t t-set="html_data" t-value="{'style': 'height: 100%;'}"/>
+            <t t-set="head">
+                <t t-call-assets="web.assets_common" t-js="false"/>
+                <t t-call-assets="web.assets_frontend" t-js="false"/>
+                <t t-call-assets="web.assets_common" t-css="false"/>
+                <t t-call-assets="web.assets_frontend" t-css="false"/>
+            </t>
+            <t t-set="body_classname" t-value="'container'"/>
+            <div class="wrap">
+                <div>
+                    <div class="text-center">
+                        <img t-attf-src="/web/static/src/img/logo2.png"/>
+                    </div>
+                </div>
+                <div class="oe_structure oe_empty">
+                    <div class="container">
+                        <h1 class="mt32">ERROR!</h1>
+                        <h4 ><b><u>There is somthing going wrong. Please try again after some time.</u></b></h4>
+                        <t t-if="error">
+                            <ul>
+                                <li>
+                                    <h4><t t-esc="error"/></h4>
+                                </li>
+                            </ul>
+                        </t>
+                        <br /><br />
+                        <p>
+                            <h4>
+                                <a t-attf-href="/shop">Go Back</a>
+                            </h4>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
 </odoo>
