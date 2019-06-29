@@ -3,10 +3,8 @@
     <record id="partenr1" model="res.partner">
         <field name="name">Test Partner</field>
         <field name="company_type">company</field>
-        <field name="dealer" eval="True"></field>
         <field name="child_ids" eval="[(0, 0,{'name': 'Partner Contact',
             'type':'contact', 'email': 'info@mycompany.com'})]"></field>
-        <field name="land" eval="[(6, 0, [ref('base.ad')])]"></field>
         <field name="street">31 Hong Kong street</field>
         <field name="city">Taipei</field>
         <field name="zip">106</field>
