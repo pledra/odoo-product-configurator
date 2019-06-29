@@ -59,8 +59,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
             return super(ProductConfigWebsiteSale, self).product(
                 product, category, search, **kwargs
             )
-
-        cfg_session = self.get_config_session(product_tmpl_id=product)
+        try:
+            cfg_session = self.get_config_session(product_tmpl_id=product)
+        except Exception as Ex:
+            return request.render(
+                'website_product_configurator.error_page', {'error': Ex.name}
+            )
 
         # Set config-step in config session when it creates from wizard
         # because select state not exist on website
@@ -68,15 +72,19 @@ class ProductConfigWebsiteSale(WebsiteSale):
             cfg_session.config_step = 'select'
             res = self.set_config_next_step(cfg_session)
             if res.get('error', False):
-                return super(ProductConfigWebsiteSale, self).product(
-                    product, category, search, **kwargs
+                return request.render(
+                    'website_product_configurator.error_page', res
                 )
 
         # Set config-step in config session when it creates from wizard
         # because select state not exist on website
         if not cfg_session.config_step:
             cfg_session.config_step = 'select'
-            self.set_config_next_step(cfg_session)
+            res = self.set_config_next_step(cfg_session)
+            if res.get('error', False):
+                return request.render(
+                    'website_product_configurator.error_page', res
+                )
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
 
@@ -301,8 +309,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         # config session and product template
         product_configurator_obj = request.env['product.configurator']
         product_template_id = self.get_config_product_template(form_values)
-        config_session_id = self.get_config_session(
-            product_tmpl_id=product_template_id)
+        try:
+            config_session_id = self.get_config_session(
+                product_tmpl_id=product_template_id)
+        except Exception as Ex:
+            return {'error': Ex.name}
 
         # prepare dictionary in formate needed to pass in onchage
         form_values = self.get_orm_form_vals(
@@ -317,7 +328,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             updates = product_configurator_obj.sudo().onchange(
                 config_vals, field_name, specs)
         except Exception as Ex:
-            return {'error': Ex}
+            return {'error': Ex.name}
 
         # get open step lines according to current configuation
         value_ids = self.get_current_configuration(
@@ -326,7 +337,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             open_cfg_step_line_ids = config_session_id.sudo()\
                 .get_open_step_lines(value_ids).ids
         except Exception as Ex:
-            return {'error': Ex}
+            return {'error': Ex.name}
 
         # if no step is defined or some attribute remains to add in a step
         open_cfg_step_line_ids = [
@@ -378,7 +389,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     state=current_step,
                 )
             except (UserError, ValidationError) as Ex:
-                return {'error': Ex}
+                return {'error': Ex.name}
         if (not next_step and
                 extra_attr_line_ids and
                 current_step != 'configure'):
@@ -403,8 +414,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         next step if exist otherwise create variant using
         configuration redirect to product page of configured product"""
         product_template_id = self.get_config_product_template(form_values)
-        config_session_id = self.get_config_session(
-            product_tmpl_id=product_template_id)
+        try:
+            config_session_id = self.get_config_session(
+                product_tmpl_id=product_template_id)
+        except Exception as Ex:
+            return {'error': Ex.name}
 
         form_values = self.get_orm_form_vals(
             form_values, config_session_id)
@@ -445,7 +459,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     'redirect_url': redirect_url,
                 }
         except Exception as Ex:
-            return {'error': Ex}
+            return {'error': Ex.name}
         return {}
 
     @http.route(

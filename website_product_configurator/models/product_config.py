@@ -5,11 +5,6 @@ from datetime import timedelta
 class ProductConfigStepLine(models.Model):
     _inherit = 'product.config.step.line'
 
-    CONFIG_FORM = [
-        'website_product_configurator.config_form_select',
-        'website_product_configurator.config_form_radio'
-    ]
-
     website_tmpl_id = fields.Many2one(
         string='Website Template',
         comodel_name='ir.ui.view',
