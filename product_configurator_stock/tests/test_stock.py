@@ -37,7 +37,7 @@ class Stock(ProductConfiguratorTestCases):
         )
         self.ProductConfWizard = self.env['product.configurator.picking'].\
             with_context(context)
-        # stockPickingId.action_config_start()
+        stockPickingId.action_config_start()
         self._configure_product_nxt_step()
         stockPickingId.move_lines.reconfigure_product()
         product_tmpl = stockPickingId.move_lines.product_id.product_tmpl_id
