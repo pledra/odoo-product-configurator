@@ -201,8 +201,7 @@ class ProductTemplate(models.Model):
         configurable_templates = self.filtered(
             lambda template: template.config_ok)
         if configurable_templates:
-            configurable_templates[:1].check_config_user_access(
-                configurable_templates[:1].config_ok)
+            configurable_templates[:1].check_config_user_access()
         for config_template in configurable_templates:
             variant_unlink = config_template.env.context.get(
                 'unlink_from_variant', False)
@@ -295,8 +294,8 @@ class ProductTemplate(models.Model):
             'product_configurator.manager_product_configuration_settings')
         return manager_product_configuration_settings
 
-    def check_config_user_access(self, config_ok=True):
-        if not config_ok or not self._check_config_group_rights():
+    def check_config_user_access(self):
+        if not self._check_config_group_rights():
             return True
         config_manager = self.env.user.has_group(
             'product_configurator.group_product_configurator_manager')
@@ -311,15 +310,14 @@ class ProductTemplate(models.Model):
     def create(self, vals):
         config_ok = vals.get('config_ok', False)
         if config_ok:
-            self.check_config_user_access(config_ok=config_ok)
+            self.check_config_user_access()
         return super(ProductTemplate, self).create(vals)
 
     @api.multi
     def write(self, vals):
         change_config_ok = ('config_ok' in vals)
         if change_config_ok or self.config_ok:
-            self.check_config_user_access(
-                config_ok=(change_config_ok or self.config_ok))
+            self.check_config_user_access()
 
         return super(ProductTemplate, self).write(vals)
 
@@ -510,7 +508,7 @@ class ProductProduct(models.Model):
         config_product = any(p.config_ok for p in self)
         if config_product:
             self.env['product.product'].check_config_user_access(
-                mode='delete', config_ok=True)
+                mode='delete')
         ctx = dict(self.env.context, unlink_from_variant=True)
         self.env.context = ctx
         return super(ProductProduct, self).unlink()
@@ -539,9 +537,8 @@ class ProductProduct(models.Model):
             extra_vals=extra_vals)
 
     @api.model
-    def check_config_user_access(self, mode, config_ok=True):
-        if (not config_ok or
-                not self.product_tmpl_id._check_config_group_rights()):
+    def check_config_user_access(self, mode):
+        if not self.product_tmpl_id._check_config_group_rights():
             return True
         config_manager = self.env.user.has_group(
             'product_configurator.group_product_configurator_manager')
@@ -558,16 +555,13 @@ class ProductProduct(models.Model):
     def create(self, vals):
         config_ok = vals.get('config_ok', False)
         if config_ok:
-            self.check_config_user_access(mode='create', config_ok=config_ok)
+            self.check_config_user_access(mode='create')
         return super(ProductProduct, self).create(vals)
 
     @api.multi
     def write(self, vals):
         change_config_ok = ('config_ok' in vals)
         if change_config_ok or self.config_ok:
-            self.check_config_user_access(
-                mode='write',
-                config_ok=(change_config_ok or self.config_ok),
-            )
+            self.check_config_user_access(mode='write')
 
         return super(ProductProduct, self).write(vals)
