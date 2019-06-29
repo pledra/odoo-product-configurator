@@ -84,19 +84,10 @@ class TestMrp(ProductConfiguratorTestCases):
         })
         context = dict(
             self.env.context,
-            default_order_id=self.id,
-            wizard_model='product.configurator.mrp',
-        )
-        mrpProduction.with_context(context)
-        mrpProduction.action_config_start()
-        self._configure_product_nxt_step()
-        mrpProduction.move_raw_ids(
-            self.env.context,
             default_order_id=mrpProduction.id,
             wizard_model='product.configurator.mrp',
         )
-        # mrpProduction.with_context(context)
-        # vals = mrpProduction.action_config_start()
+        mrpProduction.action_config_start()
         self.ProductConfWizard = self.env[
             'product.configurator.mrp'].with_context(context)
         vals = self._configure_product_nxt_step()
