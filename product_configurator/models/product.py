@@ -289,14 +289,14 @@ class ProductTemplate(models.Model):
         return action
 
     @api.model
-    def check_config_manager_rights(self):
+    def _check_config_group_rights(self):
         ICPSudo = self.env['ir.config_parameter'].sudo()
         manager_product_configuration_settings = ICPSudo.get_param(
             'product_configurator.manager_product_configuration_settings')
         return manager_product_configuration_settings
 
     def check_config_user_access(self, config_ok=True):
-        if not self.check_config_manager_rights() or not config_ok:
+        if not config_ok or not self._check_config_group_rights():
             return True
         config_manager = self.env.user.has_group(
             'product_configurator.group_product_configurator_manager')
@@ -540,13 +540,13 @@ class ProductProduct(models.Model):
 
     @api.model
     def check_config_user_access(self, mode, config_ok=True):
-        if (not self.product_tmpl_id.check_config_manager_rights()
-                or not config_ok):
+        if (not config_ok or
+                not self.product_tmpl_id._check_config_group_rights()):
             return True
         config_manager = self.env.user.has_group(
             'product_configurator.group_product_configurator_manager')
         config_user = self.env.user.has_group(
-            'product_configurator.group_product_configurator_manager')
+            'product_configurator.group_product_configurator')
         if (config_manager or (config_user and mode not in ['delete'])):
             return True
         raise ValidationError(_(
