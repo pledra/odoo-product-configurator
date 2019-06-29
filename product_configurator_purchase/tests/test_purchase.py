@@ -31,10 +31,12 @@ class Purchase(ProductConfiguratorTestCases):
         self.ProductConfWizard = self.env['product.configurator.purchase'].\
             with_context(context)
         purchase_order_id.action_config_start()
-        vals = self._configure_product_nxt_step()
+        self._configure_product_nxt_step()
         purchase_order_id.order_line.reconfigure_product()
+        product_tmpl = purchase_order_id.order_line.product_id.product_tmpl_id
         self.assertEqual(
-            vals['res_id'],
-            purchase_order_id.order_line.product_id.id,
-            'Product not exsits'
+            product_tmpl.id,
+            self.config_product.id,
+            'Error: If product_tmpl not exsits\
+            Method: action_config_start()'
         )

@@ -38,10 +38,12 @@ class Stock(ProductConfiguratorTestCases):
         self.ProductConfWizard = self.env['product.configurator.picking'].\
             with_context(context)
         # stockPickingId.action_config_start()
-        vals = self._configure_product_nxt_step()
+        self._configure_product_nxt_step()
         stockPickingId.move_lines.reconfigure_product()
+        product_tmpl = stockPickingId.move_lines.product_id.product_tmpl_id
         self.assertEqual(
-            vals['res_id'],
-            stockPickingId.move_lines.product_id.id,
-            'Product not exsits'
+            product_tmpl.id,
+            self.config_product.id,
+            'Error: If product_tmpl not exsits\
+            Method: action_config_start()'
         )

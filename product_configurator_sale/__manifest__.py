@@ -11,7 +11,9 @@
         'data/menu_product.xml',
         'views/sale_view.xml',
     ],
-    'demo': [],
+    'demo': [
+        'demo/res_partner_demo.xml',
+    ],
     'images': [],
     'test': [],
     'installable': True,

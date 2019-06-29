@@ -8,7 +8,7 @@ class SaleOrder(ProductConfiguratorTestCases):
         self.SaleOrderId = self.env['sale.order']
         self.productPricelist = self.env['product.pricelist']
         self.resPartner = self.env.ref(
-            'product_configurator_purchase.partenr1')
+            'product_configurator_sale.partenr1')
         self.currency_id = self.env.ref('base.USD')
         self.ProductConfWizard = self.env['product.configurator.sale']
 
@@ -31,10 +31,12 @@ class SaleOrder(ProductConfiguratorTestCases):
         self.ProductConfWizard = self.env[
             'product.configurator.sale'].with_context(context)
         sale_order_id.action_config_start()
-        vals = self._configure_product_nxt_step()
+        self._configure_product_nxt_step()
         sale_order_id.order_line.reconfigure_product()
+        product_tmpl = sale_order_id.order_line.product_id.product_tmpl_id
         self.assertEqual(
-            vals['res_id'],
-            sale_order_id.order_line.product_id.id,
-            'Product not exsits'
+            product_tmpl.id,
+            self.config_product.id,
+            'Error: If product_tmpl not exsits\
+            Method: action_config_start()'
         )
