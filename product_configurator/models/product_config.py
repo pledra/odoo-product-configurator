@@ -1161,7 +1161,7 @@ class ProductConfigSession(models.Model):
 
         :returns: list of available attribute values
         """
-        if not check_val_ids:
+        if check_val_ids is None:
             check_val_ids = self.value_ids.ids
         if not self.product_tmpl_id:
             product_tmpl = self.env['product.template'].browse(product_tmpl_id)
