@@ -8,17 +8,27 @@ odoo.define("website_product_configurator.tour_configuration", function (require
     var _t = core._t;
 
     tour.register("config", {
-        url: "/shop/product/2-series-39",
+        url: "/shop",
         wait_for: base.ready(),
     },
         [
             {
-                trigger: "form#product_config_form",
-                content: _t("Let's configure your first product."),
+                content: "search 2 series",
+                trigger: 'form input[name="search"]',
+                run: "text 2 series",
+            },
+            {
+                content: "search ipod",
+                trigger: 'form:has(input[name="search"]) .oe_search_button',
+            },
+            {
+                content: "select ipod",
+                trigger: '.oe_product_cart a:contains("2 Series")',
             },
             {
                 content: "click to select fuel",
                 trigger: 'div.tab-pane.container.fade.active.in select:first',
+                extra_trigger: '.nav-item.config_step.active a:contains(Engine)',
                 run: function (argument) {
                     $('.tab-pane.container.fade.active.in select:first option:contains(Gasoline)')[0].selected = true
                     $('.tab-pane.container.fade.active.in select:first option:contains(Gasoline)').closest('select').change()
