@@ -53,7 +53,7 @@ Build:
 Test Addons:
   services:
     - name: postgres:10.0-alpine
-  image: ${CI_IMAGE}:${CI_PIPELINE_ID}
+  image: ${CI_IMAGE}:${CI_COMMIT_SHA}
   stage: test
   variables:
     <<: *globalvars
@@ -79,7 +79,7 @@ Test Addons:
     when: runner_system_failure
 
 Pylint Loose: &pylint
-  image: ${CI_IMAGE}:${CI_PIPELINE_ID}
+  image: ${CI_IMAGE}:${CI_COMMIT_SHA}
   stage: test
   before_script:
      # Initialize the qa virtualenvironment
@@ -110,7 +110,7 @@ Pylint Beta:
   allow_failure: true
 
 Flake8:
-  image: ${CI_IMAGE}:${CI_PIPELINE_ID}
+  image: ${CI_IMAGE}:${CI_COMMIT_SHA}
   stage: test
   before_script:
     # Initialize the qa virtualenvironment
@@ -130,7 +130,7 @@ Flake8:
 #    - gcloud container clusters get-credentials $KUBE_CLUSTER --zone $KUBE_ZONE --project $KUBE_PROJECT
 #    - kubectl config set-context $(kubectl config current-context) --namespace=$KUBE_NAMESPACE
 #    - export SERVER_DEPLOYMENT=`kubectl get deployment -l app=odoo-doodba -l type=server -o json --output=jsonpath={.items..metadata.name}`
-#    - kubectl set image deployment/$SERVER_DEPLOYMENT server=us.gcr.io/$KUBE_PROJECT/simply-solar-staging:$CI_PIPELINE_ID
+#    - kubectl set image deployment/$SERVER_DEPLOYMENT server=us.gcr.io/$KUBE_PROJECT/simply-solar-staging:$CI_COMMIT_SHA
 #    - kubectl rollout status deployment $SERVER_DEPLOYMENT
 #    - echo "Updating all modules"
 #    - export ODOO_SERVER_POD=`kubectl get pods -l app=odoo-doodbe -l type=server -o json --output=jsonpath={.items..metadata.name}`
