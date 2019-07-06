@@ -154,9 +154,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         }
         return vals
 
-    def render_form(self, cfg_session, values={}):
+    def render_form(self, cfg_session, values=None):
         """Render the website form for the given template and configuration
         session"""
+        if values is None:
+            values = {}
         config_vals = self.get_render_vals(cfg_session)
         values.update(config_vals)
         return request.render(
