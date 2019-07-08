@@ -100,7 +100,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         function _setWeightPrice(weight, price, decimal_precisions) {
             var formatted_price = price_to_str(price, decimal_precisions.price);
-            var formatted_weight = price_to_str(weight, decimal_precisions.weight);
+            var formatted_weight = weight_to_str(weight, decimal_precisions.weight);
             $('.config_product_weight').text(formatted_weight);
             $('.config_product_price').find('.oe_currency_value').text(formatted_price);
         };
