@@ -154,12 +154,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
         }
         return vals
 
-    def render_form(self, cfg_session):
+    def render_form(self, cfg_session, values=None):
         """Render the website form for the given template and configuration
         session"""
-        vals = self.get_render_vals(cfg_session)
+        if values is None:
+            values = {}
+        config_vals = self.get_render_vals(cfg_session)
+        values.update(config_vals)
         return request.render(
-            'website_product_configurator.product_configurator', vals
+            'website_product_configurator.product_configurator', values
         )
 
     def remove_recursive_list(self, values):
