@@ -5,6 +5,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
     var time = require('web.time');
     var utils = require('web.utils');
     var core = require('web.core');
+    var Dialog = require('web.Dialog');
     var _t = core._t;
 
     var image_dict = {}
