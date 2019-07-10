@@ -53,18 +53,19 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 field_name: $(this)[0].name,
             }).then(function(data) {
                 if (data.error) {
-                    alert(data.error);
+                    openWarningDialog(data.error);
+                } else {
+                    var values = data.value;
+                    var domains = data.domain;
+
+                    var open_cfg_step_line_ids = data.open_cfg_step_line_ids;
+                    var config_image_vals = data.config_image_vals;
+
+                    _applyDomainOnValues(domains);
+                    _handleOpenSteps(open_cfg_step_line_ids);
+                    _setImageUrl(config_image_vals);
+                    _setWeightPrice(values.weight, values.price, data.decimal_precision);
                 };
-                var values = data.value;
-                var domains = data.domain;
-
-                var open_cfg_step_line_ids = data.open_cfg_step_line_ids;
-                var config_image_vals = data.config_image_vals;
-
-                _applyDomainOnValues(domains);
-                _handleOpenSteps(open_cfg_step_line_ids);
-                _setImageUrl(config_image_vals);
-                _setWeightPrice(values.weight, values.price, data.decimal_precision);
             });
             _handleCustomAttribute(ev)
         });
@@ -83,6 +84,14 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 image_dict[ev.target.name]= files_data;
             }
         });
+
+        function openWarningDialog(message) {
+            var dialog = new Dialog(config_form, {
+                title: "Warning!!!",
+                size: 'medium',
+                $content: "<div>" + message + "</div>",
+            }).open();
+        }
 
         function price_to_str(price, precision) {
             var l10n = _t.database.parameters;
@@ -207,7 +216,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     current_step: current_config_step || false,
                 }).then(function(data) {
                     if (data.error) {
-                        alert(data.error);
+                        openWarningDialog(data.error);
                     };
                     return data;
                 });
