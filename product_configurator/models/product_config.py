@@ -624,7 +624,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration(final=False)
         except ValidationError as ex:
-            raise ValidationError(ex.name)
+            raise ValidationError(ex)
         except Exception:
             raise ValidationError(_('Invalid Configuration'))
         return res
@@ -649,7 +649,7 @@ class ProductConfigSession(models.Model):
                 # TODO: Remove if cond when PR with
                 # raise error on github is merged
             except ValidationError as ex:
-                raise ValidationError(ex.name)
+                raise ValidationError(ex)
             except Exception:
                 raise ValidationError(
                     _('Default values provided generate an invalid '
@@ -679,7 +679,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration()
         except ValidationError as ex:
-            raise ValidationError(ex.name)
+            raise ValidationError(ex)
         except Exception:
             raise ValidationError(_('Invalid Configuration'))
 
