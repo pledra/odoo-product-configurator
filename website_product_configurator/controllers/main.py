@@ -120,7 +120,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
         active_step = False
         if cfg_step_lines:
             active_step = cfg_session.get_active_step()
-            if not active_step or active_step not in cfg_step_lines:
+            if not active_step and cfg_session.config_step == 'configure':
+                pass
+            elif not active_step or active_step not in cfg_step_lines:
                 active_step = cfg_step_lines[:1]
 
         cfg_session = cfg_session.sudo()
