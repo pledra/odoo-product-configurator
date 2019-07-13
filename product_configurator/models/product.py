@@ -162,7 +162,7 @@ class ProductTemplate(models.Model):
                 value_ids=default_val_ids, product_tmpl_id=self.id, final=False
             )
         except ValidationError as ex:
-            raise ValidationError(ex)
+            raise ValidationError(ex.name)
         except Exception:
             raise ValidationError(
                 _('Default values provided generate an invalid configuration')
