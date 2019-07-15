@@ -25,7 +25,10 @@ class MrpBom(models.Model):
     _inherit = 'mrp.bom'
 
     config_ok = fields.Boolean(
-        related='product_tmpl_id.config_ok', store=True, readonly=True
+        related="product_tmpl_id.config_ok",
+        store=True,
+        string="Configurable",
+        readonly=True
     )
 
 

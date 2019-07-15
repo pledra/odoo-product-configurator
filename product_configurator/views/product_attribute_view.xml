@@ -44,14 +44,10 @@
                 </div>
             </xpath>
 
-            <xpath expr="//field[@name='create_variant']" position="attributes">
-                <attribte name="groups">base.group_no_one</attribte>
-            </xpath>
-
             <xpath expr="//field[@name='name']" position="after">
+                <field name="create_variant" groups="base.group_no_one"/>
                 <field name="active"/>
             </xpath>
-
             <xpath expr="//group[@name='values_ids']" position="replace">
                 <notebook>
                     <page string="Attribute Values">
@@ -114,8 +110,8 @@
         <field name="inherit_id" ref="product.product_template_attribute_value_view_form"/>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='price_extra']" position="after">
-                <field name="weight_extra"/>
+            <xpath expr="//field[@name='price_extra']" position="before">
+                <field name="weight_extra" groups="product_configurator.group_product_configurator_manager"/>
             </xpath>
         </field>
     </record>

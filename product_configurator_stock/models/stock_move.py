@@ -11,8 +11,9 @@ class StockMove(models.Model):
         string="Custom Values"
     )
     config_ok = fields.Boolean(
-        related='product_id.config_ok',
-        string="Configurable"
+        related="product_id.config_ok",
+        string="Configurable",
+        readonly=True
     )
 
     allow_configuration = fields.Boolean(
