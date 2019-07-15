@@ -201,12 +201,15 @@ odoo.define('website_product_configurator.config_form', function (require) {
         }
 
         function _onChangeConfigStep(event, next_step) {
-            var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
+            var active_step = config_form.find('.tab-content').find('.tab-pane.active.in.show');
             var config_attr = active_step.find('.form-control.required_config_attrib');
             var flag = _checkRequiredFields(config_attr)
             var config_step_header = config_form.find('.nav.nav-tabs');
-            var current_config_step = config_step_header.find('.nav-item.config_step.active').attr('data-step-id');
+            var current_config_step = config_step_header.find('.nav-item.config_step.active.show').attr('data-step-id');
             var form_data = config_form.serializeArray();
+            console.log("-------form_data-------", form_data)
+            console.log("-------next_step-------", next_step)
+            console.log("-------current_config_step-------", current_config_step)
             for (var field_name in image_dict) {
                 form_data.push({'name': field_name, 'value': image_dict[field_name]});
             }
@@ -291,19 +294,19 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         function _openNextStep(step) {
             var config_step_header = config_form.find('.nav.nav-tabs');
-            var config_step = config_step_header.find('.nav-item.config_step.active');
+            var config_step = config_step_header.find('.nav-item.config_step.active.show');
             if (config_step.length) {
-                config_step.removeClass('active');
+                config_step.removeClass('active show');
             }
-            var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
-            active_step.removeClass('active in');
+            var active_step = config_form.find('.tab-content').find('.tab-pane.active.in.show');
+            active_step.removeClass('active in show');
 
             var next_step = config_step_header.find('.nav-item.config_step[data-step-id=' + step + ']');
             if (next_step.length) {
-                next_step.addClass('active');
+                next_step.addClass('active show');
                 var selector = next_step.find('a:first-child').attr('href');
                 var step_to_active = config_form.find('.tab-content').find(selector);
-                step_to_active.addClass('active in');
+                step_to_active.addClass('active in show');
             }
         };
 
@@ -322,11 +325,13 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var result = _onChangeConfigStep(event);
             if (result) {
                 result.then(function (data) {
+                    console.log("------data------", data)
                     if (data) {
                         if (data.next_step) {
                             _openNextStep(data.next_step);
                         };
                         if (data.redirect_url) {
+                            console.log("------data------", data.redirect_url)
                             window.location = data.redirect_url;
                         };
                     };

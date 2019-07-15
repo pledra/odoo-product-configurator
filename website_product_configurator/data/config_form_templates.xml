@@ -90,7 +90,7 @@
           <t t-foreach="cfg_step_lines" t-as="cfg_step_line">
               <div t-attf-id="cfg_step_{{cfg_step_line.id}}"
                 t-att-data-step-id="cfg_step_line.id"
-                t-att-class="'tab-pane container fade' + (cfg_step_line.id == active_step.id and ' active in' or '')">
+                t-att-class="'tab-pane container fade' + (cfg_step_line.id == active_step.id and ' in show active' or '')">
                 <t t-set="configuration_template_id" t-value="cfg_step_line.get_website_template()"/>
                 <t t-call="{{configuration_template_id}}">
                     <t t-set="cfg_step_attribute_line_ids" t-value="cfg_step_line.attribute_line_ids"/>
@@ -100,7 +100,7 @@
           <t t-if="extra_attribute_line_ids">
               <div t-attf-id="cfg_step_configure"
                 t-att-data-step-id="configure"
-                t-att-class="'tab-pane container fade' + (not active_step and ' active in' or '')">
+                t-att-class="'tab-pane container fade' + (not active_step and ' active in show' or '')">
                 <t t-call="website_product_configurator.config_form_select">
                     <t t-set="configuration_template_id" t-value="'website_product_configurator.config_form_select'"/>
                     <t t-set="cfg_step_attribute_line_ids" t-value="extra_attribute_line_ids"/>
@@ -117,13 +117,13 @@
           <ul class="nav nav-tabs">
             <t t-foreach="cfg_step_lines" t-as="cfg_step_line">
                 <li t-att-data-step-id="cfg_step_line.id"
-                    t-att-class="'nav-item config_step' + (cfg_step_line.id == active_step.id and ' active' or '') + (cfg_step_line not in open_cfg_step_lines and ' hidden' or '')">
+                    t-att-class="'nav-item config_step' + (cfg_step_line.id == active_step.id and ' active show' or '') + (cfg_step_line not in open_cfg_step_lines and ' hidden' or '')">
                     <a class="nav-link" data-toggle="tab" t-attf-href="#cfg_step_{{cfg_step_line.id}}" t-esc="cfg_step_line.config_step_id.name"/>
                 </li>
             </t>
             <t t-if="extra_attribute_line_ids">
                 <li data-step-id="configure"
-                    t-att-class="'nav-item config_step' + (not active_step and ' active' or '')">
+                    t-att-class="'nav-item config_step' + (not active_step and ' active show' or '')">
                     <a class="nav-link" data-toggle="tab" href="#cfg_step_configure">Configure</a>
                 </li>
             </t>
