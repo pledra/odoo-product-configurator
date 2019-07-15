@@ -1,5 +1,5 @@
 from odoo.addons.product_configurator.tests.\
-    product_configurator_test_cases import ProductConfiguratorTestCases
+    test_product_configurator_test_cases import ProductConfiguratorTestCases
 from datetime import datetime
 
 
@@ -32,15 +32,11 @@ class Purchase(ProductConfiguratorTestCases):
             with_context(context)
         purchase_order_id.action_config_start()
         self._configure_product_nxt_step()
-        configure_line = purchase_order_id.order_line
         purchase_order_id.order_line.reconfigure_product()
+        product_tmpl = purchase_order_id.order_line.product_id.product_tmpl_id
         self.assertEqual(
-            configure_line,
-            purchase_order_id.order_line,
-            'Line Not Equal'
-        )
-        self.assertEqual(
-            configure_line.product_id,
-            purchase_order_id.order_line.product_id,
-            'Product not exsits'
+            product_tmpl.id,
+            self.config_product.id,
+            'Error: If product_tmpl not exsits\
+            Method: action_config_start()'
         )

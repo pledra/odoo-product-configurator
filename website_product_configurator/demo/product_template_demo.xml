@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="product_configurator.bmw_2_series" model="product.template">
+            <field name="website_published">True</field>
+        </record>
+
+    </data>
+</odoo>

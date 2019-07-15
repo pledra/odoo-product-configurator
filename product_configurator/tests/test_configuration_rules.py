@@ -58,8 +58,8 @@ class ConfigurationRules(TransactionCase):
             'tapistry_black', 'steptronic', 'smoker_package', 'tow_hook'
         ]
 
+        attr_val_ids = self.get_attr_val_ids(conf)
         with self.assertRaises(ValidationError):
-            attr_val_ids = self.get_attr_val_ids(conf)
             self.cfg_session.validate_configuration(attr_val_ids)
 
     def test_missing_val_configuration(self):
@@ -68,8 +68,8 @@ class ConfigurationRules(TransactionCase):
             'tapistry_black', 'steptronic', 'smoker_package', 'tow_hook'
         ]
 
+        attr_val_ids = self.get_attr_val_ids(conf)
         with self.assertRaises(ValidationError):
-            attr_val_ids = self.get_attr_val_ids(conf)
             self.cfg_session.validate_configuration(attr_val_ids)
 
     def test_invalid_multi_configuration(self):
@@ -79,8 +79,8 @@ class ConfigurationRules(TransactionCase):
             'tow_hook'
         ]
 
+        attr_val_ids = self.get_attr_val_ids(conf)
         with self.assertRaises(ValidationError):
-            attr_val_ids = self.get_attr_val_ids(conf)
             self.cfg_session.validate_configuration(attr_val_ids)
 
     def test_invalid_custom_value_configuration(self):
@@ -97,8 +97,8 @@ class ConfigurationRules(TransactionCase):
             attr_color_id: {'value': '#fefefe'}
         }
 
+        attr_val_ids = self.get_attr_val_ids(conf)
         with self.assertRaises(ValidationError):
-            attr_val_ids = self.get_attr_val_ids(conf)
             self.cfg_session.validate_configuration(
                 attr_val_ids, custom_vals)
 

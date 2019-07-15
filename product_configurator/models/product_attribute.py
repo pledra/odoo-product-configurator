@@ -302,7 +302,6 @@ class ProductAttributeValue(models.Model):
         res = super(ProductAttributeValue, self).name_get()
         if not self._context.get('show_price_extra'):
             return res
-
         extra_prices = {
             av.id: av.price_extra for av in self if av.price_extra
         }

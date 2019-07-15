@@ -18,6 +18,7 @@
         'views/templates.xml',
     ],
     'demo': [
+        'demo/product_template_demo.xml',
     ],
     'images': [
         'static/description/cover.png'

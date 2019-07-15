@@ -1,15 +1,14 @@
-from odoo.addons.product_configurator.tests. \
-    product_configurator_test_cases import ProductConfiguratorTestCases
+from odoo.addons.product_configurator.tests.\
+    test_product_configurator_test_cases import ProductConfiguratorTestCases
 
 
 class SaleOrder(ProductConfiguratorTestCases):
-
     def setUp(self):
         super(SaleOrder, self).setUp()
         self.SaleOrderId = self.env['sale.order']
         self.productPricelist = self.env['product.pricelist']
         self.resPartner = self.env.ref(
-            'product_configurator_purchase.partenr1')
+            'product_configurator_sale.partenr1')
         self.currency_id = self.env.ref('base.USD')
         self.ProductConfWizard = self.env['product.configurator.sale']
 
@@ -33,15 +32,11 @@ class SaleOrder(ProductConfiguratorTestCases):
             'product.configurator.sale'].with_context(context)
         sale_order_id.action_config_start()
         self._configure_product_nxt_step()
-        configure_line = sale_order_id.order_line
         sale_order_id.order_line.reconfigure_product()
+        product_tmpl = sale_order_id.order_line.product_id.product_tmpl_id
         self.assertEqual(
-            configure_line,
-            sale_order_id.order_line,
-            'Line Not Equal'
-        )
-        self.assertEqual(
-            configure_line.product_id,
-            sale_order_id.order_line.product_id,
-            'Product not exsits'
+            product_tmpl.id,
+            self.config_product.id,
+            'Error: If product_tmpl not exsits\
+            Method: action_config_start()'
         )

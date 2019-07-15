@@ -1,5 +1,5 @@
 from odoo.addons.product_configurator.tests.\
-    product_configurator_test_cases import ProductConfiguratorTestCases
+    test_product_configurator_test_cases import ProductConfiguratorTestCases
 
 
 class Stock(ProductConfiguratorTestCases):
@@ -14,7 +14,7 @@ class Stock(ProductConfiguratorTestCases):
         self.sequence_id = self.env.ref(
             'stock.sequence_mrp_op')
         self.resPartner = self.env.ref(
-            'product_configurator_purchase.partenr1')
+            'stock.res_company_1')
 
     def test_00_action_config_start(self):
 
@@ -39,15 +39,11 @@ class Stock(ProductConfiguratorTestCases):
             with_context(context)
         stockPickingId.action_config_start()
         self._configure_product_nxt_step()
-        stock_configure_line = stockPickingId.move_lines
         stockPickingId.move_lines.reconfigure_product()
+        product_tmpl = stockPickingId.move_lines.product_id.product_tmpl_id
         self.assertEqual(
-            stock_configure_line,
-            stockPickingId.move_lines,
-            'Line Not Equal'
-        )
-        self.assertEqual(
-            stock_configure_line.product_id,
-            stockPickingId.move_lines.product_id,
-            'Product not exsits'
+            product_tmpl.id,
+            self.config_product.id,
+            'Error: If product_tmpl not exsits\
+            Method: action_config_start()'
         )
