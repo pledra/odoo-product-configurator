@@ -5,6 +5,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
     var time = require('web.time');
     var utils = require('web.utils');
     var core = require('web.core');
+    var Dialog = require('web.Dialog');
     var _t = core._t;
 
     var image_dict = {}
@@ -53,18 +54,19 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 field_name: $(this)[0].name,
             }).then(function(data) {
                 if (data.error) {
-                    alert(data.error);
+                    openWarningDialog(data.error);
+                } else {
+                    var values = data.value;
+                    var domains = data.domain;
+
+                    var open_cfg_step_line_ids = data.open_cfg_step_line_ids;
+                    var config_image_vals = data.config_image_vals;
+
+                    _applyDomainOnValues(domains);
+                    _handleOpenSteps(open_cfg_step_line_ids);
+                    _setImageUrl(config_image_vals);
+                    _setWeightPrice(values.weight, values.price, data.decimal_precision);
                 };
-                var values = data.value;
-                var domains = data.domain;
-
-                var open_cfg_step_line_ids = data.open_cfg_step_line_ids;
-                var config_image_vals = data.config_image_vals;
-
-                _applyDomainOnValues(domains);
-                _handleOpenSteps(open_cfg_step_line_ids);
-                _setImageUrl(config_image_vals);
-                _setWeightPrice(values.weight, values.price, data.decimal_precision);
             });
             _handleCustomAttribute(ev)
         });
@@ -84,6 +86,14 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
         });
 
+        function openWarningDialog(message) {
+            var dialog = new Dialog(config_form, {
+                title: "Warning!!!",
+                size: 'medium',
+                $content: "<div>" + message + "</div>",
+            }).open();
+        }
+
         function price_to_str(price, precision) {
             var l10n = _t.database.parameters;
             var formatted = _.str.sprintf('%.' + precision + 'f', price).split('.');
@@ -100,7 +110,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         function _setWeightPrice(weight, price, decimal_precisions) {
             var formatted_price = price_to_str(price, decimal_precisions.price);
-            var formatted_weight = price_to_str(weight, decimal_precisions.weight);
+            var formatted_weight = weight_to_str(weight, decimal_precisions.weight);
             $('.config_product_weight').text(formatted_weight);
             $('.config_product_price').find('.oe_currency_value').text(formatted_price);
         };
@@ -207,7 +217,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     current_step: current_config_step || false,
                 }).then(function(data) {
                     if (data.error) {
-                        alert(data.error);
+                        openWarningDialog(data.error);
                     };
                     return data;
                 });

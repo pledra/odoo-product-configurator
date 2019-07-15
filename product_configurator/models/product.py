@@ -198,10 +198,15 @@ class ProductTemplate(models.Model):
     def unlink(self):
         """ Prevent the removal of configurable product templates
             from variants"""
-        for template in self:
-            variant_unlink = self.env.context.get('unlink_from_variant', False)
-            if template.config_ok and variant_unlink:
-                self -= template
+        configurable_templates = self.filtered(
+            lambda template: template.config_ok)
+        if configurable_templates:
+            configurable_templates[:1].check_config_user_access()
+        for config_template in configurable_templates:
+            variant_unlink = config_template.env.context.get(
+                'unlink_from_variant', False)
+            if variant_unlink:
+                self -= config_template
         res = super(ProductTemplate, self).unlink()
         return res
 
@@ -281,6 +286,40 @@ class ProductTemplate(models.Model):
         else:
             action.update({'res_id': wizard.id})
         return action
+
+    @api.model
+    def _check_config_group_rights(self):
+        ICPSudo = self.env['ir.config_parameter'].sudo()
+        manager_product_configuration_settings = ICPSudo.get_param(
+            'product_configurator.manager_product_configuration_settings')
+        return manager_product_configuration_settings
+
+    def check_config_user_access(self):
+        if not self._check_config_group_rights():
+            return True
+        config_manager = self.env.user.has_group(
+            'product_configurator.group_product_configurator_manager')
+        if config_manager:
+            return True
+        raise ValidationError(_(
+            "Sorry, you are not allowed to create/change this kind of "
+            "document. For more information please contact your manager."
+        ))
+
+    @api.model
+    def create(self, vals):
+        config_ok = vals.get('config_ok', False)
+        if config_ok:
+            self.check_config_user_access()
+        return super(ProductTemplate, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        change_config_ok = ('config_ok' in vals)
+        if change_config_ok or self.config_ok:
+            self.check_config_user_access()
+
+        return super(ProductTemplate, self).write(vals)
 
 
 class ProductProduct(models.Model):
@@ -466,6 +505,10 @@ class ProductProduct(models.Model):
     def unlink(self):
         """ Signal unlink from product variant through context so
             removal can be stopped for configurable templates """
+        config_product = any(p.config_ok for p in self)
+        if config_product:
+            self.env['product.product'].check_config_user_access(
+                mode='delete')
         ctx = dict(self.env.context, unlink_from_variant=True)
         self.env.context = ctx
         return super(ProductProduct, self).unlink()
@@ -492,3 +535,33 @@ class ProductProduct(models.Model):
         }
         return self.product_tmpl_id.create_config_wizard(
             extra_vals=extra_vals)
+
+    @api.model
+    def check_config_user_access(self, mode):
+        if not self.product_tmpl_id._check_config_group_rights():
+            return True
+        config_manager = self.env.user.has_group(
+            'product_configurator.group_product_configurator_manager')
+        config_user = self.env.user.has_group(
+            'product_configurator.group_product_configurator')
+        if (config_manager or (config_user and mode not in ['delete'])):
+            return True
+        raise ValidationError(_(
+            "Sorry, you are not allowed to create/change this kind of "
+            "document. For more information please contact your manager."
+        ))
+
+    @api.model
+    def create(self, vals):
+        config_ok = vals.get('config_ok', False)
+        if config_ok:
+            self.check_config_user_access(mode='create')
+        return super(ProductProduct, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        change_config_ok = ('config_ok' in vals)
+        if change_config_ok or self.config_ok:
+            self.check_config_user_access(mode='write')
+
+        return super(ProductProduct, self).write(vals)

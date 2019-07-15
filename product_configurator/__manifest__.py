@@ -12,6 +12,7 @@
         'data/menu_configurable_product.xml',
         'data/product_attribute.xml',
         'data/ir_sequence_data.xml',
+        'data/ir_config_parameter_data.xml',
         'security/ir.model.access.csv',
         'views/assets.xml',
         'views/product_view.xml',
