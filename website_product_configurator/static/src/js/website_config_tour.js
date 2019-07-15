@@ -18,11 +18,11 @@ odoo.define("website_product_configurator.tour_configuration", function (require
                 run: "text 2 series",
             },
             {
-                content: "search ipod",
+                content: "search 2 series",
                 trigger: 'form:has(input[name="search"]) .oe_search_button',
             },
             {
-                content: "select ipod",
+                content: "select 2 series",
                 trigger: '.oe_product_cart a:contains("2 Series")',
             },
             {
