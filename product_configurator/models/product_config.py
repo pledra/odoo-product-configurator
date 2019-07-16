@@ -895,7 +895,7 @@ class ProductConfigSession(models.Model):
             product_tmpl_id = self.product_tmpl_id
         if value_ids is False:
             value_ids = self.value_ids
-        if custom_vals is False:
+        if custom_value_ids is False:
             custom_value_ids = self.custom_value_ids
         if not state:
             state = self.config_step
