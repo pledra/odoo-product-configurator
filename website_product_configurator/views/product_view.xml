@@ -7,7 +7,6 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product_configurator.product_template_form_view"/>
         <field name="arch" type="xml">
-            <!-- TODO: Apply domains so only values from template are available -->
             <xpath expr="//notebook/page[@name='configurator']//field[@name='config_step_line_ids']//tree//field[@name='attribute_line_ids']" position="after">
                 <field name="website_tmpl_id"/>
             </xpath>

@@ -3,10 +3,10 @@
 
     <template id="config_header" name="Product Configuration Header">
         <div id="cfg_header" class="form-group">
-            <span id="product_config_image" class="col-xs-12">
+            <span id="product_config_image">
                 <t t-set="model" t-value="config_image_vals['name']"/>
                 <t t-foreach="config_image_vals['config_image_ids']" t-as="config">
-                    <img id="cfg_image" itemprop="image" class="img img-responsive pull-right"
+                    <img id="cfg_image" itemprop="image" class="img img-responsive"
                         t-attf-src="/web/image/{{model}}/{{config}}/image"/>
                 </t>
             </span>

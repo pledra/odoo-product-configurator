@@ -1,11 +1,11 @@
-#product_config_image {
-    max-width: 1000px;
-    min-height: 480px;
+#cfg_header {
+    max-width: 90%;
+    min-height: 320px;
 }
 
 #cfg_image {
     max-width: 90%;
-    max-height: 480px;
+    max-height: 300px;
     text-align: center;
     text-align: -webkit-center;
     position: absolute;
