@@ -131,7 +131,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         config_image_ids = False
         if cfg_session.value_ids:
             config_image_ids = cfg_session._get_config_image(
-                cfg_session.value_ids, cfg_session.custom_value_ids)
+                cfg_session.value_ids.ids, cfg_session._get_custom_vals_dict())
         if not config_image_ids:
             config_image_ids = cfg_session.product_tmpl_id
 
