@@ -231,7 +231,7 @@ class ProductConfigImage(models.Model):
             try:
                 cfg_session_obj.validate_configuration(
                     value_ids=cfg_img.value_ids.ids,
-                    product_tmpl_id=self.product_tmpl_id.id,
+                    product_tmpl_id=cfg_img.product_tmpl_id.id,
                     final=False)
             except ValidationError:
                 raise ValidationError(
@@ -624,7 +624,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration(final=False)
         except ValidationError as ex:
-            raise ValidationError(ex)
+            raise ValidationError(ex.name)
         except Exception:
             raise ValidationError(_('Invalid Configuration'))
         return res
@@ -649,7 +649,7 @@ class ProductConfigSession(models.Model):
                 # TODO: Remove if cond when PR with
                 # raise error on github is merged
             except ValidationError as ex:
-                raise ValidationError(ex)
+                raise ValidationError(ex.name)
             except Exception:
                 raise ValidationError(
                     _('Default values provided generate an invalid '
@@ -679,7 +679,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration()
         except ValidationError as ex:
-            raise ValidationError(ex)
+            raise ValidationError(ex.name)
         except Exception:
             raise ValidationError(_('Invalid Configuration'))
 
