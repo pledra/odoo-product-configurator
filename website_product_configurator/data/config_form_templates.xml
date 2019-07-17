@@ -118,7 +118,9 @@
             <t t-foreach="cfg_step_lines" t-as="cfg_step_line">
                 <li t-att-data-step-id="cfg_step_line.id"
                     t-att-class="'nav-item config_step' + (cfg_step_line not in open_cfg_step_lines and ' d-none' or '')">
-                    <a class="nav-link" data-toggle="tab" t-attf-href="#cfg_step_{{cfg_step_line.id}}" t-esc="cfg_step_line.config_step_id.name"/>
+                    <a t-att-class="'nav-link' + (cfg_step_line.id == active_step.id and ' active' or '')"
+                        data-toggle="tab" role="tab" t-attf-href="#cfg_step_{{cfg_step_line.id}}"
+                        t-esc="cfg_step_line.config_step_id.name"/>
                 </li>
             </t>
             <t t-if="extra_attribute_line_ids">

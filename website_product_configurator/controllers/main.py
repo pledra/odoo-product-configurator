@@ -29,7 +29,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         is_public_user = request.env.user.has_group('base.group_public')
         cfg_session_id = product_config_sessions.get(product_tmpl_id.id)
         if cfg_session_id:
-            cfg_session = cfg_session_obj.sudo().browse(int(cfg_session_id))
+            cfg_session = cfg_session_obj.browse(int(cfg_session_id))
 
         # Retrieve an active configuration session or create a new one
         if not cfg_session or not cfg_session.exists():
@@ -118,7 +118,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
         config_image_ids = False
         if cfg_session.value_ids:
             config_image_ids = cfg_session._get_config_image(
-                cfg_session.value_ids, cfg_session.custom_value_ids)
+                cfg_session.value_ids.ids,
+                cfg_session._get_custom_vals_dict()
+            )
         if not config_image_ids:
             config_image_ids = cfg_session.product_tmpl_id
 
