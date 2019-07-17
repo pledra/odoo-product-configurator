@@ -291,7 +291,7 @@
                 <t t-set="custom_field_prefix" t-value="prefixes.get('custom_field_prefix')"/>
                 <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
                     <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
-                    <label class="control-label" t-esc="line.attribute_id.name"></label>
+                    <label class="control-label" t-esc="line.attribute_id.name" t-att-data-oe-id="line.attribute_id.id"></label>
                     <fieldset t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                         t-att-data-oe-id="line.attribute_id.id"
                         t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
@@ -299,7 +299,8 @@
                         style="height: unset;">
                         <t t-foreach="line.value_ids" t-as="value">
                             <div class="radio-card-container">
-                                <span t-esc="value.name" class="label_config_attr_value_radio"/>
+                                <span t-esc="value.with_context({'show_price_extra': True, 'active_id': product_tmpl.id, 'show_attribute': False,}).name_get()[0][1]"
+                                    class="label_config_attr_value_radio"/>
                                 <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                                     t-att-checked="'checked' if value.id in value_ids.ids else None"
                                     t-att-type="line.multi and 'checkbox' or 'radio'"
@@ -338,7 +339,6 @@
                             <t t-call="website_product_configurator.config_custom_field"/>
                         </div>
                     </t>
-                    <br />
                 </t>
             </t>
         </xpath>
