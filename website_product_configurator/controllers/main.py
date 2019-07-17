@@ -147,7 +147,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'weight_prec': weight_prec,
             'main_object': cfg_session.product_tmpl_id,
         }
-        print(vals)
         return vals
 
     def render_form(self, cfg_session, values=None):

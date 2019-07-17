@@ -6,7 +6,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
     var utils = require('web.utils');
     var core = require('web.core');
     var Dialog = require('web.Dialog');
-    var sAnimation = require('website.content.snippets.animation');
     var _t = core._t;
 
     var image_dict = {}
@@ -18,45 +17,36 @@ odoo.define('website_product_configurator.config_form', function (require) {
         var config_form = $("#product_config_form");
         var datetimepickers_options = {
             calendarWeeks: true,
-            icons : {
+            icons: {
                 time: 'fa fa-clock-o',
                 date: 'fa fa-calendar',
-                next: 'fa fa-chevron-right',
-                previous: 'fa fa-chevron-left',
                 up: 'fa fa-chevron-up',
                 down: 'fa fa-chevron-down',
-               },
-            locale : moment.locale(),
-            widgetParent: 'body',
+                previous: 'fa fa-chevron-left',
+                next: 'fa fa-chevron-right',
+                today: 'fa fa-calendar-check-o',
+                clear: 'fa fa-delete',
+                close: 'fa fa-times'
+            },
+            locale: moment.locale(),
             allowInputToggle: true,
-            showClose: true,
-            format : time.getLangDatetimeFormat(),
+            buttons: {
+                showToday: true,
+                showClose: true,
+            },
+            format: time.getLangDatetimeFormat(),
             keyBinds: null,
-                // minDate: moment({ y: 1900 }),
-                // maxDate: moment().add(200, "y"),
-                // calendarWeeks: true,
-                // icons : {
-                //     time: 'fa fa-clock-o',
-                //     date: 'fa fa-calendar',
-                //     next: 'fa fa-chevron-right',
-                //     previous: 'fa fa-chevron-left',
-                //     up: 'fa fa-chevron-up',
-                //     down: 'fa fa-chevron-down',
-                //    },
-                // locale : moment.locale(),
-                // format : time.getLangDatetimeFormat(),
         };
 
-        var datepickers_options = $.extend({}, datetimepickers_options, )
-        console.log("config_form.find('.product_config_datetimepicker').parent()",config_form.find('.product_config_datetimepicker'), $.fn.datetimepicker); 
-        var test = config_form.find('.product_config_datetimepicker').datetimepicker(datetimepickers_options);
-        console.log("##################ddddddddddddd# ",test)
-        config_form.find('.product_config_datepicker').datetimepicker(datepickers_options);
-        config_form.find('.product_config_datepicker').on('dp.change', function (event) {
+        var datepickers_options = $.extend({}, datetimepickers_options, {format: time.getLangDateFormat()})
+
+        config_form.find('.product_config_datetimepicker').parent().datetimepicker(datetimepickers_options);
+        config_form.find('.product_config_datepicker').parent().datetimepicker(datepickers_options);
+        config_form.find('.product_config_datepicker').on('change.datetimepicker', function (event) {
             var attribute = [event.currentTarget];
             _checkRequiredFields(attribute);
         });
-        config_form.find('.product_config_datetimepicker').on('dp.change', function (event) {
+        config_form.find('.product_config_datetimepicker').on('change.datetimepicker', function (event) {
             var attribute = [event.currentTarget];
             _checkRequiredFields(attribute);
         });
