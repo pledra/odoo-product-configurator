@@ -39,10 +39,8 @@
                     groups="product_configurator.group_product_configurator"
                     attrs="{'invisible': [('config_ok', '=', False)]}"/>
             </xpath>
-            <xpath expr="//header/button[@name='action_update_quantity_on_hand']" position="replace">
-                <button name="action_update_quantity_on_hand"
-                    string="Update Qty On Hand" type="object"
-                    attrs="{'invisible': [('product_variant_id', '&lt;', 1), ('type', '!=', 'product')]}"/>
+            <xpath expr="//header/button[@name='action_update_quantity_on_hand']" position="attributes">
+                <attribute name="invisible">[('product_variant_count', '&lt;', 1), ('type', '!=', 'product')]</attribute>
             </xpath>
             <xpath expr="//label[@for='purchase_ok' or @for='sale_ok']" position="after">
                 <div class="oe_left" name="options" groups="base.group_user">
