@@ -76,15 +76,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     'website_product_configurator.error_page', res
                 )
 
-        # Set config-step in config session when it creates from wizard
-        # because select state not exist on website
-        if not cfg_session.config_step:
-            cfg_session.config_step = 'select'
-            res = self.set_config_next_step(cfg_session)
-            if res.get('error', False):
-                return request.render(
-                    'website_product_configurator.error_page', res
-                )
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
 

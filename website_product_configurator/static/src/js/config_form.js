@@ -71,7 +71,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             _handleCustomAttribute(ev)
         });
 
-        config_form.find('.custom_config_value').change(function (ev) {
+        config_form.find('.custom_config_value.config_attachment').change(function (ev) {
             var file = ev.target.files[0];
             var loaded = false;
             var files_data = '';
@@ -374,11 +374,16 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var max_val = parseFloat(custom_value.attr('max') || Infinity);
             var min_val = parseFloat(custom_value.attr('min') || 0);
             var new_qty = min_val;
-            if (isNaN(parseFloat(custom_value.val()))) {
-                var message = "Characters are not allowed. Please enter a number.";
+            var ui_val = parseFloat(custom_value.val());
+            var custom_type = custom_value.attr('data-type');
+            if (isNaN(ui_val)) {
+                var message = "Please enter a number.";
                 _displayTooltip(custom_value, message);
-            } else {
-                var quantity = parseFloat(custom_value.val() || 0);
+            } else if (custom_type == 'int' && ui_val % 1 !== 0) {
+                var message = "Please enter a Integer.";
+                _displayTooltip(custom_value, message);
+            }else {
+                var quantity = ui_val || 0;
                 new_qty = quantity;
                 if (current_target.has(".fa-minus").length) {
                     new_qty = quantity - 1;
@@ -387,7 +392,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 }
                 if (new_qty > max_val) {
                     var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
-                    var message = "Selected custom value " + attribute_name.text() + " must be lower than " + (max_val + 1);
+                    var message = "Selected custom value " + attribute_name.text() + " must not be greater than " + (max_val);
                     _displayTooltip(custom_value, message);
                     new_qty = max_val;
                 }
