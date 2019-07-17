@@ -39,6 +39,12 @@
     }
 }
 
+.spinner_qty {
+    padding: 0;
+    min-width: 48px;
+    text-align: center;
+}
+
 .config_attribute input[type=radio], .config_attribute input[type=checkbox] {
     position: absolute;
     z-index: 999;
