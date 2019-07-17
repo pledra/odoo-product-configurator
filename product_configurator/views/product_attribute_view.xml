@@ -45,8 +45,10 @@
             </xpath>
 
             <xpath expr="//field[@name='name']" position="after">
-                <field name="create_variant" groups="base.group_no_one"/>
                 <field name="active"/>
+            </xpath>
+            <xpath expr="//field[@name='create_variant']" position="attributes">
+                <attribute name="groups">base.group_no_one</attribute>
             </xpath>
             <xpath expr="//group[@name='values_ids']" position="replace">
                 <notebook>
