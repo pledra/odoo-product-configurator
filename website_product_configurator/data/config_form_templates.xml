@@ -118,9 +118,7 @@
             <t t-foreach="cfg_step_lines" t-as="cfg_step_line">
                 <li t-att-data-step-id="cfg_step_line.id"
                     t-att-class="'nav-item config_step' + (cfg_step_line not in open_cfg_step_lines and ' d-none' or '')">
-                    <a t-att-class="'nav-link' + (cfg_step_line.id == active_step.id and ' active' or '')"
-                        data-toggle="tab" role="tab" t-attf-href="#cfg_step_{{cfg_step_line.id}}"
-                        t-esc="cfg_step_line.config_step_id.name"/>
+                    <a class="nav-link" data-toggle="tab" t-attf-href="#cfg_step_{{cfg_step_line.id}}" t-esc="cfg_step_line.config_step_id.name"/>
                 </li>
             </t>
             <t t-if="extra_attribute_line_ids">
@@ -349,6 +347,10 @@
     <template id="cfg_product_variant" name="Configured Product Variant">
       <t t-call="website.layout">
           <t t-set="additional_title" t-value="product_tmpl.name"/>
+
+          <t t-set="first_possible_combination" t-value="product_id.product_tmpl_id._get_first_possible_combination()"/>
+          <t t-set="combination_info" t-value="product_id.product_tmpl_id._get_combination_info(first_possible_combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+
           <div itemscope="itemscope" itemtype="http://schema.org/Product" id="wrap" class="js_sale oe_website_sale">
             <section t-attf-class="container" id="product_detail">
               <div class="row">
@@ -386,9 +388,30 @@
                       <input type="hidden" class="product_id" name="product_id" t-att-value="product_id.id" />
 
                       <div class="js_product">
-                        <div itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer" class="product_price mt16">
-                            <h4 class="oe_price_h4 css_editable_mode_hidden">
-                                <span class="text-danger oe_default_price" style="text-decoration: line-through; white-space: nowrap;"
+                            <div itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer" class="product_price mt16">
+                                <h4 class="oe_price_h4 css_editable_mode_hidden">
+                                    <span t-attf-class="text-danger oe_default_price {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="
+                                        text-decoration: line-through; white-space: nowrap;"
+                                        t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                    <b class="oe_price" style="white-space: nowrap;" t-esc="combination_info['price']" t-options="{'widget': 'monetary',
+                                        'display_currency': website.currency_id}"/>
+                                    <span itemprop="price" style="display:none;" t-esc="combination_info['price']"/>
+                                    <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
+                                </h4>
+                                <h4 class="css_non_editable_mode_hidden decimal_precision" t-att-data-precision="str(website.currency_id.decimal_places)">
+                                    <span t-field="product_id.list_price"
+                                        t-options='{
+                                        "widget": "monetary",
+                                        "display_currency": product_tmpl.currency_id}'/>
+                                </h4>
+                                <h4 class="d-none oe_not_available bg-warning">Product not available</h4>
+                                <!-- <h4 class="oe_price_h4 css_editable_mode_hidden"> -->
+                                <!-- <span t-attf-class="text-danger oe_default_price {{'' if combination_info['has_discounted_price'] else 'd-none'}}"
+                                    style="text-decoration: line-through; white-space: nowrap;"
+                                    t-esc="combination_info['list_price']"
+                                    t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"
+                                /> -->
+                                <!-- <span class="text-danger oe_default_price" style="text-decoration: line-through; white-space: nowrap;"
                                   t-field="product_id.lst_price"
                                   t-options='{
                                     "widget": "monetary",
@@ -396,12 +419,12 @@
                                     "display_currency": website.currency_id
                                  }'/>
                                 <b class="oe_price" style="white-space: nowrap;"
-                                  t-field="product_id.lst_price"
+                                  t-field="product_id.list_price"
                                   t-options='{
                                      "widget": "monetary",
                                      "display_currency": website.currency_id
                                  }'/>
-                                <span itemprop="price" style="display:none;" t-esc="product_id.lst_price"/>
+                                <span itemprop="price" style="display:none;" t-esc="product_id.list_price"/>
                                 <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
                             </h4>
                             <h4 class="css_non_editable_mode_hidden">
@@ -411,18 +434,22 @@
                                       "display_currency": product_tmpl.currency_id
                                     }'/>
                             </h4>
-                            <h4 class="d-none oe_not_available bg-warning">Product not available</h4>
+                            <h4 class="d-none oe_not_available bg-warning">Product not available</h4> -->
                         </div>
 
                         <div class="mt8">
                           <div class="css_quantity input-group oe_website_spinner">
-                              <a t-attf-href="#" class="mb8 input-group-addon js_add_cart_json">
-                                  <i class="fa fa-minus"></i>
-                              </a>
-                              <input type="text" class="js_quantity form-control" data-min="1" name="add_qty" value="1"/>
-                              <a t-attf-href="#" class="mb8 input-group-addon float_left js_add_cart_json">
-                                  <i class="fa fa-plus"></i>
-                              </a>
+                                <div class="input-group-prepend">
+                                    <a t-attf-href="#" class="btn btn-secondary js_add_cart_json" aria-label="Remove one" title="Remove one">
+                                        <i class="fa fa-minus"></i>
+                                    </a>
+                                </div>
+                                <input type="text" class="form-control quantity" data-min="1" name="add_qty" t-att-value="add_qty or 1"/>
+                                <div class="input-group-append">
+                                    <a t-attf-href="#" class="btn btn-secondary float_left js_add_cart_json" aria-label="Add one" title="Add one">
+                                        <i class="fa fa-plus"></i>
+                                    </a>
+                                </div>
                           </div>
                           <button id="add_to_cart" type="submit" class="btn btn-default pull-left mb32 mt8 btn-primary">
                             Add to Cart
