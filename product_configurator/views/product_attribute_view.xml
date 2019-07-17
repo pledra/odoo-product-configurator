@@ -101,7 +101,7 @@
         <field name="type">tree</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='price_extra']" position="after">
-                <field name="weight_extra"/>
+                <field name="weight_extra" groups="product_configurator.group_product_configurator_manager"/>
             </xpath>
         </field>
     </record>
