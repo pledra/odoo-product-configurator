@@ -127,8 +127,8 @@
               <div role="tabpanel" t-attf-id="cfg_step_configure"
                 t-att-data-step-id="configure"
                 t-att-class="'tab-pane fade container' + (not active_step and ' show active' or '')">
-                <t t-call="website_product_configurator.config_form_select">
-                    <t t-set="configuration_template_id" t-value="'website_product_configurator.config_form_select'"/>
+                <t t-call="default_website_template">
+                    <t t-set="configuration_template_id" t-value="default_website_template"/>
                     <t t-set="cfg_step_attribute_line_ids" t-value="extra_attribute_line_ids"/>
                 </t>
               </div>
