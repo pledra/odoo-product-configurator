@@ -17,7 +17,7 @@ class ProductConfigStepLine(models.Model):
     def get_website_template(self):
         """Return the external id of the qweb template linked to this step"""
         view_id = self.env[
-            'product.config.session'].check_config_form_template()
+            'product.config.session'].get_config_form_template()
         if self.website_tmpl_id:
             xml_id_dict = self.website_tmpl_id.get_xml_id()
             view_id = xml_id_dict.get(self.website_tmpl_id.id)
@@ -36,7 +36,7 @@ class ProductConfigSession(models.Model):
         if sessions_to_remove:
             sessions_to_remove.unlink()
 
-    def check_config_form_template(self):
+    def get_config_form_template(self):
         ICPSudo = self.env['ir.config_parameter'].sudo()
         website_tmpl = ICPSudo.get_param(
             'product_configurator.configuration_step_view_id')
