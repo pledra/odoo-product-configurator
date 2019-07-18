@@ -44,7 +44,7 @@ odoo.define("website_product_configurator.tour_configuration", function (require
             },
             {
                 content: "click on continue",
-                trigger: '#form_action span:contains(Continue)',
+                trigger: '.btnNextStep span:contains(Continue)',
             },
             {
                 content: "click to select color",
@@ -65,7 +65,7 @@ odoo.define("website_product_configurator.tour_configuration", function (require
             },
             {
                 content: "click on continue",
-                trigger: '#form_action span:contains(Continue)',
+                trigger: '.btnNextStep span:contains(Continue)',
             },
             {
                 content: "click to select Lines",
@@ -78,7 +78,7 @@ odoo.define("website_product_configurator.tour_configuration", function (require
             },
             {
                 content: "click on continue",
-                trigger: '#form_action span:contains(Continue)',
+                trigger: '.btnNextStep span:contains(Continue)',
             },
             {
                 content: "click to select tapistry",
@@ -91,7 +91,7 @@ odoo.define("website_product_configurator.tour_configuration", function (require
             },
             {
                 content: "click on continue",
-                trigger: '#form_action span:contains(Continue)',
+                trigger: '.btnNextStep span:contains(Continue)',
             },
             {
                 content: "click to select Transmission",
@@ -112,7 +112,7 @@ odoo.define("website_product_configurator.tour_configuration", function (require
             },
             {
                 content: "click on continue",
-                trigger: '#form_action span:contains(Continue)',
+                trigger: '.configureProduct span:contains(Continue)',
             },
         ]);
 });
