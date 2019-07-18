@@ -427,13 +427,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
 
             # next step
-            print("next_step ",next_step, current_step)
             result = self.set_config_next_step(
                 config_session_id=config_session_id,
                 current_step=current_step,
                 next_step=next_step
             )
-            print("result ",result)
             if result.get('next_step', False):
                 return {'next_step': result.get('next_step')}
             elif result.get('error', False):

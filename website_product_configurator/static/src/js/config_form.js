@@ -276,6 +276,24 @@ odoo.define('website_product_configurator.config_form', function (require) {
             return flag_all;
         };
 
+        function _handleFooterButtons(step) {
+            var step_count = step.attr('data-step-count');
+            var total_steps = $('#total_attributes').val();
+            if (step_count == '1') {
+                $('.btnPreviousStep').addClass('d-none');
+                $('.btnNextStep').removeClass('d-none');
+                $('.configureProduct').addClass('d-none');
+            } else if (step_count == total_steps) {
+                $('.btnPreviousStep').removeClass('d-none');
+                $('.btnNextStep').addClass('d-none');
+                $('.configureProduct').removeClass('d-none');
+            } else {
+                $('.btnPreviousStep').removeClass('d-none');
+                $('.btnNextStep').removeClass('d-none');
+                $('.configureProduct').addClass('d-none');
+            }
+        }
+
         config_form.find('.config_attribute').change(function (event) {
             var attribute = [event.currentTarget];
             _checkRequiredFields(attribute);
@@ -292,7 +310,17 @@ odoo.define('website_product_configurator.config_form', function (require) {
             if (!result) {
                 event.preventDefault();
                 event.stopPropagation();
+            } else {
+                _handleFooterButtons($(event.currentTarget))
             };
+        });
+
+        $('.btnNextStep').click(function(){
+            $('.nav-tabs > .config_step > .active').parent().nextAll('li:not(.d-none):first').find('a').trigger('click');
+        });
+
+        $('.btnPreviousStep').click(function(){
+            $('.nav-tabs > .config_step > .active').parent().prevAll('li:not(.d-none):first').find('a').trigger('click');
         });
 
         function _openNextStep(step) {
