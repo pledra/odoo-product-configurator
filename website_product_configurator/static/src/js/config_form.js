@@ -400,7 +400,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 }
                 if (new_qty > max_val) {
                     var attribute_name = custom_value.closest('.tab-pane').find('label[data-oe-id="' + custom_value.attr('data-oe-id') + '"]');
-                    var message = "Selected custom value " + attribute_name.text() + " must not be greater than " + (max_val + 1);
+                    var message = "Selected custom value " + attribute_name.text() + " must not be greater than " + max_val;
                     _displayTooltip(custom_value, message);
                     new_qty = max_val;
                 }
