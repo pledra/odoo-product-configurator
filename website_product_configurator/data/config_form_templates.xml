@@ -125,7 +125,7 @@
             </t>
             <t t-if="extra_attribute_line_ids">
                 <li data-step-id="configure"
-                    class="'nav-item config_step'">
+                    class="nav-item config_step">
                     <a t-att-class="'nav-link'  + (not active_step and ' active' or '')"
                         data-toggle="tab" role="tab" href="#cfg_step_configure">Configure</a>
                 </li>

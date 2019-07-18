@@ -213,7 +213,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var config_attr = active_step.find('.form-control.required_config_attrib');
             var flag = _checkRequiredFields(config_attr)
             var config_step_header = config_form.find('.nav.nav-tabs');
-            var current_config_step = config_step_header.find('.nav-item.config_step.active').attr('data-step-id');
+            var current_config_step = config_step_header.find('.nav-item.config_step > a.active').parent().attr('data-step-id');
             var form_data = config_form.serializeArray();
             for (var field_name in image_dict) {
                 form_data.push({'name': field_name, 'value': image_dict[field_name]});
