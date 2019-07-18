@@ -16,6 +16,7 @@
         'views/assets.xml',
         'views/product_view.xml',
         'views/templates.xml',
+        'views/res_config_settings_view.xml',
     ],
     'demo': [
     ],
