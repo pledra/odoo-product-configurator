@@ -116,10 +116,15 @@
 .label_config_attr_value_radio {
     position: absolute;
     z-index: 1;
+    width: 140px;
     margin: 5px auto auto 25px;
 }
 
 .radio-card-container {
     margin: 5px 10px 5px 10px;
     float: left;
+}
+.control-label{
+    margin-top: 15px;
+    margin-bottom: auto;
 }
