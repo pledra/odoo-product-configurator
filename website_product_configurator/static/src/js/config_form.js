@@ -311,7 +311,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
         });
 
         $('.btnNextStep').click(function(){
-            console.log("==========================")
             $('.nav-item.config_step.active').nextAll('li:not(.hidden):first').find('a').trigger('click');
         });
 
