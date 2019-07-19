@@ -22,7 +22,7 @@ class SaleOrder(models.Model):
             product_context
         ).browse(int(product_id))
         if not cfg_product.product_tmpl_id.config_ok:
-            return super(self, SaleOrder)._cart_update(
+            return super(SaleOrder, self)._cart_update(
                 product_id=product_id,
                 line_id=line_id,
                 add_qty=add_qty,
