@@ -59,7 +59,8 @@ class ProductTemplate(models.Model):
                 ['value_id', 'value_ids'], load=False
             )
             attr_val_line_vals = [
-                (l['value_id'], tuple(l['value_ids'])) for l in attr_val_line_vals
+                (l['value_id'], tuple(l['value_ids']))
+                for l in attr_val_line_vals
             ]
             if len(set(attr_val_line_vals)) != len(attr_val_line_vals):
                 raise ValidationError(
@@ -344,12 +345,14 @@ class ProductProduct(models.Model):
             if not product.config_ok:
                 continue
 
-            # At the moment, I don't have enough confidence with my understanding
-            # of binary attributes, so will leave these as not matching...
+            # At the moment, I don't have enough confidence with my
+            # understanding of binary attributes, so will leave these
+            # as not matching...
             # In theory, they should just work, if they are set to "non search"
             # in custom field def!
             # TODO: Check the logic with binary attributes
-            if not product.value_custom_ids.filtered(lambda cv: cv.attachment_ids):
+            if not product.value_custom_ids.filtered(
+                    lambda cv: cv.attachment_ids):
                 config_session_obj = product.env['product.config.session']
                 custom_vals = {
                     cv.attribute_id.id: cv.value

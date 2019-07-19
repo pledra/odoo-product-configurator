@@ -103,7 +103,8 @@ class ProductAttribute(models.Model):
     def check_searchable_field(self):
         for attribute in self:
             nosearch_fields = attribute._get_nosearch_fields()
-            if attribute.custom_type in nosearch_fields and attribute.search_ok:
+            if (attribute.custom_type in nosearch_fields and
+                    attribute.search_ok):
                 raise ValidationError(
                     _("Selected custom field type '%s' is not searchable" %
                       attribute.custom_type)
@@ -208,8 +209,12 @@ class ProductAttributeLine(models.Model):
 
     @api.constrains('value_ids', 'attribute_id')
     def _check_valid_attribute(self):
-        if any((not line.value_ids and not line.custom) or line.value_ids > line.attribute_id.value_ids for line in self):
-            raise ValidationError(_('You cannot use this attribute with the following value.'))
+        if any((not line.value_ids and not line.custom)
+               or line.value_ids > line.attribute_id.value_ids
+               for line in self):
+            raise ValidationError(_(
+                'You cannot use this attribute with the following value.'
+            ))
         return True
 
 

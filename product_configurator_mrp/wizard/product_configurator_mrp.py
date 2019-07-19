@@ -19,13 +19,12 @@ class ProductConfiguratorMrp(models.TransientModel):
             vals.update(order_id=int(order_id))
         return super(ProductConfiguratorMrp, self).create(vals)
 
-
     def _get_order_vals(self, product_id):
         """ Hook to allow custom line values to be put on the newly
         created or edited lines."""
 
         line_vals = {
-            'product_id': product_id,
+            'product_id': product_id.id,
         }
         return line_vals
 
@@ -60,7 +59,7 @@ class ProductConfiguratorMrp(models.TransientModel):
             'res_id': self.order_id.id,
         }
 
-        line_vals = self._get_order_vals(action['res_id'])
+        line_vals = self._get_order_vals(variant)
 
         mrpProduction = self.env['mrp.production']
         specs = mrpProduction._onchange_spec()

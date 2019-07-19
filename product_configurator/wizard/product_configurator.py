@@ -60,7 +60,8 @@ class ProductConfigurator(models.TransientModel):
     def _compute_cfg_image(self):
         # TODO: Update when allowing custom values to influence image
         for configurator in self:
-            cfg_sessions = configurator.config_session_id.with_context(bin_size=False)
+            cfg_sessions = configurator.config_session_id.with_context(
+                bin_size=False)
             image = cfg_sessions.get_config_image()
             configurator.product_img = image
 

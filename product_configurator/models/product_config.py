@@ -1506,9 +1506,9 @@ class ProductConfigSessionCustomValue(models.Model):
         for custom_val in self:
             if len(custom_val.cfg_session_id.custom_value_ids.filtered(
                     lambda x: x.attribute_id == custom_val.attribute_id)) > 1:
-                raise ValidationError(
-                    _("Configuration cannot have the same value inserted twice")
-                )
+                raise ValidationError(_(
+                    "Configuration cannot have the same value inserted twice"
+                ))
 
     # @api.constrains('cfg_session_id.value_ids')
     # def custom_only(self):
@@ -1526,12 +1526,12 @@ class ProductConfigSessionCustomValue(models.Model):
         for custom_val in self:
             custom_type = custom_val.attribute_id.custom_type
             if custom_val.value and custom_type == 'binary':
-                raise ValidationError(
-                    _("Attribute custom type is binary, attachments are the only "
-                      "accepted values with this custom field type")
-                )
+                raise ValidationError(_(
+                    "Attribute custom type is binary, attachments are the "
+                    "only accepted values with this custom field type"
+                ))
             if custom_val.attachment_ids and custom_type != 'binary':
-                raise ValidationError(
-                    _("Attribute custom type must be 'binary' for saving "
-                      "attachments to custom value")
-                )
+                raise ValidationError(_(
+                    "Attribute custom type must be 'binary' for saving "
+                    "attachments to custom value"
+                ))
