@@ -150,7 +150,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             if (flag_custom && custom_value_container.hasClass('d-none')) {
                 custom_value_container.removeClass('d-none');
                 custom_value.addClass('required_config_attrib');
-            } else if (!custom_value_container.hasClass('d-none')){
+            } else if (!flag_custom && !custom_value_container.hasClass('d-none')){
                 custom_value_container.addClass('d-none');
                 if (custom_value.hasClass('required_config_attrib')) {
                     custom_value.removeClass('required_config_attrib');
