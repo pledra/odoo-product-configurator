@@ -96,7 +96,7 @@
     background-repeat: no-repeat;
     display: inline-block;
     width: 160px;
-    height: 130px;
+    height: 160px;
     -webkit-transition: all 100ms ease-in;
        -moz-transition: all 100ms ease-in;
             transition: all 100ms ease-in;
@@ -116,8 +116,11 @@
 .label_config_attr_value_radio {
     position: absolute;
     z-index: 1;
-    width: 140px;
+    width: 138px;
     margin: 5px auto auto 25px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .radio-card-container {

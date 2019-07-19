@@ -11,6 +11,7 @@
 
     'data': [
         'security/configurator_security.xml',
+        'data/ir_config_parameter_data.xml',
         'data/config_form_templates.xml',
         'data/cron.xml',
         'views/assets.xml',

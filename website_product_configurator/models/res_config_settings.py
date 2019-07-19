@@ -17,31 +17,35 @@ class ResConfigSettings(models.TransientModel):
     def set_values(self):
         super(ResConfigSettings, self).set_values()
         ICPSudo = self.env['ir.config_parameter'].sudo()
+        website_tmpl_xml_id = ''
+        if self.website_tmpl_id:
+            website_tmpl_xml_id = self.website_tmpl_id.xml_id
         ICPSudo.set_param(
-            'product_configurator.configuration_step_view_id',
-            self.website_tmpl_id.xml_id)
-
+            'product_configurator.default_configuration_step_website_view_id',
+            website_tmpl_xml_id
+        )
 
     @api.model
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
         ICPSudo = self.env['ir.config_parameter'].sudo()
-        website_tmpl = ICPSudo.get_param(
-            'product_configurator.configuration_step_view_id')
+        xml_id = ICPSudo.get_param(
+            'product_configurator.default_configuration_step_website_view_id'
+        )
 
-        if not website_tmpl or len(website_tmpl.split('.')) != 2:
-            website_tmpl = 'website_product_configurator.config_form_select'
+        website_tmpl_xml_id = False
+        if xml_id and len(xml_id.split('.')) == 2:
+            model_data_id = self.env['ir.model.data'].search([
+                ('module', '=', xml_id.split('.')[0]),
+                ('name', '=', xml_id.split('.')[1])
+            ])
+            if model_data_id:
+                website_tmpl_id = self.env[model_data_id.model].browse(
+                    model_data_id.res_id)
+                if (website_tmpl_id.inherit_id.xml_id ==
+                        'website_product_configurator.config_form_base'):
+                    website_tmpl_xml_id = website_tmpl_id.id
 
-        website_tmpl_id = self.env['ir.model.data'].search([
-            ('module', '=', website_tmpl.split('.')[0]),
-            ('name', '=', website_tmpl.split('.')[1])])
-
-        if not website_tmpl_id:
-            website_tmpl = 'website_product_configurator.config_form_select'
-            website_tmpl_id = self.env['ir.model.data'].search([
-                ('module', '=', website_tmpl.split('.')[0]),
-                ('name', '=', website_tmpl.split('.')[1])])
-
-        res.update({'website_tmpl_id': website_tmpl_id.res_id})
+        res.update({'website_tmpl_id': website_tmpl_xml_id})
 
         return res

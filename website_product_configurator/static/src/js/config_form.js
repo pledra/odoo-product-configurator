@@ -42,12 +42,12 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         config_form.find('.product_config_datetimepicker').parent().datetimepicker(datetimepickers_options);
         config_form.find('.product_config_datepicker').parent().datetimepicker(datepickers_options);
-        config_form.find('.product_config_datepicker').on('change.datetimepicker', function (event) {
-            var attribute = [event.currentTarget];
+        config_form.find('.product_config_datepicker').parent().on('change.datetimepicker', function (event) {
+            var attribute = $(event.currentTarget).find('input.required_config_attrib');
             _checkRequiredFields(attribute);
         });
-        config_form.find('.product_config_datetimepicker').on('change.datetimepicker', function (event) {
-            var attribute = [event.currentTarget];
+        config_form.find('.product_config_datetimepicker').parent().on('change.datetimepicker', function (event) {
+            var attribute = $(event.currentTarget).find('input.required_config_attrib');
             _checkRequiredFields(attribute);
         });
 

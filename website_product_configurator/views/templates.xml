@@ -1,31 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Product item used by /shop and /shop/cart -->
-    <template id="products_item_product_price" name="Products item" inherit_id="website_sale.products_item">
-        <xpath expr="//div[hasclass('product_price')]" position="after">
-            <div itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer" class="product_price" t-if="not product.product_variant_ids and product.config_ok">
-                <b>
-                    <t t-if="True"><!-- compatibility 12.0 -->
-                        <del t-attf-class="text-danger mr8 {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="white-space: nowrap;" t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
-                    </t>
-                    <span t-if="combination_info['price']" t-esc="combination_info['price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
-                    <span itemprop="price" style="display:none;" t-esc="combination_info['price']" />
-                    <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name" />
-                </b>
-               <!--  <b>
-                    <t t-if="product.website_price_difference and website.get_current_pricelist().discount_policy=='without_discount'">
-                        <del class="text-danger mr8" style="white-space: nowrap;" t-esc="compute_currency(product.website_public_price)" t-options="{'widget': 'monetary', 'display_currency': website.get_current_pricelist().currency_id, 'from_currency': website.currency_id}" />
-                    </t>
-
-                    <span t-esc="product.website_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
-                    <span itemprop="price" style="display:none;" t-esc="product.website_price" />
-                    <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name" />
-                </b> -->
-            </div>
-        </xpath>
-    </template>
-
     <template id="error_page">
         <t t-call="web.layout">
             <t t-set="html_data" t-value="{'style': 'height: 100%;'}"/>

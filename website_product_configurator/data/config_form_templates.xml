@@ -330,8 +330,11 @@
                         style="height: unset;">
                         <t t-foreach="line.value_ids" t-as="value">
                             <div class="radio-card-container">
-                                <span t-esc="value.with_context({'show_price_extra': True, 'active_id': product_tmpl.id, 'show_attribute': False,}).name_get()[0][1]"
-                                    class="label_config_attr_value_radio"/>
+                                <t t-set="value_label"
+                                    t-value="value.with_context({'show_price_extra': True, 'active_id': product_tmpl.id, 'show_attribute': False,}).name_get()[0][1]"/>
+                                <span t-esc="value_label"
+                                    class="label_config_attr_value_radio"
+                                    t-att-title="value_label"/>
                                 <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                                     t-att-checked="'checked' if value.id in value_ids.ids else None"
                                     t-att-type="line.multi and 'checkbox' or 'radio'"
@@ -339,16 +342,19 @@
                                     t-att-value="value.id"
                                     t-att-data-oe-id="value.id"
                                     t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                                    t-att-disabled="value.id not in available_value_ids and True or False"/>
+                                    t-att-disabled="value.id not in available_value_ids and True or False"
+                                    t-att-title="value_label"/>
                                 <label class="image_config_attr_value_radio"
-                                  for="'%s%s' % (field_prefix, line.attribute_id.id)"
-                                  t-att-data-val-id="value.id"
-                                  t-attf-style="background-image:url(/web/image/product.attribute.value/{{value.id}}/image_medium);"></label>
+                                    for="'%s%s' % (field_prefix, line.attribute_id.id)"
+                                    t-att-data-val-id="value.id"
+                                    t-attf-style="background-image:url(/web/image/product.attribute.value/{{value.id}}/image_medium);"
+                                    t-att-title="value_label">
+                                </label>
                             </div>
                         </t>
                         <t t-if="line.custom">
                             <div class="radio-card-container">
-                                <span t-esc="custom_val_id.name" class="label_config_attr_value_radio"/>
+                                <span t-esc="custom_val_id.name" class="label_config_attr_value_radio" t-att-title="custom_val_id.name"/>
                                 <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                                     t-att-checked="'checked' if custom_value else None"
                                     t-att-type="line.multi and 'checkbox' or 'radio'"
@@ -356,11 +362,14 @@
                                     t-att-value="custom_val_id.id"
                                     t-att-data-oe-id="custom_val_id.id"
                                     t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                                    t-att-disabled="custom_val_id.id not in available_value_ids and True or False"/>
+                                    t-att-disabled="custom_val_id.id not in available_value_ids and True or False"
+                                    t-att-title="custom_val_id.name"/>
                                 <label class="image_config_attr_value_radio"
-                                  for="'%s%s' % (field_prefix, line.attribute_id.id)"
-                                  t-att-data-val-id="custom_val_id.id"
-                                  t-attf-style="background-image:url(/web/image/product.attribute.value/{{custom_val_id.id}}/image_medium);"></label>
+                                    for="'%s%s' % (field_prefix, line.attribute_id.id)"
+                                    t-att-data-val-id="custom_val_id.id"
+                                    t-attf-style="background-image:url(/web/image/product.attribute.value/{{custom_val_id.id}}/image_medium);"
+                                    t-att-title="custom_val_id.name">
+                                </label>
                             </div>
                         </t>
                     </fieldset>
@@ -385,15 +394,6 @@
         <t t-call="website.layout">
             <div itemscope="itemscope" itemtype="http://schema.org/Product" id="wrap" class="js_sale">
                 <section t-attf-class="container py-2 oe_website_sale #{'discount' if combination_info['has_discounted_price'] else ''}" id="product_detail">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="form-inline justify-content-end">
-                                <t t-call="website_sale.pricelist_list">
-                                    <t t-set="_classes">ml-2</t>
-                                </t>
-                            </div>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col-md-6">
                             <t t-set="variant_img" t-value="product_variant and product_variant.image_variant"/>
@@ -438,6 +438,13 @@
                             </div>
                         </div>
                         <div class="col-md-6 col-xl-4 offset-xl-2" id="product_details">
+                            <div>
+                                <div class="form-inline">
+                                    <t t-call="website_sale.pricelist_list">
+                                        <t t-set="_classes"></t>
+                                    </t>
+                                </div>
+                            </div>
                             <h1 itemprop="name" t-field="product_variant.name">Product Name</h1>
                             <span itemprop="url" style="display:none;" t-esc="'%s/website_product_configurator/open_product/%s' % (request.httprequest.url_root, slug(product_variant))"/>
                             <form action="/shop/cart/update" method="POST">
