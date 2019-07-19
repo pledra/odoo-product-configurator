@@ -142,7 +142,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             if (flag_custom && custom_value_container.hasClass('hidden')) {
                 custom_value_container.removeClass('hidden');
                 custom_value.addClass('required_config_attrib');
-            } else if (!custom_value_container.hasClass('hidden')){
+            } else if (!flag_custom && !custom_value_container.hasClass('hidden')){
                 custom_value_container.addClass('hidden');
                 if (custom_value.hasClass('required_config_attrib')) {
                     custom_value.removeClass('required_config_attrib');
