@@ -128,6 +128,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
         weight_prec = request.env['decimal.precision'].precision_get(
             'Stock Weight') or 2
+        website_tmpl_xml_id = cfg_session.get_config_form_website_template()
 
         vals = {
             'cfg_session': cfg_session,
@@ -146,6 +147,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 model_name=config_image_ids[:1]._name),
             'weight_prec': weight_prec,
             'main_object': cfg_session.product_tmpl_id,
+            'default_website_template': website_tmpl_xml_id,
         }
         return vals
 
