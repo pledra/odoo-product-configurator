@@ -312,7 +312,8 @@ class ProductConfigSession(models.Model):
         'product_tmpl_id.attribute_line_ids',
         'product_tmpl_id.attribute_line_ids.value_ids',
         'product_tmpl_id.attribute_line_ids.product_template_value_ids',
-        'product_tmpl_id.attribute_line_ids.product_template_value_ids.price_extra')
+        'product_tmpl_id.attribute_line_ids.'
+        'product_template_value_ids.price_extra')
     def _compute_cfg_price(self):
         for session in self:
             if session.product_tmpl_id:
@@ -367,8 +368,8 @@ class ProductConfigSession(models.Model):
 
     @api.model
     def get_cfg_weight(self, value_ids=None, custom_vals=None):
-        """ Computes the weight of the configured product based on the configuration
-            passed in via value_ids and custom_values
+        """ Computes the weight of the configured product based on the
+        configuration passed in via value_ids and custom_values
 
         :param value_ids: list of attribute value_ids
         :param custom_vals: dictionary of custom attribute values
@@ -403,7 +404,8 @@ class ProductConfigSession(models.Model):
         'product_tmpl_id.attribute_line_ids',
         'product_tmpl_id.attribute_line_ids.value_ids',
         'product_tmpl_id.attribute_line_ids.product_template_value_ids',
-        'product_tmpl_id.attribute_line_ids.product_template_value_ids.weight_extra')
+        'product_tmpl_id.attribute_line_ids.product_template_value_ids'
+        '.weight_extra')
     def _compute_cfg_weight(self):
         for cfg_session in self:
             cfg_session.weight = cfg_session.get_cfg_weight()
