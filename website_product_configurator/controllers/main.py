@@ -111,8 +111,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     extra_attribute_line_ids and
                     cfg_session.config_step == 'configure'):
                 pass
-            elif not active_step or active_step not in cfg_step_lines:
-                active_step = cfg_step_lines[:1]
+            elif not active_step or active_step not in open_cfg_step_lines:
+                active_step = open_cfg_step_lines[:1]
 
         cfg_session = cfg_session.sudo()
         config_image_ids = False
