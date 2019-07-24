@@ -90,7 +90,7 @@ class TestMrp(ProductConfiguratorTestCases):
         mrpProduction.action_config_start()
         self.ProductConfWizard = self.env[
             'product.configurator.mrp'].with_context(context)
-        vals = self._configure_product_nxt_step()
+        self._configure_product_nxt_step()
         # self.assertEqual(
         #     vals['res_id'],
         #     mrpProduction.product_id.id,

@@ -14,7 +14,8 @@ class ProductAttributes(TransactionCase):
         self.ProductTemplate = self.env.ref(
             'product_configurator.bmw_2_series')
         self.product_category = self.env.ref('product.product_category_5')
-        self.ProductAttributePrice = self.env['product.template.attribute.value']
+        self.ProductAttributePrice = \
+            self.env['product.template.attribute.value']
         self.attr_fuel = self.env.ref(
             'product_configurator.product_attribute_fuel')
         self.attr_engine = self.env.ref(
