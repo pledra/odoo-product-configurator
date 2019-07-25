@@ -48,7 +48,6 @@
                 <field name="create_variant" groups="base.group_no_one"/>
                 <field name="active"/>
             </xpath>
-
             <xpath expr="//group[@name='values_ids']" position="replace">
                 <notebook>
                     <page string="Attribute Values">

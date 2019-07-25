@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data noupdate="1">
+        <record id="default_configuration_step_website_view_id" model="ir.config_parameter">
+            <field name="key">product_configurator.default_configuration_step_website_view_id</field>
+            <field name="value">website_product_configurator.config_form_select</field>
+        </record>
+    </data>
+</odoo>

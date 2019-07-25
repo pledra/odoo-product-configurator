@@ -117,3 +117,9 @@
     margin: 5px 10px 5px 10px;
     float: left;
 }
+.wd50 {
+    width: 50%;
+}
+#cfg_footer{
+    padding-top: 15px;
+}

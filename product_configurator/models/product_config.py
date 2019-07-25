@@ -231,7 +231,7 @@ class ProductConfigImage(models.Model):
             try:
                 cfg_session_obj.validate_configuration(
                     value_ids=cfg_img.value_ids.ids,
-                    product_tmpl_id=self.product_tmpl_id.id,
+                    product_tmpl_id=cfg_img.product_tmpl_id.id,
                     final=False)
             except ValidationError:
                 raise ValidationError(
@@ -624,7 +624,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration(final=False)
         except ValidationError as ex:
-            raise ValidationError(ex)
+            raise ValidationError(ex.name)
         except Exception:
             raise ValidationError(_('Invalid Configuration'))
         return res
@@ -649,7 +649,7 @@ class ProductConfigSession(models.Model):
                 # TODO: Remove if cond when PR with
                 # raise error on github is merged
             except ValidationError as ex:
-                raise ValidationError(ex)
+                raise ValidationError(ex.name)
             except Exception:
                 raise ValidationError(
                     _('Default values provided generate an invalid '
@@ -670,16 +670,16 @@ class ProductConfigSession(models.Model):
             :returns: new/existing product.product recordset
 
         """
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         try:
             self.validate_configuration()
         except ValidationError as ex:
-            raise ValidationError(ex)
+            raise ValidationError(ex.name)
         except Exception:
             raise ValidationError(_('Invalid Configuration'))
 
@@ -720,7 +720,7 @@ class ProductConfigSession(models.Model):
     def _get_option_values(self, pricelist, value_ids=None):
         """Return only attribute values that have products attached with a
         price set to them"""
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         value_obj = self.env['product.attribute.value'].with_context({
@@ -733,7 +733,7 @@ class ProductConfigSession(models.Model):
     def get_components_prices(self, prices, pricelist, value_ids=None):
         """Return prices of the components which make up the final
         configured variant"""
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         vals = self._get_option_values(pricelist, value_ids)
@@ -799,10 +799,10 @@ class ProductConfigSession(models.Model):
         :returns: path to the selected image
         """
         # TODO: Also consider custom values for image change
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         img_obj = self.product_tmpl_id
@@ -839,10 +839,10 @@ class ProductConfigSession(models.Model):
          """
         self.ensure_one()
 
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         image = self.get_config_image(value_ids)
@@ -893,9 +893,9 @@ class ProductConfigSession(models.Model):
 
         if not product_tmpl_id:
             product_tmpl_id = self.product_tmpl_id
-        if not value_ids:
+        if value_ids is False:
             value_ids = self.value_ids
-        if not custom_value_ids:
+        if custom_value_ids is False:
             custom_value_ids = self.custom_value_ids
         if not state:
             state = self.config_step
@@ -972,7 +972,7 @@ class ProductConfigSession(models.Model):
         :returns: recordset of accesible configuration steps
         """
 
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         open_step_lines = self.env['product.config.step.line']
@@ -1010,7 +1010,7 @@ class ProductConfigSession(models.Model):
 
         # If there is no open step return empty dictionary
 
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         if not active_step_line_id:
@@ -1047,9 +1047,9 @@ class ProductConfigSession(models.Model):
         """ Check and open incomplete step if any
         :param value_ids: recordset of product.attribute.value
         """
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids
-        if not custom_value_ids:
+        if custom_value_ids is None:
             custom_value_ids = self.custom_value_ids
         custom_attr_selected = custom_value_ids.mapped('attribute_id')
         open_step_lines = self.get_open_step_lines()
@@ -1077,10 +1077,10 @@ class ProductConfigSession(models.Model):
         """Method called by search_variant used to search duplicates in the
         database"""
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         attr_obj = self.env['product.attribute']
@@ -1111,7 +1111,7 @@ class ProductConfigSession(models.Model):
     def validate_domains_against_sels(
             self, domains, value_ids=None, custom_vals=None):
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         if value_ids is None:
@@ -1173,7 +1173,7 @@ class ProductConfigSession(models.Model):
         if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         avail_val_ids = []
@@ -1206,7 +1206,7 @@ class ProductConfigSession(models.Model):
         """
         # TODO: Raise ConfigurationError with reason
         # Check if required values are missing for final configuration
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         if product_tmpl_id:
@@ -1216,7 +1216,7 @@ class ProductConfigSession(models.Model):
 
         product_tmpl.ensure_one()
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
         open_step_lines = self.get_open_step_lines()
         attribute_line_ids = open_step_lines.mapped('attribute_line_ids')
@@ -1318,10 +1318,10 @@ class ProductConfigSession(models.Model):
 
             :returns: product.product recordset of products matching domain
         """
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         if not product_tmpl_id:

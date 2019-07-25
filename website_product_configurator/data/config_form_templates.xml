@@ -48,14 +48,38 @@
     </template>
 
     <template id="config_footer" name="Product Configuration Footer">
-        <div id="cfg_footer" class="form-group text-right">
-           <div class="col-xs-12">
-              <button id="form_action"
-                      type="submit"
-                      class="btn btn-default pull-right mb32 btn-primary">
-                    <span>Continue</span>
-            </button>
+        <div id="cfg_footer" class="form-group row">
+            <t t-set="step_count" t-value="1"/>
+            <t t-set="active_step_count" t-value="1"/>
+            <t t-foreach="cfg_step_lines" t-as="cfg_step_line">
+                <t t-if="cfg_step_line.id == active_step.id">
+                    <t t-set="active_step_count" t-value="step_count"/>
+                </t>
+                <t t-set="step_count" t-value="step_count + 1"/>
+            </t>
+            <t t-if="extra_attribute_line_ids">
+                <t t-if="not active_step">
+                    <t t-set="active_step_count" t-value="step_count"/>
+                </t>
+                <t t-set="step_count" t-value="step_count + 1"/>
+            </t>
+            <div class="col-lg-12">
+              <div class="text-left pull-left wd50">
+                  <a t-att-class="'btn btn-primary btnPreviousStep' + ((active_step_count == 1) and ' hidden' or '')">
+                      <span>Back</span>
+                  </a>
+              </div>
+              <div class="text-right pull-right wd50">
+                  <a t-att-class="'btn btn-primary btnNextStep' + ((active_step_count == step_count - 1) and ' hidden' or '')">
+                      <span>Continue</span>
+                  </a>
+                  <button type="submit"
+                      t-att-class="'btn btn-primary text-right pull-right configureProduct' + ((active_step_count != step_count - 1) and ' hidden' or '')">
+                      <span>Continue</span>
+                  </button>
+              </div>
             </div>
+            <input type="hidden" name="total_attributes" calss="total_attributes" id="total_attributes" t-att-value="step_count - 1"/>
         </div>
     </template>
 
@@ -95,17 +119,21 @@
       <div class="row">
         <div class="col-lg-12">
           <ul class="nav nav-tabs">
+            <t t-set="step_count" t-value="1"/>
             <t t-foreach="cfg_step_lines" t-as="cfg_step_line">
                 <li t-att-data-step-id="cfg_step_line.id"
-                    t-att-class="'nav-item config_step' + (cfg_step_line.id == active_step.id and ' active' or '') + (cfg_step_line not in open_cfg_step_lines and ' hidden' or '')">
+                    t-att-class="'nav-item config_step' + (cfg_step_line.id == active_step.id and ' active' or '') + (cfg_step_line not in open_cfg_step_lines and ' hidden' or '')" t-att-data-step-count="step_count">
                     <a class="nav-link" data-toggle="tab" t-attf-href="#cfg_step_{{cfg_step_line.id}}" t-esc="cfg_step_line.config_step_id.name"/>
                 </li>
+                <t t-set="step_count" t-value="step_count + 1"/>
             </t>
             <t t-if="extra_attribute_line_ids">
                 <li data-step-id="configure"
-                    t-att-class="'nav-item config_step' + (not active_step and ' active' or '')">
+                    t-att-class="'nav-item config_step' + (not active_step and ' active' or '')"
+                    t-att-data-step-count="step_count">
                     <a class="nav-link" data-toggle="tab" href="#cfg_step_configure">Configure</a>
                 </li>
+                <t t-set="step_count" t-value="step_count + 1"/>
             </t>
           </ul>
         </div>
@@ -140,6 +168,7 @@
                     t-att-min="line.attribute_id.min_val"
                     t-att-max="line.attribute_id.max_val"
                     t-att-data-oe-id="line.attribute_id.id"
+                    t-att-data-type="custom_type"
                     t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                     t-att-class="'form-control quantity custom_config_value' + (' required_config_attrib' if custom_value else '')"
                     t-att-value="custom_value and custom_value.value or line.attribute_id.min_val or '0'"/>
@@ -162,7 +191,7 @@
                 t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-data-oe-id="line.attribute_id.id"
-                t-att-class="'form-control custom_config_value' + (' required_config_attrib' if custom_value and not custom_value.attachment_ids else '')"/>
+                t-att-class="'form-control custom_config_value config_attachment' + (' required_config_attrib' if custom_value and not custom_value.attachment_ids else '')"/>
         </t>
         <t t-if="custom_type == 'text'">
             <textarea t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
@@ -256,7 +285,8 @@
                         style="height: unset;">
                         <t t-foreach="line.value_ids" t-as="value">
                             <div class="radio-card-container">
-                                <span t-esc="value.name" class="label_config_attr_value_radio"/>
+                                <span t-esc="value.with_context({'show_price_extra': True, 'active_id': product_tmpl.id, 'show_attribute': False,}).name_get()[0][1]"
+                                  class="label_config_attr_value_radio"/>
                                 <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                                     t-att-checked="'checked' if value.id in value_ids.ids else None"
                                     t-att-type="line.multi and 'checkbox' or 'radio'"
@@ -272,7 +302,7 @@
                             </div>
                         </t>
                         <t t-if="line.custom">
-                            <div>
+                            <div class="radio-card-container">
                                 <span t-esc="custom_val_id.name" class="label_config_attr_value_radio"/>
                                 <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                                     t-att-checked="'checked' if custom_value else None"
