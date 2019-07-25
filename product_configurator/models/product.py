@@ -398,21 +398,11 @@ class ProductProduct(models.Model):
     @api.depends('product_template_attribute_value_ids.weight_extra')
     def _compute_product_weight_extra(self):
         for product in self:
-<<<<<<< HEAD
             product.weight_extra = sum(
                 product.mapped(
                     'product_template_attribute_value_ids.weight_extra'
                 )
             )
-=======
-            weight_extra = 0.0
-            attr_prices = product.mapped('attribute_value_ids.price_ids')
-            for attribute_price in attr_prices:
-                if attribute_price.product_tmpl_id == product.product_tmpl_id:
-                    weight_extra += attribute_price.weight_extra
-
-            product.weight_extra = weight_extra
->>>>>>> 12.0
 
     def _compute_product_weight(self):
         for product in self:
