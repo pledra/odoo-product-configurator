@@ -374,6 +374,7 @@
                         </t>
                     </fieldset>
                     <t t-if="line.custom">
+
                         <div t-att-class="'custom_field_container' + (' d-none' if not custom_value else '')"
                             t-att-data-oe-id="line.attribute_id.id">
                             <t t-call="website_product_configurator.config_custom_field"/>
