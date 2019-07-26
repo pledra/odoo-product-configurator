@@ -16,8 +16,8 @@ variables: &globalvars
     # K8S_DEPLOYMENT_LABELS: "type=server,release=parker-v12-staging"
     # K8S_NAMESPACE: "default"
     ODOO_REPO: "odoo/odoo"
-    ODOO_MINOR: "11.0"
-    ODOO_STAGING_BRANCH: "11.0-staging"
+    ODOO_MINOR: "12.0"
+    ODOO_STAGING_BRANCH: "12.0-staging"
     PSQL_VERSION: "10.0"
     PGHOST: "localhost"
     POSTGRES_DB: test
