@@ -1,6 +1,6 @@
 from ..tests.test_product_configurator_test_cases import \
     ProductConfiguratorTestCases
-from odoo.exceptions import ValidationError, UserError
+from odoo.exceptions import UserError
 
 
 class ConfigurationWizard(ProductConfiguratorTestCases):
@@ -8,7 +8,7 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
     def setUp(self):
         super(ConfigurationWizard, self).setUp()
         self.productTemplate = self.env['product.template']
-        self.productAttributeLine = self.env['product.attribute.line']
+        self.productAttributeLine = self.env['product.template.attribute.line']
         self.productConfigStepLine = self.env['product.config.step.line']
         self.productConfigSession = self.env['product.config.session']
         self.product_category = self.env.ref('product.product_category_5')
@@ -107,130 +107,6 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
             '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
         })
         return product_config_wizard
-
-    def test_00_action_next_step(self):
-        self.ProductConfWizard.action_next_step()
-        product_config_wizard = self.ProductConfWizard.create({
-            'product_tmpl_id': self.product_tmpl_id.id,
-        })
-        with self.assertRaises(ValidationError):
-            product_config_wizard.action_next_step()
-
-        # create attribute line 1
-        self.attributeLine1 = self.productAttributeLine.create({
-            'product_tmpl_id': self.product_tmpl_id.id,
-            'attribute_id': self.attr_fuel.id,
-            'value_ids': [(6, 0, [
-                           self.value_gasoline.id,
-                           self.value_diesel.id])],
-            'required': True,
-        })
-        # create attribute line 2
-        self.attributeLine2 = self.productAttributeLine.create({
-            'product_tmpl_id': self.product_tmpl_id.id,
-            'attribute_id': self.attr_engine.id,
-            'value_ids': [(6, 0, [
-                           self.value_218i.id,
-                           self.value_220i.id])],
-            'required': True,
-        })
-        # create attribute line 2
-        self.attributeLine3 = self.productAttributeLine.create({
-            'product_tmpl_id': self.product_tmpl_id.id,
-            'attribute_id': self.attr_engine.id,
-            'value_ids': [(6, 0, [
-                           self.value_218d.id,
-                           self.value_220d.id])],
-            'required': True,
-        })
-        # create attribute line 1
-        self.attributeLine4 = self.productAttributeLine.create({
-            'product_tmpl_id': self.product_tmpl_id.id,
-            'attribute_id': self.attr_color.id,
-            'value_ids': [(6, 0, [
-                           self.value_red.id,
-                           self.value_silver.id])],
-            'required': True,
-        })
-        self.product_tmpl_id.write({
-            'attribute_line_ids': [(6, 0, [
-                self.attributeLine1.id,
-                self.attributeLine2.id,
-                self.attributeLine3.id,
-                self.attributeLine4.id])],
-        })
-        product_config_wizard.action_next_step()
-        self.assertEqual(
-            product_config_wizard.state,
-            'configure',
-            'Error: If wizard not in configure state\
-            Method: action_next_step()'
-        )
-        with self.assertRaises(UserError):
-            product_config_wizard.action_next_step()
-
-        product_config_wizard.write({
-            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id,
-            '__attribute-{}'.format(self.attr_engine.id): self.value_218i.id,
-            '__attribute-{}'.format(self.attr_engine.id): self.value_218d.id,
-            '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
-        })
-        wizard_action = product_config_wizard.action_next_step()
-        varient_id = wizard_action.get('res_id')
-        self.assertTrue(
-            varient_id,
-            'Error: if varient id not exists\
-            Method: action_next_step()'
-        )
-
-        # configure product creating config step
-        self.configStepLine1 = self.productConfigStepLine.create({
-            'product_tmpl_id': self.product_tmpl_id.id,
-            'config_step_id': self.config_step_engine.id,
-            'attribute_line_ids': [(6, 0, [
-                self.attributeLine1.id,
-                self.attributeLine2.id])]
-        })
-        # create config_step_line 2
-        self.configStepLine2 = self.productConfigStepLine.create({
-            'product_tmpl_id': self.product_tmpl_id.id,
-            'config_step_id': self.config_step_body.id,
-            'attribute_line_ids': [(6, 0, [
-                self.attributeLine3.id])]
-        })
-        self.product_tmpl_id.write({
-            'config_step_line_ids': [(6, 0, [
-                self.configStepLine1.id,
-                self.configStepLine2.id]
-            )],
-        })
-
-        # configure product
-        product_config_wizard.action_next_step()
-        config_session = self.productConfigSession.search([
-            ('product_tmpl_id', '=', self.product_tmpl_id.id)])
-        self.assertEqual(
-            product_config_wizard.state,
-            config_session.config_step,
-            'Error: If state are not equal\
-            Method: action_next_step()'
-        )
-        product_config_wizard.action_next_step()
-        product_config_wizard.write({
-            '__attribute-{}'.format(self.attr_fuel.id): self.value_gasoline.id,
-            '__attribute-{}'.format(self.attr_engine.id): self.value_218i.id,
-        })
-        product_config_wizard.action_next_step()
-        product_config_wizard.write({
-            '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
-        })
-        action = product_config_wizard.action_next_step()
-        new_variant = action.get('res_id')
-        self.assertTrue(
-            new_variant,
-            'Error: if new varient id not exists\
-            Method: action_next_step()'
-        )
 
     def test_01_action_previous_step(self):
         product_config_wizard = self._check_wizard_nxt_step()
