@@ -1,6 +1,6 @@
 {
     'name': 'Product Configurator Purchase',
-    'version': '11.0.1.0.1',
+    'version': '12.0.0.0.0',
     'category': 'Generic Modules/Purchase',
     'summary': 'Product configuration interface for Purchase',
     'author': 'Pledra',

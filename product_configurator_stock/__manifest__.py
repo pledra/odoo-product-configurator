@@ -1,6 +1,6 @@
 {
     'name': 'Product Configurator for Stock',
-    'version': '11.0.1.0.1',
+    'version': '12.0.0.0.0',
     'category': 'Generic Modules/Stock',
     'summary': 'Product configuration interface module for Stock',
     'author': 'Pledra',

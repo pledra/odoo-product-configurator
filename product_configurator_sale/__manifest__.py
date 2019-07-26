@@ -1,6 +1,6 @@
 {
     'name': 'Product Configurator Sale',
-    'version': '11.0.1.0.3',
+    'version': '12.0.0.0.0',
     'category': 'Generic Modules/Sale',
     'summary': 'Product configuration interface modules for Sale',
     'author': 'Pledra',
