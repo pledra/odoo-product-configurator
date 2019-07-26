@@ -7,6 +7,7 @@ from odoo.addons import decimal_precision as dp
 
 class ProductAttribute(models.Model):
     _inherit = 'product.attribute'
+    _order = 'sequence'
 
     @api.multi
     def copy(self, default=None):
@@ -90,7 +91,7 @@ class ProductAttribute(models.Model):
         'this attribute?'
     )
     uom_id = fields.Many2one(
-        comodel_name='product.uom',
+        comodel_name='uom.uom',
         string='Unit of Measure'
     )
     image = fields.Binary(string='Image')
@@ -98,16 +99,16 @@ class ProductAttribute(models.Model):
     # TODO prevent the same attribute from being defined twice on the
     # attribute lines
 
-    _order = 'sequence'
-
     @api.constrains('custom_type', 'search_ok')
     def check_searchable_field(self):
-        nosearch_fields = self._get_nosearch_fields()
-        if self.custom_type in nosearch_fields and self.search_ok:
-            raise ValidationError(
-                _("Selected custom field type '%s' is not searchable" %
-                  self.custom_type)
-            )
+        for attribute in self:
+            nosearch_fields = attribute._get_nosearch_fields()
+            if (attribute.custom_type in nosearch_fields and
+                    attribute.search_ok):
+                raise ValidationError(
+                    _("Selected custom field type '%s' is not searchable" %
+                      attribute.custom_type)
+                )
 
     def validate_custom_val(self, val):
         """ Pass in a desired custom value and ensure it is valid.
@@ -136,17 +137,21 @@ class ProductAttribute(models.Model):
 
     @api.constrains('min_val', 'max_val')
     def _check_constraint_min_max_value(self):
-        if self.custom_type not in ('int', 'float'):
-            return
-        minv = self.min_val
-        maxv = self.max_val
-        if maxv and minv and maxv < minv:
-            raise ValidationError(
-                _("Maximum value must be greater than Minimum value"))
+        for attribute in self:
+            if attribute.custom_type not in ('int', 'float'):
+                return
+            minv = attribute.min_val
+            maxv = attribute.max_val
+            if maxv and minv and maxv < minv:
+                raise ValidationError(
+                    _("Maximum value must be greater than Minimum value"))
 
 
 class ProductAttributeLine(models.Model):
-    _inherit = 'product.attribute.line'
+    _inherit = 'product.template.attribute.line'
+    _order = 'product_tmpl_id, sequence, id'
+    # TODO: Order by dependencies first and then sequence so dependent fields
+    # do not come before master field
 
     @api.onchange('attribute_id')
     def onchange_attribute(self):
@@ -180,13 +185,15 @@ class ProductAttributeLine(models.Model):
     )
 
     sequence = fields.Integer(string='Sequence', default=10)
-
-    # TODO: Order by dependencies first and then sequence so dependent fields
-    # do not come before master field
-    _order = 'product_tmpl_id, sequence, id'
-
+    product_template_value_ids = fields.Many2many(
+        comodel_name='product.template.attribute.value',
+        search="_search_product_template_value_ids"
+    )
     # TODO: Constraint not allowing introducing dependencies that do not exist
     # on the product.template
+
+    def _search_product_template_value_ids(self, operator, value):
+        return [('id', operator, value)]
 
     @api.multi
     @api.constrains('value_ids', 'default_val')
@@ -200,6 +207,16 @@ class ProductAttributeLine(models.Model):
                       )
                 )
 
+    @api.constrains('value_ids', 'attribute_id')
+    def _check_valid_attribute(self):
+        if any((not line.value_ids and not line.custom)
+               or line.value_ids > line.attribute_id.value_ids
+               for line in self):
+            raise ValidationError(_(
+                'You cannot use this attribute with the following value.'
+            ))
+        return True
+
 
 class ProductAttributeValue(models.Model):
     _inherit = 'product.attribute.value'
@@ -212,39 +229,6 @@ class ProductAttributeValue(models.Model):
         product = super(ProductAttributeValue, self).copy(default)
         return product
 
-    @api.multi
-    def _compute_weight_extra(self):
-        for product_attribute in self:
-            product_tmpl_id = product_attribute._context.get('active_id')
-            if product_tmpl_id:
-                price = product_attribute.price_ids.filtered(
-                    lambda price: price.product_tmpl_id.id == product_tmpl_id
-                )
-                product_attribute.weight_extra = price.weight_extra
-            else:
-                product_attribute.weight_extra = 0.0
-
-    def _inverse_weight_extra(self):
-        product_tmpl_id = self._context.get('active_id')
-        if not product_tmpl_id:
-            return
-
-        AttributePrice = self.env['product.attribute.price']
-        prices = AttributePrice.search([
-            ('value_id', 'in', self.ids),
-            ('product_tmpl_id', '=', product_tmpl_id)
-        ])
-        updated = prices.mapped('value_id')
-        if prices:
-            prices.write({'weight_extra': self.weight_extra})
-        else:
-            for value in self - updated:
-                AttributePrice.create({
-                    'product_tmpl_id': product_tmpl_id,
-                    'value_id': value.id,
-                    'weight_extra': self.weight_extra,
-                })
-
     active = fields.Boolean(
         string='Active',
         default=True,
@@ -256,18 +240,9 @@ class ProductAttributeValue(models.Model):
         string='Related Product'
     )
     attribute_line_ids = fields.Many2many(
-        comodel_name='product.attribute.line',
+        comodel_name='product.template.attribute.line',
         string="Attribute Lines",
         copy=False
-    )
-    weight_extra = fields.Float(
-        string='Attribute Weight Extra',
-        compute='_compute_weight_extra',
-        inverse='_inverse_weight_extra',
-        default=0.0,
-        digits=dp.get_precision('Product Weight'),
-        help="Weight Extra: Extra weight for the variant with this attribute"
-        "value on sale price. eg. 200 price extra, 1000 + 200 = 1200."
     )
     image = fields.Binary(
         string='Image',
@@ -302,8 +277,16 @@ class ProductAttributeValue(models.Model):
         res = super(ProductAttributeValue, self).name_get()
         if not self._context.get('show_price_extra'):
             return res
+        product_template_id = self.env.context.get('active_id', False)
+        template_value_obj = self.env['product.template.attribute.value']
+        product_template_value_ids = template_value_obj.search([
+            ('product_tmpl_id', '=', product_template_id),
+            ('product_attribute_value_id', 'in', self.ids)]
+        )
         extra_prices = {
-            av.id: av.price_extra for av in self if av.price_extra
+            av.product_attribute_value_id.id: av.price_extra
+            for av in product_template_value_ids
+            if av.price_extra
         }
 
         res_prices = []
@@ -366,18 +349,20 @@ class ProductAttributeValue(models.Model):
 
 
 class ProductAttributePrice(models.Model):
-    _inherit = "product.attribute.price"
-    # Leverage product.attribute.price to compute the extra weight each
-    # attribute adds
+    _inherit = "product.template.attribute.value"
+    # Leverage product.template.attribute.value to compute the extra weight
+    # each attribute adds
 
     weight_extra = fields.Float(
-        string="Weight",
+        string="Attribute Weight Extra",
         digits=dp.get_precision('Product Weight')
     )
 
 
 class ProductAttributeValueLine(models.Model):
     _name = 'product.attribute.value.line'
+    _description = "Product Attribute Value Line"
+    _order = 'sequence'
 
     sequence = fields.Integer(string='Sequence', default=10)
     product_tmpl_id = fields.Many2one(
@@ -420,8 +405,6 @@ class ProductAttributeValueLine(models.Model):
             value_list = template.attribute_line_ids.mapped('value_ids')
             attr_val_line.product_value_ids = [(6, 0, value_list.ids)]
 
-    _order = 'sequence'
-
     @api.multi
     @api.constrains('value_ids')
     def _validate_configuration(self):
@@ -443,6 +426,8 @@ class ProductAttributeValueLine(models.Model):
 
 
 class ProductAttributeValueCustom(models.Model):
+    _name = 'product.attribute.value.custom'
+    _description = "Product Attribute Value Custom"
 
     @api.multi
     @api.depends('attribute_id', 'attribute_id.uom_id')
@@ -450,8 +435,6 @@ class ProductAttributeValueCustom(models.Model):
         for attr_val_custom in self:
             uom = attr_val_custom.attribute_id.uom_id.name
             attr_val_custom.name = '%s%s' % (attr_val_custom.value, uom or '')
-
-    _name = 'product.attribute.value.custom'
 
     name = fields.Char(
         string='Name',

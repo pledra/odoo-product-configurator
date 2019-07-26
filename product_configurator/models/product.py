@@ -54,17 +54,19 @@ class ProductTemplate(models.Model):
     @api.constrains('attribute_value_line_ids')
     def _validate_unique_config(self):
         """Check for duplicate configurations for the same attribute value"""
-        attr_val_line_vals = self.attribute_value_line_ids.read(
-            ['value_id', 'value_ids'], load=False
-        )
-        attr_val_line_vals = [
-            (l['value_id'], tuple(l['value_ids'])) for l in attr_val_line_vals
-        ]
-        if len(set(attr_val_line_vals)) != len(attr_val_line_vals):
-            raise ValidationError(
-                _('You cannot have a duplicate configuration for the '
-                  'same value')
+        for template in self:
+            attr_val_line_vals = template.attribute_value_line_ids.read(
+                ['value_id', 'value_ids'], load=False
             )
+            attr_val_line_vals = [
+                (l['value_id'], tuple(l['value_ids']))
+                for l in attr_val_line_vals
+            ]
+            if len(set(attr_val_line_vals)) != len(attr_val_line_vals):
+                raise ValidationError(
+                    _('You cannot have a duplicate configuration for the '
+                      'same value')
+                )
 
     config_ok = fields.Boolean(string='Can be Configured')
 
@@ -145,7 +147,8 @@ class ProductTemplate(models.Model):
         self.ensure_one()
         action = self.env.ref(
             'product.product_attribute_value_action').read()[0]
-        value_ids = self.attribute_line_ids.mapped('value_ids').ids
+        value_ids = self.attribute_line_ids.mapped(
+            'product_template_value_ids').ids
         action['domain'] = [('id', 'in', value_ids)]
         context = safe_eval(action['context'], {'active_id': self.id})
         context.update({'active_id': self.id})
@@ -171,14 +174,15 @@ class ProductTemplate(models.Model):
     @api.multi
     @api.constrains('config_line_ids', 'attribute_line_ids')
     def _check_default_value_domains(self):
-        try:
-            self._check_default_values()
-        except ValidationError as e:
-            raise ValidationError(
-                _('Restrictions added make the current default values '
-                  'generate an invalid configuration.\
-                  \n%s') % (e.name)
-            )
+        for template in self:
+            try:
+                template._check_default_values()
+            except ValidationError as e:
+                raise ValidationError(
+                    _('Restrictions added make the current default values '
+                      'generate an invalid configuration.\
+                      \n%s') % (e.name)
+                )
 
     @api.multi
     def toggle_config(self):
@@ -335,30 +339,34 @@ class ProductProduct(models.Model):
 
     @api.constrains('attribute_value_ids')
     def _check_duplicate_product(self):
-        if not self.config_ok:
-            return None
+        for product in self:
+            if not product.config_ok:
+                continue
 
-        # At the moment, I don't have enough confidence with my understanding
-        # of binary attributes, so will leave these as not matching...
-        # In theory, they should just work, if they are set to "non search"
-        # in custom field def!
-        # TODO: Check the logic with binary attributes
-        if not self.value_custom_ids.filtered(lambda cv: cv.attachment_ids):
-            config_session_obj = self.env['product.config.session']
-            custom_vals = {
-                cv.attribute_id.id: cv.value
-                for cv in self.value_custom_ids
-            }
-            duplicates = config_session_obj.search_variant(
-                product_tmpl_id=self.product_tmpl_id.id,
-                value_ids=self.attribute_value_ids.ids,
-                custom_vals=custom_vals
-            ).filtered(lambda p: p.id != self.id)
-            if duplicates:
-                raise ValidationError(
-                    _("Configurable Products cannot have duplicates "
-                      "(identical attribute values)")
-                )
+            # At the moment, I don't have enough confidence with my
+            # understanding of binary attributes, so will leave these
+            # as not matching...
+            # In theory, they should just work, if they are set to "non search"
+            # in custom field def!
+            # TODO: Check the logic with binary attributes
+            if not product.value_custom_ids.filtered(
+                    lambda cv: cv.attachment_ids):
+                config_session_obj = product.env['product.config.session']
+                custom_vals = {
+                    cv.attribute_id.id: cv.value
+                    for cv in product.value_custom_ids
+                }
+                duplicates = config_session_obj.search_variant(
+                    product_tmpl_id=product.product_tmpl_id.id,
+                    value_ids=product.attribute_value_ids.ids,
+                    custom_vals=custom_vals
+                ).filtered(lambda p: p.id != product.id)
+
+                if duplicates:
+                    raise ValidationError(
+                        _("Configurable Products cannot have duplicates "
+                          "(identical attribute values)")
+                    )
 
     @api.model
     def _get_config_name(self):
@@ -387,17 +395,14 @@ class ProductProduct(models.Model):
                     self.display_name)
         return self.display_name
 
-    @api.depends('attribute_value_ids.price_ids.weight_extra',
-                 'attribute_value_ids.price_ids.product_tmpl_id')
+    @api.depends('product_template_attribute_value_ids.weight_extra')
     def _compute_product_weight_extra(self):
         for product in self:
-            weight_extra = 0.0
-            attr_prices = product.mapped('attribute_value_ids.price_ids')
-            for attribute_price in attr_prices:
-                if attribute_price.product_tmpl_id == product.product_tmpl_id:
-                    weight_extra += attribute_price.weight_extra
-
-            product.weight_extra = weight_extra
+            product.weight_extra = sum(
+                product.mapped(
+                    'product_template_attribute_value_ids.weight_extra'
+                )
+            )
 
     def _compute_product_weight(self):
         for product in self:
@@ -455,7 +460,7 @@ class ProductProduct(models.Model):
         self.ensure_one()
         action = self.env.ref(
             'product.product_attribute_value_action').read()[0]
-        value_ids = self.attribute_value_ids.ids
+        value_ids = self.product_template_attribute_value_ids.ids
         action['domain'] = [('id', 'in', value_ids)]
         context = safe_eval(
             action['context'],
@@ -494,9 +499,8 @@ class ProductProduct(models.Model):
                 if xml_label:
                     xml_label[0].attrib['for'] = 'config_name'
                 view_obj = self.env['ir.ui.view']
-                xarch, xfields = view_obj.postprocess_and_fields(self._name,
-                                                                 xml_view,
-                                                                 view_id)
+                xarch, xfields = view_obj.postprocess_and_fields(
+                    self._name, xml_view, view_id)
                 res['arch'] = xarch
                 res['fields'] = xfields
         return res

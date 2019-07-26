@@ -38,14 +38,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 force_create=is_public_user,
                 user_id=request.env.user.id
             )
-            if product_config_sessions:
-                request.session['product_config_session'].update({
-                    product_tmpl_id.id: cfg_session.id
-                })
-            else:
-                request.session['product_config_session'] = {
-                    product_tmpl_id.id: cfg_session.id
-                }
+            product_config_sessions.update({
+                product_tmpl_id.id: cfg_session.id
+            })
+            request.session['product_config_session'] = product_config_sessions
 
         if (cfg_session.user_id.has_group('base.group_public') and not
                 is_public_user):
@@ -124,19 +120,22 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     extra_attribute_line_ids and
                     cfg_session.config_step == 'configure'):
                 pass
-            elif not active_step or active_step not in cfg_step_lines:
-                active_step = cfg_step_lines[:1]
+            elif not active_step or active_step not in open_cfg_step_lines:
+                active_step = open_cfg_step_lines[:1]
 
         cfg_session = cfg_session.sudo()
         config_image_ids = False
         if cfg_session.value_ids:
             config_image_ids = cfg_session._get_config_image(
-                cfg_session.value_ids, cfg_session.custom_value_ids)
+                cfg_session.value_ids.ids,
+                cfg_session._get_custom_vals_dict()
+            )
         if not config_image_ids:
             config_image_ids = cfg_session.product_tmpl_id
 
         weight_prec = request.env['decimal.precision'].precision_get(
             'Stock Weight') or 2
+        website_tmpl_xml_id = cfg_session.get_config_form_website_template()
 
         vals = {
             'cfg_session': cfg_session,
@@ -155,6 +154,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 model_name=config_image_ids[:1]._name),
             'weight_prec': weight_prec,
             'main_object': cfg_session.product_tmpl_id,
+            'default_website_template': website_tmpl_xml_id,
         }
         return vals
 
@@ -388,6 +388,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id)
         if extra_attr_line_ids and current_step == 'configure':
+            config_session_id.config_step = next_step
             return {'next_step': next_step}
 
         if not next_step:
@@ -487,7 +488,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
         )
         pricelist = get_pricelist()
         if request.session['product_config_session'].get(product_tmpl_id.id):
-            del request.session['product_config_session'][product_tmpl_id.id]
+            product_config_session = request.session['product_config_session']
+            del product_config_session[product_tmpl_id.id]
+            request.session['product_config_session'] = product_config_session
         values = {
             'product_id': product_id,
             'product_tmpl': product_tmpl_id,

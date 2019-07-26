@@ -5,8 +5,9 @@
         <field name="name">product.configurator</field>
         <field name="model">product.configurator</field>
         <field name="arch" type="xml">
-            <form string="Product Configurator">
+            <form >
                 <header>
+                    <field name="state" widget="statusbar" clickable="True"/>
                     <button
                         string="Reset"
                         type="object"
@@ -15,25 +16,20 @@
                         special="no_save"
                         class="oe_highlight"
                         attrs="{'invisible': ['|', ('product_tmpl_id', '=', False), ('state', '=', 'select')]}"/>
-                    <field name="state" widget="statusbar" clickable="True"/>
                 </header>
                 <sheet>
                     <field attrs="{'invisible': [('product_img', '=', False)]}" name="product_img" readonly="1" nolabel="1" widget="image"/>
                     <group col="3">
-                        <group name='static_form' colspan="2" states='select'>
+                        <group name='static_form' states='select' colspan="2">
                             <field name="config_session_id" required="context.get('wizard_id')" invisible="1"/>
                             <field name="product_id" invisible="1"/>
-                            <!-- Old Code: context is not working with attrs and we can remove condition as
-                            first stage 'select' is not visible while recofiguration-->
-                            <!-- <field name="product_tmpl_id"
-                                attrs="{'readonly': [('product_id', '!=', False)]}"
-                                required="True" options="{'no_create': True}"/> -->
                             <field name="product_tmpl_id"
                                 readonly="context.get('product_tmpl_id_readonly', False)"
                                 required="True" options="{'no_create': True}"
                                 force_save="1"/>
                             <field name="product_preset_id" invisible="context.get('wizard_id')" options="{'no_create': True}"/>
-                            <label string="To reset/change the Preset Please close and start the configuration again"  invisible="not context.get('wizard_id')" colspan="4"/>
+                            <separator string="To reset/change the Preset Please close and start the configuration again"
+                                invisible="not context.get('wizard_id')" colspan="2"/>
                             <field attrs="{'invisible': [('attribute_line_ids', '=', [])]}" name="attribute_line_ids">
                                 <tree>
                                     <field name="attribute_id"/>
@@ -50,7 +46,8 @@
                 </sheet>
                 <footer>
                     <field name="value_ids" readonly="1" force_save="1" invisible="1"/>
-                    <button type="object" name="action_previous_step" attrs="{'invisible': [('state','=','select')]}" string="Back" special="no_save"/>
+                    <button type="object" name="action_previous_step"
+                        attrs="{'invisible': [('state','=','select')]}" string="Back" special="no_save"/>
                     <button type="object" name="action_next_step" class="oe_highlight" string="Next"/>
                 </footer>
             </form>

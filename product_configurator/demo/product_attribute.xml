@@ -239,7 +239,7 @@
 
     <!-- == Attribute Lines == -->
 
-    <record id="product_attribute_line_2_series_fuel" model="product.attribute.line">
+    <record id="product_attribute_line_2_series_fuel" model="product.template.attribute.line">
         <field name="product_tmpl_id" ref="bmw_2_series"/>
         <field name="attribute_id" ref="product_attribute_fuel"/>
         <field name="value_ids" eval="[(6,0,[
@@ -249,7 +249,7 @@
         <field name="required" eval="True"/>
     </record>
 
-    <record id="product_attribute_line_2_series_engine" model="product.attribute.line">
+    <record id="product_attribute_line_2_series_engine" model="product.template.attribute.line">
         <field name="product_tmpl_id" ref="bmw_2_series"/>
         <field name="attribute_id" ref="product_attribute_engine"/>
         <field name="value_ids" eval="[(6,0,[
@@ -267,7 +267,7 @@
         <field name="required" eval="True"/>
     </record>
 
-    <record id="product_attribute_line_2_series_model_line" model="product.attribute.line">
+    <record id="product_attribute_line_2_series_model_line" model="product.template.attribute.line">
         <field name="product_tmpl_id" ref="bmw_2_series"/>
         <field name="attribute_id" ref="product_attribute_model_line"/>
         <field name="value_ids" eval="[(6,0,[
@@ -282,7 +282,7 @@
         <field name="required" eval="False"/>
     </record>
 
-    <record id="product_attribute_line_2_series_color" model="product.attribute.line">
+    <record id="product_attribute_line_2_series_color" model="product.template.attribute.line">
         <field name="product_tmpl_id" ref="bmw_2_series"/>
         <field name="attribute_id" ref="product_attribute_color"/>
         <field name="value_ids" eval="[(6,0,[
@@ -293,7 +293,7 @@
         <field name="required" eval="True"/>
     </record>
 
-    <record id="product_attribute_line_2_series_rims" model="product.attribute.line">
+    <record id="product_attribute_line_2_series_rims" model="product.template.attribute.line">
         <field name="product_tmpl_id" ref="bmw_2_series"/>
         <field name="attribute_id" ref="product_attribute_rims"/>
         <field name="value_ids" eval="[(6,0,[
@@ -304,7 +304,7 @@
         <field name="required" eval="True"/>
     </record>
 
-    <record id="product_attribute_line_2_series_tapistry" model="product.attribute.line">
+    <record id="product_attribute_line_2_series_tapistry" model="product.template.attribute.line">
         <field name="product_tmpl_id" ref="bmw_2_series"/>
         <field name="attribute_id" ref="product_attribute_tapistry"/>
         <field name="value_ids" eval="[(6,0,[
@@ -315,7 +315,7 @@
         <field name="required" eval="True"/>
     </record>
 
-    <record id="product_attribute_line_2_series_transmission" model="product.attribute.line">
+    <record id="product_attribute_line_2_series_transmission" model="product.template.attribute.line">
         <field name="product_tmpl_id" ref="bmw_2_series"/>
         <field name="attribute_id" ref="product_attribute_transmission"/>
         <field name="value_ids" eval="[(6,0,[
@@ -326,7 +326,7 @@
         <field name="required" eval="True"/>
     </record>
 
-    <record id="product_attribute_line_2_series_options" model="product.attribute.line">
+    <record id="product_attribute_line_2_series_options" model="product.template.attribute.line">
         <field name="product_tmpl_id" ref="bmw_2_series"/>
         <field name="attribute_id" ref="product_attribute_options"/>
         <field name="value_ids" eval="[(6,0,[

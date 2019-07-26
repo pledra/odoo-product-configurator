@@ -7,6 +7,7 @@ from odoo.tools.misc import formatLang
 
 class ProductConfigDomain(models.Model):
     _name = 'product.config.domain'
+    _description = "Domain for Config Restrictions"
 
     @api.multi
     @api.depends('implied_ids')
@@ -83,6 +84,7 @@ class ProductConfigDomain(models.Model):
 class ProductConfigDomainLine(models.Model):
     _name = 'product.config.domain.line'
     _order = 'sequence'
+    _description = "Domain Line for Config Restrictions"
 
     def _get_domain_conditions(self):
         operators = [
@@ -140,6 +142,7 @@ class ProductConfigDomainLine(models.Model):
 
 class ProductConfigLine(models.Model):
     _name = 'product.config.line'
+    _description = "Product Config Restrictions"
 
     # TODO: Prevent config lines having dependencies that are not set in other
     # config lines
@@ -158,7 +161,7 @@ class ProductConfigLine(models.Model):
     )
 
     attribute_line_id = fields.Many2one(
-        comodel_name='product.attribute.line',
+        comodel_name='product.template.attribute.line',
         string='Attribute Line',
         ondelete='cascade',
         required=True
@@ -202,6 +205,7 @@ class ProductConfigLine(models.Model):
 
 class ProductConfigImage(models.Model):
     _name = 'product.config.image'
+    _description = "Product Config Image"
 
     name = fields.Char('Name', size=128, required=True, translate=True)
 
@@ -231,7 +235,7 @@ class ProductConfigImage(models.Model):
             try:
                 cfg_session_obj.validate_configuration(
                     value_ids=cfg_img.value_ids.ids,
-                    product_tmpl_id=self.product_tmpl_id.id,
+                    product_tmpl_id=cfg_img.product_tmpl_id.id,
                     final=False)
             except ValidationError:
                 raise ValidationError(
@@ -242,6 +246,7 @@ class ProductConfigImage(models.Model):
 
 class ProductConfigStep(models.Model):
     _name = 'product.config.step'
+    _description = "Product Config Steps"
 
     # TODO: Prevent values which have dependencies to be set in a
     #       step with higher sequence than the dependency
@@ -256,6 +261,7 @@ class ProductConfigStep(models.Model):
 
 class ProductConfigStepLine(models.Model):
     _name = 'product.config.step.line'
+    _description = "Product Config Step Lines"
 
     name = fields.Char(related='config_step_id.name')
 
@@ -265,7 +271,7 @@ class ProductConfigStepLine(models.Model):
         required=True
     )
     attribute_line_ids = fields.Many2many(
-        comodel_name='product.attribute.line',
+        comodel_name='product.template.attribute.line',
         relation='config_step_line_attr_id_rel',
         column1='cfg_line_id',
         column2='attr_id',
@@ -286,23 +292,28 @@ class ProductConfigStepLine(models.Model):
 
     @api.constrains('config_step_id')
     def _check_config_step(self):
-        cfg_step_lines = self.product_tmpl_id.config_step_line_ids
-        cfg_steps = cfg_step_lines.filtered(
-            lambda line: line != self).mapped('config_step_id')
-        if self.config_step_id in cfg_steps:
-            raise ValidationError(_(
-                'Cannot have a configuration step defined twice.'
-            ))
+        for config_step in self:
+            cfg_step_lines = config_step.product_tmpl_id.config_step_line_ids
+            cfg_steps = cfg_step_lines.filtered(
+                lambda line: line != config_step).mapped('config_step_id')
+            if config_step.config_step_id in cfg_steps:
+                raise ValidationError(_(
+                    'Cannot have a configuration step defined twice.'
+                ))
 
 
 class ProductConfigSession(models.Model):
     _name = 'product.config.session'
+    _description = "Product Config Session"
 
     @api.multi
-    @api.depends('value_ids', 'product_tmpl_id.list_price',
-                 'product_tmpl_id.attribute_line_ids',
-                 'product_tmpl_id.attribute_line_ids.value_ids',
-                 'product_tmpl_id.attribute_line_ids.value_ids.price_extra')
+    @api.depends(
+        'value_ids', 'product_tmpl_id.list_price',
+        'product_tmpl_id.attribute_line_ids',
+        'product_tmpl_id.attribute_line_ids.value_ids',
+        'product_tmpl_id.attribute_line_ids.product_template_value_ids',
+        'product_tmpl_id.attribute_line_ids.'
+        'product_template_value_ids.price_extra')
     def _compute_cfg_price(self):
         for session in self:
             if session.product_tmpl_id:
@@ -357,8 +368,8 @@ class ProductConfigSession(models.Model):
 
     @api.model
     def get_cfg_weight(self, value_ids=None, custom_vals=None):
-        """ Computes the weight of the configured product based on the configuration
-            passed in via value_ids and custom_values
+        """ Computes the weight of the configured product based on the
+        configuration passed in via value_ids and custom_values
 
         :param value_ids: list of attribute value_ids
         :param custom_vals: dictionary of custom attribute values
@@ -375,20 +386,26 @@ class ProductConfigSession(models.Model):
         self = self.with_context({'active_id': product_tmpl.id})
 
         value_ids = self.flatten_val_ids(value_ids)
-        vals = self.env['product.attribute.value'].browse(value_ids)
 
         weight_extra = 0.0
-        for attribute_price in vals.mapped('price_ids'):
-            if attribute_price.product_tmpl_id == product_tmpl:
-                weight_extra += attribute_price.weight_extra
+        product_attr_val_obj = self.env['product.template.attribute.value']
+        product_tmpl_attr_values = product_attr_val_obj.search([
+            ('product_tmpl_id', 'in', product_tmpl.ids),
+            ('product_attribute_value_id', 'in', value_ids)
+        ])
+        for product_tmpl_attr_val in product_tmpl_attr_values:
+            weight_extra += product_tmpl_attr_val.weight_extra
 
         return product_tmpl.weight + weight_extra
 
     @api.multi
-    @api.depends('value_ids', 'product_tmpl_id',
-                 'product_tmpl_id.attribute_line_ids',
-                 'product_tmpl_id.attribute_line_ids.value_ids',
-                 'product_tmpl_id.attribute_line_ids.value_ids.weight_extra')
+    @api.depends(
+        'value_ids', 'product_tmpl_id',
+        'product_tmpl_id.attribute_line_ids',
+        'product_tmpl_id.attribute_line_ids.value_ids',
+        'product_tmpl_id.attribute_line_ids.product_template_value_ids',
+        'product_tmpl_id.attribute_line_ids.product_template_value_ids'
+        '.weight_extra')
     def _compute_cfg_weight(self):
         for cfg_session in self:
             cfg_session.weight = cfg_session.get_cfg_weight()
@@ -670,10 +687,10 @@ class ProductConfigSession(models.Model):
             :returns: new/existing product.product recordset
 
         """
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         try:
@@ -720,7 +737,7 @@ class ProductConfigSession(models.Model):
     def _get_option_values(self, pricelist, value_ids=None):
         """Return only attribute values that have products attached with a
         price set to them"""
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         value_obj = self.env['product.attribute.value'].with_context({
@@ -733,7 +750,7 @@ class ProductConfigSession(models.Model):
     def get_components_prices(self, prices, pricelist, value_ids=None):
         """Return prices of the components which make up the final
         configured variant"""
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         vals = self._get_option_values(pricelist, value_ids)
@@ -777,12 +794,15 @@ class ProductConfigSession(models.Model):
         self = self.with_context({'active_id': product_tmpl.id})
 
         value_ids = self.flatten_val_ids(value_ids)
-        vals = self.env['product.attribute.value'].browse(value_ids)
 
         price_extra = 0.0
-        for attribute_price in vals.mapped('price_ids'):
-            if attribute_price.product_tmpl_id == product_tmpl:
-                price_extra += attribute_price.price_extra
+        product_attr_val_obj = self.env['product.template.attribute.value']
+        product_tmpl_attr_values = product_attr_val_obj.search([
+            ('product_tmpl_id', 'in', product_tmpl.ids),
+            ('product_attribute_value_id', 'in', value_ids)
+        ])
+        for product_tmpl_attr_val in product_tmpl_attr_values:
+            price_extra += product_tmpl_attr_val.price_extra
 
         return product_tmpl.list_price + price_extra
 
@@ -799,10 +819,10 @@ class ProductConfigSession(models.Model):
         :returns: path to the selected image
         """
         # TODO: Also consider custom values for image change
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         img_obj = self.product_tmpl_id
@@ -839,10 +859,10 @@ class ProductConfigSession(models.Model):
          """
         self.ensure_one()
 
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         image = self.get_config_image(value_ids)
@@ -893,9 +913,9 @@ class ProductConfigSession(models.Model):
 
         if not product_tmpl_id:
             product_tmpl_id = self.product_tmpl_id
-        if not value_ids:
+        if value_ids is False:
             value_ids = self.value_ids
-        if not custom_value_ids:
+        if custom_value_ids is False:
             custom_value_ids = self.custom_value_ids
         if not state:
             state = self.config_step
@@ -972,7 +992,7 @@ class ProductConfigSession(models.Model):
         :returns: recordset of accesible configuration steps
         """
 
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         open_step_lines = self.env['product.config.step.line']
@@ -1010,7 +1030,7 @@ class ProductConfigSession(models.Model):
 
         # If there is no open step return empty dictionary
 
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         if not active_step_line_id:
@@ -1047,9 +1067,9 @@ class ProductConfigSession(models.Model):
         """ Check and open incomplete step if any
         :param value_ids: recordset of product.attribute.value
         """
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids
-        if not custom_value_ids:
+        if custom_value_ids is None:
             custom_value_ids = self.custom_value_ids
         custom_attr_selected = custom_value_ids.mapped('attribute_id')
         open_step_lines = self.get_open_step_lines()
@@ -1077,10 +1097,10 @@ class ProductConfigSession(models.Model):
         """Method called by search_variant used to search duplicates in the
         database"""
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         attr_obj = self.env['product.attribute']
@@ -1111,7 +1131,7 @@ class ProductConfigSession(models.Model):
     def validate_domains_against_sels(
             self, domains, value_ids=None, custom_vals=None):
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         if value_ids is None:
@@ -1173,7 +1193,7 @@ class ProductConfigSession(models.Model):
         if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         avail_val_ids = []
@@ -1206,7 +1226,7 @@ class ProductConfigSession(models.Model):
         """
         # TODO: Raise ConfigurationError with reason
         # Check if required values are missing for final configuration
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
         if product_tmpl_id:
@@ -1216,7 +1236,7 @@ class ProductConfigSession(models.Model):
 
         product_tmpl.ensure_one()
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
         open_step_lines = self.get_open_step_lines()
         attribute_line_ids = open_step_lines.mapped('attribute_line_ids')
@@ -1318,10 +1338,10 @@ class ProductConfigSession(models.Model):
 
             :returns: product.product recordset of products matching domain
         """
-        if not value_ids:
+        if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if not custom_vals:
+        if custom_vals is None:
             custom_vals = self._get_custom_vals_dict()
 
         if not product_tmpl_id:
@@ -1443,6 +1463,7 @@ class ProductConfigSession(models.Model):
 class ProductConfigSessionCustomValue(models.Model):
     _name = 'product.config.session.custom.value'
     _rec_name = 'attribute_id'
+    _description = "Product Config Session Custom Value"
 
     attribute_id = fields.Many2one(
         comodel_name='product.attribute',
@@ -1483,11 +1504,12 @@ class ProductConfigSessionCustomValue(models.Model):
 
     @api.constrains('cfg_session_id', 'attribute_id')
     def unique_attribute(self):
-        if len(self.cfg_session_id.custom_value_ids.filtered(
-                lambda x: x.attribute_id == self.attribute_id)) > 1:
-            raise ValidationError(
-                _("Configuration cannot have the same value inserted twice")
-            )
+        for custom_val in self:
+            if len(custom_val.cfg_session_id.custom_value_ids.filtered(
+                    lambda x: x.attribute_id == custom_val.attribute_id)) > 1:
+                raise ValidationError(_(
+                    "Configuration cannot have the same value inserted twice"
+                ))
 
     # @api.constrains('cfg_session_id.value_ids')
     # def custom_only(self):
@@ -1502,14 +1524,15 @@ class ProductConfigSessionCustomValue(models.Model):
 
     @api.constrains('attachment_ids', 'value')
     def check_custom_type(self):
-        custom_type = self.attribute_id.custom_type
-        if self.value and custom_type == 'binary':
-            raise ValidationError(
-                _("Attribute custom type is binary, attachments are the only "
-                  "accepted values with this custom field type")
-            )
-        if self.attachment_ids and custom_type != 'binary':
-            raise ValidationError(
-                _("Attribute custom type must be 'binary' for saving "
-                  "attachments to custom value")
-            )
+        for custom_val in self:
+            custom_type = custom_val.attribute_id.custom_type
+            if custom_val.value and custom_type == 'binary':
+                raise ValidationError(_(
+                    "Attribute custom type is binary, attachments are the "
+                    "only accepted values with this custom field type"
+                ))
+            if custom_val.attachment_ids and custom_type != 'binary':
+                raise ValidationError(_(
+                    "Attribute custom type must be 'binary' for saving "
+                    "attachments to custom value"
+                ))

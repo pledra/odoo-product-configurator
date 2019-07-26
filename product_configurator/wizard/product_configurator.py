@@ -1,7 +1,7 @@
 from lxml import etree
 
 from odoo.osv import orm
-from odoo.addons.base.ir.ir_model import FIELD_TYPES
+from odoo.addons.base.models.ir_model import FIELD_TYPES
 
 from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError
@@ -17,6 +17,7 @@ class FreeSelection(fields.Selection):
 class ProductConfigurator(models.TransientModel):
     _name = 'product.configurator'
     _inherits = {'product.config.session': 'config_session_id'}
+    _description = "Product configuration Wizard"
 
     @property
     def _prefixes(self):
@@ -58,10 +59,11 @@ class ProductConfigurator(models.TransientModel):
     @api.depends('product_tmpl_id', 'value_ids', 'custom_value_ids')
     def _compute_cfg_image(self):
         # TODO: Update when allowing custom values to influence image
-
-        cfg_sessions = self.config_session_id.with_context(bin_size=False)
-        image = cfg_sessions.get_config_image()
-        self.product_img = image
+        for configurator in self:
+            cfg_sessions = configurator.config_session_id.with_context(
+                bin_size=False)
+            image = cfg_sessions.get_config_image()
+            configurator.product_img = image
 
     @api.multi
     @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids')
@@ -321,7 +323,7 @@ class ProductConfigurator(models.TransientModel):
         string='Configuration Session'
     )
     attribute_line_ids = fields.One2many(
-        comodel_name='product.attribute.line',
+        comodel_name='product.template.attribute.line',
         compute='_compute_attr_lines',
         string="Attributes",
         readonly=True,
@@ -986,6 +988,7 @@ class ProductConfigurator(models.TransientModel):
 
 class ProductConfiguratorCustomValue(models.TransientModel):
     _name = 'product.configurator.custom.value'
+    _description = "Product Configurator Custom Value"
 
     attachment_ids = fields.Many2many(
         comodel_name='ir.attachment',

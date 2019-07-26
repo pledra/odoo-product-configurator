@@ -1,11 +1,11 @@
-#product_config_image {
-    max-width: 1000px;
-    min-height: 480px;
+#cfg_header {
+    max-width: 90%;
+    min-height: 320px;
 }
 
 #cfg_image {
     max-width: 90%;
-    max-height: 480px;
+    max-height: 300px;
     text-align: center;
     text-align: -webkit-center;
     position: absolute;
@@ -37,6 +37,12 @@
         float: left;
         padding: 10px 10px 10px 0px;
     }
+}
+
+.spinner_qty {
+    padding: 0;
+    min-width: 48px;
+    text-align: center;
 }
 
 .config_attribute input[type=radio], .config_attribute input[type=checkbox] {
@@ -89,8 +95,8 @@
     background-size: contain;
     background-repeat: no-repeat;
     display: inline-block;
-    width: 150px;
-    height: 110px;
+    width: 160px;
+    height: 160px;
     -webkit-transition: all 100ms ease-in;
        -moz-transition: all 100ms ease-in;
             transition: all 100ms ease-in;
@@ -110,10 +116,22 @@
 .label_config_attr_value_radio {
     position: absolute;
     z-index: 1;
+    width: 138px;
     margin: 5px auto auto 25px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .radio-card-container {
     margin: 5px 10px 5px 10px;
     float: left;
+}
+.control-label{
+    margin-top: 15px;
+    margin-bottom: auto;
+}
+
+#cfg_footer {
+    padding-top: 15px;
 }

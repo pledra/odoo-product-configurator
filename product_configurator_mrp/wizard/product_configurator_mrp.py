@@ -24,7 +24,7 @@ class ProductConfiguratorMrp(models.TransientModel):
         created or edited lines."""
 
         line_vals = {
-            'product_id': product_id,
+            'product_id': product_id.id,
         }
         return line_vals
 
@@ -41,6 +41,7 @@ class ProductConfiguratorMrp(models.TransientModel):
             }
             variant = self.config_session_id.create_get_variant(
                 self.value_ids.ids, custom_vals)
+
         except ValidationError:
             raise
         except Exception:
@@ -58,7 +59,7 @@ class ProductConfiguratorMrp(models.TransientModel):
             'res_id': variant.id,
         }
 
-        line_vals = self._get_order_vals(action['res_id'])
+        line_vals = self._get_order_vals(variant)
 
         mrpProduction = self.env['mrp.production']
         specs = mrpProduction._onchange_spec()
