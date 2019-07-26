@@ -20,7 +20,6 @@ class ProductConfiguratorPurchase(models.TransientModel):
         """ Hook to allow custom line values to be put on the newly
         created or edited lines."""
         product = self.env['product.product'].browse(product_id)
-
         return {
             'product_id': product_id,
             'product_qty': 1,
@@ -34,9 +33,8 @@ class ProductConfiguratorPurchase(models.TransientModel):
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
         res = super(ProductConfiguratorPurchase, self).action_config_done()
-        if res['res_model'] == self._name:
+        if res.get('res_model') == self._name:
             return res
-
         line_vals = self._get_order_line_vals(res['res_id'])
 
         if self.order_line_id:

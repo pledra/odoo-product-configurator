@@ -41,12 +41,9 @@ class MrpBomLine(models.Model):
         product. """
         if not self.bom_id.config_ok:
             return super(MrpBomLine, self)._skip_bom_line(product=product)
-
         if not self.config_set_id.configuration_ids:
             return False
-
         product_value_ids = set(product.attribute_value_ids.ids)
-
         for config in self.config_set_id.configuration_ids:
             if len(set(config.value_ids.ids) - product_value_ids) == 0:
                 return False

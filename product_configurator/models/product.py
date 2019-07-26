@@ -267,7 +267,6 @@ class ProductTemplate(models.Model):
         """create product configuration wizard
         - return action to launch wizard
         - click on next step based on value of click_next"""
-
         action = {
             'type': 'ir.actions.act_window',
             'res_model': 'product.configurator',
@@ -279,7 +278,6 @@ class ProductTemplate(models.Model):
                 wizard_model='product.configurator',
             ),
         }
-
         wizard_obj = self.env[model_name]
         wizard_vals = {
             'product_tmpl_id': self.id

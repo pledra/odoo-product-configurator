@@ -56,7 +56,7 @@ class ProductConfiguratorMrp(models.TransientModel):
             'name': "Manufacturing Order",
             'view_mode': 'form',
             'context': self.env.context,
-            'res_id': self.order_id.id,
+            'res_id': variant.id,
         }
 
         line_vals = self._get_order_vals(variant)

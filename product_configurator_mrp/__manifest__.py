@@ -1,6 +1,6 @@
 {
     'name': 'Product Configurator Manufacturing',
-    'version': '11.0.1.0.8',
+    'version': '12.0.0.0.0',
     'category': 'Manufacturing',
     'summary': 'BOM Support for configurable products',
     'author': 'Pledra',

@@ -129,78 +129,10 @@ class ProductAttributes(TransactionCase):
                 'min_val': 20
             })
 
-    # def test_06_onchange_attribute(self):
-    #     self.ProductAttributeLineFuel.onchange_attribute()
-    #     self.assertFalse(
-    #         self.ProductAttributeLineFuel.value_ids,
-    #         "value_ids is not False"
-    #     )
-    #     self.assertTrue(
-    #         self.ProductAttributeLineFuel.required,
-    #         "required not exsits value"
-    #     )
-    #     self.ProductAttributeLineFuel.multi = True
-    #     self.assertTrue(
-    #         self.ProductAttributeLineFuel.multi,
-    #         "multi not exsits value"
-    #     )
-    #     self.ProductAttributeLineFuel.custom = True
-    #     self.assertTrue(
-    #         self.ProductAttributeLineFuel.custom,
-    #         "custom not exsits value"
-    #     )
-
     def test_07_check_default_values(self):
         with self.assertRaises(ValidationError):
             self.ProductAttributeLineFuel.default_val = \
                 self.value_218i.id
-
-    # def test_08_compute_weight_extra(self):
-    #     self.assertEqual(
-    #         self.value_gasoline.weight_extra,
-    #         0.0,
-    #         "weight_extra not 0.0"
-    #     )
-    #     self.value_gasoline = \
-    #         self.value_gasoline.with_context(
-    #             active_id=self.ProductTemplate.id)
-    #     self.value_gasoline.weight_extra = 14
-    #     self.value_gasoline._compute_weight_extra()
-    #     self.assertEqual(
-    #         self.value_gasoline.price_ids.weight_extra,
-    #         14,
-    #         "weight_extra not exsits"
-    #     )
-    #     self.value_gasoline.price_ids.weight_extra = 15
-    #     self.value_gasoline._compute_weight_extra()
-    #     self.assertEqual(
-    #         self.value_gasoline.weight_extra,
-    #         15,
-    #         "values are not equal"
-    #     )
-
-    # TODO :: Left to create method
-    # def test_09_inverse_weight_extra(self):
-    #     self.ProductAttributePrice = self.ProductAttributePrice.create({
-    #         'product_tmpl_id': self.ProductTemplate.id,
-    #         'value_id': self.value_218i.id,
-    #         'weight_extra': 12,
-    #     })
-    #     self.value_gasoline = \
-    #         self.value_gasoline.with_context(
-    #             active_id=self.ProductTemplate.id)
-    #     self.value_gasoline.weight_extra = 14
-    #     self.value_gasoline._compute_weight_extra()
-    #     self.assertEqual(
-    #         14,
-    #         self.value_gasoline.weight_extra,
-    #         "weight_extra not exsits"
-    #     )
-    #     self.assertEqual(
-    #         self.value_gasoline.price_ids.weight_extra,
-    #         14,
-    #         "weight_extra not exsits"
-    #     )
 
     def test_10_copy_attribute(self):
         copyAttribute = self.ProductAttributeFuel.copy()
