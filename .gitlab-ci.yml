@@ -111,7 +111,7 @@ Pylint Beta:
   allow_failure: true
 
 Flake8:
-  image: ${CI_IMAGE}:${CI_COMMIT_SHA}
+  image: ${CI_IMAGE}:${CI_IMAGE_TAG}
   stage: test
   before_script:
     # Initialize the qa virtualenvironment
