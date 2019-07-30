@@ -167,8 +167,6 @@ class ProductAttributeLine(models.Model):
 
     @api.onchange('value_ids')
     def onchange_values(self):
-        if not getattr(threading.currentThread(), 'testing', False):
-            return None
         if self.default_val and self.default_val not in self.value_ids:
             self.default_val = None
 

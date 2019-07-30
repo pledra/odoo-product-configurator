@@ -196,13 +196,13 @@ class ProductAttributes(TransactionCase):
             Method: copy()'
         )
 
-    # def test_15_onchange_values(self):
-    #     productattributeline = self.env['product.template.attribute.line']
-    #     productattributeline.onchange_values()
-    #     productattributeline.: 
-    #     self.assertTrue(
-    #         productattributeline.default_val,
-    #         'Error: If default_val not exists\
-    #         Method: onchange_values()'
-    #         )
+    def test_15_onchange_values(self):
+        productattributeline = self.env['product.template.attribute.line']
+        productattributeline.onchange_values()
+        self.assertEqual(
+            productattributeline.default_val,
+            productattributeline.value_ids,
+            'Error: If default_val not exists\
+            Method: onchange_values()'
+            )
 
