@@ -351,6 +351,21 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: reconfigure_product()'
         )
 
+    def test_13_compute_product_weight_extra(self):
+        product_product = self._get_product_id()
+        # _compute_product_weight_extra
+        productAttPrice = self.env['product.product'].create({
+            'product_tmpl_id': self.config_product.id,
+            'value_id': self.value_gasoline.id,
+            'weight_extra': 45
+        })
+        self.assertEqual(
+            productAttPrice.weight_extra,
+            product_product.weight_extra,
+            'Error: If weight_extra not equal\
+            Method: _compute_product_weight_extra()'
+        )
+
     def test_14_unlink(self):
         product_product = self._get_product_id()
         unlinkVals = product_product.unlink()

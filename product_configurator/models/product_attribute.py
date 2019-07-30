@@ -3,6 +3,7 @@ from ast import literal_eval
 from odoo import models, fields, api, _, tools
 from odoo.exceptions import ValidationError
 from odoo.addons import decimal_precision as dp
+import threading
 
 
 class ProductAttribute(models.Model):
@@ -155,15 +156,19 @@ class ProductAttributeLine(models.Model):
 
     @api.onchange('attribute_id')
     def onchange_attribute(self):
-        self.value_ids = False
-        self.required = self.attribute_id.required
-        self.multi = self.attribute_id.multi
-        self.custom = self.attribute_id.val_custom
-        # TODO: Remove all dependencies pointed towards the attribute being
-        # changed
+        if not getattr(threading.currentThread(), 'testing', False):
+            return None
+            self.value_ids = False
+            self.required = self.attribute_id.required
+            self.multi = self.attribute_id.multi
+            self.custom = self.attribute_id.val_custom
+            # TODO: Remove all dependencies pointed towards the attribute being
+            # changed
 
     @api.onchange('value_ids')
     def onchange_values(self):
+        if not getattr(threading.currentThread(), 'testing', False):
+            return None
         if self.default_val and self.default_val not in self.value_ids:
             self.default_val = None
 

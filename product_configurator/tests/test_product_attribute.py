@@ -129,6 +129,27 @@ class ProductAttributes(TransactionCase):
                 'min_val': 20
             })
 
+    def test_06_onchange_attribute(self):
+        self.ProductAttributeLineFuel.onchange_attribute()
+        self.assertTrue(
+            self.ProductAttributeLineFuel.value_ids,
+            "value_ids is not False"
+        )
+        self.assertTrue(
+            self.ProductAttributeLineFuel.required,
+            "required not exsits value"
+        )
+        self.ProductAttributeLineFuel.multi = True
+        self.assertTrue(
+            self.ProductAttributeLineFuel.multi,
+            "multi not exsits value"
+        )
+        self.ProductAttributeLineFuel.custom = True
+        self.assertTrue(
+            self.ProductAttributeLineFuel.custom,
+            "custom not exsits value"
+        )
+
     def test_07_check_default_values(self):
         with self.assertRaises(ValidationError):
             self.ProductAttributeLineFuel.default_val = \
@@ -174,3 +195,14 @@ class ProductAttributes(TransactionCase):
             'Error: If not equal productattribute name\
             Method: copy()'
         )
+
+    # def test_15_onchange_values(self):
+    #     productattributeline = self.env['product.template.attribute.line']
+    #     productattributeline.onchange_values()
+    #     productattributeline.: 
+    #     self.assertTrue(
+    #         productattributeline.default_val,
+    #         'Error: If default_val not exists\
+    #         Method: onchange_values()'
+    #         )
+
