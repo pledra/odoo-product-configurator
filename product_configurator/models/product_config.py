@@ -752,7 +752,6 @@ class ProductConfigSession(models.Model):
         configured variant"""
         if value_ids is None:
             value_ids = self.value_ids.ids
-
         vals = self._get_option_values(pricelist, value_ids)
         for val in vals:
             prices['vals'].append(
@@ -1442,7 +1441,6 @@ class ProductConfigSession(models.Model):
         attr_obj = self.env['product.attribute']
         binary_attribute_ids = attr_obj.search([
             ('custom_type', '=', 'binary')]).ids
-
         custom_lines = []
 
         for key, val in custom_vals.items():

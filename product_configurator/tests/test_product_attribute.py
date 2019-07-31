@@ -129,12 +129,34 @@ class ProductAttributes(TransactionCase):
                 'min_val': 20
             })
 
+    def test_06_onchange_attribute(self):
+        with self.env.do_in_onchange():
+            self.ProductAttributeLineFuel.onchange_attribute()
+            self.assertFalse(
+                self.ProductAttributeLineFuel.value_ids,
+                "value_ids is not False"
+            )
+            self.assertTrue(
+                self.ProductAttributeLineFuel.required,
+                "required not exsits value"
+            )
+            self.ProductAttributeLineFuel.multi = True
+            self.assertTrue(
+                self.ProductAttributeLineFuel.multi,
+                "multi not exsits value"
+            )
+            self.ProductAttributeLineFuel.custom = True
+            self.assertTrue(
+                self.ProductAttributeLineFuel.custom,
+                "custom not exsits value"
+            )
+
     def test_07_check_default_values(self):
         with self.assertRaises(ValidationError):
             self.ProductAttributeLineFuel.default_val = \
                 self.value_218i.id
 
-    def test_10_copy_attribute(self):
+    def test_08_copy_attribute(self):
         copyAttribute = self.ProductAttributeFuel.copy()
         self.assertEqual(
             copyAttribute.name,
@@ -143,7 +165,7 @@ class ProductAttributes(TransactionCase):
             Method: copy()'
         )
 
-    def test_11_compute_get_value_id(self):
+    def test_09_compute_get_value_id(self):
         attrvalline = self.env[
             'product.attribute.value.line'].create({
                 'product_tmpl_id': self.ProductTemplate.id,
@@ -155,7 +177,7 @@ class ProductAttributes(TransactionCase):
             Method: _compute_get_value_id()'
         )
 
-    def test_12_validate_configuration(self):
+    def test_10_validate_configuration(self):
         with self.assertRaises(ValidationError):
             self.env['product.attribute.value.line'].create({
                 'product_tmpl_id': self.ProductTemplate.id,
@@ -165,7 +187,7 @@ class ProductAttributes(TransactionCase):
                 )]
             })
 
-    def test_14_copy(self):
+    def test_11_copy(self):
         default = {}
         productattribute = self.value_gasoline.copy(default)
         self.assertEqual(
@@ -174,3 +196,13 @@ class ProductAttributes(TransactionCase):
             'Error: If not equal productattribute name\
             Method: copy()'
         )
+
+    def test_12_onchange_values(self):
+        productattributeline = self.env['product.template.attribute.line']
+        productattributeline.onchange_values()
+        self.assertEqual(
+            productattributeline.default_val,
+            productattributeline.value_ids,
+            'Error: If default_val not exists\
+            Method: onchange_values()'
+            )
