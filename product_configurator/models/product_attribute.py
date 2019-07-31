@@ -3,7 +3,6 @@ from ast import literal_eval
 from odoo import models, fields, api, _, tools
 from odoo.exceptions import ValidationError
 from odoo.addons import decimal_precision as dp
-import threading
 
 
 class ProductAttribute(models.Model):
