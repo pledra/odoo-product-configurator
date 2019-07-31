@@ -354,9 +354,9 @@ class TestProduct(ProductConfiguratorTestCases):
     def test_13_compute_product_weight_extra(self):
         product_product = self._get_product_id()
         # _compute_product_weight_extra
-        productAttPrice = self.env['product.product'].create({
+        productAttPrice = self.env['product.template.attribute.value'].create({
             'product_tmpl_id': self.config_product.id,
-            'value_id': self.value_gasoline.id,
+            'product_attribute_value_id': self.value_gasoline.id,
             'weight_extra': 45
         })
         self.assertEqual(
@@ -525,11 +525,11 @@ class TestProduct(ProductConfiguratorTestCases):
         product_product.with_context({
             'default_config_ok': True}).fields_view_get()
 
-    def test_21_get_conversions_dict(self):
+    def test_20_get_conversions_dict(self):
         product_product = self._get_product_id()
         product_product._get_conversions_dict()
 
-    def test_22_compute_product_variant_count(self):
+    def test_21_compute_product_variant_count(self):
         self.product_tmpl_id = self.env['product.template'].create({
             'name': 'Test Configuration',
             'config_ok': True,
@@ -545,7 +545,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _compute_product_variant_count()'
         )
 
-    def test_23_get_config_name(self):
+    def test_22_get_config_name(self):
         product_product = self._get_product_id()
         product_product._get_config_name()
         self.assertTrue(
@@ -554,7 +554,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _get_config_name()'
         )
 
-    def test_24_search_product_weight(self):
+    def test_23_search_product_weight(self):
         product_product = self._get_product_id()
         operator = 'and'
         value = 10
@@ -566,7 +566,7 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: _search_product_weight()'
         )
 
-    def test_25_search_weight(self):
+    def test_24_search_weight(self):
         operator = 'and'
         value = 10
         search_weight = \

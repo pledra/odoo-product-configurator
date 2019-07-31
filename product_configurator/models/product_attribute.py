@@ -156,14 +156,12 @@ class ProductAttributeLine(models.Model):
 
     @api.onchange('attribute_id')
     def onchange_attribute(self):
-        if not getattr(threading.currentThread(), 'testing', False):
-            return None
-            self.value_ids = False
-            self.required = self.attribute_id.required
-            self.multi = self.attribute_id.multi
-            self.custom = self.attribute_id.val_custom
-            # TODO: Remove all dependencies pointed towards the attribute being
-            # changed
+        self.value_ids = False
+        self.required = self.attribute_id.required
+        self.multi = self.attribute_id.multi
+        self.custom = self.attribute_id.val_custom
+        # TODO: Remove all dependencies pointed towards the attribute being
+        # changed
 
     @api.onchange('value_ids')
     def onchange_values(self):
