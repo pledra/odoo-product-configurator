@@ -6,7 +6,7 @@
       name="Configurator" parent="" web_icon="product_configurator,static/description/icon.png"
       sequence="20" groups="product_configurator.group_product_configurator_manager"/>
     <menuitem id="menu_product_configurable_product_main" name="Configurable Products" parent="menu_product_configurable" sequence="10" />
-    <menuitem id="menu_product_configurable_settings" name="Settings" parent="menu_product_configurable" sequence="20" />
+    <menuitem id="menu_product_configurable_settings" name="Configuration" parent="menu_product_configurable" sequence="20" />
 
     <record id="product_configurable_template_action" model="ir.actions.act_window">
         <field name="name">Configurable Templates</field>
@@ -58,7 +58,7 @@
     <menuitem id="menu_action_general_configuration"
               action="action_general_configuration"
               name="Settings"
-              parent="menu_product_configurable_settings" sequence="20"/>
+              parent="menu_product_configurable_settings" sequence="0"/>
 
     <menuitem id="menu_product_config_steps_action"
               action="product_config_steps_action"

@@ -169,14 +169,14 @@
         id="menu_attribute_action_configuration"
         action="action_attributes_view"
         parent="menu_product_configurable_settings"
-        sequence="1"
+        sequence="10"
         groups="product.group_product_variant"/>
 
     <menuitem
         id="menu_variants_action_configuration"
         action="product.variants_action"
         parent="menu_product_configurable_settings"
-        sequence="2"
+        sequence="20"
         groups="product.group_product_variant"/>
 </data>
 </odoo>
