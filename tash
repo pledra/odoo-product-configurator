@@ -1,0 +1,51 @@
+[1mdiff --git a/product_configurator/models/product.py b/product_configurator/models/product.py[m
+[1mindex 9b5801a..ea89a15 100644[m
+[1m--- a/product_configurator/models/product.py[m
+[1m+++ b/product_configurator/models/product.py[m
+[36m@@ -303,7 +303,9 @@[m [mclass ProductTemplate(models.Model):[m
+             return True[m
+         config_manager = self.env.user.has_group([m
+             'product_configurator.group_product_configurator_manager')[m
+[31m-        if config_manager:[m
+[32m+[m[32m        user_root = self.env.ref('base.user_root')[m
+[32m+[m[32m        user_admin = self.env.ref('base.user_admin')[m
+[32m+[m[32m        if config_manager or self.env.user.id in [user_root.id, user_admin.id]:[m
+             return True[m
+         raise ValidationError(_([m
+             "Sorry, you are not allowed to create/change this kind of "[m
+[36m@@ -548,7 +550,11 @@[m [mclass ProductProduct(models.Model):[m
+             'product_configurator.group_product_configurator_manager')[m
+         config_user = self.env.user.has_group([m
+             'product_configurator.group_product_configurator')[m
+[31m-        if (config_manager or (config_user and mode not in ['delete'])):[m
+[32m+[m[32m        user_root = self.env.ref('base.user_root')[m
+[32m+[m[32m        user_admin = self.env.ref('base.user_admin')[m
+[32m+[m[32m        if (config_manager or[m
+[32m+[m[32m                (config_user and mode not in ['delete']) or[m
+[32m+[m[32m                self.env.user.id in [user_root.id, user_admin.id]):[m
+             return True[m
+         raise ValidationError(_([m
+             "Sorry, you are not allowed to create/change this kind of "[m
+[1mdiff --git a/product_configurator/security/configurator_security.xml b/product_configurator/security/configurator_security.xml[m
+[1mindex e928831..7712d9b 100644[m
+[1m--- a/product_configurator/security/configurator_security.xml[m
+[1m+++ b/product_configurator/security/configurator_security.xml[m
+[36m@@ -10,7 +10,7 @@[m
+             <field name="name">User</field>[m
+             <field name="category_id" ref="product_config_category"/>[m
+             <field name="implied_ids" eval="[(4, ref('product.group_product_variant'))]"/>[m
+[31m-            <field name="users" eval="[(4, ref('base.user_root'))]"/>[m
+[32m+[m[32m            <!-- <field name="users" eval="[(4, ref('base.user_root'))]"/> -->[m
+         </record>[m
+ [m
+         <record id="group_product_configurator_manager" model="res.groups">[m
+[36m@@ -24,6 +24,9 @@[m
+         <record model="res.groups" id="base.group_user">[m
+             <field name="implied_ids" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>[m
+         </record>[m
+[32m+[m[32m        <record model="res.users" id="base.user_admin">[m
+[32m+[m[32m            <field eval="[(4,ref('product_configurator.group_product_configurator_manager'))]" name="groups_id"/>[m
+[32m+[m[32m        </record>[m
+ [m
+     </data>[m
+ </odoo>[m

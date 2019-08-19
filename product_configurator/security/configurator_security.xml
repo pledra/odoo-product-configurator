@@ -23,6 +23,9 @@
         <record model="res.groups" id="base.group_user">
             <field name="implied_ids" eval="[(4, ref('product_configurator.group_product_configurator'))]"/>
         </record>
+        <record model="res.users" id="base.user_root">
+            <field eval="[(4, ref('product_configurator.group_product_configurator_manager'))]" name="groups_id"/>
+        </record>
 
     </data>
 </odoo>
