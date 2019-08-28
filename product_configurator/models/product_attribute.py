@@ -278,7 +278,11 @@ class ProductAttributeValue(models.Model):
         string="Medium Image",
         attachment=True,
         help="Attribute value medium size image"
-        " (Display on website for radio buttons)"
+    )
+    image_small = fields.Binary(
+        string="Small Image",
+        attachment=True,
+        help="Attribute value small size image"
     )
     # prevent to add new attr-value from adding
     # in already created template
