@@ -117,6 +117,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 pass
             elif not active_step or active_step not in open_cfg_step_lines:
                 active_step = open_cfg_step_lines[:1]
+                cfg_session.config_step = '%s' % (active_step.id)
 
         cfg_session = cfg_session.sudo()
         config_image_ids = False
@@ -398,6 +399,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
         if not next_step:
             next_step = config_session_id.check_and_open_incomplete_step()
+
         if next_step and isinstance(
                 next_step,
                 type(request.env['product.config.step.line'])
