@@ -381,9 +381,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
         config_session_id = config_session_id.sudo()
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id)
-        if extra_attr_line_ids and current_step == 'configure' and next_step:
-            config_session_id.config_step = next_step
-            return {'next_step': next_step}
+        if extra_attr_line_ids and current_step == 'configure':
+            if next_step:
+                config_session_id.config_step = next_step
+                return {'next_step': next_step}
+            else:
+                next_step = config_session_id.check_and_open_incomplete_step()
+            if not next_step:
+                return {'next_step': False}
 
         if not next_step:
             try:
@@ -396,7 +401,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 extra_attr_line_ids and
                 current_step != 'configure'):
             next_step = 'configure'
-
         if not next_step:
             next_step = config_session_id.check_and_open_incomplete_step()
 
