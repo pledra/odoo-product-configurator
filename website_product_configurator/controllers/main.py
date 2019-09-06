@@ -38,14 +38,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 force_create=is_public_user,
                 user_id=request.env.user.id
             )
-            if product_config_sessions:
-                request.session['product_config_session'].update({
-                    product_tmpl_id.id: cfg_session.id
-                })
-            else:
-                request.session['product_config_session'] = {
-                    product_tmpl_id.id: cfg_session.id
-                }
+            product_config_sessions.update({
+                product_tmpl_id.id: cfg_session.id
+            })
+            request.session['product_config_session'] = product_config_sessions
 
         if (cfg_session.user_id.has_group('base.group_public') and not
                 is_public_user):
@@ -360,13 +356,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
             image_line_ids=config_image_ids,
             model_name=config_image_ids[:1]._name
         )
+        partner = request.env.user.partner_id
+        pricelist = request.website.get_current_pricelist()
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_line_ids'] = open_cfg_step_line_ids
         updates['config_image_vals'] = image_vals
         decimal_prec_obj = request.env['decimal.precision']
         updates['decimal_precision'] = {
             'weight': decimal_prec_obj.precision_get('Stock Weight') or 2,
-            'price': decimal_prec_obj.precision_get('Product Price') or 2,
+            'price': pricelist.currency_id.decimal_places or 2,
         }
         return updates
 
@@ -488,7 +486,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
         pricelist = get_pricelist()
         if (request.session.get('product_config_session') and
                 request.session['product_config_session'].get(product_tmpl_id.id)):
-            del request.session['product_config_session'][product_tmpl_id.id]
+            product_config_session = request.session['product_config_session']
+            del product_config_session[product_tmpl_id.id]
+            request.session['product_config_session'] = product_config_session
         values = {
             'product_id': product_id,
             'product_tmpl': product_tmpl_id,
