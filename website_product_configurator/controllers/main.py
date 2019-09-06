@@ -500,7 +500,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
             key=lambda obj: obj.attribute_id.sequence
         )
         pricelist = get_pricelist()
-        if request.session['product_config_session'].get(product_tmpl_id.id):
+        if (request.session.get('product_config_session') and
+                request.session['product_config_session'].get(product_tmpl_id.id)):
             product_config_session = request.session['product_config_session']
             del product_config_session[product_tmpl_id.id]
             request.session['product_config_session'] = product_config_session
