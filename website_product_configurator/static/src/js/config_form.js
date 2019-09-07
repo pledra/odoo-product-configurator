@@ -11,6 +11,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
     var image_dict = {}
 
     $(document).ready(function () {
+        // Datetime picker
         var config_form = $("#product_config_form");
         var datetimepickers_options = {
             calendarWeeks: true,
@@ -43,12 +44,23 @@ odoo.define('website_product_configurator.config_form', function (require) {
             _checkRequiredFields(attribute);
         });
 
+        //Loader
+        if ($.blockUI) {
+            $.blockUI.defaults.baseZ = 2147483647;
+            $.blockUI.defaults.css.border = '0';
+            $.blockUI.defaults.css["background-color"] = '';
+            $.blockUI.defaults.overlayCSS["opacity"] = '0.5';
+            $.blockUI.defaults.message = '<h2 class="text-white"><img src="/web/static/src/img/spin.png" class="fa-pulse"/><br /></h2>'
+        }
+
         /* Monitor input changes in the configuration form and call the backend onchange method*/
         config_form.find('.config_attribute').change(function(ev) {
+            $(ev.currentTarget).addClass('change_dirty');
             var form_data = config_form.serializeArray();
             for (var field_name in image_dict) {
                 form_data.push({'name': field_name, 'value': image_dict[field_name]});
             }
+            $.blockUI();
             ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
                 form_values: form_data,
                 field_name: $(this)[0].name,
@@ -67,6 +79,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     _setImageUrl(config_image_vals);
                     _setWeightPrice(values.weight, values.price, data.decimal_precision);
                 };
+                if ($.blockUI) {
+                    $.unblockUI();
+                }
             });
             _handleCustomAttribute(ev)
         });
@@ -198,9 +213,22 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     };
                 });
             });
-        }
+        };
 
-        function _onChangeConfigStep(event, next_step) {
+        function _checkChange(active_step, check_change) {
+            if (!check_change) {
+                return true
+            }
+            var changed_attrs = active_step.find('.change_dirty');
+            var flag = false;
+            if (changed_attrs.length) {
+                flag = true;
+                changed_attrs.removeClass('change_dirty')
+            }
+            return flag
+        };
+
+        function _onChangeConfigStep(event, next_step, check_change) {
             var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
             var config_attr = active_step.find('.form-control.required_config_attrib');
             var flag = _checkRequiredFields(config_attr)
@@ -210,7 +238,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
             for (var field_name in image_dict) {
                 form_data.push({'name': field_name, 'value': image_dict[field_name]});
             }
-            if (flag) {
+            var is_change = _checkChange(active_step, check_change)
+            if (flag && is_change) {
+                $.blockUI();
                 return ajax.jsonRpc("/website_product_configurator/save_configuration", 'call', {
                     form_values: form_data,
                     next_step: next_step || false,
@@ -219,8 +249,13 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     if (data.error) {
                         openWarningDialog(data.error);
                     };
+                    if ($.blockUI) {
+                        $.unblockUI();
+                    }
                     return data;
                 });
+            } else if(flag && !is_change) {
+                return true;
             } else {
                 return false;
             }
@@ -301,7 +336,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         config_form.find('.config_step').click(function (event) {
             var next_step = event.currentTarget.getAttribute('data-step-id');
-            var result = _onChangeConfigStep(event, next_step);
+            var result = _onChangeConfigStep(event, next_step, true);
             if (!result) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -349,7 +384,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             event.preventDefault();
             event.stopPropagation();
 
-            var result = _onChangeConfigStep(event);
+            var result = _onChangeConfigStep(event, false);
             if (result) {
                 result.then(function (data) {
                     if (data) {
