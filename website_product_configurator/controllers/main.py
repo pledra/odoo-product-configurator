@@ -62,9 +62,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         try:
             cfg_session = self.get_config_session(product_tmpl_id=product)
         except Exception as Ex:
-            return request.render(
-                'website_product_configurator.error_page', {'error': Ex}
-            )
+            return request.redirect('/website_product_configurator/error_page/%s' % (Ex))
 
         # Set config-step in config session when it creates from wizard
         # because select state not exist on website
@@ -72,9 +70,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             cfg_session.config_step = 'select'
             res = self.set_config_next_step(cfg_session)
             if res.get('error', False):
-                return request.render(
-                    'website_product_configurator.error_page', res
-                )
+                return request.redirect('/website_product_configurator/error_page/%s' % (res))
 
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
@@ -491,3 +487,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
         }
         return request.render(
             "website_product_configurator.cfg_product_variant", values)
+
+    @http.route('/website_product_configurator/error_page/<string:message>',
+        type='http', auth="public", website=True)
+    def render_error(self, message='', **post):
+        vals = {'error': message or ''}
+        return request.render('website_product_configurator.error_page', vals)

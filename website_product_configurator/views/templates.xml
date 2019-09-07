@@ -19,7 +19,7 @@
     </template>
 
     <template id="error_page">
-        <t t-call="web.layout">
+        <t t-call="website.layout">
             <t t-set="html_data" t-value="{'style': 'height: 100%;'}"/>
             <t t-set="head">
                 <t t-call-assets="web.assets_common" t-js="false"/>
