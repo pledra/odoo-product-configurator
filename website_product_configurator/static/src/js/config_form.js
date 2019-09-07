@@ -46,11 +46,12 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         //Loader
         if ($.blockUI) {
-            $.blockUI.defaults.baseZ = 2147483647;
-            $.blockUI.defaults.css.border = '0';
-            $.blockUI.defaults.css["background-color"] = '';
-            $.blockUI.defaults.overlayCSS["opacity"] = '0.5';
-            $.blockUI.defaults.message = '<h2 class="text-white"><img src="/web/static/src/img/spin.png" class="fa-pulse"/><br /></h2>'
+            var blockui_opts = $.blockUI.defaults
+            blockui_opts.baseZ = 2147483647;
+            blockui_opts.css.border = '0';
+            blockui_opts.css["background-color"] = '';
+            blockui_opts.overlayCSS["opacity"] = '0.5';
+            blockui_opts.message = '<h2 class="text-white"><img src="/web/static/src/img/spin.png" class="fa-pulse"/><br /></h2>'
         }
 
         /* Monitor input changes in the configuration form and call the backend onchange method*/
@@ -60,7 +61,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             for (var field_name in image_dict) {
                 form_data.push({'name': field_name, 'value': image_dict[field_name]});
             }
-            $.blockUI();
+            $.blockUI(blockui_opts);
             ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
                 form_values: form_data,
                 field_name: $(this)[0].name,
@@ -240,7 +241,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             }
             var is_change = _checkChange(active_step, check_change)
             if (flag && is_change) {
-                $.blockUI();
+                $.blockUI(blockui_opts);
                 return ajax.jsonRpc("/website_product_configurator/save_configuration", 'call', {
                     form_values: form_data,
                     next_step: next_step || false,
