@@ -1,4 +1,5 @@
 from ast import literal_eval
+from odoo.addons import decimal_precision as dp
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
@@ -447,6 +448,7 @@ class ProductConfigSession(models.Model):
         compute='_compute_cfg_price',
         string='Price',
         store=True,
+        digits=dp.get_precision('Product Price')
     )
     state = fields.Selection(
         string='State',
