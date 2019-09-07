@@ -385,7 +385,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             event.preventDefault();
             event.stopPropagation();
 
-            var result = _onChangeConfigStep(event, false);
+            var result = _onChangeConfigStep(event);
             if (result) {
                 result.then(function (data) {
                     if (data) {
