@@ -62,7 +62,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         try:
             cfg_session = self.get_config_session(product_tmpl_id=product)
         except Exception as Ex:
-            return request.redirect('/website_product_configurator/error_page/%s' % (Ex))
+            return request.redirect('/website_product_configurator/error_page')
 
         # Set config-step in config session when it creates from wizard
         # because select state not exist on website
@@ -70,7 +70,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             cfg_session.config_step = 'select'
             res = self.set_config_next_step(cfg_session)
             if res.get('error', False):
-                return request.redirect('/website_product_configurator/error_page/%s' % (res))
+                return request.redirect('/website_product_configurator/error_page')
 
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
@@ -488,8 +488,18 @@ class ProductConfigWebsiteSale(WebsiteSale):
         return request.render(
             "website_product_configurator.cfg_product_variant", values)
 
-    @http.route('/website_product_configurator/error_page/<string:message>',
+    @http.route([
+            '/website_product_configurator/error_page/',
+            '/website_product_configurator/error_page/<string:message>',
+            '/website_product_configurator/error_page/<string:error>/<string:message>',
+        ],
         type='http', auth="public", website=True)
-    def render_error(self, message='', **post):
-        vals = {'error': message or ''}
+    def render_error(self, error=None, message='', **post):
+        error = error and True or False
+        if not message:
+            message = (
+                "Due to some technical issues requestd operation is not available. "
+                "Please try after some time"
+            )
+        vals = {'message': message, 'error': error}
         return request.render('website_product_configurator.error_page', vals)
