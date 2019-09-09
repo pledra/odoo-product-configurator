@@ -53,7 +53,7 @@ Build:
 Test Addons:
   services:
     - name: postgres:10.0-alpine
-  image: ${CI_IMAGE}:${CI_COMMIT_SHA}
+  image: ${CI_IMAGE}:${ODOO_MINOR}-${CI_COMMIT_SHA}
   stage: test
   variables:
     <<: *globalvars

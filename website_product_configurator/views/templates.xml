@@ -27,7 +27,7 @@
                             <div class="row">
                                 <div t-if="error" class="col-lg-12 col-sm-12">
                                     <h1 class="mt32">ERROR!</h1>
-                                    <h4><b><u>There is somthing going wrong. Please try again after some time.</u></b></h4>
+                                    <h4><b><u>Something went wrong. Please try again later.</u></b></h4>
                                 </div>
                                 <div t-if="message" class="col-lg-12 col-sm-12">
                                     <h4><t t-esc="message"/></h4>
