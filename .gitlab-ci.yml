@@ -79,7 +79,7 @@ Test Addons:
     when: runner_system_failure
 
 Pylint Loose: &pylint
-  image: ${CI_IMAGE}:${CI_COMMIT_SHA}
+  image: ${CI_IMAGE}:${ODOO_MINOR}-${CI_COMMIT_SHA}
   stage: test
   before_script:
      # Initialize the qa virtualenvironment
@@ -110,7 +110,7 @@ Pylint Beta:
   allow_failure: true
 
 Flake8:
-  image: ${CI_IMAGE}:${CI_COMMIT_SHA}
+  image: ${CI_IMAGE}:${ODOO_MINOR}-${CI_COMMIT_SHA}
   stage: test
   before_script:
     # Initialize the qa virtualenvironment
