@@ -6,6 +6,7 @@ stages:
 variables: &globalvars
     ADDON_CATEGORIES: "--private"
     CI_IMAGE: "gcr.io/pledra-1/product-configurator"
+    CI_IMAGE_TAG: "11.0-${CI_COMMIT_SHA}"
     GIT_DEPTH: "3"
     GIT_STRATEGY: none
     GIT_HOST: "git@gitlab.pledra.com:pledra"
@@ -53,7 +54,7 @@ Build:
 Test Addons:
   services:
     - name: postgres:10.0-alpine
-  image: ${CI_IMAGE}:${CI_COMMIT_SHA}
+  image: ${CI_IMAGE}:${CI_IMAGE_TAG}
   stage: test
   variables:
     <<: *globalvars
@@ -79,7 +80,7 @@ Test Addons:
     when: runner_system_failure
 
 Pylint Loose: &pylint
-  image: ${CI_IMAGE}:${CI_COMMIT_SHA}
+  image: ${CI_IMAGE}:${CI_IMAGE_TAG}
   stage: test
   before_script:
      # Initialize the qa virtualenvironment
@@ -110,7 +111,7 @@ Pylint Beta:
   allow_failure: true
 
 Flake8:
-  image: ${CI_IMAGE}:${CI_COMMIT_SHA}
+  image: ${CI_IMAGE}:${CI_IMAGE_TAG}
   stage: test
   before_script:
     # Initialize the qa virtualenvironment
