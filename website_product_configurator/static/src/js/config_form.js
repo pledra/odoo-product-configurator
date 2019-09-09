@@ -56,7 +56,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         /* Monitor input changes in the configuration form and call the backend onchange method*/
         config_form.find('.config_attribute').change(function(ev) {
-            $(ev.currentTarget).addClass('change_dirty');
+            // $(ev.currentTarget).addClass('change_dirty');
             var form_data = config_form.serializeArray();
             for (var field_name in image_dict) {
                 form_data.push({'name': field_name, 'value': image_dict[field_name]});
@@ -216,18 +216,18 @@ odoo.define('website_product_configurator.config_form', function (require) {
             });
         };
 
-        function _checkChange(active_step, check_change) {
-            if (!check_change) {
-                return true
-            }
-            var changed_attrs = active_step.find('.change_dirty');
-            var flag = false;
-            if (changed_attrs.length) {
-                flag = true;
-                changed_attrs.removeClass('change_dirty')
-            }
-            return flag
-        };
+        // function _checkChange(active_step, check_change) {
+        //     if (!check_change) {
+        //         return true
+        //     }
+        //     var changed_attrs = active_step.find('.change_dirty');
+        //     var flag = false;
+        //     if (changed_attrs.length) {
+        //         flag = true;
+        //         changed_attrs.removeClass('change_dirty')
+        //     }
+        //     return flag
+        // };
 
         function _onChangeConfigStep(event, next_step, check_change) {
             var active_step = config_form.find('.tab-content').find('.tab-pane.active.in');
@@ -239,8 +239,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
             for (var field_name in image_dict) {
                 form_data.push({'name': field_name, 'value': image_dict[field_name]});
             }
-            var is_change = _checkChange(active_step, check_change)
-            if (flag && is_change) {
+            // var is_change = _checkChange(active_step, check_change)
+            // if (flag && is_change) {
+            if (flag) {
                 $.blockUI(blockui_opts);
                 return ajax.jsonRpc("/website_product_configurator/save_configuration", 'call', {
                     form_values: form_data,
@@ -255,8 +256,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     }
                     return data;
                 });
-            } else if(flag && !is_change) {
-                return true;
+            // } else if(flag && !is_change) {
+            //     return true;
             } else {
                 return false;
             }
