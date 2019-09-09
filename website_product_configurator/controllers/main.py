@@ -16,6 +16,7 @@ def get_pricelist():
         pricelist = partner.property_product_pricelist
     return pricelist
 
+
 error_page = '/website_product_configurator/error_page/'
 
 
@@ -501,8 +502,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
         error = error and True or False
         if not message:
             message = (
-                "Due to technical issues the requested operation is not available. "
-                "Please try again later."
+                "Due to technical issues the requested operation is not "
+                "available. Please try again later."
             )
         vals = {'message': message, 'error': error}
         return request.render(error_page, vals)
