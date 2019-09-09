@@ -16,6 +16,8 @@ def get_pricelist():
         pricelist = partner.property_product_pricelist
     return pricelist
 
+error_page = '/website_product_configurator/error_page/'
+
 
 class ProductConfigWebsiteSale(WebsiteSale):
 
@@ -61,8 +63,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
         try:
             cfg_session = self.get_config_session(product_tmpl_id=product)
-        except Exception as Ex:
-            return request.redirect('/website_product_configurator/error_page')
+        except Exception:
+            return request.redirect(error_page)
 
         # Set config-step in config session when it creates from wizard
         # because select state not exist on website
@@ -70,7 +72,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             cfg_session.config_step = 'select'
             res = self.set_config_next_step(cfg_session)
             if res.get('error', False):
-                return request.redirect('/website_product_configurator/error_page')
+                return request.redirect(error_page)
 
         # Render the configuration template based on the configuration session
         config_form = self.render_form(cfg_session)
@@ -486,12 +488,13 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'vals': vals,
         }
         return request.render(
-            "website_product_configurator.cfg_product_variant", values)
+            "website_product_configurator.cfg_product_variant", values
+        )
 
     @http.route([
-            '/website_product_configurator/error_page/',
-            '/website_product_configurator/error_page/<string:message>',
-            '/website_product_configurator/error_page/<string:error>/<string:message>',
+            error_page,
+            '%s<string:message>' % error_page,
+            '%s<string:error>/<string:message>' % error_page,
         ],
         type='http', auth="public", website=True)
     def render_error(self, error=None, message='', **post):
@@ -502,4 +505,4 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 "Please try again later."
             )
         vals = {'message': message, 'error': error}
-        return request.render('website_product_configurator.error_page', vals)
+        return request.render(error_page, vals)
