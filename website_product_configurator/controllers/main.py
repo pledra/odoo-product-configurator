@@ -498,8 +498,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
         error = error and True or False
         if not message:
             message = (
-                "Due to some technical issues requestd operation is not available. "
-                "Please try after some time"
+                "Due to technical issues the requested operation is not available. "
+                "Please try again later."
             )
         vals = {'message': message, 'error': error}
         return request.render('website_product_configurator.error_page', vals)
