@@ -59,42 +59,68 @@ odoo.define('website_product_configurator.config_form', function (require) {
             blockui_opts.css["background-color"] = '';
             blockui_opts.overlayCSS["opacity"] = '0.5';
             blockui_opts.message = '<h2 class="text-white"><img src="/web/static/src/img/spin.png" class="fa-pulse"/><br /></h2>'
-        }
+        };
+
+        function _checkChange(attr_field) {
+            var flag = true
+            if (attr_field.tagName == 'FIELDSET') {
+                flag = !($(attr_field).attr('data-old-val-id') == $(attr_field).find('input:checked').val());
+            } else if (attr_field.tagName == 'SELECT'){
+                flag = !($(attr_field).attr('data-old-val-id') == $(attr_field).val());
+            }
+            return flag
+        };
 
 
         /* Monitor input changes in the configuration form and call the backend onchange method*/
         config_form.find('.config_attribute').change(function(ev) {
-            $(ev.currentTarget).addClass('change_dirty');
-            var form_data = config_form.serializeArray();
-            for (var field_name in image_dict) {
-                form_data.push({'name': field_name, 'value': image_dict[field_name]});
-            }
-            $.blockUI(blockui_opts);
-            ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
-                form_values: form_data,
-                field_name: $(this)[0].name,
-            }).then(function(data) {
-                if (data.error) {
-                    openWarningDialog(data.error);
-                } else {
-                    var values = data.value;
-                    var domains = data.domain;
+            //$(ev.currentTarget).addClass('change_dirty');
+            var flag = _checkChange(this);
+            if (flag) {
+                var form_data = config_form.serializeArray();
+                for (var field_name in image_dict) {
+                    form_data.push({'name': field_name, 'value': image_dict[field_name]});
 
-                    var open_cfg_step_line_ids = data.open_cfg_step_line_ids;
-                    var config_image_vals = data.config_image_vals;
-
-                    _applyDomainOnValues(domains);
-                    _handleOpenSteps(open_cfg_step_line_ids);
-                    _setImageUrl(config_image_vals);
-                    _setWeightPrice(values.weight, values.price, data.decimal_precision);
-                };
-                if ($.blockUI) {
-                    $.unblockUI();
                 }
+                $.blockUI(blockui_opts);
+                    ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
+                        form_values: form_data,
+                        field_name: $(this)[0].name,
+                    }).then(function(data) {
+                        if (data.error) {
+                            openWarningDialog(data.error);
+                        } else {
+                            var values = data.value;
+                            var domains = data.domain;
 
-            });
-            _handleCustomAttribute(ev)
+                            var open_cfg_step_line_ids = data.open_cfg_step_line_ids;
+                            var config_image_vals = data.config_image_vals;
+
+                            _applyDomainOnValues(domains);
+                            _setDataOldValId();
+                            _handleOpenSteps(open_cfg_step_line_ids);
+                            _setImageUrl(config_image_vals);
+                            _setWeightPrice(values.weight, values.price, data.decimal_precision);
+                        };
+                        if ($.blockUI) {
+                            $.unblockUI();
+                        }
+                    });
+                    _handleCustomAttribute(ev)
+            };
+
         });
+        function _setDataOldValId() {
+            var selections = $('select.config_attribute')
+            _.each(selections, function (select) {
+                $(select).attr('data-old-val-id', $(select).val());
+            })
+            var fieldsets = $('fieldset.config_attribute')
+            _.each(fieldsets, function (fieldset) {
+                $(fieldset).attr('data-old-val-id', $(fieldset).find('input:checked').val());
+            })
+        }
+
 
         config_form.find('.custom_config_value.config_attachment').change(function (ev) {
             var file = ev.target.files[0];
@@ -224,18 +250,18 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 });
             });
         };
-        function _checkChange(active_step, check_change) {
-            if (!check_change) {
-                return true
-            }
-            var changed_attrs = active_step.find('.change_dirty');
-            var flag = false;
-            if (changed_attrs.length) {
-                flag = true;
-                changed_attrs.removeClass('change_dirty')
-            }
-            return flag
-        };
+        // function _checkChange(active_step, check_change) {
+        //     if (!check_change) {
+        //         return true
+        //     }
+        //     var changed_attrs = active_step.find('.change_dirty');
+        //     var flag = false;
+        //     if (changed_attrs.length) {
+        //         flag = true;
+        //         changed_attrs.removeClass('change_dirty')
+        //     }
+        //     return flag
+        // };
 
         function _onChangeConfigStep(event, next_step, check_change) {
             var active_step = config_form.find('.tab-content').find('.tab-pane.active.show');
@@ -248,8 +274,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 form_data.push({'name': field_name, 'value': image_dict[field_name]});
             }
             // if (flag) {
-            var is_change = _checkChange(active_step, check_change)
-            if (flag && is_change) {
+            // var is_change = _checkChange(active_step, check_change)
+            // if (flag && is_change) {
+            if (flag){
                 $.blockUI(blockui_opts);
                 return ajax.jsonRpc("/website_product_configurator/save_configuration", 'call', {
                     form_values: form_data,
@@ -265,8 +292,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
                     return data;
                 });
-            } else if(flag && !is_change) {
-                return true;
+            // } else if(flag && !is_change) {
+            //     return true;
 
             }else {
                 return false;
