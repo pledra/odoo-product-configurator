@@ -17,6 +17,9 @@ def get_pricelist():
     return pricelist
 
 
+error_page = '/website_product_configurator/error_page/'
+
+
 class ProductConfigWebsiteSale(WebsiteSale):
 
     def get_config_session(self, product_tmpl_id):
@@ -57,10 +60,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
         try:
             cfg_session = self.get_config_session(product_tmpl_id=product)
-        except Exception as Ex:
-            return request.render(
-                'website_product_configurator.error_page', {'error': Ex}
-            )
+         except Exception:
+            return request.redirect(error_page)
 
         # Set config-step in config session when it creates from wizard
         # because select state not exist on website
@@ -68,10 +69,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             cfg_session.config_step = 'select'
             res = self.set_config_next_step(cfg_session)
             if res.get('error', False):
-                return request.render(
-                    'website_product_configurator.error_page', res
-                )
-
+                return request.redirect(error_page)
         # Set config-step in config session when it creates from wizard
         # because select state not exist on website
         if not cfg_session.config_step:
@@ -367,6 +365,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             image_line_ids=config_image_ids,
             model_name=config_image_ids[:1]._name
         )
+        pricelist = request.website.get_current_pricelist()
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_line_ids'] = open_cfg_step_line_ids
         updates['config_image_vals'] = image_vals
@@ -505,8 +504,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
         #         request.session['product_config_session'].get(product_tmpl_id.id)):
         #     product_config_session = request.session['product_config_session']
         # Bizzappdev start code
-        if (request.session.get('product_config_session') and
-                request.session['product_config_session'].get(product_tmpl_id.id)):
+        product_config_session = request.session.get('product_config_session')
+        if (product_config_session and
+                product_config_session.get(product_tmpl_id.id)):
+
         # Bizzappdev end code
             del product_config_session[product_tmpl_id.id]
             request.session['product_config_session'] = product_config_session
@@ -518,4 +519,21 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'vals': vals,
         }
         return request.render(
-            "website_product_configurator.cfg_product_variant", values)
+            "website_product_configurator.cfg_product_variant", values
+        )
+    @http.route([
+        error_page,
+        '%s<string:message>' % error_page,
+        '%s<string:error>/<string:message>' % error_page,
+        ],
+        type='http', auth="public", website=True)
+    def render_error(self, error=None, message='', **post):
+        error = error and True or False
+        if not message:
+            message = (
+                "Due to technical issues the requested operation is not"
+                "available. Please try again later."
+            )
+        vals = {'message': message, 'error': error}
+        return request.render(error_page, vals)
+
