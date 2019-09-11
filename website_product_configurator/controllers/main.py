@@ -378,11 +378,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         config_session_id = config_session_id.sudo()
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id)
-        #old code
+        # old code
         # if extra_attr_line_ids and current_step == 'configure':
         #     config_session_id.config_step = next_step
         #     return {'next_step': next_step}
-        #Bizzappdev start code
+        # Bizzappdev start code
         if extra_attr_line_ids and current_step == 'configure':
             if next_step:
                 config_session_id.config_step = next_step
@@ -392,7 +392,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             if not next_step:
                 return {'next_step': False}
 
-        #Bizzappdev end code
+        # Bizzappdev end code
 
         if not next_step:
             try:
@@ -492,14 +492,18 @@ class ProductConfigWebsiteSale(WebsiteSale):
         pricelist = get_pricelist()
         # old code
         # if (request.session.get('product_config_session') and
-        #         request.session['product_config_session'].get(product_tmpl_id.id)):
-        #     product_config_session = request.session['product_config_session']
+        #         request.session['product_config_session'].get(
+        #             product_tmpl_id.id
+        #         )):
+        #     product_config_session = request.session[
+        #         'product_config_session'
+        #     ]
         # Bizzappdev start code
         product_config_session = request.session.get('product_config_session')
         if (product_config_session and
                 product_config_session.get(product_tmpl_id.id)):
 
-        # Bizzappdev end code
+            # Bizzappdev end code
             del product_config_session[product_tmpl_id.id]
             request.session['product_config_session'] = product_config_session
         values = {
@@ -512,6 +516,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         return request.render(
             "website_product_configurator.cfg_product_variant", values
         )
+
     @http.route([
         error_page,
         '%s<string:message>' % error_page,
@@ -526,5 +531,4 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 "available. Please try again later."
             )
         vals = {'message': message, 'error': error}
-        return request.render(error_page, vals)
-
+        return request.render('website_product_configurator.error_page', vals)
