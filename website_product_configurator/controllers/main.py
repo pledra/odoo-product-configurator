@@ -41,14 +41,10 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 force_create=is_public_user,
                 user_id=request.env.user.id
             )
-            if product_config_sessions:
-                request.session['product_config_session'].update({
-                    product_tmpl_id.id: cfg_session.id
-                })
-            else:
-                request.session['product_config_session'] = {
-                    product_tmpl_id.id: cfg_session.id
-                }
+            product_config_sessions.update({
+                product_tmpl_id.id: cfg_session.id
+            })
+            request.session['product_config_session'] = product_config_sessions
 
         if (cfg_session.user_id.has_group('base.group_public') and not
                 is_public_user):
@@ -116,6 +112,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 pass
             elif not active_step or active_step not in open_cfg_step_lines:
                 active_step = open_cfg_step_lines[:1]
+                cfg_session.config_step = '%s' % (active_step.id)
 
         cfg_session = cfg_session.sudo()
         config_image_ids = False
@@ -358,13 +355,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
             image_line_ids=config_image_ids,
             model_name=config_image_ids[:1]._name
         )
+        pricelist = request.website.get_current_pricelist()
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_line_ids'] = open_cfg_step_line_ids
         updates['config_image_vals'] = image_vals
         decimal_prec_obj = request.env['decimal.precision']
         updates['decimal_precision'] = {
             'weight': decimal_prec_obj.precision_get('Stock Weight') or 2,
-            'price': decimal_prec_obj.precision_get('Product Price') or 2,
+            'price': pricelist.currency_id.decimal_places or 2,
         }
         return updates
 
@@ -380,8 +378,13 @@ class ProductConfigWebsiteSale(WebsiteSale):
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id)
         if extra_attr_line_ids and current_step == 'configure':
-            config_session_id.config_step = next_step
-            return {'next_step': next_step}
+            if next_step:
+                config_session_id.config_step = next_step
+                return {'next_step': next_step}
+            else:
+                next_step = config_session_id.check_and_open_incomplete_step()
+            if not next_step:
+                return {'next_step': False}
 
         if not next_step:
             try:
@@ -394,9 +397,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 extra_attr_line_ids and
                 current_step != 'configure'):
             next_step = 'configure'
-
         if not next_step:
             next_step = config_session_id.check_and_open_incomplete_step()
+
         if next_step and isinstance(
                 next_step,
                 type(request.env['product.config.step.line'])
@@ -479,8 +482,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
             key=lambda obj: obj.attribute_id.sequence
         )
         pricelist = get_pricelist()
-        if request.session['product_config_session'].get(product_tmpl_id.id):
-            del request.session['product_config_session'][product_tmpl_id.id]
+        product_config_session = request.session.get('product_config_session')
+        if (product_config_session and
+                product_config_session.get(product_tmpl_id.id)):
+            del product_config_session[product_tmpl_id.id]
+            request.session['product_config_session'] = product_config_session
         values = {
             'product_id': product_id,
             'product_tmpl': product_tmpl_id,
