@@ -363,7 +363,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         decimal_prec_obj = request.env['decimal.precision']
         updates['decimal_precision'] = {
             'weight': decimal_prec_obj.precision_get('Stock Weight') or 2,
-            'price': decimal_prec_obj.precision_get('Product Price') or 2,
+            'price': pricelist.currency_id.decimal_places or 2,
         }
         return updates
 
