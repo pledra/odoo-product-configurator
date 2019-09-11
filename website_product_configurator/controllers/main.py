@@ -63,7 +63,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         except Exception:
             return request.redirect(error_page)
 
-
         # Set config-step in config session when it creates from wizard
         # because select state not exist on website
         if not cfg_session.config_step:
@@ -502,7 +501,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             "website_product_configurator.cfg_product_variant", values
         )
 
-    #Bizzappdv start code
+    # Bizzappdv start code
     @http.route([
         error_page,
         '%s<string:message>' % error_page,
@@ -518,6 +517,4 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
         vals = {'message': message, 'error': error}
         return request.render('error_page', vals)
-    #Bizzappdev end code
-
-
+    # Bizzappdev end code
