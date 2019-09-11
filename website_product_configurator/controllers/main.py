@@ -506,4 +506,4 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 "available. Please try again later."
             )
         vals = {'message': message, 'error': error}
-        return request.render(error_page, vals)
+        return request.render('website_product_configurator.error_page', vals)
