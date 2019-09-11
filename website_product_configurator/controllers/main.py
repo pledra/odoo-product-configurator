@@ -22,6 +22,13 @@ error_page = '/website_product_configurator/error_page/'
 
 class ProductConfigWebsiteSale(WebsiteSale):
 
+    ERROR_CODES = {
+        1: (
+            "Due to technical issues the requested operation is not "
+            "available. Please try again later."
+        )
+    }
+
     def get_config_session(self, product_tmpl_id):
         cfg_session_obj = request.env['product.config.session']
         cfg_session = False
@@ -501,20 +508,20 @@ class ProductConfigWebsiteSale(WebsiteSale):
             "website_product_configurator.cfg_product_variant", values
         )
 
-    # Bizzappdv start code
     @http.route([
         error_page,
-        '%s<string:message>' % error_page,
-        '%s<string:error>/<string:message>' % error_page,
-    ],
-        type='http', auth="public", website=True)
-    def render_error(self, error=None, message='', **post):
+        '%s<int:error_code>/' % error_page,
+        '%s<string:error>/<int:error_code>' % error_page,
+    ], type='http', auth="public", website=True)
+    def render_error(self, error=False, error_code=None, **post):
         error = error and True or False
+        message = self.ERROR_CODES.get(error_code)
         if not message:
             message = (
                 "Due to technical issues the requested operation is not"
                 "available. Please try again later."
             )
         vals = {'message': message, 'error': error}
-        return request.render('error_page', vals)
-    # Bizzappdev end code
+        return request.render(
+            'website_product_configurator.error_page', vals
+        )
