@@ -323,12 +323,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
         try:
             updates = product_configurator_obj.sudo().onchange(
                 config_vals, field_name, specs)
+            updates['value'] = self.remove_recursive_list(updates['value'])
         except Exception as Ex:
             return {'error': Ex}
 
         # get open step lines according to current configuation
-        value_ids = self.get_current_configuration(
-            form_values, config_session_id)
+        value_ids = updates['value'].get('value_ids')
+        if not value_ids:
+            value_ids = self.get_current_configuration(
+                form_values, config_session_id)
         try:
             open_cfg_step_line_ids = config_session_id.sudo()\
                 .get_open_step_lines(value_ids).ids
@@ -356,7 +359,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             model_name=config_image_ids[:1]._name
         )
         pricelist = request.website.get_current_pricelist()
-        updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_line_ids'] = open_cfg_step_line_ids
         updates['config_image_vals'] = image_vals
         decimal_prec_obj = request.env['decimal.precision']
