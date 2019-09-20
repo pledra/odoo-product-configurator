@@ -1189,6 +1189,8 @@ class ProductConfigSession(models.Model):
             )
             if avail:
                 avail_val_ids.append(attr_val_id)
+            elif attr_val_id in value_ids:
+                value_ids.remove(attr_val_id)
         return avail_val_ids
 
     @api.model
