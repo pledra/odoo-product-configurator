@@ -5,12 +5,12 @@ class ProductAttributeValue(models.Model):
     _inherit = 'product.attribute.value'
 
     def get_attr_value_name(self, product_tmpl, pricelist_id):
-        res = self.name_get()
         self = self.with_context({
             'show_price_extra': False,
             'active_id': product_tmpl.id,
             'show_attribute': False,
         })
+        res = self.name_get()
         extra_prices = {
             av.id: av.price_extra for av in self if av.price_extra
         }
