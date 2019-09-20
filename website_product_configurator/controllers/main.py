@@ -511,8 +511,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
     @http.route([
         error_page,
-        '%s<string:message>' % error_page,
-        '%s<string:error>/<string:message>' % error_page,
+        '%s<string:error>' % error_page,
     ],
         type='http', auth="public", website=True)
     def render_error(self, error=None, message='', **post):
