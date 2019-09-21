@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import models
 
 
 class ProductAttributeValue(models.Model):
@@ -24,7 +24,9 @@ class ProductAttributeValue(models.Model):
             if price_extra:
                 val = (
                     val[0], '%s ( +%s )' %
-                    (val[1], ('{0:,.%sf}' % (price_precision)).format(price_extra))
+                    (val[1], ('{0:,.%sf}' % (
+                        price_precision
+                    )).format(price_extra))
                 )
             res_prices.append(val)
         return res_prices
