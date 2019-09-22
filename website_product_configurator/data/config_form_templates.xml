@@ -288,7 +288,7 @@
                                 t-att-data-oe-id="value.id"
                                 t-att-name="value.id"
                                 t-att-disabled="value.id not in available_value_ids and True or False">
-                                <t t-esc="value.get_attr_value_name(product_tmpl, pricelist.id)[0][1]"/>
+                                <t t-esc="line.product_template_value_ids.get_attr_value_name(product_tmpl, pricelist.id)[0][1]"/>
                             </option>
                           </t>
                           <t t-if="line.custom">
@@ -331,7 +331,7 @@
                         <t t-foreach="line.value_ids" t-as="value">
                             <div class="radio-card-container">
                                 <t t-set="value_label"
-                                    t-value="value.get_attr_value_name(product_tmpl, pricelist.id)[0][1]"/>
+                                    t-value="line.product_template_value_ids.get_attr_value_name(product_tmpl, pricelist.id)[0][1]"/>
                                 <span t-esc="value_label"
                                     class="label_config_attr_value_radio"
                                     t-att-title="value_label"/>
