@@ -155,6 +155,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'weight_prec': weight_prec,
             'main_object': cfg_session.product_tmpl_id,
             'default_website_template': website_tmpl_xml_id,
+            'pricelist': request.website.get_current_pricelist(),
         }
         return vals
 
