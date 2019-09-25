@@ -144,6 +144,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'weight_prec': weight_prec,
             'main_object': cfg_session.product_tmpl_id,
             'default_website_template': website_tmpl_xml_id,
+            'pricelist': request.website.get_current_pricelist()
         }
         return vals
 
@@ -299,7 +300,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
     @http.route('/website_product_configurator/onchange',
                 type='json', methods=['POST'], auth="public", website=True)
-    def onchange(self, form_values, field_name):
+    def onchange(self, form_values, field_name, **post):
         """Capture onchange events in the website and forward data to backend
         onchange method"""
         # config session and product template
@@ -323,12 +324,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
         try:
             updates = product_configurator_obj.sudo().onchange(
                 config_vals, field_name, specs)
+            updates['value'] = self.remove_recursive_list(updates['value'])
         except Exception as Ex:
             return {'error': Ex}
 
         # get open step lines according to current configuation
-        value_ids = self.get_current_configuration(
-            form_values, config_session_id)
+        value_ids = updates['value'].get('value_ids')
+        if not value_ids:
+            value_ids = self.get_current_configuration(
+                form_values, config_session_id)
         try:
             open_cfg_step_line_ids = config_session_id.sudo()\
                 .get_open_step_lines(value_ids).ids
@@ -356,7 +360,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             model_name=config_image_ids[:1]._name
         )
         pricelist = request.website.get_current_pricelist()
-        updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_line_ids'] = open_cfg_step_line_ids
         updates['config_image_vals'] = image_vals
         decimal_prec_obj = request.env['decimal.precision']
@@ -412,7 +415,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
     @http.route('/website_product_configurator/save_configuration',
                 type='json', methods=['POST'], auth="public", website=True)
     def save_configuration(self, form_values, current_step=False,
-                           next_step=False):
+                           next_step=False, **post):
         """Save current configuration in related session and
         next step if exist otherwise create variant using
         configuration redirect to product page of configured product"""
@@ -433,24 +436,32 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
 
             # next step
-            result = self.set_config_next_step(
-                config_session_id=config_session_id,
-                current_step=current_step,
-                next_step=next_step
-            )
-            if result.get('next_step', False):
-                return {'next_step': result.get('next_step')}
-            elif result.get('error', False):
-                return {'error': result.get('error')}
-            if not (config_session_id.value_ids or
-                    config_session_id.custom_value_ids):
-                return {
-                    'error': (
-                        "You must select at least one "
-                        "attribute in order to configure a product"
-                    )
-                }
-
+            check_next_step = True
+            if post.get('force_check_build'):
+                try:
+                    valid = config_session_id.sudo().validate_configuration()
+                    if valid:
+                        check_next_step = False
+                except Exception:
+                    pass
+            if check_next_step:
+                result = self.set_config_next_step(
+                    config_session_id=config_session_id,
+                    current_step=current_step,
+                    next_step=next_step
+                )
+                if result.get('next_step', False):
+                    return {'next_step': result.get('next_step')}
+                elif result.get('error', False):
+                    return {'error': result.get('error')}
+                if not (config_session_id.value_ids or
+                        config_session_id.custom_value_ids):
+                    return {
+                        'error': (
+                            "You must select at least one "
+                            "attribute in order to configure a product"
+                        )
+                    }
             # create variant
             product = config_session_id.sudo().create_get_variant()
             if product:
@@ -500,8 +511,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
     @http.route([
         error_page,
-        '%s<string:message>' % error_page,
-        '%s<string:error>/<string:message>' % error_page,
+        '%s<string:error>' % error_page,
     ],
         type='http', auth="public", website=True)
     def render_error(self, error=None, message='', **post):
