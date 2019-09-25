@@ -370,12 +370,13 @@ class ProductConfigWebsiteSale(WebsiteSale):
             image_line_ids=config_image_ids,
             model_name=config_image_ids[:1]._name
         )
+        pricelist = request.website.get_current_pricelist()
         updates['open_cfg_step_line_ids'] = open_cfg_step_line_ids
         updates['config_image_vals'] = image_vals
         decimal_prec_obj = request.env['decimal.precision']
         updates['decimal_precision'] = {
             'weight': decimal_prec_obj.precision_get('Stock Weight') or 2,
-            'price': decimal_prec_obj.precision_get('Product Price') or 2,
+            'price': pricelist.currency_id.decimal_places or 2,
         }
         return updates
 

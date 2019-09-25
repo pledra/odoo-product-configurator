@@ -288,10 +288,10 @@
                                 t-att-data-oe-id="value.id"
                                 t-att-name="value.id"
                                 t-att-disabled="value.id not in available_value_ids and True or False">
-                                <t t-esc="line.product_template_value_ids.get_attr_value_name(product_tmpl, pricelist.id)[0][1]"/>
+                                <t t-esc="value.get_attr_value_name(product_tmpl, pricelist.id)[0][1]"/>
                             </option>
-                          </t>
-                          <t t-if="line.custom">
+                        </t>
+                        <t t-if="line.custom">
                               <option
                                   t-att-selected="'selected' if custom_value else None"
                                   t-att-class="'config_attr_value custom_config_attr_value' + (' disabled' if custom_val_id.id not in available_value_ids else '')"
@@ -300,8 +300,8 @@
                                   t-att-name="custom_val_id.id"
                                   t-att-disabled="custom_val_id.id not in available_value_ids and True or False">
                                   <t t-esc="custom_val_id.name"/>
-                              </option>
-                          </t>
+                            </option>
+                        </t>
                     </select>
                     <t t-if="line.custom">
                         <div t-att-class="'custom_field_container' + (' d-none' if not custom_value else '')"
@@ -331,7 +331,7 @@
                         <t t-foreach="line.value_ids" t-as="value">
                             <div class="radio-card-container">
                                 <t t-set="value_label"
-                                    t-value="line.product_template_value_ids.get_attr_value_name(product_tmpl, pricelist.id)[0][1]"/>
+                                    t-value="value.get_attr_value_name(product_tmpl, pricelist.id)[0][1]"/>
                                 <span t-esc="value_label"
                                     class="label_config_attr_value_radio"
                                     t-att-title="value_label"/>
