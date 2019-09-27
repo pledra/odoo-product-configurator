@@ -460,14 +460,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
                     return {'next_step': result.get('next_step')}
                 elif result.get('error', False):
                     return {'error': result.get('error')}
-                if not (config_session_id.value_ids or
-                        config_session_id.custom_value_ids):
-                    return {
-                        'error': (
-                            "You must select at least one "
-                            "attribute in order to configure a product"
-                        )
-                    }
+            if not (config_session_id.value_ids or
+                    config_session_id.custom_value_ids):
+                return {
+                    'error': (
+                        "You must select at least one "
+                        "attribute in order to configure a product"
+                    )
+                }
             # create variant
             product = config_session_id.sudo().create_get_variant()
             if product:
