@@ -37,7 +37,13 @@
                               </div>
                                <div class="config_price">
                                 <span><b>Price: </b></span>
-                                <span class="config_product_price" t-esc="cfg_session.price" t-options="{'widget': 'monetary', 'display_currency': product_tmpl.currency_id}"/>
+                                <!-- old code -->
+                                <!-- <span class="config_product_price" t-esc="cfg_session.price" t-options="{'widget': 'monetary', 'display_currency': product_tmpl.currency_id}"/> -->
+                                <!-- Bizzappdev start code -->
+                                <span class="config_product_price" t-esc="cfg_session.price" 
+                                    t-options="{'widget': 'monetary', 'display_currency': website.get_current_pricelist().currency_id}"/>
+                                <!-- Bizzappdev end code -->
+
                               </div>
                             </div>
                         </div>

@@ -378,6 +378,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         config_session_id = config_session_id.sudo()
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id)
+        # old code
+        # if extra_attr_line_ids and current_step == 'configure':
+        #     config_session_id.config_step = next_step
+        #     return {'next_step': next_step}
+        # Bizzappdev start code
         if extra_attr_line_ids and current_step == 'configure':
             if next_step:
                 config_session_id.config_step = next_step
