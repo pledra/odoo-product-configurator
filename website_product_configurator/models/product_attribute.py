@@ -11,7 +11,7 @@ class ProductTemplateAttributeValue(models.Model):
             'show_attribute': False,
         })
 
-        res =  self.name_get()
+        res = self.name_get()
         product_template_id = self.env.context.get('active_id', False)
         template_value_obj = self.env['product.template.attribute.value']
         res_prices = []
