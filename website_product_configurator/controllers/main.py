@@ -445,7 +445,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
             # next step
             check_next_step = True
-            if post.get('force_check_build'):
+            if post.get('submit_configuration'):
                 try:
                     valid = config_session_id.sudo().validate_configuration()
                     if valid:
