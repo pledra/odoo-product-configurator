@@ -282,6 +282,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     form_values: form_data,
                     next_step: next_step || false,
                     current_step: current_config_step || false,
+                    submit_configuration: event.type == 'submit'? true: false,
                 }).then(function(data) {
                     if (data.error) {
                         openWarningDialog(data.error);
