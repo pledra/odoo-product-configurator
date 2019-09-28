@@ -22,13 +22,6 @@ error_page = '/website_product_configurator/error_page/'
 
 class ProductConfigWebsiteSale(WebsiteSale):
 
-    ERROR_CODES = {
-        1: (
-            "Due to technical issues the requested operation is not "
-            "available. Please try again later."
-        )
-    }
-
     def get_config_session(self, product_tmpl_id):
         cfg_session_obj = request.env['product.config.session']
         cfg_session = False
@@ -69,16 +62,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             cfg_session = self.get_config_session(product_tmpl_id=product)
         except Exception:
             return request.redirect(error_page)
-
-        # Set config-step in config session when it creates from wizard
-        # because select state not exist on website
-        if not cfg_session.config_step:
-            cfg_session.config_step = 'select'
-            res = self.set_config_next_step(cfg_session)
-            if res.get('error', False):
-                return request.render(
-                    'website_product_configurator.error_page', res
-                )
 
         # Set config-step in config session when it creates from wizard
         # because select state not exist on website
@@ -128,6 +111,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 pass
             elif not active_step or active_step not in open_cfg_step_lines:
                 active_step = open_cfg_step_lines[:1]
+                cfg_session.config_step = '%s' % (active_step.id)
 
         cfg_session = cfg_session.sudo()
         config_image_ids = False
@@ -372,13 +356,14 @@ class ProductConfigWebsiteSale(WebsiteSale):
             image_line_ids=config_image_ids,
             model_name=config_image_ids[:1]._name
         )
+        pricelist = request.website.get_current_pricelist()
         updates['value'] = self.remove_recursive_list(updates['value'])
         updates['open_cfg_step_line_ids'] = open_cfg_step_line_ids
         updates['config_image_vals'] = image_vals
         decimal_prec_obj = request.env['decimal.precision']
         updates['decimal_precision'] = {
             'weight': decimal_prec_obj.precision_get('Stock Weight') or 2,
-            'price': decimal_prec_obj.precision_get('Product Price') or 2,
+            'price': pricelist.currency_id.decimal_places or 2,
         }
         return updates
 
@@ -394,8 +379,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id)
         if extra_attr_line_ids and current_step == 'configure':
-            config_session_id.config_step = next_step
-            return {'next_step': next_step}
+            if next_step:
+                config_session_id.config_step = next_step
+                return {'next_step': next_step}
+            else:
+                next_step = config_session_id.check_and_open_incomplete_step()
+            if not next_step:
+                return {'next_step': False}
+
+        # Bizzappdev end code
 
         if not next_step:
             try:
@@ -493,8 +485,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
             key=lambda obj: obj.attribute_id.sequence
         )
         pricelist = get_pricelist()
-        if request.session['product_config_session'].get(product_tmpl_id.id):
-            product_config_session = request.session['product_config_session']
+        product_config_session = request.session.get('product_config_session')
+        if (product_config_session and
+                product_config_session.get(product_tmpl_id.id)):
+
+            # Bizzappdev end code
             del product_config_session[product_tmpl_id.id]
             request.session['product_config_session'] = product_config_session
         values = {
@@ -510,18 +505,16 @@ class ProductConfigWebsiteSale(WebsiteSale):
 
     @http.route([
         error_page,
-        '%s<int:error_code>/' % error_page,
-        '%s<string:error>/<int:error_code>' % error_page,
-    ], type='http', auth="public", website=True)
-    def render_error(self, error=False, error_code=None, **post):
+        '%s<string:message>' % error_page,
+        '%s<string:error>/<string:message>' % error_page,
+        ],
+        type='http', auth="public", website=True)
+    def render_error(self, error=None, message='', **post):
         error = error and True or False
-        message = self.ERROR_CODES.get(error_code)
         if not message:
             message = (
                 "Due to technical issues the requested operation is not"
                 "available. Please try again later."
             )
         vals = {'message': message, 'error': error}
-        return request.render(
-            'website_product_configurator.error_page', vals
-        )
+        return request.render('website_product_configurator.error_page', vals)
