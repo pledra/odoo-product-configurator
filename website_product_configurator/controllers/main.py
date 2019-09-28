@@ -381,11 +381,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
         config_session_id = config_session_id.sudo()
         extra_attr_line_ids = self.get_extra_attribute_line_ids(
             config_session_id.product_tmpl_id)
-        # old code
-        # if extra_attr_line_ids and current_step == 'configure':
-        #     config_session_id.config_step = next_step
-        #     return {'next_step': next_step}
-        # Bizzappdev start code
         if extra_attr_line_ids and current_step == 'configure':
             if next_step:
                 config_session_id.config_step = next_step
@@ -501,15 +496,6 @@ class ProductConfigWebsiteSale(WebsiteSale):
             key=lambda obj: obj.attribute_id.sequence
         )
         pricelist = get_pricelist()
-        # old code
-        # if (request.session.get('product_config_session') and
-        #         request.session['product_config_session'].get(
-        #             product_tmpl_id.id
-        #         )):
-        #     product_config_session = request.session[
-        #         'product_config_session'
-        #     ]
-        # Bizzappdev start code
         product_config_session = request.session.get('product_config_session')
         if (product_config_session and
                 product_config_session.get(product_tmpl_id.id)):
