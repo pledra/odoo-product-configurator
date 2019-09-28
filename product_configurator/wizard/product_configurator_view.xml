@@ -23,6 +23,7 @@
                         <group name='static_form' states='select' colspan="2">
                             <field name="config_session_id" required="context.get('wizard_id')" invisible="1"/>
                             <field name="product_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
                             <field name="product_tmpl_id"
                                 readonly="context.get('product_tmpl_id_readonly', False)"
                                 required="True" options="{'no_create': True}"
@@ -40,7 +41,7 @@
                         </group>
                         <group colspan="1">
                             <field name="weight"/>
-                            <field name="price" widget='monetary' options="{'field_digits': True}"/>
+                            <field name="price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                         </group>
                     </group>
                 </sheet>

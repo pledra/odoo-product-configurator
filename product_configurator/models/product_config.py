@@ -411,6 +411,16 @@ class ProductConfigSession(models.Model):
         for cfg_session in self:
             cfg_session.weight = cfg_session.get_cfg_weight()
 
+    @api.multi
+    def _compute_currency_id(self):
+        main_company = self.env['res.company']._get_main_company()
+        for session in self:
+            template = session.product_tmpl_id
+            session.currency_id = (
+                template.company_id.sudo().currency_id.id or
+                main_company.currency_id.id
+            )
+
     name = fields.Char(
         string='Configuration Session Number',
         readonly=True
@@ -449,6 +459,11 @@ class ProductConfigSession(models.Model):
         string='Price',
         store=True,
         digits=dp.get_precision('Product Price')
+    )
+    currency_id = fields.Many2one(
+        comodel_name='res.currency',
+        string='Currency',
+        compute='_compute_currency_id'
     )
     state = fields.Selection(
         string='State',
