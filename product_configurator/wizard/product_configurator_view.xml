@@ -40,7 +40,7 @@
                         </group>
                         <group colspan="1">
                             <field name="weight"/>
-                            <field name="price" widget="monetary"/>
+                            <field name="price" widget='monetary' options="{'field_digits': True}"/>
                         </group>
                     </group>
                 </sheet>

@@ -461,7 +461,8 @@ class ProductConfigSession(models.Model):
     )
     weight = fields.Float(
         string="Weight",
-        compute="_compute_cfg_weight"
+        compute="_compute_cfg_weight",
+        digits=dp.get_precision('Stock Weight')
     )
     # Product preset
     product_preset_id = fields.Many2one(
