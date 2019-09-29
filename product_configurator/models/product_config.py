@@ -432,6 +432,11 @@ class ProductConfigSession(models.Model):
         compute='_compute_config_step_name',
         string="Configuration Step"
     )
+    product_id = fields.Many2one(
+        comodel_name='product.product',
+        name='Configured Variant',
+        ondelete='restrict',
+    )
     product_tmpl_id = fields.Many2one(
         comodel_name='product.template',
         domain=[('config_ok', '=', True)],
@@ -488,14 +493,28 @@ class ProductConfigSession(models.Model):
     )
 
     @api.multi
-    def action_confirm(self):
+    def action_confirm(self, product_id=None):
         if self.product_tmpl_id.config_ok:
             try:
                 self.validate_configuration()
             except Exception:
                 return False
-        self.state = 'done'
+        if product_id is None:
+            product_id = self.create_get_variant().id
+        self.write({
+            'state': 'done',
+            'product_id': product_id
+        })
         return True
+
+    @api.constrains('state')
+    def _check_product_id(self):
+        for session in self.filtered(lambda s: s.state == 'done'):
+            if not session.product_id:
+                raise ValidationError(_(
+                    "Finished configuration session must have a "
+                    "product_id linked")
+                )
 
     @api.multi
     def update_session_configuration_value(self, vals, product_tmpl_id=None):
@@ -732,7 +751,7 @@ class ProductConfigSession(models.Model):
                 duplicates = False
 
         if duplicates:
-            self.action_confirm()
+            self.action_confirm(product_id=duplicates[:1].id)
             return duplicates[:1]
 
         vals = self.get_variant_vals(value_ids, custom_vals)
@@ -747,8 +766,7 @@ class ProductConfigSession(models.Model):
             author_id=self.env.user.partner_id.id
         )
 
-        self.action_confirm()
-
+        self.action_confirm(product_id=variant.id)
         return variant
 
     @api.multi
