@@ -494,13 +494,13 @@ class ProductConfigSession(models.Model):
 
     @api.multi
     def action_confirm(self, product_id=None):
-        self.ensure_one();
-        if product_id is None:
-            product_id = self.create_get_variant()
-        self.write({
-            'state': 'done',
-            'product_id': product_id.id
-        })
+        for session in self:
+            if product_id is None:
+                product_id = session.create_get_variant()
+            session.write({
+                'state': 'done',
+                'product_id': product_id.id
+            })
         return True
 
     @api.constrains('state')
