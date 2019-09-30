@@ -494,16 +494,12 @@ class ProductConfigSession(models.Model):
 
     @api.multi
     def action_confirm(self, product_id=None):
-        if self.product_tmpl_id.config_ok:
-            try:
-                self.validate_configuration()
-            except Exception:
-                return False
+        self.ensure_one();
         if product_id is None:
-            product_id = self.create_get_variant().id
+            product_id = self.create_get_variant()
         self.write({
             'state': 'done',
-            'product_id': product_id
+            'product_id': product_id.id
         })
         return True
 
@@ -724,6 +720,8 @@ class ProductConfigSession(models.Model):
             :returns: new/existing product.product recordset
 
         """
+        if self.product_tmpl_id.config_ok:
+            self.validate_configuration()
         if value_ids is None:
             value_ids = self.value_ids.ids
 
@@ -751,7 +749,6 @@ class ProductConfigSession(models.Model):
                 duplicates = False
 
         if duplicates:
-            self.action_confirm(product_id=duplicates[:1].id)
             return duplicates[:1]
 
         vals = self.get_variant_vals(value_ids, custom_vals)
@@ -766,7 +763,6 @@ class ProductConfigSession(models.Model):
             author_id=self.env.user.partner_id.id
         )
 
-        self.action_confirm(product_id=variant.id)
         return variant
 
     @api.multi

@@ -64,6 +64,7 @@ class ProductConfiguratorLot(models.TransientModel):
         try:
             variant = self.product_tmpl_id.create_get_variant(
                 self.value_ids.ids, custom_vals)
+            self.config_session_id.action_confirm(product_id=variant)
         except ValidationError:
             raise
         except Exception:

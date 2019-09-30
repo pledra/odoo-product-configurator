@@ -972,6 +972,7 @@ class ProductConfigurator(models.TransientModel):
         if step_to_open:
             return self.open_step(step_to_open)
         variant = self.config_session_id.create_get_variant()
+        self.config_session_id.action_confirm(product_id=variant)
         action = {
             'type': 'ir.actions.act_window',
             'res_model': 'product.product',

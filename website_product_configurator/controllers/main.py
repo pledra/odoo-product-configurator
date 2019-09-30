@@ -467,6 +467,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 }
             # create variant
             product = config_session_id.sudo().create_get_variant()
+            self.config_session_id.sudo().action_confirm(product_id=product)
             if product:
                 redirect_url = "/website_product_configurator/open_product"
                 redirect_url += '/%s' % (slug(product))
