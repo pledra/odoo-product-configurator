@@ -435,7 +435,7 @@ class ProductConfigSession(models.Model):
     product_id = fields.Many2one(
         comodel_name='product.product',
         name='Configured Variant',
-        ondelete='restrict',
+        ondelete='cascade',
     )
     product_tmpl_id = fields.Many2one(
         comodel_name='product.template',
