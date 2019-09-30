@@ -432,6 +432,11 @@ class ProductConfigSession(models.Model):
         compute='_compute_config_step_name',
         string="Configuration Step"
     )
+    product_id = fields.Many2one(
+        comodel_name='product.product',
+        name='Configured Variant',
+        ondelete='cascade',
+    )
     product_tmpl_id = fields.Many2one(
         comodel_name='product.template',
         domain=[('config_ok', '=', True)],
@@ -488,14 +493,24 @@ class ProductConfigSession(models.Model):
     )
 
     @api.multi
-    def action_confirm(self):
-        if self.product_tmpl_id.config_ok:
-            try:
-                self.validate_configuration()
-            except Exception:
-                return False
-        self.state = 'done'
+    def action_confirm(self, product_id=None):
+        for session in self:
+            if product_id is None:
+                product_id = session.create_get_variant()
+            session.write({
+                'state': 'done',
+                'product_id': product_id.id
+            })
         return True
+
+    @api.constrains('state')
+    def _check_product_id(self):
+        for session in self.filtered(lambda s: s.state == 'done'):
+            if not session.product_id:
+                raise ValidationError(_(
+                    "Finished configuration session must have a "
+                    "product_id linked")
+                )
 
     @api.multi
     def update_session_configuration_value(self, vals, product_tmpl_id=None):
@@ -705,6 +720,8 @@ class ProductConfigSession(models.Model):
             :returns: new/existing product.product recordset
 
         """
+        if self.product_tmpl_id.config_ok:
+            self.validate_configuration()
         if value_ids is None:
             value_ids = self.value_ids.ids
 
@@ -732,7 +749,6 @@ class ProductConfigSession(models.Model):
                 duplicates = False
 
         if duplicates:
-            self.action_confirm()
             return duplicates[:1]
 
         vals = self.get_variant_vals(value_ids, custom_vals)
@@ -746,8 +762,6 @@ class ProductConfigSession(models.Model):
             body=_('Product created via configuration wizard'),
             author_id=self.env.user.partner_id.id
         )
-
-        self.action_confirm()
 
         return variant
 
