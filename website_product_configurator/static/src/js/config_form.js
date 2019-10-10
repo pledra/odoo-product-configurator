@@ -117,7 +117,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             })
             var fieldsets = $('fieldset.config_attribute')
             _.each(fieldsets, function (fieldset) {
-                $(fieldset).attr('data-old-val-id', $(fieldset).find('input:checked').val());
+                $(fieldset).attr('data-old-val-id', $(fieldset).find('input:checked').val() || '');
             })
         }
 
