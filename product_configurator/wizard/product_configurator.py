@@ -717,6 +717,11 @@ class ProductConfigurator(models.TransientModel):
             'user_id': self.env.uid,
             'config_session_id': session.id,
         })
+        wz_value_ids = vals.get('value_ids', [])
+        if session.value_ids and (
+            (wz_value_ids and not wz_value_ids[0][2]) or
+                not wz_value_ids):
+            vals.update({'value_ids': [(6, 0, session.value_ids.ids)]})
         return super(ProductConfigurator, self).create(vals)
 
     @api.multi
