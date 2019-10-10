@@ -141,7 +141,7 @@ class ProductConfigurator(models.TransientModel):
             config_session_id = self.config_session_id
 
         domains = {}
-        check_avail_ids  = cfg_val_ids[:]
+        check_avail_ids = cfg_val_ids[:]
         for line in product_tmpl_id.attribute_line_ids.sorted():
             field_name = field_prefix + str(line.attribute_id.id)
 
@@ -153,7 +153,7 @@ class ProductConfigurator(models.TransientModel):
             # get available values
 
             avail_ids = config_session_id.values_available(
-                check_val_ids=line.value_ids.ids, value_ids=check_avail_ids )
+                check_val_ids=line.value_ids.ids, value_ids=check_avail_ids)
             domains[field_name] = [('id', 'in', avail_ids)]
             check_avail_ids = list(
                 set(check_avail_ids) -
