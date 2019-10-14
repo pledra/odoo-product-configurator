@@ -247,6 +247,15 @@ odoo.define('website_product_configurator.config_form', function (require) {
                             };
                         };
                     };
+                    if (!domain[0][2].length && $selection.attr('data-attr-required')) {
+                        $selection.removeClass('required_config_attrib');
+                        $selection.removeClass('textbox-border-color');
+                    } else if (domain[0][2].length &&
+                        !$selection.hasClass('required_config_attrib') &&
+                        $selection.attr('data-attr-required')
+                    ) {
+                        $selection.addClass('required_config_attrib');
+                    }
                 });
             });
         };
