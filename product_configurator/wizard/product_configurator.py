@@ -626,8 +626,9 @@ class ProductConfigurator(models.TransientModel):
                         continue
                     attrs['readonly'].append(
                         (dependee_field, 'not in', list(val_ids)))
-                    attrs['required'].append(
-                        (dependee_field, 'in', list(val_ids)))
+                    if attr_line.required:
+                        attrs['required'].append(
+                            (dependee_field, 'in', list(val_ids)))
 
             # Create the new field in the view
             node = etree.Element(
