@@ -607,8 +607,9 @@ class ProductConfigurator(models.TransientModel):
                     attr_id = domain_line.attribute_id.id
                     attr_field = field_prefix + str(attr_id)
                     attr_lines = wiz.product_tmpl_id.attribute_line_ids
+                    cfg_step_ids = [id for id in config_steps.ids]
                     # If the fields it depends on are not in the config step
-                    if config_steps and str(attr_line.id) != wiz.state:
+                    if config_steps and wiz.state in cfg_step_ids:
                         continue
                     if attr_field not in attr_depends:
                         attr_depends[attr_field] = set()
