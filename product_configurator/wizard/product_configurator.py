@@ -610,8 +610,10 @@ class ProductConfigurator(models.TransientModel):
                     attr_field = field_prefix + str(attr_id)
                     attr_lines = wiz.product_tmpl_id.attribute_line_ids
                     # If the fields it depends on are not in the config step
-                    if config_steps and wiz.state not in cfg_step_ids:
-                        continue
+                    # allow to update attrs for all attribute.\ otherwise
+                    # required will not work with stepchange using statusbar.
+                    # if config_steps and wiz.state not in cfg_step_ids:
+                    #     continue
                     if attr_field not in attr_depends:
                         attr_depends[attr_field] = set()
                     if domain_line.condition == 'in':
