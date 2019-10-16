@@ -310,7 +310,7 @@
                         </t>
                     </select>
                     <t t-if="line.custom">
-                        <div t-att-class="'custom_field_container' + (' d-none' if not custom_value and line.value_ids else '')"
+                        <div t-att-class="'custom_field_container mt16' + (' d-none' if not custom_value and line.value_ids else '')"
                             t-att-data-oe-id="line.attribute_id.id">
                             <t t-call="website_product_configurator.config_custom_field"/>
                         </div>
