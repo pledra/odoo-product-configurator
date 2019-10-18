@@ -283,7 +283,7 @@
                               t-att-data-attr-required="line.required"
                               t-att-multiple="'multiple' if line.multi else None"
                               t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                              t-att-class="'form-control config_attribute' + (' required_config_attrib' if (available_val or value_ids and line.required and custom_value) or  (available_val or value_ids and line.required) else '')"
+                              t-att-class="'form-control config_attribute' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '')"
                               t-att-data-old-val-id="(value_ids &amp; line.value_ids) and (value_ids &amp; line.value_ids).ids[0] or ''">
 
                               <!-- t-att-disabled="'disabled' if not available_val_ids and not line.custom else None" -->
@@ -336,7 +336,7 @@
                         t-att-data-oe-id="line.attribute_id.id"
                         t-att-data-attr-required="line.required"
                         t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                        t-att-class="'form-control config_attribute' + (' required_config_attrib' if (available_val or value_ids and line.required and custom_value) or  (available_val or value_ids and line.required) else '')"
+                        t-att-class="'form-control config_attribute' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '')"
                         style="height: unset;"
                         t-att-data-old-val-id="(value_ids &amp; line.value_ids) and (value_ids &amp; line.value_ids).ids[0] or ''">
                         <t t-foreach="line.value_ids" t-as="value">
