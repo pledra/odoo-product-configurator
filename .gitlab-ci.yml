@@ -27,28 +27,31 @@ variables: &globalvars
     PRIVATE_DIR: "./odoo/custom/src/private"
 
 Build:
- image: google/cloud-sdk:latest
- stage: build
- variables:
-   <<: *globalvars
-   GIT_STRATEGY: clone
- script:
-   # Login to gcloud
-   - echo $GCE_SERVICE_ACCOUNT_JSON > /service_account.json
-   # Authenticate to gain access to gcloud services for this project
-   - gcloud auth activate-service-account --key-file=/service_account.json --project=$GCLOUD_PROJECT
-   # Checkout scaffolding
-   - git fetch origin scaffolding-${ODOO_MINOR} && git checkout scaffolding-${ODOO_MINOR}
-   # Add a worktree for the CI branch and set to private
-   - git worktree add ./odoo/custom/src/private/__ci_project_dir $CI_COMMIT_SHA
-   - cp $PRIVATE_DIR/__ci_project_dir/* $PRIVATE_DIR -R && rm -rf $PRIVATE_DIR/__ci_project_dir
-   # Install yaml dependency
-   - apt install python3-yaml -y
-   # Send source to google cloud builder
-   - ci/image build      
- retry:
-   max: 2
-   when: runner_system_failure
+  image: google/cloud-sdk:latest
+  stage: build
+  variables:
+    <<: *globalvars
+    GIT_STRATEGY: clone
+  script:
+    # Login to gcloud
+    - echo $GCE_SERVICE_ACCOUNT_JSON > /service_account.json
+    # Authenticate to gain access to gcloud services for this project
+    - gcloud auth activate-service-account --key-file=/service_account.json --project=$GCLOUD_PROJECT
+    # Checkout scaffolding
+    - git fetch origin scaffolding-${ODOO_MINOR} && git checkout scaffolding-${ODOO_MINOR}
+    # Add a worktree for the CI branch and set to private
+    - git worktree add ./odoo/custom/src/private/__ci_project_dir $CI_COMMIT_SHA
+    - cp $PRIVATE_DIR/__ci_project_dir/* $PRIVATE_DIR -R && rm -rf $PRIVATE_DIR/__ci_project_dir
+    # Install yaml dependency
+    - apt install python3-yaml -y
+    # Send source to google cloud builder
+    - ci/image build      
+  retry:
+    max: 2
+    when: runner_system_failure
+  only:
+    refs:
+      - /^[0-9]{1,2}\.0-.*$/
 
 
 Test Addons:
@@ -78,6 +81,9 @@ Test Addons:
   retry:
     max: 2
     when: runner_system_failure
+  only:
+    refs:
+      - /^[0-9]{1,2}\.0-.*$/
 
 Pylint Loose: &pylint
   image: ${CI_IMAGE}:${CI_IMAGE_TAG}
@@ -90,6 +96,9 @@ Pylint Loose: &pylint
   retry:
     max: 2
     when: runner_system_failure
+  only:
+    refs:
+      - /^[0-9]{1,2}\.0-.*$/
 
 Pylint Strict:
   <<: *pylint
@@ -121,46 +130,6 @@ Flake8:
   retry:
     max: 2
     when: runner_system_failure
-
-#deploy_staging:
-#  image: google/cloud-sdk:alpine
-#  stage: deploy
-#  script:
-#    - gcloud auth activate-service-account --key-file=service_account.json
-#    - gcloud components install kubectl
-#    - gcloud container clusters get-credentials $KUBE_CLUSTER --zone $KUBE_ZONE --project $KUBE_PROJECT
-#    - kubectl config set-context $(kubectl config current-context) --namespace=$KUBE_NAMESPACE
-#    - export SERVER_DEPLOYMENT=`kubectl get deployment -l app=odoo-doodba -l type=server -o json --output=jsonpath={.items..metadata.name}`
-#    - kubectl set image deployment/$SERVER_DEPLOYMENT server=us.gcr.io/$KUBE_PROJECT/simply-solar-staging:$CI_COMMIT_SHA
-#    - kubectl rollout status deployment $SERVER_DEPLOYMENT
-#    - echo "Updating all modules"
-#    - export ODOO_SERVER_POD=`kubectl get pods -l app=odoo-doodbe -l type=server -o json --output=jsonpath={.items..metadata.name}`
-#    - kubectl exec -it $ODOO_SERVER_POD -c server odoo -- -d $ODOO_DB -u base -i web_environment_ribbon --no-xmlrpc --stop-after-init
-#  environment:
-#    name: staging
-#    url: https://simplysolar.turnpack.com
-#  only:
-#    - /^.*-staging$/
-#  retry: 1
-
-#deploy_prod:
-#  stage: deploy
-#  script:
-#    - echo "Deploy to production server"
-#  environment:
-#    name: production
-#    url: https://simplysolar.turnpack.com
-#  when: manual
-#  only:
-#    - /^.*-(staging|test)$/
-
-# Cleanup:
-#   image: google/cloud-sdk:alpine
-#   stage: cleanup
-#   script:
-#     - export LATEST_IMG_TAG_DATE=$(gcloud container images list-tags $CI_IMAGE --filter=tags:latest --format="value(timestamp)")
-#     - export LATEST_TEST_IMG_TAG_DATE=$(gcloud container images list-tags $CI_TEST_IMAGE --filter=tags:latest --format="value(timestamp)")
-#     - export OBSOLETE_IMAGE_DIGESTS=$(gcloud container images list-tags $CI_IMAGE --filter="timestamp.datetime < $LATEST_IMG_TAG_DATE" --format='get(digest)')
-#     - export OBSOLETE_TEST_IMAGE_DIGESTS=$(gcloud container images list-tags $CI_TEST_IMAGE --filter="timestamp.datetime < $LATEST_TEST_IMG_TAG_DATE" --format='get(digest)')
-#     - for IMG_DIGEST in $OBSOLETE_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_IMAGE@$IMG_DIGEST; done
-#     - for IMG_DIGEST in $OBSOLETE_TEST_IMAGE_DIGESTS; do gcloud container images delete --force-delete-tags --quiet $CI_TEST_IMAGE@$IMG_DIGEST; done
+  only:
+    refs:
+      - /^[0-9]{1,2}\.0-.*$/
