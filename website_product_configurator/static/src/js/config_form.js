@@ -145,7 +145,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
         _applyDomainOnValues: function (domains) {
             var self = this;
             _.each(domains, function (domain, attr_id) {
-                var $selection = config_form.find('#' + attr_id);
+                var $selection = self.config_form.find('#' + attr_id);
                 var $options = $selection.find('.config_attr_value');
                 _.each($options, function (option) {
                     var condition = domain[0][1];
