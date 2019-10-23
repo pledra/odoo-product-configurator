@@ -244,7 +244,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var attribute_id = $(event.currentTarget).attr('data-oe-id');
             var custom_value = container.find('.custom_config_value[data-oe-id=' + attribute_id + ']');
             var custom_value_container = custom_value.closest('.custom_field_container[data-oe-id=' + attribute_id + ']');
-            var custom_config_attr = $(event.currentTarget).find('.custom_config_attr_value');
+            var attr_field = container.find('.config_attribute[data-oe-id=' + attribute_id + ']');
+            var custom_config_attr = attr_field.find('.custom_config_attr_value');
             var flag_custom = false;
             if (custom_config_attr.length && custom_config_attr[0].tagName == "OPTION" && custom_config_attr[0].selected) {
                 flag_custom = true;
@@ -302,6 +303,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         _onChangeFile: function (ev) {
             var self = this;
+            var result = $.Deferred();
             var file = ev.target.files[0];
             var loaded = false;
             var files_data = '';
@@ -313,7 +315,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 buffer = buffer.split(',')[1];
                 files_data = buffer;
                 self.image_dict[ev.target.name]= files_data;
+                result.resolve();
             }
+            return result.promise();
         },
 
         _onChangeCustomField: function(event) {
