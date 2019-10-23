@@ -628,9 +628,11 @@ class ProductConfigurator(models.TransientModel):
                 for dependee_field, val_ids in attr_depends.items():
                     if not val_ids:
                         continue
-                    if attr_line.required and not attr_line.custom:
+                    if not attr_line.custom:
                         attrs['readonly'].append(
                             (dependee_field, 'not in', list(val_ids)))
+
+                    if attr_line.required and not attr_line.custom:
                         attrs['required'].append(
                             (dependee_field, 'in', list(val_ids)))
 
