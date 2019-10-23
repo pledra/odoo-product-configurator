@@ -51,7 +51,7 @@ Build:
     when: runner_system_failure
   only:
     refs:
-      - /^[0-9]{1,2}\.0-.*$/
+      - /^[0-9]{1,2}\.0.*$/
 
 
 Test Addons:
@@ -83,7 +83,7 @@ Test Addons:
     when: runner_system_failure
   only:
     refs:
-      - /^[0-9]{1,2}\.0-.*$/
+      - /^[0-9]{1,2}\.0.*$/
 
 Pylint Loose: &pylint
   image: ${CI_IMAGE}:${CI_IMAGE_TAG}
@@ -98,7 +98,7 @@ Pylint Loose: &pylint
     when: runner_system_failure
   only:
     refs:
-      - /^[0-9]{1,2}\.0-.*$/
+      - /^[0-9]{1,2}\.0.*$/
 
 Pylint Strict:
   <<: *pylint
@@ -132,4 +132,4 @@ Flake8:
     when: runner_system_failure
   only:
     refs:
-      - /^[0-9]{1,2}\.0-.*$/
+      - /^[0-9]{1,2}\.0.*$/
