@@ -18,7 +18,8 @@
       <xpath expr="." position="inside">
         <t t-call="website.layout">
         <div itemscope="itemscope" itemtype="http://schema.org/Product" id="wrap">
-          <div class="container">
+
+          <section id="product_configurator" class="container py-2 product_configurator">
             <div class="row">
                 <div class="col-lg-12">
                     <t t-call="website_product_configurator.config_header"/>
@@ -67,7 +68,7 @@
                     </form>
                 </div>
             </div>
-          </div>
+          </section>
         </div>
         </t>
       </xpath>
@@ -185,7 +186,7 @@
                 t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-data-oe-id="line.attribute_id.id"
                 t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
-                t-att-class="'form-control custom_config_value' + (' required_config_attrib' if custom_value else '')"
+                t-att-class="'form-control custom_config_value' + (' required_config_attrib' if (custom_value or not line.value_ids) and line.required else '')"
                 t-att-value="custom_value.value"/>
         </t>
         <t t-if="custom_type in ['float','int']">
@@ -205,7 +206,7 @@
                     t-att-data-oe-id="line.attribute_id.id"
                     t-att-data-type="custom_type"
                     t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
-                    t-att-class="'form-control custom_config_value spinner_qty' + (' required_config_attrib' if custom_value else '')"
+                    t-att-class="'form-control custom_config_value spinner_qty' + (' required_config_attrib' if (custom_value or not line.value_ids) and line.required else '')"
                     t-att-value="custom_value and custom_value.value or line.attribute_id.min_val or '0'"/>
                 <div class="input-group-append">
                     <a t-attf-href="#" aria-label="Add one" title="Add one"
@@ -226,13 +227,13 @@
                 t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-data-oe-id="line.attribute_id.id"
-                t-att-class="'form-control custom_config_value config_attachment' + (' required_config_attrib' if custom_value and not custom_value.attachment_ids else '')"/>
+                t-att-class="'form-control custom_config_value config_attachment' + (' required_config_attrib' if ((custom_value and not custom_value.attachment_ids) or not line.value_ids) and line.required else '')"/>
         </t>
         <t t-if="custom_type == 'text'">
             <textarea t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                 t-att-data-oe-id="line.attribute_id.id"
-                t-att-class="'form-control custom_config_value' + (' required_config_attrib' if custom_value else '')"><t t-esc="custom_value.value"/></textarea>
+                t-att-class="'form-control custom_config_value' + (' required_config_attrib' if (custom_value or not line.value_ids) and line.required else '')"></textarea>
         </t>
         <t t-if="custom_type == 'datetime'">
             <div class="input-group date" t-att-id="'datetime-%s%s' % (custom_field_prefix, line.attribute_id.id)" data-target-input="nearest">
@@ -240,7 +241,7 @@
                     t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                     t-att-data-oe-id="line.attribute_id.id"
                     t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
-                    t-att-class="'datetimepicker-input product_config_datetimepicker form-control custom_config_value' + (' required_config_attrib' if custom_value else '')"
+                    t-att-class="'datetimepicker-input product_config_datetimepicker form-control custom_config_value' + (' required_config_attrib' if (custom_value or not line.value_ids) and line.required else '')"
                     t-att-value="custom_value.value"
                     t-att-data-target="'#datetime-%s%s' % (custom_field_prefix, line.attribute_id.id)"/>
                 <div class="input-group-append" t-att-data-target="'#datetime-%s%s' % (custom_field_prefix, line.attribute_id.id)" data-toggle="datetimepicker">
@@ -256,7 +257,7 @@
                     t-att-id="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                     t-att-data-oe-id="line.attribute_id.id"
                     t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
-                    t-att-class="'datetimepicker-input product_config_datepicker form-control custom_config_value' + (' required_config_attrib' if custom_value else '')"
+                    t-att-class="'datetimepicker-input product_config_datepicker form-control custom_config_value' + (' required_config_attrib' if (custom_value or not line.value_ids) and line.required else '')"
                     t-att-value="custom_value.value"
                     t-att-data-target="'#date-%s%s' % (custom_field_prefix, line.attribute_id.id)"/>
                 <div class="input-group-append" t-att-data-target="'#date-%s%s' % (custom_field_prefix, line.attribute_id.id)" data-toggle="datetimepicker">
@@ -283,7 +284,7 @@
                               t-att-data-attr-required="line.required"
                               t-att-multiple="'multiple' if line.multi else None"
                               t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                              t-att-class="'form-control config_attribute' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '')"
+                              t-att-class="'form-control config_attribute' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '') + (' d-none' if not line.value_ids else '')"
                               t-att-data-old-val-id="(value_ids &amp; line.value_ids) and (value_ids &amp; line.value_ids).ids[0] or ''">
 
                               <!-- t-att-disabled="'disabled' if not available_val_ids and not line.custom else None" -->
@@ -301,7 +302,7 @@
                         </t>
                         <t t-if="line.custom">
                               <option
-                                  t-att-selected="'selected' if custom_value else None"
+                                  t-att-selected="'selected' if custom_value or not line.value_ids else None"
                                   t-att-class="'config_attr_value custom_config_attr_value' + (' disabled' if custom_val_id.id not in available_value_ids else '')"
                                   t-att-value="custom_val_id.id"
                                   t-att-data-oe-id="custom_val_id.id"
@@ -312,7 +313,7 @@
                         </t>
                     </select>
                     <t t-if="line.custom">
-                        <div t-att-class="'custom_field_container' + (' d-none' if not custom_value else '')"
+                        <div t-att-class="'custom_field_container mt16' + (' d-none' if not custom_value and line.value_ids else '')"
                             t-att-data-oe-id="line.attribute_id.id">
                             <t t-call="website_product_configurator.config_custom_field"/>
                         </div>
@@ -336,7 +337,7 @@
                         t-att-data-oe-id="line.attribute_id.id"
                         t-att-data-attr-required="line.required"
                         t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                        t-att-class="'form-control config_attribute' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '')"
+                        t-att-class="'form-control config_attribute' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '') + (' d-none' if not line.value_ids else '')"
                         style="height: unset;"
                         t-att-data-old-val-id="(value_ids &amp; line.value_ids) and (value_ids &amp; line.value_ids).ids[0] or ''">
                         <t t-foreach="line.value_ids" t-as="value">
@@ -367,7 +368,7 @@
                             <div class="radio-card-container">
                                 <span t-esc="custom_val_id.name" class="label_config_attr_value_radio" t-att-title="custom_val_id.name"/>
                                 <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
-                                    t-att-checked="'checked' if custom_value else None"
+                                    t-att-checked="'checked' if custom_value or not line.value_ids else None"
                                     t-att-type="line.multi and 'checkbox' or 'radio'"
                                     t-att-class="'config_attr_value custom_config_attr_value'"
                                     t-att-value="custom_val_id.id"
@@ -386,7 +387,7 @@
                     </fieldset>
                     <t t-if="line.custom">
 
-                        <div t-att-class="'custom_field_container' + (' d-none' if not custom_value else '')"
+                        <div t-att-class="'custom_field_container' + (' d-none' if not custom_value and line.value_ids else '')"
                             t-att-data-oe-id="line.attribute_id.id">
                             <t t-call="website_product_configurator.config_custom_field"/>
                         </div>

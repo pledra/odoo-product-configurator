@@ -322,8 +322,11 @@ class ProductTemplate(models.Model):
     @api.multi
     def write(self, vals):
         change_config_ok = ('config_ok' in vals)
-        if change_config_ok or self.config_ok:
-            self.check_config_user_access()
+        configurable_templates = self.filtered(
+            lambda template: template.config_ok
+        )
+        if change_config_ok or configurable_templates:
+            self[:1].check_config_user_access()
 
         return super(ProductTemplate, self).write(vals)
 
@@ -571,7 +574,10 @@ class ProductProduct(models.Model):
     @api.multi
     def write(self, vals):
         change_config_ok = ('config_ok' in vals)
-        if change_config_ok or self.config_ok:
-            self.check_config_user_access(mode='write')
+        configurable_products = self.filtered(
+            lambda product: product.config_ok
+        )
+        if change_config_ok or configurable_products:
+            self[:1].check_config_user_access(mode='write')
 
         return super(ProductProduct, self).write(vals)
