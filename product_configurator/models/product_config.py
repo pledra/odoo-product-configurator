@@ -1117,7 +1117,9 @@ class ProductConfigSession(models.Model):
             )
             check_val_ids = unset_attr_line.mapped('value_ids')
             avail_val_ids = self.values_available(
-                check_val_ids.ids, value_ids.ids, product_tmpl_id=self.product_tmpl_id
+                check_val_ids.ids,
+                value_ids.ids,
+                product_tmpl_id=self.product_tmpl_id
             )
             if unset_attr_line and avail_val_ids:
                 step_to_open = step
@@ -1291,9 +1293,12 @@ class ProductConfigSession(models.Model):
                 common_vals = set(value_ids) & set(line.value_ids.ids)
                 custom_val = custom_vals.get(attr.id)
                 avail_val_ids = self.values_available(
-                    line.value_ids.ids, value_ids, product_tmpl_id=self.product_tmpl_id
+                    line.value_ids.ids,
+                    value_ids,
+                    product_tmpl_id=self.product_tmpl_id
                 )
-                if line.required and avail_val_ids and not common_vals and not custom_val:
+                if line.required and avail_val_ids and not common_vals and\
+                        not custom_val:
                     # TODO: Verify custom value type to be correct
                     raise ValidationError(_(
                         "Required attribute '%s' is empty" % (attr.name)))
