@@ -210,7 +210,7 @@
                     t-att-value="custom_value and custom_value.value or line.attribute_id.min_val or '0'"/>
                 <div class="input-group-append">
                     <a t-attf-href="#" aria-label="Add one" title="Add one"
-                        t-att-class="'btn btn-link float_left d-md-inline-block js_add_qty'  + (' btn-disabled' if custom_val and custom_val &gt;= line.attribute_id.max_val else '')">
+                        t-att-class="'btn btn-link float_left d-md-inline-block js_add_qty'  + (' btn-disabled' if custom_val and line.attribute_id.max_val and custom_val &gt;= line.attribute_id.max_val else '')">
                         <i class="fa fa-plus"></i>
                     </a>
                 </div>
