@@ -439,8 +439,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
         },
 
         _onClickRadioImage: function(event) {
-            var val_id = $(this).data('val-id');
-            var value_input = $(this).closest('fieldset').find('.config_attr_value[data-oe-id="' + val_id + '"]');
+            var val_id = $(event.currentTarget).data('val-id');
+            var value_input = $(event.currentTarget).closest('fieldset').find('.config_attr_value[data-oe-id="' + val_id + '"]');
             if (value_input.prop('disabled')) {
                 return
             }
