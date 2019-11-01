@@ -463,3 +463,37 @@ class ConfigurationWizard(ProductConfiguratorTestCases):
             '__attribute-{}'.format(self.attr_color.id): self.value_red.id,
         }
         product_config_wizard_2.read(multi_vals)
+
+    def test_16_get_onchange_domains(self):
+        self.wizard = self.env['product.configurator']
+        # session id
+        session_id = self.productConfigSession.create({
+            'product_tmpl_id': self.config_product.id,
+            'value_ids': [(6, 0, [
+                self.value_gasoline.id,
+                self.value_transmission.id,
+                self.value_red.id]
+            )],
+            'user_id': self.env.user.id,
+        })
+        field_prefix = self.wizard._prefixes.get('field_prefix')
+        check_available_val_id = {
+            field_prefix + '%s' % (self.value_gasoline.attribute_id.id):
+            self.value_gasoline.id,
+            field_prefix + '%s' % (self.value_218i.attribute_id.id):
+            self.value_218i.id,
+            field_prefix + '%s' % (self.value_sport_line.attribute_id.id):
+            self.value_sport_line.id,
+        }
+        values_ids = self.value_diesel.ids
+        product_tmpl_id = self.config_product
+        domains_available = self.wizard.get_onchange_domains(
+            check_available_val_id, values_ids, product_tmpl_id, session_id)
+        rec = domains_available[field_prefix + str(
+            self.value_sport_line.attribute_id.id)][-1][-1]
+        self.assertNotIn(
+            self.value_sport_line.id,
+            rec,
+            'Error: If value exists\
+            Method: get_onchange_domains()'
+            )
