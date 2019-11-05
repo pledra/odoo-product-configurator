@@ -172,6 +172,15 @@ odoo.define('website_product_configurator.config_form', function (require) {
                             };
                         };
                     };
+                    if (!domain[0][2].length && $selection.attr('data-attr-required')) {
+                        $selection.removeClass('required_config_attrib');
+                        $selection.removeClass('textbox-border-color');
+                    } else if (domain[0][2].length &&
+                        !$selection.hasClass('required_config_attrib') &&
+                        $selection.attr('data-attr-required')
+                    ) {
+                        $selection.addClass('required_config_attrib');
+                    }
                 });
             });
         },
@@ -281,7 +290,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 } else if (!config_attr[i].value.trim()  || config_attr[i].value == '0') {
                     flag = false;
                 };
-
                 if (!flag) {
                     $(config_attr[i]).addClass('textbox-border-color');
                 } else if (flag && $(config_attr[i]).hasClass('textbox-border-color')) {

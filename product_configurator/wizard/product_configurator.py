@@ -610,8 +610,10 @@ class ProductConfigurator(models.TransientModel):
                     attr_field = field_prefix + str(attr_id)
                     attr_lines = wiz.product_tmpl_id.attribute_line_ids
                     # If the fields it depends on are not in the config step
-                    if config_steps and str(attr_line.id) != wiz.state:
-                        continue
+                    # allow to update attrs for all attribute.\ otherwise
+                    # required will not work with stepchange using statusbar.
+                    # if config_steps and wiz.state not in cfg_step_ids:
+                    #     continue
                     if attr_field not in attr_depends:
                         attr_depends[attr_field] = set()
                     if domain_line.condition == 'in':
@@ -626,10 +628,13 @@ class ProductConfigurator(models.TransientModel):
                 for dependee_field, val_ids in attr_depends.items():
                     if not val_ids:
                         continue
-                    attrs['readonly'].append(
-                        (dependee_field, 'not in', list(val_ids)))
-                    attrs['required'].append(
-                        (dependee_field, 'in', list(val_ids)))
+                    if not attr_line.custom:
+                        attrs['readonly'].append(
+                            (dependee_field, 'not in', list(val_ids)))
+
+                    if attr_line.required and not attr_line.custom:
+                        attrs['required'].append(
+                            (dependee_field, 'in', list(val_ids)))
 
             # Create the new field in the view
             node = etree.Element(
