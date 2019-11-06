@@ -590,3 +590,17 @@ class ProductConfig(ProductConfiguratorTestCases):
             'Error: If Value not equal\
             Method: eval()'
         )
+
+    def test_20_values_available(self):
+        check_available_val_ids = (self.value_gasoline + self.value_218i +
+                                   self.value_sport_line).ids
+        product_tmpl_id = self.config_product.id
+        values_ids = [self.value_diesel.id]
+        available_value_ids = self.productConfigSession.values_available(
+            check_available_val_ids, values_ids, {}, product_tmpl_id)
+        self.assertNotIn(
+            self.value_sport_line.id,
+            available_value_ids,
+            'Error: If value exists\
+            Method: values_available()'
+        )
