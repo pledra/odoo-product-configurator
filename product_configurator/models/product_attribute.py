@@ -289,12 +289,21 @@ class ProductAttributeValue(models.Model):
             if av.price_extra
         }
 
+        price_precision = self.env['decimal.precision'].precision_get(
+            'Product Price'
+        )
         res_prices = []
 
         for val in res:
             price_extra = extra_prices.get(val[0])
             if price_extra:
-                val = (val[0], '%s ( +%s )' % (val[1], price_extra))
+                val = (
+                    val[0],
+                    '%s ( +%s )' % (
+                        val[1],
+                        ('{0:,.%sf}' % (price_precision)).format(price_extra)
+                    )
+                )
             res_prices.append(val)
         return res_prices
 
@@ -355,7 +364,7 @@ class ProductAttributePrice(models.Model):
 
     weight_extra = fields.Float(
         string="Attribute Weight Extra",
-        digits=dp.get_precision('Product Weight')
+        digits=dp.get_precision('Stock Weight')
     )
 
 
