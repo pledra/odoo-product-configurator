@@ -183,6 +183,13 @@ class ProductAttributeValue(models.Model):
         comodel_name='product.product',
         string='Related Product'
     )
+    # prevent to add new attr-value from adding
+    # in already created template
+    product_ids = fields.Many2many(
+        comodel_name='product.product',
+        copy=False
+    )
+
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
