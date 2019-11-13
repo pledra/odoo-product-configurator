@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_template_form_view" model="ir.ui.view">
+        <field name="name">product.configurator.product.template.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id"
+               ref="product_configurator.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <!-- TODO: Implement a method to hide this field for non-configurable product templates -->
+            <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='required']"
+                   position="before">
+                <field name="default_val"
+                       domain="[('id', 'in', value_ids and value_ids[0][2])]"
+                       context="{'show_attribute': False}"
+                       options="{'no_create': True, 'no_create_edit': True}"
+                       invisible="not context.get('default_config_ok', False)"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

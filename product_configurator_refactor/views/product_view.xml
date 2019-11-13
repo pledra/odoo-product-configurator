@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_template_only_form_view_refactor" model="ir.ui.view">
+        <field name="name">
+            product.configurator.product.template.form.refactor
+        </field>
+        <field name="model">product.template</field>
+        <field name="inherit_id"
+               ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='variants']" position="replace">
+                <page name="variants" string="Variants"
+                      groups="product.group_product_variant">
+                    <field name="attribute_line_ids" widget="one2many_list"
+                           context="{'show_attribute': False, 'attribute_line_ids': attribute_line_ids, 'default_config_ok': True}">
+                        <tree string="Variants">
+                            <field name="sequence" widget="handle"/>
+                            <field name="attribute_id"/>
+                            <field name="value_ids" widget="many2many_tags"
+                                   options="{'no_create_edit': True}"
+                                   domain="[('attribute_id', '=', attribute_id)]"
+                                   context="{'default_attribute_id': attribute_id}"
+                                   invisible="1"/>
+                            <field name="required"/>
+                            <field name="multi"/>
+                            <field name="custom"/>
+                        </tree>
+                        <form string="Variants">
+                            <group>
+                                <group>
+                                    <field name="attribute_id"/>
+                                </group>
+                                <group>
+                                    <field name="required"/>
+                                    <field name="multi"/>
+                                    <field name="custom"/>
+                                    <field name="default_val" invisible="1"/>
+                                </group>
+                            </group>
+                            <field name="value_ids" widget="many2many_tags"
+                                   options="{'no_create_edit': True}"
+                                   domain="[('attribute_id', '=', attribute_id)]"
+                                   context="{'default_attribute_id': attribute_id}"
+                                   invisible="1"/>
+                            <field name="value_idss"
+                                   options="{'no_create_edit': True}"
+                                   domain="[('attribute_id', '=', attribute_id)]"
+                                   context="{'default_attribute_id': attribute_id}">
+                                <tree string="Values" editable="top">
+                                    <field name="attribute_line_id"
+                                           invisible="1"/>
+                                    <field name="related_attribute_id"
+                                           invisible="1"/>
+                                    <field name="attrib_value_id"
+                                           domain="[('attribute_id','=',related_attribute_id)]"
+                                           context="{'default_attribute_id': related_attribute_id}"/>
+                                    <field name="is_default"/>
+                                </tree>
+                            </field>
+                        </form>
+                    </field>
+                    <p class="oe_grey">
+                        <strong>Warning</strong>: adding or deleting attributes
+                        will delete and recreate existing variants and lead
+                        to the loss of their possible customizations.
+                    </p>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
