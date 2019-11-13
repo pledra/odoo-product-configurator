@@ -43,11 +43,12 @@ class ProductConfigDomain(models.Model):
                      line.value_ids.ids)
                 )
             # ensure 2 operands follow the last operator
-            computed_domain.append(
-                (lines[-1].attribute_id.id,
-                 lines[-1].condition,
-                 lines[-1].value_ids.ids)
-            )
+            if lines:
+                computed_domain.append(
+                    (lines[-1].attribute_id.id,
+                     lines[-1].condition,
+                     lines[-1].value_ids.ids)
+                )
         return computed_domain
 
     name = fields.Char(
