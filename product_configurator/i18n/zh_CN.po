@@ -1,0 +1,1031 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_configurator
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-11-26 10:24+0000\n"
+"PO-Revision-Date: 2018-09-24 19:37+0800\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 2.1.1\n"
+"Last-Translator: \n"
+"Language: zh_CN\n"
+
+#. module: product_configurator
+#: model:product.template,name:product_configurator.bmw_2_series
+msgid "2 Series"
+msgstr "宝马2 Series系列"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_218d
+msgid "218d"
+msgstr "宝马II 218d"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_218d_coupe
+#: model:product.template,name:product_configurator.product_engine_218d_coupe_product_template
+msgid "218d Coupé"
+msgstr "218d Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_218i
+msgid "218i"
+msgstr "218i"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_218i_coupe
+#: model:product.template,name:product_configurator.product_engine_218i_coupe_product_template
+msgid "218i Coupé"
+msgstr "218i Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_220d
+msgid "220d"
+msgstr "220d"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_220d_coupe
+#: model:product.template,name:product_configurator.product_engine_220d_coupe_product_template
+msgid "220d Coupé"
+msgstr "220d Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_220d_xdrive
+msgid "220d xDrive"
+msgstr "220d xDrive"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_220d_xdrive_coupe
+#: model:product.template,name:product_configurator.product_engine_220d_xdrive_coupe_product_template
+msgid "220d xDrive Coupé"
+msgstr "220d xDrive Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_220i
+msgid "220i"
+msgstr "220i"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_220i_coupe
+#: model:product.template,name:product_configurator.product_engine_220i_coupe_product_template
+msgid "220i Coupé"
+msgstr "220i Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_225d
+msgid "225d"
+msgstr "225d"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_225d_coupe
+#: model:product.template,name:product_configurator.product_engine_225d_coupe_product_template
+msgid "225d Coupé"
+msgstr "225d Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_228i
+msgid "228i"
+msgstr "228i"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_228i_coupe
+#: model:product.template,name:product_configurator.product_engine_228i_coupe_product_template
+msgid "228i Coupé"
+msgstr "228i Coupé"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_active
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_active
+msgid "Active"
+msgstr "激活"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_val_custom
+msgid "Allow custom value for this attribute?"
+msgstr "允许该属性自定义值么？"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_line_custom
+msgid "Allow custom values for this attribute?"
+msgstr "允许该属性自定义值么？"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_line_multi
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_multi
+msgid "Allow selection of multiple values for this attribute?"
+msgstr "允许为这个属性选择多个值么？"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_armrest
+#: model:product.product,name:product_configurator.product_2_series_armrest
+#: model:product.template,name:product_configurator.product_2_series_armrest_product_template
+msgid "Armrest"
+msgstr "扶手"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Attachment"
+msgstr "附件"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_attachment_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_attachment_ids
+msgid "Attachments"
+msgstr "附件"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_attribute_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_attribute_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_attribute_id
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_custom
+msgid "Attribute"
+msgstr "属性"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_line_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_line_ids
+msgid "Attribute Dependencies"
+msgstr "属性依赖"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_attribute_line_id
+msgid "Attribute Line"
+msgstr "属性明细"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_attribute_line_ids
+msgid "Attribute Lines"
+msgstr "属性明细"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
+msgid "Attribute Name"
+msgstr "属性名称"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Attribute Value Dependencies"
+msgstr "属性值的依赖关系"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_attr_line_val_ids
+msgid "Attribute Values"
+msgstr "属性值"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:505
+#, python-format
+msgid ""
+"Attribute custom type is binary, attachments are the only accepted values "
+"with this custom field type"
+msgstr "属性自定义类型是二进制类型，附件具有此自定义字段类型的唯一值"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:510
+#, python-format
+msgid ""
+"Attribute custom type must be 'binary' for saving attachments to custom value"
+msgstr "属性自定义类型必须是“二进制”，以便将附件保存到自定义值"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_steptronic
+msgid "Automatic (Steptronic)"
+msgstr "自动（步进）"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_steptronic_sport
+msgid "Automatic Sport (Steptronic)"
+msgstr "自动运动（步进式）"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_2_series_transmission_steptronic
+#: model:product.template,name:product_configurator.product_2_series_transmission_steptronic_product_template
+msgid "Automatic Transmission Steptronic"
+msgstr "步进式自动变速器"
+
+#. module: product_configurator
+#: model:product.category,name:product_configurator.product_category_bmw
+msgid "BMW"
+msgstr "BMW"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_black
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tapistry_black
+msgid "Black"
+msgstr "黑色"
+
+#. module: product_configurator
+#: model:product.config.step,name:product_configurator.config_step_body
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_body
+msgid "Body"
+msgstr "车身"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_value_active
+msgid ""
+"By unchecking the active field you can disable a attribute value without "
+"deleting it"
+msgstr "通过取消检查活动字段，可以在不删除属性值的情况下禁用属性值"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_active
+msgid ""
+"By unchecking the active field you can disable a attribute without deleting "
+"it"
+msgstr "通过取消检查活动字段，可以禁用属性而不删除该属性"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_ok
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_ok
+msgid "Can be Configured"
+msgstr "可配置"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:268
+#, python-format
+msgid "Cannot have a configuration step defined twice."
+msgstr "不可二次定义配置步骤。"
+
+#. module: product_configurator
+#: sql_constraint:product.attribute.value.custom:0
+msgid "Cannot have two custom values for the same attribute"
+msgstr "不能为同一属性设置两个自定义值"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Char"
+msgstr "Char"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+#: model:product.attribute,name:product_configurator.product_attribute_color
+msgid "Color"
+msgstr "颜色"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_condition
+msgid "Condition"
+msgstr "条件"
+
+#. module: product_configurator
+#: model:ir.ui.menu,name:product_configurator.menu_product_configurable
+msgid "Configurable Products"
+msgstr "可配置产品"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_product_tmpl_id
+msgid "Configurable Template"
+msgstr "可配置模板"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_configurable_template_action
+#: model:ir.ui.menu,name:product_configurator.menu_product_configurable_template_action
+msgid "Configurable Templates"
+msgstr "可配置模板"
+
+#. module: product_configurator
+#: model:ir.ui.menu,name:product_configurator.menu_product_configurable_variants_action
+msgid "Configurable Variants"
+msgstr "可配置变体"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_value_ids
+msgid "Configuration"
+msgstr "配置"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_image_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_image_ids
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configuration Images"
+msgstr "配置图片"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_step_line_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_template_config_step_line_ids
+msgid "Configuration Lines"
+msgstr "配置明细"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_config_domain_action
+#: model:ir.ui.menu,name:product_configurator.menu_product_config_domain_action
+#: model:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configuration Restrictions"
+msgstr "配置约束"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_config_session
+#: model:ir.ui.menu,name:product_configurator.menu_product_config_session
+#: model:ir.ui.view,arch_db:product_configurator.product_config_session_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_config_session_tree_view
+msgid "Configuration Sessions"
+msgstr "配置sessions会话"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_config_step_id
+#: model:ir.ui.view,arch_db:product_configurator.config_step_form_view
+#: model:ir.ui.view,arch_db:product_configurator.config_step_tree_view
+msgid "Configuration Step"
+msgstr "配置步骤"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_config_steps_action
+#: model:ir.ui.menu,name:product_configurator.menu_product_config_steps_action
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configuration Steps"
+msgstr "配置步骤"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_custom
+msgid "Configuration Values"
+msgstr "配置值"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:486
+#, python-format
+msgid "Configuration cannot have the same value inserted twice"
+msgstr "配置不能插入两次相同的值"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_template_form_view
+msgid "Configurator"
+msgstr "配置器"
+
+#. module: product_configurator
+#: model:ir.actions.act_window,name:product_configurator.product_configurable_variant_action
+msgid "Configured Variants"
+msgstr "配置变体"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tapistry_coral_red_black
+msgid "Coral Red/Black"
+msgstr "珊瑚红/黑色"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_3
+msgid "Coupé Black"
+msgstr "Coupé Black"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_9
+msgid "Coupé Black Rims 384"
+msgstr "Coupé Black Rims 384"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_10
+msgid "Coupé Black Rims 387"
+msgstr "Coupé Black Rims 387"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_1
+msgid "Coupé Red"
+msgstr "Coupé Red"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_5
+msgid "Coupé Red Rims 384"
+msgstr "Coupé Red Rims 384"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_6
+msgid "Coupé Red Rims 387"
+msgstr "Coupé Red Rims 387"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_2
+msgid "Coupé Silver"
+msgstr "Coupé Silver"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_7
+msgid "Coupé Silver Rims 384"
+msgstr "Coupé Silver Rims 384"
+
+#. module: product_configurator
+#: model:product.config.image,name:product_configurator.config_image_8
+msgid "Coupé Silver Rims 387"
+msgstr "Coupé Silver Rims 387"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_create_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_create_uid
+msgid "Created by"
+msgstr "创建者"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_create_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_create_date
+msgid "Created on"
+msgstr "创建于"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_custom
+#: model:product.attribute,name:product_configurator.custom_attribute
+#: model:product.attribute.value,name:product_configurator.custom_attribute_value
+msgid "Custom"
+msgstr "自定义"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_val_custom
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_value
+msgid "Custom Value"
+msgstr "自定义值"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_value_custom_ids
+#: model:ir.model.fields,field_description:product_configurator.field_sale_order_line_custom_value_ids
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_config_session_form_view
+#: model:ir.ui.view,arch_db:product_configurator.product_form_view_custom_vals_inherit
+msgid "Custom Values"
+msgstr "自定义值"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_config_session_custom_value_value
+msgid "Custom value held as string"
+msgstr "自定义值保持string字符串"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Date"
+msgstr "日期"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "DateTime"
+msgstr "时间日期"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_description
+msgid "Description"
+msgstr "描述"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_required
+msgid ""
+"Determines the required value of this attribute though it can be change on "
+"the template level"
+msgstr "可以在模板级别上更改该属性的所需值"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_diesel
+msgid "Diesel"
+msgstr "柴油机"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_display_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_display_name
+msgid "Display Name"
+msgstr "显示名称"
+
+#. module: product_configurator
+#: selection:product.config.session,state:0
+msgid "Done"
+msgstr "完成"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_rims_384
+msgid "Double-spoke 18\""
+msgstr "Double-spoke 18\""
+
+#. module: product_configurator
+#: selection:product.config.session,state:0
+msgid "Draft"
+msgstr "草稿"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_engine
+#: model:product.config.step,name:product_configurator.config_step_engine
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_engine
+msgid "Engine"
+msgstr "引擎"
+
+#. module: product_configurator
+#: model:product.config.step,name:product_configurator.config_step_extras
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_extras
+msgid "Extras"
+msgstr "附加"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_custom_type
+msgid "Field Type"
+msgstr "字段类型"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Float"
+msgstr "浮点型"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_fuel
+msgid "Fuel"
+msgstr "燃料"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_gasoline
+msgid "Gasoline"
+msgstr "汽油"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_id
+msgid "ID"
+msgstr "ID"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_image
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_image
+msgid "Image"
+msgstr "图片"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_implied_ids
+#: model:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
+msgid "Inherited"
+msgstr "继承"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Integer"
+msgstr "整型"
+
+#. module: product_configurator
+#: model:product.config.step,name:product_configurator.config_step_interior
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_interior
+msgid "Interior"
+msgstr "内部"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product.py:288
+#: code:addons/product_configurator/models/product_config.py:434
+#, python-format
+msgid "Invalid Configuration"
+msgstr "无效配置"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_account_invoice_line
+msgid "Invoice Line"
+msgstr "发票明细"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_line_required
+msgid "Is this attribute required?"
+msgstr "此属性是必须的么？"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step___last_update
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line___last_update
+msgid "Last Modified on"
+msgstr "最后修改于"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_write_uid
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_write_uid
+msgid "Last Updated by"
+msgstr "最近更新人"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_write_date
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_write_date
+msgid "Last Updated on"
+msgstr "最近更新于"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_model_line
+#: model:product.config.step,name:product_configurator.config_step_lines
+#: model:product.config.step.line,name:product_configurator.2_series_config_step_lines
+msgid "Lines"
+msgstr "明细"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_luxury_line
+#: model:product.product,name:product_configurator.product_bmw_luxury_line
+#: model:product.template,name:product_configurator.product_bmw_luxury_line_product_template
+msgid "Luxury Line"
+msgstr "Luxury Line"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_m235i
+msgid "M235i"
+msgstr "M235i"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_m235i_coupe
+#: model:product.template,name:product_configurator.product_engine_m235i_coupe_product_template
+msgid "M235i Coupé"
+msgstr "M235i Coupé"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_m235i_xdrive
+msgid "M235i xDrive"
+msgstr "M235i xDrive"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_engine_m2351_xdrive_coupe
+#: model:product.template,name:product_configurator.product_engine_m2351_xdrive_coupe_product_template
+msgid "M235i xDrive Coupe"
+msgstr "M235i xDrive Coupe"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_max_val
+msgid "Max Value"
+msgstr "最大值"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_min_val
+msgid "Min Value"
+msgstr "最小值"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_max_val
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_min_val
+msgid "Minimum value allowed"
+msgstr "允许的最小值"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_advantage
+#: model:product.product,name:product_configurator.product_bmw_model_advantage
+#: model:product.template,name:product_configurator.product_bmw_model_advantage_product_template
+msgid "Model Advantage"
+msgstr "Model Advantage"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_luxury_line
+#: model:product.product,name:product_configurator.product_bmw_model_luxury_line
+#: model:product.template,name:product_configurator.product_bmw_model_luxury_line_product_template
+msgid "Model Luxury Line"
+msgstr "Model Luxury Line"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_m_sport
+#: model:product.product,name:product_configurator.product_bmw_model_m_sport
+#: model:product.template,name:product_configurator.product_bmw_model_m_sport_product_template
+msgid "Model M Sport"
+msgstr "Model M Sport"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_model_sport_line
+#: model:product.product,name:product_configurator.product_bmw_model_sport_line
+#: model:product.template,name:product_configurator.product_bmw_model_sport_line_product_template
+msgid "Model Sport Line"
+msgstr "Model Sport Line"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_multi
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_multi
+msgid "Multi"
+msgstr "多项"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_name
+#: model:ir.model.fields,field_description:product_configurator.field_product_product_config_name
+msgid "Name"
+msgstr "名字"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_operator
+msgid "Operators"
+msgstr "操作员"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_options
+msgid "Options"
+msgstr "选项"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tapistry_oyster_black
+msgid "Oyster/Black"
+msgstr "牡蛎/黑色"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_price
+msgid "Price"
+msgstr "价格"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_product
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_product_tmpl_id
+msgid "Product"
+msgstr "产品"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute
+msgid "Product Attribute"
+msgstr "产品属性"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_form_view
+msgid "Product Attribute Values"
+msgstr "产品属性值"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
+msgid "Product Attributes"
+msgstr "产品属性"
+
+#. module: product_configurator
+#: model:ir.module.category,name:product_configurator.product_config_category
+msgid "Product Configurator"
+msgstr "产品配置"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_custom_product_id
+msgid "Product ID"
+msgstr "产品 ID"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_template
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_product_tmpl_id
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_product_tmpl_id
+msgid "Product Template"
+msgstr "产品模板"
+
+#. module: product_configurator
+#: model:res.groups,name:product_configurator.group_product_configurator
+msgid "Products"
+msgstr "产品"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_red
+msgid "Red"
+msgstr "红色"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_value_product_id
+msgid "Related Product"
+msgstr "相关产品"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_required
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_required
+msgid "Required"
+msgstr "必须"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_domain_line_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_domain_id
+msgid "Restrictions"
+msgstr "约束"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_rims
+msgid "Rims"
+msgstr "轮辋"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_domain_id
+msgid "Rule"
+msgstr "规则"
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_config_domain_form_view
+msgid "Rules"
+msgstr "规则"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "销售订单明细"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_search_ok
+msgid "Searchable"
+msgstr "可检索的"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_line_sequence
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_image_sequence
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_sequence
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_step_line_sequence
+msgid "Sequence"
+msgstr "序列"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_cfg_session_id
+msgid "Session"
+msgstr "Session会话"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_silver
+msgid "Silver"
+msgstr "银色"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_paint_silver
+#: model:product.template,name:product_configurator.product_paint_silver_product_template
+msgid "Silver Paint"
+msgstr "银色的漆"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_smoker_package
+#: model:product.product,name:product_configurator.product_2_series_smoker_package
+#: model:product.template,name:product_configurator.product_2_series_smoker_package_product_template
+msgid "Smoker Package"
+msgstr "吸烟者套装"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_2_series_transmission_steptronic_sport
+#: model:product.template,name:product_configurator.product_2_series_transmission_steptronic_sport_product_template
+msgid "Sport Automatic Transmission Steptronic"
+msgstr "运动步进式自动变速器"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_sport_line
+#: model:product.product,name:product_configurator.product_bmw_sport_line
+#: model:product.template,name:product_configurator.product_bmw_sport_line_product_template
+msgid "Sport Line"
+msgstr "Sport Line"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_state
+msgid "State"
+msgstr "状态"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_stock_move
+msgid "Stock Move"
+msgstr "库存移动"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_sunroof
+#: model:product.product,name:product_configurator.product_2_series_sunroof
+#: model:product.template,name:product_configurator.product_2_series_sunroof_product_template
+msgid "Sunroof"
+msgstr "天窗"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_tapistry
+msgid "Tapistry"
+msgstr "车毯"
+
+#. module: product_configurator
+#: selection:product.attribute,custom_type:0
+msgid "Textarea"
+msgstr "文本区域"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_custom_type
+msgid "The type of the custom field generated in the frontend"
+msgstr "前端生成的自定义字段的类型"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_tow_hook
+msgid "Tow hook"
+msgstr "拖车挂钩"
+
+#. module: product_configurator
+#: model:product.product,name:product_configurator.product_2_series_towhook
+#: model:product.template,name:product_configurator.product_2_series_towhook_product_template
+msgid "Towhook"
+msgstr "拖车挂钩"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_trans_implied_ids
+msgid "Transitively inherits"
+msgstr "传递继承"
+
+#. module: product_configurator
+#: model:product.attribute,name:product_configurator.product_attribute_transmission
+msgid "Transmission"
+msgstr "传送"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_attribute_uom_id
+msgid "Unit of Measure"
+msgstr "度量单位"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_user_id
+msgid "User"
+msgstr "用户"
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_rims_378
+msgid "V-spoke 16\""
+msgstr "V-spoke 16\""
+
+#. module: product_configurator
+#: model:product.attribute.value,name:product_configurator.product_attribute_value_rims_387
+msgid "V-spoke 18\""
+msgstr "V-spoke 18\""
+
+#. module: product_configurator
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_form_view
+msgid "Validation"
+msgstr "验证"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_custom_value_value
+#: model:ir.ui.view,arch_db:product_configurator.product_attribute_value_form_view
+msgid "Value"
+msgstr "值"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_session_value_ids
+msgid "Value ids"
+msgstr "id 值"
+
+#. module: product_configurator
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_domain_line_value_ids
+#: model:ir.model.fields,field_description:product_configurator.field_product_config_line_value_ids
+msgid "Values"
+msgstr "值"
+
+#. module: product_configurator
+#: code:addons/product_configurator/models/product_config.py:213
+#, python-format
+msgid "Values entered for line '%s' generate a incompatible configuration"
+msgstr "输入的参数值 '%s' 生成不兼容的配置信息"
+
+#. module: product_configurator
+#: model:ir.model.fields,help:product_configurator.field_product_attribute_search_ok
+msgid ""
+"When checking for variants with the same configuration, do we include this "
+"field in the search?"
+msgstr "在检查具有相同配置的变体时，是否搜索中包含此字段？"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute_line
+msgid "product.attribute.line"
+msgstr "product.attribute.line"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute_value
+msgid "product.attribute.value"
+msgstr "product.attribute.value"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_attribute_value_custom
+msgid "product.attribute.value.custom"
+msgstr "product.attribute.value.custom"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_domain
+msgid "product.config.domain"
+msgstr "product.config.domain"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_domain_line
+msgid "product.config.domain.line"
+msgstr "product.config.domain.line"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_image
+msgid "product.config.image"
+msgstr "product.config.image"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_line
+msgid "product.config.line"
+msgstr "product.config.line"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_session
+msgid "product.config.session"
+msgstr "product.config.session"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_session_custom_value
+msgid "product.config.session.custom.value"
+msgstr "product.config.session.custom.value"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_step
+msgid "product.config.step"
+msgstr "product.config.step"
+
+#. module: product_configurator
+#: model:ir.model,name:product_configurator.model_product_config_step_line
+msgid "product.config.step.line"
+msgstr "product.config.step.line"
