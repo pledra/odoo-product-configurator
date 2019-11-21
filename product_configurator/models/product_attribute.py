@@ -283,11 +283,18 @@ class ProductAttributeValue(models.Model):
             ('product_tmpl_id', '=', product_template_id),
             ('product_attribute_value_id', 'in', self.ids)]
         )
-        extra_prices = {
-            av.product_attribute_value_id.id: av.price_extra
-            for av in product_template_value_ids
-            if av.price_extra
-        }
+        extra_prices = {}
+        for av in product_template_value_ids:
+            pricelist = (
+                self.env.user.partner_id.property_product_pricelist
+            )
+            product = av.product_attribute_value_id.product_id
+            if product:
+                extra_prices[av.product_attribute_value_id.id] = product.with_context(
+                    pricelist=pricelist.id
+                ).price
+            else:
+                extra_prices[av.product_attribute_value_id.id] = av.price_extra
 
         price_precision = self.env['decimal.precision'].precision_get(
             'Product Price'

@@ -832,8 +832,17 @@ class ProductConfigSession(models.Model):
             ('product_tmpl_id', 'in', product_tmpl.ids),
             ('product_attribute_value_id', 'in', value_ids)
         ])
-        for product_tmpl_attr_val in product_tmpl_attr_values:
-            price_extra += product_tmpl_attr_val.price_extra
+        for attr_val in product_tmpl_attr_values:
+            pricelist = (
+                self.env.user.partner_id.property_product_pricelist
+            )
+            product = attr_val.product_attribute_value_id.product_id
+            if product:
+                price_extra += product.with_context(
+                    pricelist=pricelist.id
+                ).price
+            else:
+                price_extra += attr_val.price_extra
 
         return product_tmpl.list_price + price_extra
 
