@@ -59,7 +59,7 @@
                         <field name="value_ids"
                                widget="many2many_tags"
                                attrs="{'readonly': [('attribute_line_id','=',False)]}"
-                               domain="[('id','in',attr_line_val_ids[0][2])]"
+                               domain="[('id','in',attr_line_val_ids)]"
                                options="{'no_create': True, 'no_create_edit': True}"
                                context="{'show_attribute': False}"/>
                         <field name="domain_id"/>

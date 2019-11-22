@@ -1,6 +1,7 @@
 odoo.define('website_product_configurator.website_form', function (require) {
-"use strict";
+    "use strict";
 
+    require('web.dom_ready');
     var ajax = require('web.ajax');
     var core = require('web.core');
     var base = require('web_editor.base');
@@ -9,39 +10,43 @@ odoo.define('website_product_configurator.website_form', function (require) {
     var path = window.location.pathname;
     var config_form = $("#product_config_form");
 
+    var ret = {};
+
     $('button.cfg_clear').on('click', function(event){
         var path = window.location.pathname;
         ajax.jsonRpc(path + "/config_clear", 'call', {}).then(
             function (res) {
                 if (res) {
-                    window.location.replace(res)
+                    window.location.replace(res);
                 }
         });
     });
 
-    function get_cfg_vals() {
+    ret.get_cfg_vals = function get_cfg_vals() {
         var cfg_vals = {};
         var inputs = config_form.find('.cfg_input');
 
         inputs.each(function(){
             var value = parseInt($(this).val());
-            cfg_vals[$(this).attr('name')] = parseInt($(this).val())
+            cfg_vals[$(this).attr('name')] = parseInt($(this).val());
         });
 
         return cfg_vals;
     };
 
-    function update_config_image(cfg_vals) {
-        ajax.jsonRpc(path + "/image_update", 'call', {'cfg_vals': cfg_vals}).then(
+    ret.update_config_image = function update_config_image(cfg_vals) {
+        return ajax.jsonRpc(path + "/image_update", 'call', {'cfg_vals': cfg_vals}).then(
             function (res) {
                 if (res) {
                     $('#cfg_image').attr('src', res);
                 }
+
+                return res;
         });
     };
 
-    function update_price(onchange_vals) {
-        var dom_prices = $('#cfg_price_tags')
+    ret.update_price = function update_price(onchange_vals) {
+        var dom_prices = $('#cfg_price_tags');
         dom_prices.text('');
         $('#cfg_tax').text(onchange_vals['prices']['taxes']);
         $('#cfg_total').text(onchange_vals['prices']['total']);
@@ -57,19 +62,22 @@ odoo.define('website_product_configurator.website_form', function (require) {
             dom_prices.append($('<div>').addClass('col-sm-4 text-right').append(price, currency));
             dom_prices.append($('<div>').addClass('clearfix'));
         });
-    }
+    };
 
 
-    function value_onchange(cfg_vals) {
+    ret.value_onchange = function value_onchange(cfg_vals) {
         /* Show/hide available values with the configuration present in frontend passed as cfg_vals */
-        ajax.jsonRpc(path + "/value_onchange", 'call', {'cfg_vals': cfg_vals}).then(
+        return ajax.jsonRpc(path + "/value_onchange", 'call', {'cfg_vals': cfg_vals}).then(
                 function (res) {
                     if (res) {
+                        var value_selector = '[value="' + res['value_ids'].join('"],[value="') + '"]';
+
+                        // This is for the 'Select-Box' view
                         var select_fields = config_form.find('select.cfg_input');
                         if (select_fields) {
                             var options = select_fields.children('option').not(':empty,[value="custom"]');
                             options.addClass('hidden');
-                            var available_options = options.filter('[value="' + res['value_ids'].join('"],[value="') + '"]');
+                            var available_options = options.filter(value_selector);
                             var unavailable_options = options.not(available_options).get();
                             $(unavailable_options).prop('selected', false);
                             available_options.removeClass('hidden');
@@ -77,34 +85,50 @@ odoo.define('website_product_configurator.website_form', function (require) {
                             select_fields.each(function(){
                                 var select_options = $(this).children('option').not(':empty,.hidden');
                                 $(this).prop('disabled', select_options.length ? false : true);
-                            })
+                            });
 
                         }
+
+                        // Radio-Thumbnail view
+                        var input_groups = config_form.find('.input-group:has(input.cfg_input)');
+                        if (input_groups) {
+                            input_groups.addClass('hidden');
+                            var available_inputs = input_groups.filter(':has(input.cfg_input' + value_selector + ')');
+                            available_inputs.removeClass('hidden');
+                            var unavailable_inputs = input_groups.not(available_inputs).get();
+                            $(unavailable_inputs).prop('selected', false);
+                        }
+
                         config_form.find('.cfg_input').each(function(){
-                            update_price(res);
+                            ret.update_price(res);
                         });
                     }
+
+                    return res;
             });
     };
 
     /* Show custom input and when option is picked in selection field */
 
-    config_form.on('change', '.cfg_input, .custom_val:not([type="file"])', onchange);
+    config_form.on('change', '.cfg_input, .custom_val:not([type="file"])', function() {
+        // Allow for dynamically set onchange handler
+        return ret.onchange.apply(this, arguments);
+    });
 
     /*TODO* Only when value is changed in custom value trigger not on every blur*/
 
-    function onchange(){
+    ret.onchange = function onchange(){
         var cfg_input = $(this);
         var cfg_vals = config_form.find('.cfg_input, .custom_val').serializeArray();
         var custom_input = config_form.find('#custom_attribute_' + cfg_input.data('oe-id'));
         var value = cfg_input.val();
 
         /* Send all values from the form to backend */
-        value_onchange(cfg_vals);
+        ret.value_onchange(cfg_vals);
 
         if (cfg_input.is(':checked')) {
             if (cfg_input.attr('type') == 'radio') {
-                var radio_inputs = config_form.find("input[name='" + cfg_input.attr('name') + "']")
+                var radio_inputs = config_form.find("input[name='" + cfg_input.attr('name') + "']");
                 radio_inputs.each(function(){
                     if ($(this) != cfg_input) {
                         $(this).parent().removeClass('active');
@@ -112,20 +136,18 @@ odoo.define('website_product_configurator.website_form', function (require) {
                 });
             }
             cfg_input.parent().addClass('active');
-        }
-        else {
+        } else {
             $(this).parent().removeClass('active');
         }
 
         if (custom_input && value == 'custom'){
             custom_input.attr('readonly', false);
             custom_input.closest('div.cfg_custom').removeClass('hidden');
-        }
-        else {
+        } else {
             custom_input.attr('readonly', 'readonly');
-            custom_input.closest('div.cfg_custom').addClass('hidden')
+            custom_input.closest('div.cfg_custom').addClass('hidden');
             if (cfg_vals && $(this).hasClass('cfg_img_update')){
-                update_config_image(cfg_vals);
+                ret.update_config_image(cfg_vals);
             }
         }
     };
@@ -147,7 +169,7 @@ odoo.define('website_product_configurator.website_form', function (require) {
             var mousex = e.pageX + 20; //Get X coordinates
             var mousey = e.pageY + 10; //Get Y coordinates
             $('.attr_description')
-            .css({ top: mousey, left: mousex })
+            .css({ top: mousey, left: mousex });
     });
 
     /* Validate the form */
@@ -177,4 +199,5 @@ odoo.define('website_product_configurator.website_form', function (require) {
         return false;
     });
 
+    return ret;
 });

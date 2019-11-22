@@ -3,12 +3,14 @@ odoo.define('product_configurator.FormView', function (require) {
 "use strict";
 
 var core = require('web.core');
+var field_registry = require('web.field_registry');
 var _t = core._t;
 
-var FieldBooleanButton = core.form_widget_registry.map['boolean_button'].extend({
+var FieldBooleanButton = field_registry.map['boolean_button'].extend({
     init: function() {
         this._super.apply(this, arguments);
-        switch (this.options["terminology"]) {
+        var terminology = this.attrs.options && this.attrs.options['terminology'];
+        switch (terminology) {
             case "config":
                 this.string_true = _t("Configurable");
                 this.hover_true = _t("Deactivate");
@@ -20,6 +22,6 @@ var FieldBooleanButton = core.form_widget_registry.map['boolean_button'].extend(
 });
 
 
-core.form_widget_registry.add('boolean_button', FieldBooleanButton);
+field_registry.add('boolean_button', FieldBooleanButton);
 
 });

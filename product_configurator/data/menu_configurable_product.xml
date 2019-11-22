@@ -2,7 +2,10 @@
 <openerp>
     <data>
 
-        <menuitem id="menu_product_configurable" name="Configurable Products" parent="sales_team.menu_base_partner" sequence="20" />
+        <menuitem id="menu_product_configurable"
+                  name="Configurable Products"
+                  parent="sale.sale_menu_root"
+                  sequence="20" />
 
         <record id="product_configurable_template_action" model="ir.actions.act_window">
             <field name="name">Configurable Templates</field>

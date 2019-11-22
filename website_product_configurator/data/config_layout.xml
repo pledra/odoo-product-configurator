@@ -55,10 +55,10 @@
           <input
               type="text"
               t-att-id="cfg_vars['custom_attr_field_prefix'] + str(line.attribute_id.id)"
-              t-att-min="line.attribute_id.min_val"
-              t-att-max="line.attribute_id.max_val"
+              t-att-min="str(line.attribute_id.min_val)"
+              t-att-max="str(line.attribute_id.max_val)"
               t-att-name="cfg_vars['custom_attr_field_prefix'] + str(line.attribute_id.id)"
-              t-att-class="'js_quantity form-control %s' % ' '.join(attr_classes)"
+              t-att-class="'js_quantity form-control ' + ' '.join(attr_classes)"
               t-att-value="custom_value.value"
               t-att-readonly="'readonly' if not custom_value else None"/>
           <span class="input-group-addon">
@@ -80,7 +80,7 @@
         <input type="file"
           t-att-id="cfg_vars['custom_attr_field_prefix'] + str(line.attribute_id.id)"
           t-att-name="cfg_vars['custom_attr_field_prefix'] + str(line.attribute_id.id)"
-          t-att-class="'form-control %s' % ' '.join([cls for cls in attr_classes if cls != 'required' and not custom_value.attachment_ids])"
+          t-att-class="'form-control ' + ' '.join([cls for cls in attr_classes if cls != 'required' and not custom_value.attachment_ids])"
           t-att-readonly="'readonly' if not custom_value else None"
           t-att-multiple="'multiple' if line.multi else ''"/>
       </t>
@@ -101,7 +101,7 @@
     <!-- TODO: Make a scenario for lines allowing multiple selection, maybe checkbox in select?-->
     <template id="config_form_select" primary="True" inherit_id="config_form_base" name="Selection-Box">
     <xpath expr="." position="inside">
-      <form id="product_config_form" class="form-horizontal" method="post" enctype="multipart/form-data">
+      <form id="product_config_form" class="col-md-8 form-horizontal" method="post" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
         <t t-set="lines" t-value="cfg_vars.get('cfg_step_lines') or cfg_vars['attr_lines']"/>
         <t t-set="cfg_val_ids" t-value="cfg_vars['cfg_session'].value_ids"/>
@@ -154,7 +154,7 @@
 
     <template id="config_form_radio" primary="True" inherit_id="config_form_base" name="Radio-Thumbnail">
     <xpath expr="." position="inside">
-      <form id="product_config_form" class="form-horizontal" method="post">
+      <form id="product_config_form" class="col-md-8 form-horizontal" method="post">
         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
         <t t-set="lines" t-value="cfg_vars.get('cfg_step_lines') or cfg_vars.get('attr_lines')"/>
         <t t-foreach="lines" t-as="line">

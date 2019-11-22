@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Product Configurator Manufacturing',
-    'version': '10.0.1.0.0',
+    'version': '11.0.1.0.0',
     'category': 'Manufacturing',
     'summary': 'BOM Support for configurable products',
     'author': 'Pledra',

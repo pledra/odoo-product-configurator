@@ -26,13 +26,13 @@ class ProductConfigurator(models.TransientModel):
     # depending on complexity and AFK time we must increase the lifespan
     # of this TransientModel life
 
-    @api.multi
     @api.depends('product_tmpl_id', 'value_ids', 'custom_value_ids')
     def _compute_cfg_image(self):
         # TODO: Update when allowing custom values to influence image
-        product_tmpl = self.product_tmpl_id.with_context(bin_size=False)
-        img_obj = product_tmpl.get_config_image_obj(self.value_ids.ids)
-        self.product_img = img_obj.image
+        for r in self:
+            product_tmpl = r.product_tmpl_id.with_context(bin_size=False)
+            img_obj = product_tmpl.get_config_image_obj(r.value_ids.ids)
+            r.product_img = img_obj.image
 
     # TODO: We could use a m2o instead of a monkeypatched select field but
     # adding new steps should be trivial via custom development
@@ -121,9 +121,9 @@ class ProductConfigurator(models.TransientModel):
         """
         vals = {}
 
-        dynamic_fields = {k: v for k, v in dynamic_fields.iteritems() if v}
+        dynamic_fields = {k: v for k, v in dynamic_fields.items() if v}
 
-        for k, v in dynamic_fields.iteritems():
+        for k, v in dynamic_fields.items():
             if not v:
                 continue
             available_val_ids = domains[k][0][2]
@@ -136,7 +136,7 @@ class ProductConfigurator(models.TransientModel):
                 vals[k] = None
 
         product_img = self.product_tmpl_id.get_config_image_obj(
-            dynamic_fields.values())
+            list(dynamic_fields.values()))
 
         vals.update(product_img=product_img.image)
 
@@ -167,12 +167,12 @@ class ProductConfigurator(models.TransientModel):
             cfg_step = self.env['product.config.step.line']
 
         dynamic_fields = {
-            k: v for k, v in values.iteritems() if k.startswith(
+            k: v for k, v in values.items() if k.startswith(
                 self.field_prefix)
         }
 
         # Get the unstored values from the client view
-        for k, v in dynamic_fields.iteritems():
+        for k, v in dynamic_fields.items():
             attr_id = int(k.split(self.field_prefix)[1])
             line_attributes = cfg_step.attribute_line_ids.mapped(
                 'attribute_id')
@@ -234,6 +234,11 @@ class ProductConfigurator(models.TransientModel):
         comodel_name='sale.order.line',
         readonly=True,
     )
+
+    @api.model
+    def _get_field_types(self):
+        # retrieve the possible field types from the field classes' metaclass
+        return sorted((key, key) for key in fields.MetaField.by_type)
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -307,7 +312,7 @@ class ProductConfigurator(models.TransientModel):
 
                 # Set default field type
                 field_type = 'char'
-                field_types = self.env['ir.model.fields']._get_field_types()
+                field_types = self._get_field_types()
 
                 if attribute.custom_type:
                     custom_type = line.attribute_id.custom_type
@@ -358,7 +363,7 @@ class ProductConfigurator(models.TransientModel):
         # Get updated fields including the dynamic ones
         fields = self.fields_get()
         dynamic_fields = {
-            k: v for k, v in fields.iteritems() if k.startswith(
+            k: v for k, v in fields.items() if k.startswith(
                 self.field_prefix) or k.startswith(self.custom_field_prefix)
         }
 
@@ -463,7 +468,7 @@ class ProductConfigurator(models.TransientModel):
                         val_ids = val_ids - domain_line.value_ids
                         attr_depends[attr_field] |= set(val_ids.ids)
 
-                for dependee_field, val_ids in attr_depends.iteritems():
+                for dependee_field, val_ids in attr_depends.items():
                     if not val_ids:
                         continue
                     attrs['readonly'].append(
@@ -567,7 +572,6 @@ class ProductConfigurator(models.TransientModel):
         custom_ext_id = 'product_configurator.custom_attribute_value'
         custom_val = self.env.ref(custom_ext_id)
         dynamic_vals = {}
-
         res = super(ProductConfigurator, self).read(fields=fields, load=load)
 
         if not dynamic_fields:
@@ -587,29 +591,37 @@ class ProductConfigurator(models.TransientModel):
                 lambda v: v in self.value_ids)
 
             if not attr_line.custom and not vals:
+                res[0][field_name] = False
                 continue
 
-            if attr_line.custom and custom_vals:
-                dynamic_vals.update({
-                    field_name: custom_val.id,
-                })
-                if attr_line.attribute_id.custom_type == 'binary':
+            if attr_line.custom:
+                if custom_vals:
                     dynamic_vals.update({
-                        custom_field_name: custom_vals.eval()
+                        field_name: [custom_val.id, custom_val.name],
                     })
+                    if attr_line.attribute_id.custom_type == 'binary':
+                        dynamic_vals.update({
+                            custom_field_name: custom_vals.eval(),
+                        })
+                    else:
+                        dynamic_vals.update({
+                            custom_field_name: custom_vals.eval(),
+                        })
                 else:
                     dynamic_vals.update({
-                        custom_field_name: custom_vals.eval()
+                        field_name: False,
+                        custom_field_name: False,
                     })
             elif attr_line.multi:
-                dynamic_vals = {field_name: [[6, 0, vals.ids]]}
+                dynamic_vals = {field_name: vals.ids}
             else:
                 try:
                     vals.ensure_one()
-                    dynamic_vals = {field_name: vals.id}
+                    dynamic_vals = {field_name: [vals.id, vals.name]}
                 except:
                     continue
             res[0].update(dynamic_vals)
+
         return res
 
     @api.multi

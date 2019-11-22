@@ -187,100 +187,104 @@
   </t>
 </template>
 
+<template id="configurator_summary" name="Configuration Form Summary">
+    <div class="col-md-4">
+        <img id="cfg_image" itemprop="image" class="img img-responsive" t-att-src="get_config_image(product_tmpl, cfg_vars['cfg_session'].value_ids.ids)"/>
+        <div id="cfg_price" class="row mt16">
+            <t t-set="prices" t-value="product_tmpl.get_cfg_price(cfg_val_ids.ids, formatLang=True)"/>
+            <t t-set="vals" t-value="prices.get('vals')"/>
+            <div id="cfg_price_tags" class="col-xs-12">
+                <t t-foreach="vals" t-as="vals">
+                    <t t-if="vals[0]">
+                        <div class="col-sm-8 text-right">
+                            <div class="label label-info">
+                                <t t-esc="vals[0]"/>:
+                                <t t-esc="vals[1]"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-right">
+                            <span style="white-space: nowrap;" t-esc="vals[2]"/>
+                            <span t-field="pricelist.currency_id"/>
+                        </div>
+                        <div class="clearfix"/>
+                    </t>
+                </t>
+            </div>
+            <div class="col-xs-12 mt16">
+                <div class="col-xs-6 text-right"><h4>Total: </h4></div>
+                <div class="col-xs-6">
+                    <h4>
+                        <span id="cfg_total" style="white-space: nowrap;" t-esc="prices['total']"/>
+                        <span t-esc="prices['currency']"/>
+                    </h4>
+                </div>
+                <div class="col-xs-6 text-right" style="opacity: 0.8">
+                    <h5 style="margin: 0">Taxes:</h5>
+                </div>
+                <div class="col-xs-6">
+                    <h5 style="margin: 0">
+                        <span id="cfg_tax" t-esc="prices['taxes']"/>
+                        <span t-esc="prices['currency']"/>
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
 <!-- Product configurator wizard -->
 
-  <template id="product_configurator">
+<template id="product_configurator">
     <t t-call="website.layout">
         <t t-set="cfg_val_ids" t-value="cfg_vars['cfg_session'].value_ids"/>
         <t t-set="additional_title">Product Configurator</t>
         <div id="wrap">
             <div class="oe_structure"/>
             <div class="container mb32">
-            <div class="row mt8">
-              <div class="col-xs-12">
-                <t t-call="website.publish_management" groups="sales_team.group_sale_manager">
-                    <t t-set="object" t-value="product_tmpl" />
-                    <t t-set="publish_edit" t-value="True" />
-                    <t t-set="action" t-value="'product.product_template_action'" />
-                </t>
-              </div>
-              <!-- <div class="col-sm-4">
-                  <ol class="breadcrumb">
-                      <li><a t-att-href="keep(category=0)" onclick="history.go(-1); return false;">Products</a></li>
-                      <li t-if="category"><a t-att-href="keep('/shop/category/%s' % slug(category), category=0)" t-field="category.name"/></li>
-                      <li class="active"><span t-field="product_tmpl.name"/></li>
-                  </ol>
-              </div>      -->
-              <div class="col-lg-4 text-left" id="cfg_tmpl_name">
-                <h1 t-field="product_tmpl.name"/>
-              </div>
-              <div class="col-lg-2 text-center" id="cfg_toolbar">
-                <button type="button" class="btn btn-default btn-md cfg_clear center-block">
-                  <span class="fa fa-refresh"></span> Reset
-                </button>
-              </div>
-              <div class="col-lg-6" id="cfg_statusbar">
-                <t t-call="website_product_configurator.config_steps"/>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-8" id="config_error" t-if="fatal_error" >
-                <div class="alert alert-danger" role="alert">
-                  <span class="fa fa-exclamation" aria-hidden="true"></span>
-                  <span class="sr-only">Error:</span>
-                  <span t-esc="fatal_error"/>
+                <div class="row mt8">
+                    <div class="col-xs-12">
+                        <t t-call="website.publish_management" groups="sales_team.group_sale_manager">
+                            <t t-set="object" t-value="product_tmpl" />
+                            <t t-set="publish_edit" t-value="True" />
+                            <t t-set="action" t-value="'product.product_template_action'" />
+                        </t>
+                    </div>
+                    <!-- <div class="col-sm-4">
+                         <ol class="breadcrumb">
+                         <li><a t-att-href="keep(category=0)" onclick="history.go(-1); return false;">Products</a></li>
+                         <li t-if="category"><a t-att-href="keep('/shop/category/%s' % slug(category), category=0)" t-field="category.name"/></li>
+                         <li class="active"><span t-field="product_tmpl.name"/></li>
+                         </ol>
+                         </div>      -->
+                    <div class="col-lg-4 text-left" id="cfg_tmpl_name">
+                        <h1 t-field="product_tmpl.name"/>
+                    </div>
+                    <div class="col-lg-2 text-center" id="cfg_toolbar">
+                        <button type="button" class="btn btn-default btn-md cfg_clear center-block">
+                            <span class="fa fa-refresh"></span> Reset
+                        </button>
+                    </div>
+                    <div class="col-lg-6" id="cfg_statusbar">
+                        <t t-call="website_product_configurator.config_steps"/>
+                    </div>
                 </div>
-              </div>
-              <div id="cfg_container" class="col-md-8">
-                <t t-call="website_product_configurator.config_form"/>
-              </div>
-              <div class="col-md-4">
-                <img id="cfg_image" itemprop="image" class="img img-responsive" t-att-src="get_config_image(product_tmpl, cfg_vars['cfg_session'].value_ids.ids)"/>
-                <div id="cfg_price" class="row mt16">
-                  <t t-set="prices" t-value="product_tmpl.get_cfg_price(cfg_val_ids.ids, formatLang=True)"/>
-                  <t t-set="vals" t-value="prices.get('vals')"/>
-                  <div id="cfg_price_tags" class="col-xs-12">
-                    <t t-foreach="vals" t-as="vals">
-                      <t t-if="vals[0]">
-                        <div class="col-sm-8 text-right">
-                          <div class="label label-info">
-                            <t t-esc="vals[0]"/>:
-                            <t t-esc="vals[1]"/>
-                          </div>
+                <div class="row">
+                    <div class="col-md-8" id="config_error" t-if="fatal_error" >
+                        <div class="alert alert-danger" role="alert">
+                            <span class="fa fa-exclamation" aria-hidden="true"></span>
+                            <span class="sr-only">Error:</span>
+                            <span t-esc="fatal_error"/>
                         </div>
-                        <div class="col-sm-4 text-right">
-                          <span style="white-space: nowrap;" t-esc="vals[2]"/>
-                          <span t-field="pricelist.currency_id"/>
-                        </div>
-                        <div class="clearfix"/>
-                      </t>
-                    </t>
-                  </div>
-                  <div class="col-xs-12 mt16">
-                    <div class="col-xs-6 text-right"><h4>Total: </h4></div>
-                    <div class="col-xs-6">
-                      <h4>
-                        <span id="cfg_total" style="white-space: nowrap;" t-esc="prices['total']"/>
-                        <span t-esc="prices['currency']"/>
-                      </h4>
                     </div>
-                    <div class="col-xs-6 text-right" style="opacity: 0.8">
-                      <h5 style="margin: 0">Taxes:</h5>
+                    <div id="cfg_container" class="col-md-8">
+                        <t t-call="website_product_configurator.config_form"/>
                     </div>
-                    <div class="col-xs-6">
-                      <h5 style="margin: 0">
-                        <span id="cfg_tax" t-esc="prices['taxes']"/>
-                        <span t-esc="prices['currency']"/>
-                      </h5>
-                    </div>
-                  </div>
+                    <t t-call="website_product_configurator.configurator_summary" />
                 </div>
-              </div>
-            </div>
             </div>
         </div>
     </t>
-  </template>
+</template>
 
 <!-- Product configurator checkout -->
 
