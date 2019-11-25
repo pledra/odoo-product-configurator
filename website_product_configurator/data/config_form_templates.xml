@@ -298,7 +298,7 @@
                                 t-att-name="value.id"
                                 t-att-disabled="value.id not in available_value_ids and True or False">
                                 <t t-esc="value.name"/>
-                                <t t-set="price_extra" t-value="value.get_attr_value_name(product_tmpl, pricelist.id).get(value.id)"/>
+                                <t t-set="price_extra" t-value="value.website_product_price_extra_value(product_tmpl, pricelist.id).get(value.id)"/>
                                 <t t-if="price_extra">
                                     (+<t t-esc="price_extra" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id, 'from_currency': website.currency_id}"/>)
                                 </t>
@@ -346,10 +346,13 @@
                         t-att-data-old-val-id="(value_ids &amp; line.value_ids) and (value_ids &amp; line.value_ids).ids[0] or ''">
                         <t t-foreach="line.value_ids" t-as="value">
                             <div class="radio-card-container">
-                                <t t-set="value_label" t-value="value.get_attr_value_name(product_tmpl, pricelist.id).get(value.id)"/>
-                                <t t-if="value_label">
-                                    <span class="label_config_price_extra_radio">(+<t t-esc="value_label" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id, 'from_currency': website.currency_id}"/>)</span>
-                                </t>
+                                <t t-set="value_label" t-value="value.website_product_price_extra_value(product_tmpl, pricelist.id).get(value.id)"/>
+                                <span class="label_config_attr_value_radio">
+                                    <t t-esc="value.name"/>
+                                    <t t-if="value_label">
+                                        (+<t t-esc="value_label" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id, 'from_currency': website.currency_id}"/>)
+                                    </t>
+                                </span>
                                 <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                                     t-att-checked="'checked' if value.id in value_ids.ids else None"
                                     t-att-type="line.multi and 'checkbox' or 'radio'"

@@ -272,6 +272,22 @@ class ProductAttributeValue(models.Model):
         tools.image_resize_images(vals)
         return super(ProductAttributeValue, self).write(vals)
 
+    def get_product_price_extra_value(self, attr_values):
+        extra_prices = {}
+        for av in attr_values:
+            pricelist = (
+                self.env.user.partner_id.property_product_pricelist
+            )
+            product = av.product_attribute_value_id.product_id
+            if product:
+                extra_prices[av.product_attribute_value_id.id] = product.with_context(
+                    pricelist=pricelist.id
+                ).price
+            else:
+                extra_prices[av.product_attribute_value_id.id] = av.price_extra
+
+        return extra_prices
+
     @api.multi
     def name_get(self):
         res = super(ProductAttributeValue, self).name_get()
@@ -283,18 +299,7 @@ class ProductAttributeValue(models.Model):
             ('product_tmpl_id', '=', product_template_id),
             ('product_attribute_value_id', 'in', self.ids)]
         )
-        extra_prices = {}
-        for av in product_template_value_ids:
-            pricelist = (
-                self.env.user.partner_id.property_product_pricelist
-            )
-            product = av.product_attribute_value_id.product_id
-            if product:
-                extra_prices[av.product_attribute_value_id.id] = product.with_context(
-                    pricelist=pricelist.id
-                ).price
-            else:
-                extra_prices[av.product_attribute_value_id.id] = av.price_extra
+        extra_prices = self.get_product_price_extra_value(product_template_value_ids)
 
         price_precision = self.env['decimal.precision'].precision_get(
             'Product Price'
