@@ -155,9 +155,14 @@ class ProductConfig(ProductConfiguratorTestCases):
 
     def test_04_compute_cfg_price(self):
         # check for _compute_cfg_price
+        price = self.config_product.list_price
+        price += self.value_220i.product_id.lst_price
+        price += self.value_model_sport_line.product_id.lst_price
+        price += self.value_transmission.product_id.lst_price
+        price += self.value_options_2.product_id.lst_price
         self.assertEqual(
             self.session_id.price,
-            self.config_product.list_price,
+            price,
             'Error: If different session price and list_price\
             Method: _compute_cfg_price'
         )
@@ -413,10 +418,15 @@ class ProductConfig(ProductConfiguratorTestCases):
             'weight_extra': 20.0,
             'price_extra': 20.0,
         })
+        price = self.config_product.list_price
+        price += self.value_220i.product_id.lst_price
+        price += self.value_model_sport_line.product_id.lst_price
+        price += self.value_transmission.product_id.lst_price
+        price += self.value_options_2.product_id.lst_price
         price_extra_val = self.session_id.get_cfg_price()
         self.assertEqual(
             price_extra_val,
-            25020.0,
+            price + 20,
             'Error: If not equal price extra\
             Method: get_cfg_price()'
         )

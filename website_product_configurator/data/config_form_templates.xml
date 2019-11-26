@@ -41,7 +41,7 @@
                                 <!-- old code -->
                                 <!-- <span class="config_product_price" t-esc="cfg_session.price" t-options="{'widget': 'monetary', 'display_currency': product_tmpl.currency_id}"/> -->
                                 <!-- Bizzappdev start code -->
-                                <span class="config_product_price" t-esc="cfg_session.price" 
+                                <span class="config_product_price" t-esc="cfg_session.price"
                                     t-options="{'widget': 'monetary', 'display_currency': website.get_current_pricelist().currency_id}"/>
                                 <!-- Bizzappdev end code -->
 
@@ -298,7 +298,7 @@
                                 t-att-name="value.id"
                                 t-att-disabled="value.id not in available_value_ids and True or False">
                                 <t t-esc="value.name"/>
-                                <t t-set="price_extra" t-value="value.website_product_price_extra_value(product_tmpl, pricelist.id).get(value.id)"/>
+                                <t t-set="price_extra" t-value="extra_prices.get(value.id, 0)"/>
                                 <t t-if="price_extra">
                                     (+<t t-esc="price_extra" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id, 'from_currency': website.currency_id}"/>)
                                 </t>
@@ -346,27 +346,31 @@
                         t-att-data-old-val-id="(value_ids &amp; line.value_ids) and (value_ids &amp; line.value_ids).ids[0] or ''">
                         <t t-foreach="line.value_ids" t-as="value">
                             <div class="radio-card-container">
-                                <t t-set="value_label" t-value="value.website_product_price_extra_value(product_tmpl, pricelist.id).get(value.id)"/>
-                                <span class="label_config_attr_value_radio">
-                                    <t t-esc="value.name"/>
-                                    <t t-if="value_label">
-                                        (+<t t-esc="value_label" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id, 'from_currency': website.currency_id}"/>)
+                                <div class="info_config_attr_value_radio">
+                                    <span class="label_config_attr_value_radio">
+                                        <t t-esc="value.name"/>
+                                    </span>
+                                    <t t-set="price_extra" t-value="extra_prices.get(value.id, 0)"/>
+                                    <t t-if="price_extra">
+                                        <span class="label_config_price_extra_radio">
+                                            (+<t t-esc="price_extra" t-options="{'widget': 'monetary', 'display_currency': pricelist.currency_id, 'from_currency': website.currency_id}"/>)
+                                        </span>
                                     </t>
-                                </span>
-                                <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
-                                    t-att-checked="'checked' if value.id in value_ids.ids else None"
-                                    t-att-type="line.multi and 'checkbox' or 'radio'"
-                                    t-att-class="'config_attr_value'"
-                                    t-att-value="value.id"
-                                    t-att-data-oe-id="value.id"
-                                    t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                                    t-att-disabled="value.id not in available_value_ids and True or False"
-                                    t-att-title="value_label"/>
+                                    <input t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
+                                        t-att-checked="'checked' if value.id in value_ids.ids else None"
+                                        t-att-type="line.multi and 'checkbox' or 'radio'"
+                                        t-att-class="'config_attr_value'"
+                                        t-att-value="value.id"
+                                        t-att-data-oe-id="value.id"
+                                        t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
+                                        t-att-disabled="value.id not in available_value_ids and True or False"
+                                        t-att-title="value.name"/>
+                                </div>
                                 <label class="image_config_attr_value_radio"
                                     for="'%s%s' % (field_prefix, line.attribute_id.id)"
                                     t-att-data-val-id="value.id"
                                     t-attf-style="background-image:url(/web/image/product.attribute.value/{{value.id}}/image_medium);"
-                                    t-att-title="value_label">
+                                    t-att-title="value.name">
                                 </label>
                             </div>
                         </t>
