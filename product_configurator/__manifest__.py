@@ -18,6 +18,7 @@
         'views/product_view.xml',
         'views/product_attribute_view.xml',
         'views/product_config_view.xml',
+        'views/res_config_settings.xml',
         'wizard/product_configurator_view.xml',
     ],
     'demo': [
