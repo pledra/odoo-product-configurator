@@ -128,7 +128,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         website_tmpl_xml_id = cfg_session.get_config_form_website_template()
         pricelist = request.website.get_current_pricelist()
         attr_val_obj = request.env['product.attribute.value']
-        extra_prices = attr_val_obj.website_product_price_extra_value(
+        extra_prices = attr_val_obj.sudo().website_product_price_extra_value(
             product_tmpl=cfg_session.product_tmpl_id,
             pricelist=pricelist
         )

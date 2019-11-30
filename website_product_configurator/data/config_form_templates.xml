@@ -124,7 +124,7 @@
               <div role="tabpanel" t-attf-id="cfg_step_{{cfg_step_line.id}}"
                 t-att-data-step-id="cfg_step_line.id"
                 t-att-class="'tab-pane fade container' + (cfg_step_line.id == active_step.id and ' show active' or '')">
-                <t t-set="configuration_template_id" t-value="cfg_step_line.get_website_template()"/>
+                <t t-set="configuration_template_id" t-value="cfg_step_line.sudo().get_website_template()"/>
                 <t t-call="{{configuration_template_id}}">
                     <t t-set="cfg_step_attribute_line_ids" t-value="cfg_step_line.attribute_line_ids"/>
                 </t>
