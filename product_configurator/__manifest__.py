@@ -1,6 +1,6 @@
 {
     'name': 'Product Configurator',
-    'version': '11.0.1.0.16',
+    'version': '11.0.1.0.17',
     'category': 'Generic Modules/Base',
     'summary': 'Base for product configuration interface modules',
     'author': 'Pledra',
@@ -18,6 +18,7 @@
         'views/product_view.xml',
         'views/product_attribute_view.xml',
         'views/product_config_view.xml',
+        'views/res_config_settings.xml',
         'wizard/product_configurator_view.xml',
     ],
     'demo': [
