@@ -827,14 +827,11 @@ class ProductConfigSession(models.Model):
         value_ids = self.flatten_val_ids(value_ids)
 
         price_extra = 0.0
-        product_attr_val_obj = self.env['product.template.attribute.value']
-        product_tmpl_attr_values = product_attr_val_obj.search([
-            ('product_tmpl_id', 'in', product_tmpl.ids),
-            ('product_attribute_value_id', 'in', value_ids)
-        ])
         attr_val_obj = self.env['product.attribute.value']
+        av_ids = attr_val_obj.browse(value_ids)
         extra_prices = attr_val_obj.get_attribute_value_extra_prices(
-            pt_attr_value_ids=product_tmpl_attr_values
+            product_tmpl_id=product_tmpl.id,
+            pt_attr_value_ids=av_ids,
         )
         price_extra = sum(extra_prices.values())
         return product_tmpl.list_price + price_extra

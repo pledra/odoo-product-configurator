@@ -127,9 +127,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'Stock Weight') or 2
         website_tmpl_xml_id = cfg_session.get_config_form_website_template()
         pricelist = request.website.get_current_pricelist()
-        attr_val_obj = request.env['product.attribute.value']
-        extra_prices = attr_val_obj.sudo().website_product_price_extra_value(
-            product_tmpl=cfg_session.product_tmpl_id,
+        product_tmpl = cfg_session.product_tmpl_id
+        attr_value_ids = product_tmpl.attribute_line_ids.mapped('value_ids')
+        av_obj = request.env['product.attribute.value']
+        extra_prices = av_obj.sudo().get_attribute_value_extra_prices(
+            product_tmpl_id=product_tmpl.id,
+            pt_attr_value_ids=attr_value_ids,
             pricelist=pricelist
         )
 

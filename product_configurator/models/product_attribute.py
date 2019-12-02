@@ -273,23 +273,30 @@ class ProductAttributeValue(models.Model):
         return super(ProductAttributeValue, self).write(vals)
 
     @api.model
-    def get_attribute_value_extra_prices(self, pt_attr_value_ids,
-                                         pricelist=None):
+    def get_attribute_value_extra_prices(self, product_tmpl_id,
+                                         pt_attr_value_ids, pricelist=None):
         extra_prices = {}
         if not pricelist:
             pricelist = self.env.user.partner_id.property_product_pricelist
 
-        for av in pt_attr_value_ids:
-            attr_val_id = av.product_attribute_value_id
-            product = attr_val_id.product_id
+        related_product_av_ids = self.env['product.attribute.value'].search([
+            ('id', 'in', pt_attr_value_ids.ids),
+            ('product_id', '!=', False)
+        ])
+        extra_prices = {
+            av.id: av.product_id.with_context(pricelist=pricelist.id).price
+            for av in related_product_av_ids
+        }
+        remaining_av_ids = pt_attr_value_ids - related_product_av_ids
+        pe_lines = self.env['product.template.attribute.value'].search([
+            ('product_attribute_value_id', 'in', remaining_av_ids.ids),
+            ('product_tmpl_id', '=', product_tmpl_id)
+        ])
+        for line in pe_lines:
+            attr_val_id = line.product_attribute_value_id
             if attr_val_id.id not in extra_prices:
                 extra_prices[attr_val_id.id] = 0
-            if product:
-                extra_prices[attr_val_id.id] += product.with_context(
-                    pricelist=pricelist.id
-                ).price
-                continue
-            extra_prices[attr_val_id.id] += av.price_extra
+            extra_prices[attr_val_id.id] += line.price_extra
         return extra_prices
 
     @api.multi
@@ -298,17 +305,13 @@ class ProductAttributeValue(models.Model):
         if not self._context.get('show_price_extra'):
             return res
         product_template_id = self.env.context.get('active_id', False)
-        template_value_obj = self.env['product.template.attribute.value']
-        pt_attr_value_ids = template_value_obj.search([
-            ('product_tmpl_id', '=', product_template_id),
-            ('product_attribute_value_id', 'in', self.ids)]
-        )
 
         price_precision = self.env['decimal.precision'].precision_get(
             'Product Price'
         )
         extra_prices = self.get_attribute_value_extra_prices(
-            pt_attr_value_ids=pt_attr_value_ids
+            product_tmpl_id=product_template_id,
+            pt_attr_value_ids=self
         )
 
         res_prices = []
