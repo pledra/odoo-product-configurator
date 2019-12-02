@@ -323,8 +323,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
         specs = product_configurator_obj._onchange_spec()
         updates = {}
         try:
-            updates = product_configurator_obj.sudo().onchange(
-                config_vals, field_name, specs)
+            updates = product_configurator_obj.sudo().apply_onchange_values(
+                values=config_vals,
+                field_name=field_name,
+                field_onchange=specs
+            )
             updates['value'] = self.remove_recursive_list(updates['value'])
         except Exception as Ex:
             return {'error': Ex}
