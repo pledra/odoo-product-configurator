@@ -137,3 +137,10 @@
 #cfg_footer {
     padding-top: 15px;
 }
+
+.label_config_price_extra_radio {
+    position: absolute;
+    z-index: 1;
+    width: 138px;
+    margin: 25px auto auto 5px;;
+}

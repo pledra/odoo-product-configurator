@@ -126,6 +126,15 @@ class ProductConfigWebsiteSale(WebsiteSale):
         weight_prec = request.env['decimal.precision'].precision_get(
             'Stock Weight') or 2
         website_tmpl_xml_id = cfg_session.get_config_form_website_template()
+        pricelist = request.website.get_current_pricelist()
+        product_tmpl = cfg_session.product_tmpl_id
+        attr_value_ids = product_tmpl.attribute_line_ids.mapped('value_ids')
+        av_obj = request.env['product.attribute.value']
+        extra_prices = av_obj.sudo().get_attribute_value_extra_prices(
+            product_tmpl_id=product_tmpl.id,
+            pt_attr_value_ids=attr_value_ids,
+            pricelist=pricelist
+        )
 
         vals = {
             'cfg_session': cfg_session,
@@ -145,7 +154,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
             'weight_prec': weight_prec,
             'main_object': cfg_session.product_tmpl_id,
             'default_website_template': website_tmpl_xml_id,
-            'pricelist': request.website.get_current_pricelist(),
+            'pricelist': pricelist,
+            'extra_prices': extra_prices,
         }
         return vals
 
