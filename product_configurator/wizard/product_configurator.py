@@ -233,12 +233,11 @@ class ProductConfigurator(models.TransientModel):
 
         return vals
 
-    @api.multi
-    def onchange(self, values, field_name, field_onchange):
-        """ Override the onchange wrapper to return domains to dynamic
-        fields as onchange isn't triggered for non-db fields
-        """
-        # when it is called from controller then
+    def apply_onchange_values(self, values, field_name, field_onchange):
+        """Called from web-controller
+        - original onchage return M2o values in formate
+        (attr-value.id, attr-value.name) but on website
+        we need only attr-value.id"""
         product_tmpl_id = self.env['product.template'].browse(
             values.get('product_tmpl_id', []))
         if not product_tmpl_id:
@@ -319,6 +318,24 @@ class ProductConfigurator(models.TransientModel):
         )
 
         return {'value': vals, 'domain': domains}
+
+    @api.multi
+    def onchange(self, values, field_name, field_onchange):
+        """ Override the onchange wrapper to return domains to dynamic
+        fields as onchange isn't triggered for non-db fields
+        """
+        onchange_values = self.apply_onchange_values(
+            values=values,
+            field_name=field_name,
+            field_onchange=field_onchange
+        )
+        field_prefix = self._prefixes.get('field_prefix')
+        vals = onchange_values['value']
+        for key, val in vals.items():
+            if isinstance(val, int) and key.startswith(field_prefix):
+                att_val = self.env['product.attribute.value'].browse(val)
+                vals[key] = (att_val.id, att_val.name)
+        return onchange_values
 
     config_session_id = fields.Many2one(
         required=True,
@@ -645,7 +662,7 @@ class ProductConfigurator(models.TransientModel):
             node = etree.Element(
                 "field",
                 name=field_name,
-                on_change="onchange_attribute_value(%s, context)" % field_name,
+                on_change="1",
                 default_focus="1" if attr_line == attr_lines[0] else "0",
                 attrs=str(attrs),
                 context=str({
