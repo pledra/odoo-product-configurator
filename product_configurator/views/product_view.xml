@@ -101,7 +101,7 @@
                         <field name="domain_id"/>
                     </tree>
                 </field>
-                <separator colspan="4" string="Configuration Steps"/>
+                <separator colspan="4" string="Configuration Steps" name="configurator_steps"/>
                 <field name="config_step_line_ids"
                        attrs="{'readonly': [('attribute_line_ids','=',[])]}">
                     <tree string="Configuration Steps" editable="bottom">
@@ -113,7 +113,7 @@
                                widget="many2many_tags"/>
                     </tree>
                 </field>
-                <separator colspan="4" string="Configuration Images"/>
+                <separator colspan="4" string="Configuration Images" name="configurator_images"/>
                 <field name="config_image_ids">
                     <tree editable="bottom" string="Configuration Images">
                         <field name="sequence" widget="handle"/>
