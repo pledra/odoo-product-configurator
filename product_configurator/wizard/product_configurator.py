@@ -262,8 +262,11 @@ class ProductConfigurator(models.TransientModel):
         field_type = type(field_name)
 
         field_prefix = self._prefixes.get('field_prefix')
-
-        if field_type == list or not field_name.startswith(field_prefix):
+        custom_field_prefix = self._prefixes.get('custom_field_prefix')
+        if field_type == list or (
+            not field_name.startswith(field_prefix)
+            and not field_name.startswith(custom_field_prefix)
+        ):
             res = super(ProductConfigurator, self).onchange(
                 values, field_name, field_onchange)
             return res
