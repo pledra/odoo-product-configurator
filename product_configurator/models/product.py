@@ -339,12 +339,12 @@ class ProductTemplate(models.Model):
                 "The product template is archived so no "
                 "combination is possible."
             )
-        if self.config_ok:
-            yield(self.env['product.template.attribute.value'])
-        return super(ProductTemplate, self)._get_possible_combinations(
-            parent_combination=parent_combination,
-            necessary_values=necessary_values
-        )
+        if not self.config_ok:
+            return super(ProductTemplate, self)._get_possible_combinations(
+                parent_combination=parent_combination,
+                necessary_values=necessary_values
+            )
+        return iter([self.env['product.template.attribute.value']])
 
 
 class ProductProduct(models.Model):
