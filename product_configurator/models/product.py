@@ -332,7 +332,7 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def _get_possible_combinations(self, parent_combination=None,
-                                    necessary_values=None):
+                                   necessary_values=None):
         self.ensure_one()
         if not self.active:
             return _(
