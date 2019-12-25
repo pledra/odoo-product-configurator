@@ -21,6 +21,7 @@
                                     <field name="multi"/>
                                 </tree>
                             </field>
+                            <field name="stored_support_vals" invisible='1'/>
                         </group>
                         <group colspan="1">
                             <field attrs="{'invisible': [('product_img', '=', False)]}" name="product_img" readonly="1" nolabel="1" widget="image"/>

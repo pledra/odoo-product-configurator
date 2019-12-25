@@ -456,6 +456,9 @@ class ProductTemplate(models.Model):
         if custom_vals is None:
             custom_vals = {}
 
+        # Check if all the values passed are not restricted
+        avail_val_ids = self.values_available(value_ids, value_ids)
+
         for line in self.attribute_line_ids:
             # Validate custom values
             attr = line.attribute_id
@@ -465,11 +468,12 @@ class ProductTemplate(models.Model):
                 common_vals = set(value_ids) & set(line.value_ids.ids)
                 custom_val = custom_vals.get(attr.id)
                 if line.required and not common_vals and not custom_val:
-                    # TODO: Verify custom value type to be correct
-                    return False
+                    # If there are possible values, then enforce
+                    # the "required" status.
+                    if set(line.value_ids.ids) & set(avail_val_ids):
+                        # TODO: Verify custom value type to be correct
+                        return False
 
-        # Check if all all the values passed are not restricted
-        avail_val_ids = self.values_available(value_ids, value_ids)
         if set(value_ids) - set(avail_val_ids):
             return False
 
