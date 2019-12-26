@@ -26,5 +26,5 @@
         'static/description/cover.png'
     ],
     'application': True,
-    'installable': True,
+    'installable': False,
 }

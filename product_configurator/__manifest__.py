@@ -33,7 +33,7 @@
     ],
     'post_init_hook': 'post_init_hook',
     'qweb': ['static/xml/create_button.xml'],
-    'installable': True,
+    'installable': False,
     'application': True,
     'auto_install': False,
 }
