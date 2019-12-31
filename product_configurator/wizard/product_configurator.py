@@ -986,8 +986,6 @@ class ProductConfigurator(models.TransientModel):
     def action_reset(self):
         """Delete wizard and configuration session then create
         a new wizard+session and return an action for the new wizard object"""
-
-        ctx = dict(self._context)
         try:
             session = self.config_session_id
             # Field parent_id(of session) defind in
@@ -995,13 +993,14 @@ class ProductConfigurator(models.TransientModel):
             # be moved in product_configurator_subconfig
             # while session.parent_id:
             #     session = session.parent_id
-            ctx.update(default_product_tmpl_id=session.product_tmpl_id.id)
+            session_product_tmpl_id = session.product_tmpl_id
             session.unlink()
         except Exception:
             session = self.env["product.config.step"]
 
         action = self.with_context(
-            wizard_id=None, allow_preset_selection=False
+            wizard_id=None, allow_preset_selection=False,
+            default_product_tmpl_id=session_product_tmpl_id.id
         ).get_wizard_action()
         return action
 
