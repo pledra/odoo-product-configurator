@@ -356,7 +356,7 @@ class ProductConfigSession(models.Model):
            {attribute_id: parsed_custom_value}"""
         custom_vals = {}
         for val in self.custom_value_ids:
-            if val.attribute_id.custom_type in ["float", "int"]:
+            if val.attribute_id.custom_type in ["float", "integer"]:
                 custom_vals[val.attribute_id.id] = literal_eval(val.value)
             elif val.attribute_id.custom_type == "binary":
                 custom_vals[val.attribute_id.id] = val.attachment_ids
@@ -1621,7 +1621,7 @@ class ProductConfigSessionCustomValue(models.Model):
             if len(vals) == 1:
                 return vals[0]
             return vals
-        elif field_type == "int":
+        elif field_type == "integer":
             return int(self.value)
         elif field_type == "float":
             return float(self.value)

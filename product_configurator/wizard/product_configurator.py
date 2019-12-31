@@ -504,7 +504,7 @@ class ProductConfigurator(models.TransientModel):
                     field_types = FIELD_TYPES
                     custom_type = line.attribute_id.custom_type
                     # TODO: Rename int to integer in values
-                    if custom_type == "int":
+                    if custom_type == "integer":
                         field_type = "integer"
                     elif custom_type in [f[0] for f in field_types]:
                         field_type = custom_type

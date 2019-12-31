@@ -49,8 +49,8 @@
                     <group>
                         <group>
                             <field name="custom_type"/>
-                            <field name="min_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
-                            <field name="max_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
+                            <field name="min_val" attrs="{'invisible': [('custom_type','not in',['integer','float'])]}"/>
+                            <field name="max_val" attrs="{'invisible': [('custom_type','not in',['integer','float'])]}"/>
                         </group>
                         <group>
                             <field name="search_ok"/>

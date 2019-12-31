@@ -175,7 +175,7 @@ class ProductConfig(ProductConfiguratorTestCases):
                 'attribute_id': self.attr_fuel.id
             })
         # check for custom type Int
-        self.attr_fuel.custom_type = 'int'
+        self.attr_fuel.custom_type = 'integer'
         productConfigSessionCustVals.update({'value': 154})
         checkIntval = self.session_id._get_custom_vals_dict()
         attr_id = productConfigSessionCustVals.attribute_id.id
@@ -581,7 +581,7 @@ class ProductConfig(ProductConfiguratorTestCases):
                 'cfg_session_id': self.session_id.id,
                 'attribute_id': self.attr_fuel.id
             })
-        self.attr_fuel.custom_type = 'int'
+        self.attr_fuel.custom_type = 'integer'
         productConfigSessionCustVals.update({'value': 154})
         checkIntval = productConfigSessionCustVals.eval()
         self.assertEqual(

@@ -28,7 +28,7 @@ class ProductAttribute(models.Model):
     def onchange_custom_type(self):
         if self.custom_type in self._get_nosearch_fields():
             self.search_ok = False
-        if self.custom_type not in ("int", "float"):
+        if self.custom_type not in ("integer", "float"):
             self.min_val = False
             self.max_val = False
 
@@ -111,7 +111,7 @@ class ProductAttribute(models.Model):
         Probaly should check type, etc, but let's assume fine for the moment.
         """
         self.ensure_one()
-        if self.custom_type in ("int", "float"):
+        if self.custom_type in ("integer", "float"):
             minv = self.min_val
             maxv = self.max_val
             val = literal_eval(str(val))
@@ -141,7 +141,7 @@ class ProductAttribute(models.Model):
     def _check_constraint_min_max_value(self):
         """Prevent to add Maximun value less than minimum value"""
         for attribute in self:
-            if attribute.custom_type not in ("int", "float"):
+            if attribute.custom_type not in ("integer", "float"):
                 continue
             minv = attribute.min_val
             maxv = attribute.max_val
