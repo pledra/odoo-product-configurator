@@ -151,7 +151,7 @@ class ProductTemplate(models.Model):
             0
         ]
         value_ids = self.attribute_line_ids.mapped(
-            "product_template_value_ids"
+            "value_ids"
         ).ids
         action["domain"] = [("id", "in", value_ids)]
         context = safe_eval(action["context"], {"active_id": self.id})
