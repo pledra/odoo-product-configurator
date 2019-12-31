@@ -7,7 +7,7 @@
                 <t t-set="model" t-value="config_image_vals['name']"/>
                 <t t-foreach="config_image_vals['config_image_ids']" t-as="config">
                     <img id="cfg_image" itemprop="image" class="img img-responsive"
-                        t-attf-src="/web/image/{{model}}/{{config}}/image"/>
+                        t-attf-src="/web/image/{{model}}/{{config}}/image_1920"/>
                 </t>
             </span>
         </div>
@@ -372,7 +372,7 @@
                                     <label class="image_config_attr_value_radio"
                                         for="'%s%s' % (field_prefix, line.attribute_id.id)"
                                         t-att-data-val-id="value.id"
-                                        t-attf-style="background-image:url(/web/image/product.attribute.value/{{value.id}}/image_medium);"
+                                        t-attf-style="background-image:url(/web/image/product.attribute.value/{{value.id}}/image);"
                                         t-att-title="value.name">
                                     </label>
                                 </div>
@@ -392,7 +392,7 @@
                                     <label class="image_config_attr_value_radio"
                                         for="'%s%s' % (field_prefix, line.attribute_id.id)"
                                         t-att-data-val-id="custom_val_id.id"
-                                        t-attf-style="background-image:url(/web/image/product.attribute.value/{{custom_val_id.id}}/image_medium);"
+                                        t-attf-style="background-image:url(/web/image/product.attribute.value/{{custom_val_id.id}}/image);"
                                         t-att-title="custom_val_id.name">
                                     </label>
                                 </div>
@@ -428,8 +428,8 @@
                             <div id="o-carousel-product" class="carousel slide" data-ride="carousel" data-interval="0">
                               <div class="carousel-outer">
                                 <div class="carousel-inner">
-                                    <div t-if="variant_img" class="carousel-item active" itemprop="image" t-field="product_variant.image" t-options="{'widget': 'image', 'class': 'product_detail_img js_variant_img', 'alt-field': 'name', 'zoom': 'image', 'unique': str(product_tmpl['__last_update']) + (str(product_variant['__last_update']) or '')}"/>
-                                    <div t-attf-class="carousel-item#{'' if variant_img else ' active'}" itemprop="image" t-field="product_tmpl.image" t-options="{'widget': 'image', 'class': 'product_detail_img', 'alt-field': 'name', 'zoom': 'image', 'unique': product_tmpl['__last_update']}"/>
+                                    <div t-if="variant_img" class="carousel-item active" itemprop="image" t-field="product_variant.image_1920" t-options="{'widget': 'image', 'class': 'product_detail_img js_variant_img', 'alt-field': 'name', 'zoom': 'image_1920', 'unique': str(product_tmpl['__last_update']) + (str(product_variant['__last_update']) or '')}"/>
+                                    <div t-attf-class="carousel-item#{'' if variant_img else ' active'}" itemprop="image" t-field="product_tmpl.image_1920" t-options="{'widget': 'image', 'class': 'product_detail_img', 'alt-field': 'name', 'zoom': 'image_1920', 'unique': product_tmpl['__last_update']}"/>
                                     <t t-if="len(image_ids)" t-foreach="image_ids" t-as="pimg">
                                         <div class="carousel-item" t-field="pimg.image" t-options='{"widget": "image", "class": "product_detail_img", "alt-field": "name", "zoom": "image" }'/>
                                     </t>

@@ -18,7 +18,7 @@
         <field name="name">Luxury Line</field>
         <field name="type">product</field>
         <field name="lst_price" eval="0"/>
-        <field name="image" type="base64" file="product_configurator/static/img/product-luxury-line.jpg"/>
+        <field name="image_1920" type="base64" file="product_configurator/static/img/product-luxury-line.jpg"/>
     </record>
 
     <record id="product_configurator.product_bmw_model_sport_line" model="product.product">
