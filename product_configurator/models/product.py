@@ -352,6 +352,41 @@ class ProductTemplate(models.Model):
 
         return super(ProductTemplate, self).write(vals)
 
+    @api.constrains("config_line_ids")
+    def _check_config_line_domain(self):
+        attribute_line_ids = self.attribute_line_ids
+        tmpl_value_ids = attribute_line_ids.mapped("value_ids")
+        tmpl_attribute_ids = attribute_line_ids.mapped("attribute_id")
+        error_message = False
+        for domain_id in self.config_line_ids.mapped("domain_id"):
+            domain_attr_ids = domain_id.domain_line_ids.mapped("attribute_id")
+            domain_value_ids = domain_id.domain_line_ids.mapped("value_ids")
+            invalid_value_ids = domain_value_ids - tmpl_value_ids
+            invalid_attribute_ids = domain_attr_ids - tmpl_attribute_ids
+            if not invalid_value_ids and not invalid_value_ids:
+                continue
+            if not error_message:
+                error_message = _(
+                    "Following Attribute/Value from restriction "
+                    "are not present in template attributes/values. "
+                    "Please make sure you are adding right restriction"
+                )
+            error_message += _("\nRestriction: %s") % (domain_id.name)
+            error_message += (
+                invalid_attribute_ids
+                and _("\nAttribute/s: %s")
+                % (", ".join(invalid_attribute_ids.mapped("name")))
+                or ""
+            )
+            error_message += (
+                invalid_value_ids
+                and _("\nValue/s: %s\n")
+                % (", ".join(invalid_value_ids.mapped("name")))
+                or ""
+            )
+        if error_message:
+            raise ValidationError(error_message)
+
 
 class ProductProduct(models.Model):
     _inherit = "product.product"

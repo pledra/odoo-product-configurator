@@ -98,7 +98,10 @@
                                domain="[('id','in',attr_line_val_ids)]"
                                options="{'no_create': True, 'no_create_edit': True}"
                                context="{'show_attribute': False}"/>
-                        <field name="domain_id"/>
+                        <field name="domain_id" context="{'product_tmpl_id': product_tmpl_id or active_id or parent.id, 'product_attribute_ids': template_attribute_ids}"/>
+                        <field name="product_tmpl_id" invisible="1"/>
+                        <field name="template_attribute_ids" invisible="1"/>
+
                     </tree>
                 </field>
                 <separator colspan="4" string="Configuration Steps" name="configurator_steps"/>
