@@ -1,0 +1,10 @@
+.oe_stat_button {
+    &:hover {
+        .o_boolean_button .o_not_hover {
+            display: none;
+        }
+        .o_boolean_button .o_hover {
+            display: inline-block !important;
+        }
+    }
+}

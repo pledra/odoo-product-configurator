@@ -2,6 +2,8 @@
 <odoo>
 <data>
 
+    <!-- Configuration Restriction Lines -->
+
     <record id="product_config_line_gasoline_engines" model="product.config.line">
         <field name="product_tmpl_id" ref="bmw_2_series"/>
         <field name="attribute_line_id" ref="product_attribute_line_2_series_engine"/>

@@ -13,7 +13,7 @@
             <div name="button_box" position="inside">
                 <button class="oe_stat_button" name="toggle_config"
                     type="object" icon="fa-wrench" groups="product_configurator.group_product_configurator_manager">
-                    <field name="config_ok" widget="boolean_button" options='{"terminology": "config"}'/>
+                    <field name="config_ok"  options='{"active": "Configurable", "inactive": "Standard"}' widget="boolean_button"/>
                 </button>
             </div>
         </field>
@@ -119,7 +119,7 @@
                         <field name="sequence" widget="handle"/>
                         <field name="name"/>
                         <field name="value_ids" widget="many2many_tags" context="{'_cfg_product_tmpl_id': parent.id}"/>
-                        <field name="image" widget="image" height="30px"/>
+                        <field name="image_1920" widget="image" height="30px"/>
                     </tree>
                 </field>
                 <field name="attribute_line_val_ids" invisible="1"/>
@@ -204,7 +204,7 @@
             <xpath expr='//header' position="inside">
                 <button string="Variant Prices" type="object"
                     name="get_product_attribute_values_action"
-                    attrs="{'invisible': ['|', ('attribute_value_ids', '=', False), ('config_ok', '=', False)]}"
+                    attrs="{'invisible': ['|', ('product_template_attribute_value_ids', '=', False), ('config_ok', '=', False)]}"
                     groups="product_configurator.group_product_configurator_manager"/>
                 <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
                         class="oe_highlight"

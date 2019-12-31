@@ -13,7 +13,6 @@
                         type="object"
                         name="action_reset"
                         confirm="Are you sure? This will remove your current configuration for this template!"
-                        special="no_save"
                         class="oe_highlight"
                         attrs="{'invisible': ['|', ('product_tmpl_id', '=', False), ('state', '=', 'select')]}"/>
                 </header>
@@ -28,9 +27,9 @@
                                 readonly="context.get('product_tmpl_id_readonly', False)"
                                 required="True" options="{'no_create': True}"
                                 force_save="1"/>
-                            <field name="product_preset_id" invisible="context.get('wizard_id')" options="{'no_create': True}"/>
+                            <field name="product_preset_id" invisible="not context.get('allow_preset_selection')" options="{'no_create': True}"/>
                             <separator string="To reset/change the Preset Please close and start the configuration again"
-                                invisible="not context.get('wizard_id')" colspan="2"/>
+                                invisible="context.get('allow_preset_selection')" colspan="2"/>
                             <field attrs="{'invisible': [('attribute_line_ids', '=', [])]}" name="attribute_line_ids">
                                 <tree>
                                     <field name="attribute_id"/>
@@ -48,7 +47,7 @@
                 <footer>
                     <field name="value_ids" readonly="1" force_save="1" invisible="1"/>
                     <button type="object" name="action_previous_step"
-                        attrs="{'invisible': [('state','=','select')]}" string="Back" special="no_save"/>
+                        attrs="{'invisible': [('state','=','select')]}" string="Back"/>
                     <button type="object" name="action_next_step" class="oe_highlight" string="Next"/>
                 </footer>
             </form>

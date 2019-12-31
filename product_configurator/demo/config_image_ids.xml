@@ -2,10 +2,12 @@
 <odoo>
 <data>
 
+    <!-- Image Lines -->
+
     <record id="config_image_1" model="product.config.image">
         <field name="name">Coupé Red</field>
         <field name="product_tmpl_id" ref="bmw_2_series"/>
-        <field name="image" type="base64" file="product_configurator/static/img/2-series-coupe.jpg"/>
+        <field name="image_1920" type="base64" file="product_configurator/static/img/2-series-coupe.jpg"/>
         <field name="value_ids" eval="[(6,0,[
             ref('product_attribute_value_red')
         ])]"/>
@@ -14,7 +16,7 @@
     <record id="config_image_2" model="product.config.image">
         <field name="name">Coupé Silver</field>
         <field name="product_tmpl_id" ref="bmw_2_series"/>
-        <field name="image" type="base64" file="product_configurator/static/img/2-series-coupe-silver.jpg"/>
+        <field name="image_1920" type="base64" file="product_configurator/static/img/2-series-coupe-silver.jpg"/>
         <field name="value_ids" eval="[(6,0,[
             ref('product_attribute_value_silver')
         ])]"/>
@@ -23,7 +25,7 @@
     <record id="config_image_3" model="product.config.image">
         <field name="name">Coupé Black</field>
         <field name="product_tmpl_id" ref="bmw_2_series"/>
-        <field name="image" type="base64" file="product_configurator/static/img/2-series-coupe-black.jpg"/>
+        <field name="image_1920" type="base64" file="product_configurator/static/img/2-series-coupe-black.jpg"/>
         <field name="value_ids" eval="[(6,0,[
             ref('product_attribute_value_black')
         ])]"/>
@@ -32,7 +34,7 @@
     <record id="config_image_5" model="product.config.image">
         <field name="name">Coupé Red Rims 384</field>
         <field name="product_tmpl_id" ref="bmw_2_series"/>
-        <field name="image" type="base64" file="product_configurator/static/img/2-series-coupe-red-star-spoke-384.jpg"/>
+        <field name="image_1920" type="base64" file="product_configurator/static/img/2-series-coupe-red-star-spoke-384.jpg"/>
         <field name="value_ids" eval="[(6,0,[
             ref('product_attribute_value_red'),
             ref('product_attribute_value_rims_384'),
@@ -42,7 +44,7 @@
     <record id="config_image_6" model="product.config.image">
         <field name="name">Coupé Red Rims 387</field>
         <field name="product_tmpl_id" ref="bmw_2_series"/>
-        <field name="image" type="base64" file="product_configurator/static/img/2-series-coupe-red-star-spoke-387.jpg"/>
+        <field name="image_1920" type="base64" file="product_configurator/static/img/2-series-coupe-red-star-spoke-387.jpg"/>
         <field name="value_ids" eval="[(6,0,[
             ref('product_attribute_value_red'),
             ref('product_attribute_value_rims_387'),
@@ -52,7 +54,7 @@
     <record id="config_image_7" model="product.config.image">
         <field name="name">Coupé Silver Rims 384</field>
         <field name="product_tmpl_id" ref="bmw_2_series"/>
-        <field name="image" type="base64" file="product_configurator/static/img/2-series-coupe-silver-star-spoke-384.jpg"/>
+        <field name="image_1920" type="base64" file="product_configurator/static/img/2-series-coupe-silver-star-spoke-384.jpg"/>
         <field name="value_ids" eval="[(6,0,[
             ref('product_attribute_value_silver'),
             ref('product_attribute_value_rims_384'),
@@ -62,7 +64,7 @@
     <record id="config_image_8" model="product.config.image">
         <field name="name">Coupé Silver Rims 387</field>
         <field name="product_tmpl_id" ref="bmw_2_series"/>
-        <field name="image" type="base64" file="product_configurator/static/img/2-series-coupe-silver-star-spoke-387.jpg"/>
+        <field name="image_1920" type="base64" file="product_configurator/static/img/2-series-coupe-silver-star-spoke-387.jpg"/>
         <field name="value_ids" eval="[(6,0,[
             ref('product_attribute_value_silver'),
             ref('product_attribute_value_rims_387'),
@@ -72,7 +74,7 @@
     <record id="config_image_9" model="product.config.image">
         <field name="name">Coupé Black Rims 384</field>
         <field name="product_tmpl_id" ref="bmw_2_series"/>
-        <field name="image" type="base64" file="product_configurator/static/img/2-series-coupe-black-star-spoke-384.jpg"/>
+        <field name="image_1920" type="base64" file="product_configurator/static/img/2-series-coupe-black-star-spoke-384.jpg"/>
         <field name="value_ids" eval="[(6,0,[
             ref('product_attribute_value_black'),
             ref('product_attribute_value_rims_384'),
@@ -82,7 +84,7 @@
     <record id="config_image_10" model="product.config.image">
         <field name="name">Coupé Black Rims 387</field>
         <field name="product_tmpl_id" ref="bmw_2_series"/>
-        <field name="image" type="base64" file="product_configurator/static/img/2-series-coupe-black-star-spoke-387.jpg"/>
+        <field name="image_1920" type="base64" file="product_configurator/static/img/2-series-coupe-black-star-spoke-387.jpg"/>
         <field name="value_ids" eval="[(6,0,[
             ref('product_attribute_value_black'),
             ref('product_attribute_value_rims_387'),

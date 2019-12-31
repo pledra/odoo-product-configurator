@@ -85,7 +85,7 @@
                 </group>
                 <field name="attachment_ids" attrs="{'invisible': [('value', '!=', False)]}">
                     <tree>
-                        <field name="datas_fname"/>
+                        <field name="name"/>
                         <field name="datas"/>
                     </tree>
                 </field>
@@ -160,27 +160,5 @@
             </form>
         </field>
     </record>
-
-    <record model="ir.actions.act_window" id="action_attributes_view">
-        <field name="name">Attributes</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">product.attribute</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
-    </record>
-
-    <menuitem
-        id="menu_attribute_action_configuration"
-        action="action_attributes_view"
-        parent="menu_product_configurable_settings"
-        sequence="10"
-        groups="product.group_product_variant"/>
-
-    <menuitem
-        id="menu_variants_action_configuration"
-        action="product.variants_action"
-        parent="menu_product_configurable_settings"
-        sequence="20"
-        groups="product.group_product_variant"/>
 </data>
 </odoo>
