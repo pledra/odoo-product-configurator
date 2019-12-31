@@ -412,7 +412,7 @@ class ProductConfigurator(models.TransientModel):
     def _onchange_product_preset(self):
         """Set value ids as from product preset"""
         pta_value_ids = (
-            self.prod_preset_id.product_template_attribute_value_ids
+            self.product_preset_id.product_template_attribute_value_ids
         )
         attr_value_ids = pta_value_ids.mapped("product_attribute_value_id")
         self.value_ids = attr_value_ids
