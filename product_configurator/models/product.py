@@ -151,7 +151,7 @@ class ProductTemplate(models.Model):
             0
         ]
         value_ids = self.attribute_line_ids.mapped(
-            "value_ids"
+            "product_template_value_ids"
         ).ids
         action["domain"] = [("id", "in", value_ids)]
         context = safe_eval(action["context"], {"active_id": self.id})
@@ -197,13 +197,13 @@ class ProductTemplate(models.Model):
         for record in self:
             record.config_ok = not record.config_ok
 
-    def create_variant_ids(self):
+    def _create_variant_ids(self):
         """ Prevent configurable products from creating variants as these serve
             only as a template for the product configurator"""
         templates = self.filtered(lambda t: not t.config_ok)
         if not templates:
             return None
-        return super(ProductTemplate, templates).create_variant_ids()
+        return super(ProductTemplate, templates)._create_variant_ids()
 
     def unlink(self):
         """- Prevent the removal of configurable product templates
