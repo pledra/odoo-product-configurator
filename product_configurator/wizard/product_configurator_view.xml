@@ -13,6 +13,7 @@
                         type="object"
                         name="action_reset"
                         confirm="Are you sure? This will remove your current configuration for this template!"
+                        special="no_save"
                         class="oe_highlight"
                         attrs="{'invisible': ['|', ('product_tmpl_id', '=', False), ('state', '=', 'select')]}"/>
                 </header>
