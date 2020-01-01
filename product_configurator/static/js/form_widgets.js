@@ -2,6 +2,8 @@
 odoo.define('product_configurator.FieldBooleanButton', function (require) {
 "use strict";
     var FormController = require('web.FormController');
+    var ListController = require('web.ListController');
+    var KanbanController = require('web.KanbanController');
     var core = require('web.core');
     var basic_fields = require('web.basic_fields');
     var registry = require('web.field_registry');
@@ -35,6 +37,14 @@ odoo.define('product_configurator.FieldBooleanButton', function (require) {
     });
 
     FormController.include({
+        renderButtons: function ($node) {
+            var self = this;
+            this._super.apply(this, arguments);
+            if(self.modelName == 'product.product' && self.initialState.context.custom_create_variant) {
+                this.$buttons.find('.o-kanban-button-new').css('display', 'none')
+            }
+        },
+
         _onButtonClicked: function (event) {
             var attrs = event.data.attrs
             if (attrs.special === 'no_save') {
@@ -46,6 +56,24 @@ odoo.define('product_configurator.FieldBooleanButton', function (require) {
                 return this._super(event_no_save);
             }
             this._super(event);
+        },
+    });
+    ListController.include({
+        renderButtons: function ($node) {
+            var self = this;
+            this._super.apply(this, arguments);
+            if(self.modelName == 'product.product' && self.initialState.context.custom_create_variant) {
+                this.$buttons.find('.o-kanban-button-new').css('display', 'none')
+            }
+        },
+    });
+    KanbanController.include({
+        renderButtons: function ($node) {
+            var self = this;
+            this._super.apply(this, arguments);
+            if(self.modelName == 'product.product' && self.initialState.context.custom_create_variant) {
+                this.$buttons.find('.o-kanban-button-new').css('display', 'none')
+            }
         },
     });
 
