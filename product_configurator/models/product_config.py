@@ -686,7 +686,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration(final=False)
         except ValidationError as ex:
-            raise ValidationError(ex)
+            raise ValidationError('%s' % ex.name)
         except Exception:
             raise ValidationError(_("Invalid Configuration"))
         return res
@@ -721,7 +721,7 @@ class ProductConfigSession(models.Model):
                 # TODO: Remove if cond when PR with
                 # raise error on github is merged
             except ValidationError as ex:
-                raise ValidationError(ex)
+                raise ValidationError('%s' % ex.name)
             except Exception:
                 raise ValidationError(
                     _(
@@ -754,7 +754,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration()
         except ValidationError as ex:
-            raise ValidationError(ex)
+            raise ValidationError('%s' % ex.name)
         except Exception:
             raise ValidationError(_("Invalid Configuration"))
 
@@ -1319,6 +1319,19 @@ class ProductConfigSession(models.Model):
         return avail_val_ids
 
     @api.model
+    def get_extra_attribute_line_ids(self, product_template_id):
+        """Retrieve attribute lines defined on the product_template_id
+        which are not assigned to configuration steps"""
+
+        extra_attribute_line_ids = (
+            product_template_id.attribute_line_ids -
+            product_template_id.config_step_line_ids.mapped(
+                'attribute_line_ids'
+            )
+        )
+        return extra_attribute_line_ids
+
+    @api.model
     def validate_configuration(
         self,
         value_ids=None,
@@ -1353,6 +1366,8 @@ class ProductConfigSession(models.Model):
             custom_vals = self._get_custom_vals_dict()
         open_step_lines = self.get_open_step_lines()
         attribute_line_ids = open_step_lines.mapped("attribute_line_ids")
+        attribute_line_ids += self.get_extra_attribute_line_ids(
+            product_template_id=product_tmpl)
         for line in attribute_line_ids:
             # Validate custom values
             attr = line.attribute_id
@@ -1393,13 +1408,13 @@ class ProductConfigSession(models.Model):
                 else:
                     group_by_attr[val.attribute_id] = val
 
-            message = "The following values are not available:"
+            message = _("The following values are not available:")
             for attr, val in group_by_attr.items():
                 message += "\n%s: %s" % (
                     attr.name,
                     ", ".join(val.mapped("name")),
                 )
-            raise ValidationError(_(message))
+            raise ValidationError(message)
 
         # Check if custom values are allowed
         custom_attr_ids = (
