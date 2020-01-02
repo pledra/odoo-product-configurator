@@ -5,4 +5,8 @@
         <field name="context">{"search_default_filter_to_purchase":1, "search_default_filter_standard_products": 1}</field>
     </record>
 
+    <record id="purchase.product_product_action" model="ir.actions.act_window">
+        <field name="context">{"search_default_filter_to_purchase": 1, "search_default_filter_standard_products": 1}</field>
+    </record>
+
 </odoo>
