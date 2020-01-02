@@ -165,7 +165,7 @@
         <field name="priority" eval="8"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='attribute_id']" position="attributes">
-                <attribute name="context">{'flag_config_ok': context.get('default_config_ok', False)}</attribute>
+                <attribute name="context">{'flag_config_ok': context.get('default_config_ok', False) or (parent and parent.config_ok or False)}</attribute>
             </xpath>
         </field>
     </record>
