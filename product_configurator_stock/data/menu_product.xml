@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="stock.product_template_action_product" model="ir.actions.act_window">
+        <field name="context">{"search_default_consumable": 1, "default_type": "product", "quantity_available_locations_domain": ("internal",), "search_default_filter_standard_products": 1}</field>
+    </record>
+
+    <record id="stock_product_normal_action" model="ir.actions.act_window">
+        <field name="context">{"quantity_available_locations_domain": ("internal",), "search_default_filter_standard_products": 1}</field>
+    </record>
+
+</odoo>
