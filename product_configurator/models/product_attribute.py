@@ -208,7 +208,7 @@ class ProductAttributeLine(models.Model):
         values when custom is true"""
         for ptal in self:
             # Customization
-            if ptal.active and not ptal.value_ids and not line.custom:
+            if ptal.active and not ptal.value_ids and not ptal.custom:
                 # Old code
                 # if ptal.active and not ptal.value_ids:
                 # Customization End
