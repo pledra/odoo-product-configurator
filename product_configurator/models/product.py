@@ -296,7 +296,7 @@ class ProductTemplate(models.Model):
             action = wizard.action_next_step()
         else:
             wizard_obj = wizard_obj.with_context(
-                wizard_model="product.configurator",
+                wizard_model=model_name,
                 allow_preset_selection=True,
             )
             action = wizard_obj.get_wizard_action(wizard=wizard)
