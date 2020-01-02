@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="partenr1" model="res.partner">
+    <record id="partenr_sale_1" model="res.partner">
         <field name="name">Test Partner</field>
         <field name="company_type">company</field>
         <field name="child_ids" eval="[(0, 0, {'name': 'Partner Contact', 'type':'contact', 'email': 'info@mycompany.com'})]"></field>
