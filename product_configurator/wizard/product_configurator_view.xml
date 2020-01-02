@@ -15,7 +15,8 @@
                         confirm="Are you sure? This will remove your current configuration for this template!"
                         special="no_save"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|', ('product_tmpl_id', '=', False), ('state', '=', 'select')]}"/>
+                        attrs="{'invisible': ['|', ('product_tmpl_id', '=', False), ('state', '=', 'select')]}"
+                        context="{'reset_wizard': True}"/>
                 </header>
                 <sheet>
                     <field attrs="{'invisible': [('product_img', '=', False)]}" name="product_img" readonly="1" nolabel="1" widget="image"/>

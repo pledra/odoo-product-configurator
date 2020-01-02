@@ -1,12 +1,15 @@
 /* Add one more option to boolean_button form widget (displayed in the product.template form view) */
 odoo.define('product_configurator.FieldBooleanButton', function (require) {
 "use strict";
+    var basic_fields = require('web.basic_fields');
+    var registry = require('web.field_registry');
+
     var FormController = require('web.FormController');
     var ListController = require('web.ListController');
     var KanbanController = require('web.KanbanController');
+
+    var pyUtils = require('web.py_utils');
     var core = require('web.core');
-    var basic_fields = require('web.basic_fields');
-    var registry = require('web.field_registry');
     var _lt = core._lt;
 
     var FieldBooleanButton = basic_fields.FieldBoolean.extend({
@@ -41,12 +44,18 @@ odoo.define('product_configurator.FieldBooleanButton', function (require) {
             var self = this;
             this._super.apply(this, arguments);
             if(self.modelName == 'product.product' && self.initialState.context.custom_create_variant) {
-                this.$buttons.find('.o-kanban-button-new').css('display', 'none')
+                this.$buttons.find('.o_form_button_create').css('display', 'none')
             }
         },
 
         _onButtonClicked: function (event) {
+            var self = this;
             var attrs = event.data.attrs
+            if (event.data.attrs.context) {
+                var btn_ctx = pyUtils.eval('context', event.data.attrs.context);
+                var record_ctx = self.model.get(event.data.record.id).context;
+                self.model.localData[event.data.record.id].context = _.extend({}, btn_ctx, record_ctx)
+            }
             if (attrs.special === 'no_save') {
                 this.canBeSaved = function() {
                     return true;
@@ -63,7 +72,7 @@ odoo.define('product_configurator.FieldBooleanButton', function (require) {
             var self = this;
             this._super.apply(this, arguments);
             if(self.modelName == 'product.product' && self.initialState.context.custom_create_variant) {
-                this.$buttons.find('.o-kanban-button-new').css('display', 'none')
+                this.$buttons.find('.o_list_button_add').css('display', 'none')
             }
         },
     });

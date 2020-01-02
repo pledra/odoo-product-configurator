@@ -907,13 +907,13 @@ class ProductConfigurator(models.TransientModel):
         to database persistent value_ids field"""
 
         # Remove all dynamic fields from write values
-        self.config_session_id.update_session_configuration_value(
-            vals=vals, product_tmpl_id=self.product_tmpl_id
-        )
+        if not self.env.context.get('reset_wizard'):
+            self.config_session_id.update_session_configuration_value(
+                vals=vals, product_tmpl_id=self.product_tmpl_id
+            )
         vals = self._remove_dynamic_fields(vals)
 
-        res = super(ProductConfigurator, self).write(vals)
-        return res
+        return super(ProductConfigurator, self).write(vals)
 
     def unlink(self):
         """Remove parent configuration session along with wizard"""
