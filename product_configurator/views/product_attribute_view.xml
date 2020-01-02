@@ -162,10 +162,9 @@
         <field name="name">product.template.attribute.line.form</field>
         <field name="model">product.template.attribute.line</field>
         <field name="inherit_id" ref="product.product_template_attribute_line_form"/>
-        <field name="priority" eval="8"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='attribute_id']" position="attributes">
-                <attribute name="context">{'flag_config_ok': parent and parent.config_ok or context.get('default_config_ok', False)}</attribute>
+                <attribute name="context">{'flag_config_ok': not parent and context.get('default_config_ok', False) or parent.config_ok}</attribute>
             </xpath>
         </field>
     </record>
