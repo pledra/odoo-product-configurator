@@ -355,7 +355,7 @@ class ProductConfigurator(models.TransientModel):
             values=values, field_name=field_name, field_onchange=field_onchange
         )
         field_prefix = self._prefixes.get("field_prefix")
-        vals = onchange_values["value"]
+        vals = onchange_values.get("value", {})
         for key, val in vals.items():
             if isinstance(val, int) and key.startswith(field_prefix):
                 att_val = self.env["product.attribute.value"].browse(val)
@@ -907,7 +907,7 @@ class ProductConfigurator(models.TransientModel):
         to database persistent value_ids field"""
 
         # Remove all dynamic fields from write values
-        if not self.env.context.get('reset_wizard'):
+        if not self.env.context.get("reset_wizard"):
             self.config_session_id.update_session_configuration_value(
                 vals=vals, product_tmpl_id=self.product_tmpl_id
             )
@@ -999,8 +999,9 @@ class ProductConfigurator(models.TransientModel):
             session = self.env["product.config.step"]
 
         action = self.with_context(
-            wizard_id=None, allow_preset_selection=False,
-            default_product_tmpl_id=session_product_tmpl_id.id
+            wizard_id=None,
+            allow_preset_selection=False,
+            default_product_tmpl_id=session_product_tmpl_id.id,
         ).get_wizard_action()
         return action
 
@@ -1018,6 +1019,11 @@ class ProductConfigurator(models.TransientModel):
             "type": "ir.actions.act_window",
             "res_model": self._name,
             "name": "Configure Product",
+            "views": [[
+                    self.env.ref(
+                        "product_configurator.product_configurator_form"
+                    ).id, "form",
+                ]],
             "view_mode": "form",
             "context": ctx,
             "target": "new",
