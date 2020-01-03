@@ -1,4 +1,4 @@
-from odoo import models, api, fields
+from odoo import models, fields
 
 
 class PickingType(models.Model):
@@ -17,7 +17,6 @@ class Picking(models.Model):
         string="Allow configuration",
     )
 
-    @api.multi
     def action_config_start(self):
         """Return action to start configuration wizard"""
         configurator_obj = self.env["product.configurator.picking"]

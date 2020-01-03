@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class StockMove(models.Model):
@@ -21,7 +21,6 @@ class StockMove(models.Model):
         comodel_name="product.config.session", string="Config Session"
     )
 
-    @api.multi
     def reconfigure_product(self):
         """ Creates and launches a product configurator wizard with a linked
         template and variant in order to re-configure a existing product. It is
