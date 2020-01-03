@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="mrp_production_form_view" model="ir.ui.view">
-        <field name="name">product.config.mrp.form.view</field>
+        <field name="name">product.config.mrp.form.view.configure</field>
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
@@ -15,6 +15,21 @@
                         groups="product_configurator.group_product_configurator"/>
             </xpath>
         </field>
+    </record>
+
+    <record id="mrp_production_tree_view" model="ir.ui.view">
+        <field name="name">mrp.production.tree.configure</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="js_class">product_configurator_mrp_tree</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp.mrp_production_action" model="ir.actions.act_window">
+        <field name="context">{"search_default_todo": True, "default_company_id": allowed_company_ids[0], "custom_create_variant": True}</field>
     </record>
 
     <record id="mrp_bom_form_view" model="ir.ui.view">
@@ -31,11 +46,11 @@
                 <attribute name="attrs">{'readonly': [('config_ok', '=', True)]}</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='attribute_value_ids']" position="attributes">
-                <attribute name="attrs">{'readonly': [('parent.config_ok', '=', True)]}</attribute>
+            <xpath expr="//field[@name='bom_product_template_attribute_value_ids']" position="attributes">
+                <attribute name="attrs">{'column_invisible': [('parent.type','not in', ('normal', 'phantom'))], 'readonly': [('parent.config_ok', '=', True)]}</attribute>
             </xpath>
 
-             <xpath expr="//field[@name='attribute_value_ids']" position="after">
+             <xpath expr="//field[@name='bom_product_template_attribute_value_ids']" position="after">
                 <field name="config_set_id"
                        attrs="{'readonly': [('parent.config_ok', '=', False)]}"
                        options="{'create_edit': True, 'open': 'True'}"
