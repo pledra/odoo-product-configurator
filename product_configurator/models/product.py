@@ -409,19 +409,13 @@ class ProductProduct(models.Model):
             # In theory, they should just work, if they are set to "non search"
             # in custom field def!
             # TODO: Check the logic with binary attributes
-            if product.value_custom_ids.filtered(lambda cv: cv.attachment_ids):
-                continue
             config_session_obj = product.env["product.config.session"]
-            custom_vals = {
-                cv.attribute_id.id: cv.value for cv in product.value_custom_ids
-            }
             ptav_ids = product.product_template_attribute_value_ids.mapped(
                 "product_attribute_value_id"
             )
             duplicates = config_session_obj.search_variant(
                 product_tmpl_id=product.product_tmpl_id,
                 value_ids=ptav_ids.ids,
-                custom_vals=custom_vals,
             ).filtered(lambda p: p.id != product.id)
 
             if duplicates:
@@ -497,12 +491,6 @@ class ProductProduct(models.Model):
 
     config_name = fields.Char(
         string="Name", size=256, compute="_compute_config_name"
-    )
-    value_custom_ids = fields.One2many(
-        comodel_name="product.attribute.value.custom",
-        inverse_name="product_id",
-        string="Custom Values",
-        readonly=True,
     )
     price_extra = fields.Float(
         compute="_compute_product_price_extra",
