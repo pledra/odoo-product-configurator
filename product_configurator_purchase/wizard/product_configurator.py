@@ -33,23 +33,21 @@ class ProductConfiguratorPurchase(models.TransientModel):
         res = super(ProductConfiguratorPurchase, self).action_config_done()
         if res.get("res_model") == self._name:
             return res
+        model_name = "purchase.order.line"
         line_vals = self._get_order_line_vals(res["res_id"])
 
-        order_line_obj = self.env["purchase.order.line"]
-        specs = order_line_obj._onchange_spec()
+        order_line_obj = self.env[model_name]
+        cfg_session = self.config_session_id
+        specs = cfg_session.get_onchange_specifications(model=model_name)
         updates = order_line_obj.onchange(line_vals, ["product_id"], specs)
 
         values = updates.get("value", {})
-        for name, val in values.items():
-            if isinstance(val, tuple):
-                values[name] = val[0]
+        values = cfg_session.get_vals_to_write(values=values, model=model_name)
         values.update(line_vals)
 
         if self.order_line_id:
             self.order_line_id.write(values)
-            order_line = self.order_line_id
         else:
             values.update({'order_id': self.order_id.id})
-            order_line = self.order_id.order_line.create(values)
-        order_line.onchange_product_id()
+            self.order_id.order_line.create(values)
         return
