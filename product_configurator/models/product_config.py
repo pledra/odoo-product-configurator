@@ -1160,24 +1160,19 @@ class ProductConfigSession(models.Model):
 
     @api.model
     def get_variant_search_domain(
-        self, product_tmpl_id, value_ids=None, custom_vals=None
+        self, product_tmpl_id, value_ids=None
     ):
         """Method called by search_variant used to search duplicates in the
         database"""
-
-        if custom_vals is None:
-            custom_vals = self._get_custom_vals_dict()
 
         if value_ids is None:
             value_ids = self.value_ids.ids
 
         attr_obj = self.env["product.attribute"]
-
         domain = [
             ("product_tmpl_id", "=", product_tmpl_id.id),
             ("config_ok", "=", True),
         ]
-
         pta_value_ids = self.env["product.template.attribute.value"].search(
             [
                 ("product_tmpl_id", "=", product_tmpl_id.id),
@@ -1188,24 +1183,6 @@ class ProductConfigSession(models.Model):
             domain.append(
                 ("product_template_attribute_value_ids", "=", value_id.id)
             )
-
-        attr_search = attr_obj.search(
-            [
-                ("search_ok", "=", True),
-                ("custom_type", "not in", attr_obj._get_nosearch_fields()),
-            ]
-        )
-
-        for attr_id, value in custom_vals.items():
-            if attr_id not in attr_search.ids:
-                domain.append(
-                    ("value_custom_ids.attribute_id", "!=", int(attr_id))
-                )
-            else:
-                domain.append(
-                    ("value_custom_ids.attribute_id", "=", int(attr_id))
-                )
-                domain.append(("value_custom_ids.value", "=", value))
         return domain
 
     def validate_domains_against_sels(
@@ -1489,7 +1466,6 @@ class ProductConfigSession(models.Model):
         domain = self.get_variant_search_domain(
             product_tmpl_id=product_tmpl_id,
             value_ids=value_ids,
-            custom_vals={},
         )
         products = self.env["product.product"].search(domain)
 
