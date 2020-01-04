@@ -35,17 +35,17 @@ class ProductConfiguratorSale(models.TransientModel):
         res = super(ProductConfiguratorSale, self).action_config_done()
         if res.get("res_model") == self._name:
             return res
+        model_name = "sale.order.line"
         line_vals = self._get_order_line_vals(res["res_id"])
 
         # Call onchange explicite as write and create
         # will not trigger onchange automatically
-        order_line_obj = self.env["sale.order.line"]
-        specs = order_line_obj._onchange_spec()
+        order_line_obj = self.env[model_name]
+        cfg_session = self.config_session_id
+        specs = cfg_session.get_onchange_specifications(model=model_name)
         updates = order_line_obj.onchange(line_vals, ["product_id"], specs)
         values = updates.get("value", {})
-        for name, val in values.items():
-            if isinstance(val, tuple):
-                values[name] = val[0]
+        values = cfg_session.get_vals_to_write(values=values, model=model_name)
         values.update(line_vals)
 
         if self.order_line_id:
