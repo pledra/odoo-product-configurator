@@ -43,19 +43,17 @@ class ProductConfiguratorPicking(models.TransientModel):
         if res["res_model"] == self._name:
             return res
 
+        model_name = "stock.move"
         line_vals = self._get_order_line_vals(res["res_id"])
-        order_line_obj = self.env["stock.move"]
-        specs = order_line_obj._onchange_spec()
+        order_line_obj = self.env[model_name]
+        cfg_session = self.config_session_id
+        specs = cfg_session.get_onchange_specifications(model=model_name)
         updates = order_line_obj.onchange(line_vals, ["product_id"], specs)
         values = updates.get("value", {})
-        for name, val in values.items():
-            if isinstance(val, tuple):
-                values[name] = val[0]
-
+        values = cfg_session.get_vals_to_write(values=values, model=model_name)
         values.update(line_vals)
         if self.stock_move_id:
             self.stock_move_id.write(values)
-            move_line = self.stock_move_id
         else:
-            move_line = self.picking_id.move_lines.create(values)
+            self.picking_id.move_lines.create(values)
         return
