@@ -203,11 +203,6 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
-                <page string="Custom Values">
-                    <field name="value_custom_ids"/>
-                </page>
-            </xpath>
             <xpath expr='//header' position="inside">
                 <button string="Variant Prices" type="object"
                     name="get_product_attribute_values_action"

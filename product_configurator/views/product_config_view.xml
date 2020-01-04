@@ -70,42 +70,6 @@
         </field>
     </record>
 
-    <record id="product_attribute_value_custom_form" model="ir.ui.view">
-        <field name="name">product.attribute.value.custom.form</field>
-        <field name="model">product.attribute.value.custom</field>
-        <field name="arch" type="xml">
-            <form string="Configuration Values">
-                <group>
-                    <group>
-                        <field name="name"/>
-                        <field name="attribute_id"/>
-                    </group>
-                    <group>
-                        <field name="value" attrs="{'invisible': [('attachment_ids', '!=', [])]}"/>
-                    </group>
-                </group>
-                <field name="attachment_ids" attrs="{'invisible': [('value', '!=', False)]}">
-                    <tree>
-                        <field name="name"/>
-                        <field name="datas"/>
-                    </tree>
-                </field>
-            </form>
-        </field>
-    </record>
-
-    <record id="product_attribute_value_custom_tree" model="ir.ui.view">
-        <field name="name">product.attribute.value.custom.tree</field>
-        <field name="model">product.attribute.value.custom</field>
-        <field name="arch" type="xml">
-            <tree string="Configuration Values" editable="bottom">
-                <field name="attribute_id" string="Attribute"/>
-                <field name="value"/>
-                <field name="attachment_ids" widget="many2many_tags"/>
-            </tree>
-        </field>
-    </record>
-
     <record id="product_config_session_tree_view" model="ir.ui.view">
         <field name="name">product.config.session.tree</field>
         <field name="model">product.config.session</field>
