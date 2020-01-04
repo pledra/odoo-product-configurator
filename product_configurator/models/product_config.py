@@ -686,7 +686,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration(final=False)
         except ValidationError as ex:
-            raise ValidationError('%s' % ex.name)
+            raise ValidationError("%s" % ex.name)
         except Exception:
             raise ValidationError(_("Invalid Configuration"))
         return res
@@ -721,7 +721,7 @@ class ProductConfigSession(models.Model):
                 # TODO: Remove if cond when PR with
                 # raise error on github is merged
             except ValidationError as ex:
-                raise ValidationError('%s' % ex.name)
+                raise ValidationError("%s" % ex.name)
             except Exception:
                 raise ValidationError(
                     _(
@@ -754,7 +754,7 @@ class ProductConfigSession(models.Model):
         try:
             self.validate_configuration()
         except ValidationError as ex:
-            raise ValidationError('%s' % ex.name)
+            raise ValidationError("%s" % ex.name)
         except Exception:
             raise ValidationError(_("Invalid Configuration"))
 
@@ -1324,9 +1324,9 @@ class ProductConfigSession(models.Model):
         which are not assigned to configuration steps"""
 
         extra_attribute_line_ids = (
-            product_template_id.attribute_line_ids -
-            product_template_id.config_step_line_ids.mapped(
-                'attribute_line_ids'
+            product_template_id.attribute_line_ids
+            - product_template_id.config_step_line_ids.mapped(
+                "attribute_line_ids"
             )
         )
         return extra_attribute_line_ids
@@ -1367,7 +1367,8 @@ class ProductConfigSession(models.Model):
         open_step_lines = self.get_open_step_lines()
         attribute_line_ids = open_step_lines.mapped("attribute_line_ids")
         attribute_line_ids += self.get_extra_attribute_line_ids(
-            product_template_id=product_tmpl)
+            product_template_id=product_tmpl
+        )
         for line in attribute_line_ids:
             # Validate custom values
             attr = line.attribute_id
@@ -1603,6 +1604,60 @@ class ProductConfigSession(models.Model):
                 custom_vals.update({"value": val})
             custom_lines.append((0, 0, custom_vals))
         return custom_lines
+
+    @api.model
+    def get_child_specification(self, model, parent):
+        """return dictiory of onchange specification by
+        appending parent before each key"""
+        model_obj = self.env[model]
+        specs = model_obj._onchange_spec()
+        new_specs = {}
+        for key, val in specs.items():
+            new_specs["%s.%s" % (parent, key)] = val
+        return new_specs
+
+    @api.model
+    def get_onchange_specifications(self, model):
+        """return onchange specification
+        - same functionality by _onchange_spec
+        - needed this method because odoo don't add specification for fields
+        one2many or many2many there is view-reference(using : tree_view_ref)
+        intead of view in that field"""
+        model_obj = self.env[model]
+        specs = model_obj._onchange_spec()
+        for name, field in model_obj._fields.items():
+            if not field.type in ["one2many", "many2many"]:
+                continue
+            ch_specs = self.get_child_specification(
+                model=field.comodel_name, parent=name
+            )
+            specs.update(ch_specs)
+        return specs
+
+    @api.model
+    def get_vals_to_write(self, values, model):
+        """Return values in formate excepted by write/create methods
+        - same functionality by _convert_to_write
+        - needed this method because odoo don't call convert to write
+        for the many2many/one2many fields"""
+        model_obj = self.env[model]
+        values = model_obj._convert_to_write(values)
+        fields = model_obj._fields
+        for key, vals in values.items():
+            if not isinstance(vals, list):
+                continue
+            new_lst = []
+            for line in vals:
+                new_line = line
+                if line and isinstance(line[-1], dict):
+                    new_line = line[:-1] + (
+                        self.get_vals_to_write(
+                            values=line[-1], model=fields[key].comodel_name
+                        ),
+                    )
+                new_lst.append(new_line)
+            values[key] = new_lst
+        return values
 
 
 class ProductConfigSessionCustomValue(models.Model):
