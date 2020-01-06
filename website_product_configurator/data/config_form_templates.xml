@@ -207,7 +207,7 @@
                     t-att-data-type="custom_type"
                     t-att-name="'%s%s' % (custom_field_prefix, line.attribute_id.id)"
                     t-att-class="'form-control custom_config_value spinner_qty' + (' required_config_attrib' if (custom_value or not line.value_ids) and line.required else '')"
-                    t-att-value="custom_value and custom_value.value or line.attribute_id.min_val or '0'"/>
+                    t-att-value="custom_value and product_tmpl.setFloatCustomVal(custom_value.value) or line.attribute_id.min_val or '0'"/>
                 <div class="input-group-append">
                     <a t-attf-href="#" aria-label="Add one" title="Add one"
                         t-att-class="'btn btn-link float_left d-md-inline-block js_add_qty'  + (' btn-disabled' if custom_val and line.attribute_id.max_val and custom_val &gt;= line.attribute_id.max_val else '')">

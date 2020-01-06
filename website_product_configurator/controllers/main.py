@@ -270,9 +270,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
             custom_field_value = values.get(custom_field, False)
 
             if attr_line.custom and custom_field_value:
+                lang = request.env['ir.qweb.field'].user_lang()
                 custom_field_value = custom_field_value[0]
                 if attr_line.attribute_id.custom_type in ['int', 'float']:
-                    custom_field_value = safe_eval(custom_field_value)
+                    custom_field_value = safe_eval(
+                        custom_field_value.replace(lang.decimal_point, '.')
+                    )
 
             if attr_line.multi:
                 field_value = [[6, False, field_value]]

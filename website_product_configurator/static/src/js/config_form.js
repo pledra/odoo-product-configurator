@@ -105,7 +105,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
                         } else {
                             var values = data.value;
                             var domains = data.domain;
-
                             var open_cfg_step_line_ids = data.open_cfg_step_line_ids;
                             var config_image_vals = data.config_image_vals;
 
@@ -483,6 +482,22 @@ odoo.define('website_product_configurator.config_form', function (require) {
             this._checkRequiredFields(custom_value);
         },
 
+        convert_to_float: function (value) {
+            var l10n = _t.database.parameters;
+            return value.split(l10n.decimal_point).join('.')
+        },
+
+        convert_to_str: function (value) {
+            value = value.toString()
+            var l10n = _t.database.parameters;
+            return value.split('.').join(l10n.decimal_point)
+        },
+
+        _setCustomFloatVal: function(value) {
+            self.convert_to_float(value)
+            self.convert_to_str(value)
+        },
+
         _handleSppinerCustomValue: function (ev) {
             var self = this;
             ev.preventDefault();
@@ -493,7 +508,8 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var max_val = parseFloat(custom_value.attr('max') || Infinity);
             var min_val = parseFloat(custom_value.attr('min') || 0);
             var new_qty = min_val;
-            var ui_val = parseFloat(custom_value.val());
+            var value = self.convert_to_float(custom_value.val())
+            var ui_val = parseFloat(value);
             var custom_type = custom_value.attr('data-type');
             if (isNaN(ui_val)) {
                 var message = "Please enter a number.";
@@ -522,6 +538,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     new_qty = min_val;
                 }
             }
+            new_qty = self.convert_to_str(new_qty)
             custom_value.val(new_qty);
             self._disableEnableAddRemoveQtyButton(current_target, new_qty ,max_val ,min_val)
             return custom_value;
