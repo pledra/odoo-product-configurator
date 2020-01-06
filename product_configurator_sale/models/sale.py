@@ -20,7 +20,7 @@ class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
     custom_value_ids = fields.One2many(
-        comodel_name="product.attribute.value.custom",
+        comodel_name="product.config.session.custom.value",
         inverse_name="product_id",
         related="config_session_id.custom_value_ids",
         string="Custom Values",
