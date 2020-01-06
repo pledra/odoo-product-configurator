@@ -173,6 +173,9 @@
                 <field name="price"/>
                 <field name="config_step_name"/>
                 <field name="product_id"/>
+                <separator/>
+                <filter name="session_draft" string="Active Sessions" domain="[('state','=','draft')]"/>
+                <filter name="session_done" string="Completed Sessions" domain="[('state','=','done')]"/>
                 <group expand="0" string="Group By">
                     <filter string="State" name="state" context="{'group_by':'state'}"/>
                     <filter string="Product Template" name="product_tmpl_id" context="{'group_by':'product_tmpl_id'}"/>
