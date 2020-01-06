@@ -5,7 +5,7 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     @api.model
-    def setFloatCustomVal(self, custom_value):
+    def get_float_custom_val(self, custom_value):
         lang = self.env['ir.qweb.field'].user_lang()
         if not custom_value:
             return False

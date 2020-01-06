@@ -493,11 +493,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
             return value.split('.').join(l10n.decimal_point)
         },
 
-        _setCustomFloatVal: function(value) {
-            self.convert_to_float(value)
-            self.convert_to_str(value)
-        },
-
         _handleSppinerCustomValue: function (ev) {
             var self = this;
             ev.preventDefault();
