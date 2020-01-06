@@ -22,7 +22,7 @@ class SaleOrderLine(models.Model):
     custom_value_ids = fields.One2many(
         comodel_name="product.attribute.value.custom",
         inverse_name="product_id",
-        related="config_session_id.value_custom_ids",
+        related="config_session_id.custom_value_ids",
         string="Custom Values",
     )
     config_ok = fields.Boolean(
