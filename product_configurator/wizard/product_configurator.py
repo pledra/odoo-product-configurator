@@ -799,21 +799,6 @@ class ProductConfigurator(models.TransientModel):
                     "value_ids": [(6, 0, attr_value_ids.ids)],
                 }
             )
-            custom_vals = []
-            for val in product.value_custom_ids:
-                custom_vals.append(
-                    (
-                        0,
-                        0,
-                        {
-                            "attribute_id": val.attribute_id.id,
-                            "value": val.value,
-                            "attachment_ids": [(6, 0, val.attachment_ids.ids)],
-                        },
-                    )
-                )
-            if custom_vals:
-                vals.update({"custom_value_ids": custom_vals})
 
         # Get existing session for this product_template or create a new one
         session = self.env["product.config.session"].create_get_session(

@@ -759,26 +759,12 @@ class ProductConfigSession(models.Model):
             raise ValidationError(_("Invalid Configuration"))
 
         duplicates = self.search_variant(
-            value_ids=value_ids,
-            custom_vals=custom_vals,
-            product_tmpl_id=self.product_tmpl_id,
+            value_ids=value_ids, product_tmpl_id=self.product_tmpl_id
         )
-
-        # At the moment, I don't have enough confidence with my understanding
-        # of binary attributes, so will leave these as not matching...
-        # In theory, they should just work, if they are set to "non search"
-        # in custom field def!
-        # TODO: Check the logic with binary attributes
-        if custom_vals:
-            value_custom_ids = self.encode_custom_values(custom_vals)
-            if any("attachment_ids" in cv[2] for cv in value_custom_ids):
-                duplicates = False
-
         if duplicates:
             return duplicates[:1]
 
         vals = self.get_variant_vals(value_ids, custom_vals)
-
         product_obj = (
             self.env["product.product"]
             .sudo()
@@ -936,11 +922,6 @@ class ProductConfigSession(models.Model):
             "taxes_id": [(6, 0, self.product_tmpl_id.taxes_id.ids)],
             "image_1920": image,
         }
-
-        if custom_vals:
-            vals.update(
-                {"value_custom_ids": self.encode_custom_values(custom_vals)}
-            )
         return vals
 
     def get_session_search_domain(
@@ -1176,25 +1157,18 @@ class ProductConfigSession(models.Model):
         return False
 
     @api.model
-    def get_variant_search_domain(
-        self, product_tmpl_id, value_ids=None, custom_vals=None
-    ):
+    def get_variant_search_domain(self, product_tmpl_id, value_ids=None):
         """Method called by search_variant used to search duplicates in the
         database"""
-
-        if custom_vals is None:
-            custom_vals = self._get_custom_vals_dict()
 
         if value_ids is None:
             value_ids = self.value_ids.ids
 
         attr_obj = self.env["product.attribute"]
-
         domain = [
             ("product_tmpl_id", "=", product_tmpl_id.id),
             ("config_ok", "=", True),
         ]
-
         pta_value_ids = self.env["product.template.attribute.value"].search(
             [
                 ("product_tmpl_id", "=", product_tmpl_id.id),
@@ -1205,24 +1179,6 @@ class ProductConfigSession(models.Model):
             domain.append(
                 ("product_template_attribute_value_ids", "=", value_id.id)
             )
-
-        attr_search = attr_obj.search(
-            [
-                ("search_ok", "=", True),
-                ("custom_type", "not in", attr_obj._get_nosearch_fields()),
-            ]
-        )
-
-        for attr_id, value in custom_vals.items():
-            if attr_id not in attr_search.ids:
-                domain.append(
-                    ("value_custom_ids.attribute_id", "!=", int(attr_id))
-                )
-            else:
-                domain.append(
-                    ("value_custom_ids.attribute_id", "=", int(attr_id))
-                )
-                domain.append(("value_custom_ids.value", "=", value))
         return domain
 
     def validate_domains_against_sels(
@@ -1476,9 +1432,7 @@ class ProductConfigSession(models.Model):
         return True
 
     @api.model
-    def search_variant(
-        self, value_ids=None, custom_vals=None, product_tmpl_id=None
-    ):
+    def search_variant(self, value_ids=None, product_tmpl_id=None):
         """ Searches product.variants with given value_ids and custom values
             given in the custom_vals dict
 
@@ -1490,8 +1444,8 @@ class ProductConfigSession(models.Model):
         if value_ids is None:
             value_ids = self.value_ids.ids
 
-        if custom_vals is None:
-            custom_vals = self._get_custom_vals_dict()
+        custom_value_id = self.get_custom_value_id()
+        value_ids = list(set(value_ids) - set(custom_value_id.ids))
 
         if not product_tmpl_id:
             product_tmpl_id = self.product_tmpl_id
@@ -1504,20 +1458,18 @@ class ProductConfigSession(models.Model):
                 )
 
         domain = self.get_variant_search_domain(
-            product_tmpl_id=product_tmpl_id,
-            value_ids=value_ids,
-            custom_vals=custom_vals,
+            product_tmpl_id=product_tmpl_id, value_ids=value_ids
         )
-
         products = self.env["product.product"].search(domain)
 
         # At this point, we might have found products with all of the passed
         # in values, but it might have more attributes!  These are NOT
         # matches
+        for p in products:
+            print(p.product_template_attribute_value_ids, value_ids)
         more_attrs = products.filtered(
             lambda p: len(p.product_template_attribute_value_ids)
             != len(value_ids)
-            or len(p.value_custom_ids) != len(custom_vals)
         )
         products -= more_attrs
         return products
@@ -1665,6 +1617,18 @@ class ProductConfigSessionCustomValue(models.Model):
     _rec_name = "attribute_id"
     _description = "Product Config Session Custom Value"
 
+    @api.depends("attribute_id", "attribute_id.uom_id")
+    def _compute_val_name(self):
+        for attr_val_custom in self:
+            uom = attr_val_custom.attribute_id.uom_id.name
+            attr_val_custom.name = "%s%s" % (
+                attr_val_custom.value,
+                (" %s" % uom) or "",
+            )
+
+    name = fields.Char(
+        string="Name", readonly=True, compute="_compute_val_name", store=True
+    )
     attribute_id = fields.Many2one(
         comodel_name="product.attribute", string="Attribute", required=True
     )
