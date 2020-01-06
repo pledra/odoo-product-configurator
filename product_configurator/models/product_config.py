@@ -759,10 +759,8 @@ class ProductConfigSession(models.Model):
             raise ValidationError(_("Invalid Configuration"))
 
         duplicates = self.search_variant(
-            value_ids=value_ids,
-            product_tmpl_id=self.product_tmpl_id
+            value_ids=value_ids, product_tmpl_id=self.product_tmpl_id
         )
-        print("duplicates ",duplicates)
         if duplicates:
             return duplicates[:1]
 
@@ -1159,9 +1157,7 @@ class ProductConfigSession(models.Model):
         return False
 
     @api.model
-    def get_variant_search_domain(
-        self, product_tmpl_id, value_ids=None
-    ):
+    def get_variant_search_domain(self, product_tmpl_id, value_ids=None):
         """Method called by search_variant used to search duplicates in the
         database"""
 
@@ -1436,9 +1432,7 @@ class ProductConfigSession(models.Model):
         return True
 
     @api.model
-    def search_variant(
-        self, value_ids=None, product_tmpl_id=None
-    ):
+    def search_variant(self, value_ids=None, product_tmpl_id=None):
         """ Searches product.variants with given value_ids and custom values
             given in the custom_vals dict
 
@@ -1464,8 +1458,7 @@ class ProductConfigSession(models.Model):
                 )
 
         domain = self.get_variant_search_domain(
-            product_tmpl_id=product_tmpl_id,
-            value_ids=value_ids,
+            product_tmpl_id=product_tmpl_id, value_ids=value_ids
         )
         products = self.env["product.product"].search(domain)
 
@@ -1624,6 +1617,18 @@ class ProductConfigSessionCustomValue(models.Model):
     _rec_name = "attribute_id"
     _description = "Product Config Session Custom Value"
 
+    @api.depends("attribute_id", "attribute_id.uom_id")
+    def _compute_val_name(self):
+        for attr_val_custom in self:
+            uom = attr_val_custom.attribute_id.uom_id.name
+            attr_val_custom.name = "%s%s" % (
+                attr_val_custom.value,
+                (" %s" % uom) or "",
+            )
+
+    name = fields.Char(
+        string="Name", readonly=True, compute="_compute_val_name", store=True
+    )
     attribute_id = fields.Many2one(
         comodel_name="product.attribute", string="Attribute", required=True
     )
