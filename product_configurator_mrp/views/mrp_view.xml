@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="mrp_production_form_view" model="ir.ui.view">
-        <field name="name">product.config.mrp.form.view.configure</field>
+    <!-- configuration start -->
+
+    <record id="mrp_production_form_view_config" model="ir.ui.view">
+        <field name="name">product.config.mrp.form.view</field>
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="before">
-                <button name="action_config_start"
-                        states="draft,ready"
+            <xpath expr="//form" position="attributes">
+                <attribute name="js_class">product_configurator_mrp_form</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="attributes">
+                <attribute name="class">oe_title col-lg-10 col-md-9 col-sm-9 col-xs-12 pull-left</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <div class="col-lg-2 col-md-3 col-sm-3 col-xs-12 pull-left">
+                    <field name="config_ok" invisible="1"/>
+                    <button name="reconfigure_product"
+                        groups="product_configurator.group_product_configurator"
                         class="oe_highlight"
                         type="object"
-                        string="Configure Product"
-                        groups="product_configurator.group_product_configurator"/>
+                        string="Reconfigure"
+                        attrs="{'invisible': [('config_ok','=',False)]}"/>
+                </div>
             </xpath>
         </field>
     </record>
 
-    <record id="mrp_production_tree_view" model="ir.ui.view">
-        <field name="name">mrp.production.tree.configure</field>
+    <record id="mrp_production_tree_view_config" model="ir.ui.view">
+        <field name="name">product.config.mrp.tree.view</field>
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
         <field name="arch" type="xml">
@@ -28,9 +39,24 @@
         </field>
     </record>
 
+    <record id="mrp_production_kanban_view_config" model="ir.ui.view">
+        <field name="name">product.config.mrp.kanban.view</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="js_class">product_configurator_mrp_kanban</attribute>
+            </xpath>
+        </field>
+    </record>
+
     <record id="mrp.mrp_production_action" model="ir.actions.act_window">
         <field name="context">{"search_default_todo": True, "default_company_id": allowed_company_ids[0], "custom_create_variant": True}</field>
     </record>
+
+
+
+
 
     <record id="mrp_bom_form_view" model="ir.ui.view">
         <field name="name">product.config.mrp.bom.form.view</field>

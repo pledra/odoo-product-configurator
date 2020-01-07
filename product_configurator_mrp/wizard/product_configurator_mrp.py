@@ -1,5 +1,6 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.tools.safe_eval import safe_eval
+from odoo.exceptions import ValidationError
 
 
 class ProductConfiguratorMrp(models.TransientModel):
@@ -59,13 +60,24 @@ class ProductConfiguratorMrp(models.TransientModel):
         values = updates.get("value", {})
         values = cfg_session.get_vals_to_write(values=values, model=model_name)
         values.update(line_vals)
+        if not values.get("bom_id"):
+            raise ValidationError(
+                _(
+                    "There is no BOM associated with selected product. "
+                    "Please inform to administrator/manager. [Product: %s]"
+                    % (
+                        self.env["product.product"]
+                        .browse(res["res_id"])
+                        .display_name
+                    )
+                )
+            )
 
         if self.order_id:
             self.order_id.write(values)
             mrp_order = self.order_id
         else:
             mrp_order = self.order_id.create(values)
-
         mrp_action = self.get_mrp_production_action()
         mrp_action.update({"res_id": mrp_order.id})
         return mrp_action

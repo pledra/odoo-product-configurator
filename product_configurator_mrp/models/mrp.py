@@ -4,6 +4,13 @@ from odoo import api, fields, models
 class MrpProduction(models.Model):
     _inherit = "mrp.production"
 
+    config_ok = fields.Boolean(
+        related="product_id.config_ok",
+        store=True,
+        string="Configurable",
+        readonly=True,
+    )
+
     def action_config_start(self):
         """Return action to start configuration wizard"""
         configurator_obj = self.env["product.configurator.mrp"]
@@ -13,6 +20,17 @@ class MrpProduction(models.Model):
             allow_preset_selection=True,
         )
         return configurator_obj.with_context(ctx).get_wizard_action()
+
+    def reconfigure_product(self):
+        """ Creates and launches a product configurator wizard with a linked
+        template and variant in order to re-configure a existing product. It is
+        esetially a shortcut to pre-fill configuration data of a variant"""
+        wizard_model = "product.configurator.mrp"
+        extra_vals = {"order_id": self.id, "product_id": self.product_id.id}
+        self = self.with_context({"default_order_id": self.id})
+        return self.product_id.product_tmpl_id.create_config_wizard(
+            model_name=wizard_model, extra_vals=extra_vals
+        )
 
 
 class MrpBom(models.Model):

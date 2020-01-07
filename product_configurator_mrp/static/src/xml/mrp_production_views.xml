@@ -10,19 +10,17 @@
     </t>
 
     <t t-extend="KanbanView.buttons" t-name="ConfigKanbanView.buttons">
-        <t t-jquery="button.o-kanban-button-new" t-operation="after">
+        <t t-jquery="button" t-operation="after">
             <button type="button" t-attf-class="btn #{btnClass} o-kanban-button-new_config" accesskey="c">
-                <t t-esc="create_text || _t('Configure')"/>
+                Configure
             </button>
         </t>
     </t>
 
-    <t t-extend="FormView.buttons" t-name="ConfigFormView.buttons">
-        <t t-jquery="button.o_form_button_create" t-operation="after">
-            <button t-if="widget.is_action_enabled('create')" type="button"
-                class="btn btn-secondary o_form_button_create_config" accesskey="c">
-                Configure
-            </button>
-        </t>
+    <t t-name="ConfigFormView.buttons">
+        <button t-if="widget.is_action_enabled('create')" type="button"
+            class="btn btn-secondary o_form_button_create_config" accesskey="c">
+            Configure
+        </button>
     </t>
 </templates>
