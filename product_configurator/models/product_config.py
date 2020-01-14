@@ -194,7 +194,7 @@ class ProductConfigLine(models.Model):
     @api.multi
     @api.constrains('value_ids')
     def check_value_attributes(self):
-        for line in self:
+        for line in self.filtered(lambda l: l.value_ids):
             value_attributes = line.value_ids.mapped('attribute_id')
             if value_attributes != line.attribute_line_id.attribute_id:
                 raise ValidationError(
