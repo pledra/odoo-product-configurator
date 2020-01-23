@@ -330,6 +330,22 @@ class ProductTemplate(models.Model):
 
         return super(ProductTemplate, self).write(vals)
 
+    @api.multi
+    def _get_possible_combinations(self, parent_combination=None,
+                                   necessary_values=None):
+        self.ensure_one()
+        if not self.active:
+            return _(
+                "The product template is archived so no "
+                "combination is possible."
+            )
+        if not self.config_ok:
+            return super(ProductTemplate, self)._get_possible_combinations(
+                parent_combination=parent_combination,
+                necessary_values=necessary_values
+            )
+        return iter([self.env['product.template.attribute.value']])
+
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
