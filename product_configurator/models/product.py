@@ -49,7 +49,8 @@ class ProductTemplate(models.Model):
                 raise ValidationError(
                     _(
                         "All attribute values used in attribute value lines "
-                        "must be defined in the attribute lines of the template"
+                        "must be defined in the attribute lines of the "
+                        "template"
                     )
                 )
 
