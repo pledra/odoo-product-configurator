@@ -228,8 +228,8 @@ class ProductConfigLine(models.Model):
                 raise ValidationError(
                     _(
                         "Values must belong to the attribute of the "
-                        "corresponding attribute_line set on the configuration "
-                        "line"
+                        "corresponding attribute_line set on the "
+                        "configuration line"
                     )
                 )
 
@@ -1164,7 +1164,6 @@ class ProductConfigSession(models.Model):
         if value_ids is None:
             value_ids = self.value_ids.ids
 
-        attr_obj = self.env["product.attribute"]
         domain = [
             ("product_tmpl_id", "=", product_tmpl_id.id),
             ("config_ok", "=", True),
@@ -1578,7 +1577,7 @@ class ProductConfigSession(models.Model):
         model_obj = self.env[model]
         specs = model_obj._onchange_spec()
         for name, field in model_obj._fields.items():
-            if not field.type in ["one2many", "many2many"]:
+            if field.type not in ["one2many", "many2many"]:
                 continue
             ch_specs = self.get_child_specification(
                 model=field.comodel_name, parent=name
