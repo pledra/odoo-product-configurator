@@ -1464,8 +1464,6 @@ class ProductConfigSession(models.Model):
         # At this point, we might have found products with all of the passed
         # in values, but it might have more attributes!  These are NOT
         # matches
-        for p in products:
-            print(p.product_template_attribute_value_ids, value_ids)
         more_attrs = products.filtered(
             lambda p: len(p.product_template_attribute_value_ids)
             != len(value_ids)
