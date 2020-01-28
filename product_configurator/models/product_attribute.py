@@ -1,6 +1,6 @@
 from ast import literal_eval
 
-from odoo import models, fields, api, _, tools
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 
