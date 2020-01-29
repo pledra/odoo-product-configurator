@@ -3,11 +3,10 @@
 
     <template id="assets_backend" name="Product Configurator Assets" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
-            <link href="/product_configurator/static/css/style.css" rel="stylesheet"/>
+            <link rel="stylesheet" type="text/scss" href="/product_configurator/static/scss/form_widget.scss"/>
             <script type="text/javascript" src="/product_configurator/static/js/form_widgets.js"/>
             <script type="text/javascript" src="/product_configurator/static/js/data_manager.js"/>
             <script type="text/javascript" src="/product_configurator/static/js/relational_fields.js"/>
         </xpath>
     </template>
-
 </odoo>

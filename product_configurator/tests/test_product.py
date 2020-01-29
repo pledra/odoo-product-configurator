@@ -292,23 +292,23 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: get_product_attribute_values_action()'
         )
 
-    def test_11_compute_name(self):
+    def test_11_compute_config_name(self):
         product_product = self._get_product_id()
         product_product.config_ok = False
-        product_product._compute_name()
+        product_product._compute_config_name()
         self.assertEqual(
             product_product.config_name,
             '2 Series',
             'Error: If different product config_name\
-            Method: _compute_name()'
+            Method: _compute_config_name()'
         )
         product_product.config_ok = True
-        product_product._compute_name()
+        product_product._compute_config_name()
         self.assertEqual(
             product_product.config_name,
             '2 Series',
             'Error: If different product config_name\
-            Method: _compute_name()'
+            Method: _compute_config_name()'
         )
 
     def test_12_reconfigure_product(self):

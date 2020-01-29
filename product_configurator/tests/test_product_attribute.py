@@ -47,7 +47,7 @@ class ProductAttributes(TransactionCase):
 
         self.ProductAttributeFuel.min_val = 20
         self.ProductAttributeFuel.max_val = 30
-        self.ProductAttributeFuel.custom_type = 'int'
+        self.ProductAttributeFuel.custom_type = 'integer'
         self.ProductAttributeFuel.onchange_custom_type()
         self.assertEqual(
             self.ProductAttributeFuel.min_val,
@@ -84,7 +84,7 @@ class ProductAttributes(TransactionCase):
 
     def test_02_onchange_val_custom(self):
         self.ProductAttributeFuel.val_custom = False
-        self.ProductAttributeFuel.custom_type = 'int'
+        self.ProductAttributeFuel.custom_type = 'integer'
         self.ProductAttributeFuel.onchange_val_custom_field()
         self.assertFalse(
             self.ProductAttributeFuel.custom_type,
@@ -101,7 +101,7 @@ class ProductAttributes(TransactionCase):
             'max_val': 20,
             'min_val': 10
         })
-        self.ProductAttributeFuel.custom_type = 'int'
+        self.ProductAttributeFuel.custom_type = 'integer'
         with self.assertRaises(ValidationError):
             self.ProductAttributeFuel.validate_custom_val(5)
 
@@ -109,7 +109,7 @@ class ProductAttributes(TransactionCase):
             'max_val': 0,
             'min_val': 10
         })
-        self.ProductAttributeFuel.custom_type = 'int'
+        self.ProductAttributeFuel.custom_type = 'integer'
         with self.assertRaises(ValidationError):
             self.ProductAttributeFuel.validate_custom_val(5)
 
@@ -117,12 +117,12 @@ class ProductAttributes(TransactionCase):
             'min_val': 0,
             'max_val': 20
         })
-        self.ProductAttributeFuel.custom_type = 'int'
+        self.ProductAttributeFuel.custom_type = 'integer'
         with self.assertRaises(ValidationError):
             self.ProductAttributeFuel.validate_custom_val(25)
 
     def test_05_check_constraint_min_max_value(self):
-        self.ProductAttributeFuel.custom_type = 'int'
+        self.ProductAttributeFuel.custom_type = 'integer'
         with self.assertRaises(ValidationError):
             self.ProductAttributeFuel.write({
                 'max_val': 10,

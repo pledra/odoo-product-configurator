@@ -13,7 +13,7 @@
             <div name="button_box" position="inside">
                 <button class="oe_stat_button" name="toggle_config"
                     type="object" icon="fa-wrench" groups="product_configurator.group_product_configurator_manager">
-                    <field name="config_ok" widget="boolean_button" options='{"terminology": "config"}'/>
+                    <field name="config_ok"  options='{"active": "Configurable", "inactive": "Standard"}' widget="boolean_button"/>
                 </button>
             </div>
         </field>
@@ -72,6 +72,10 @@
                 <attribute name="attrs">{'required': [('custom','!=',True)]}</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']" position="attributes">
+                <attribute name="context">{'flag_config_ok': not parent and context.get('default_config_ok', False) or parent.config_ok}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']" position="before">
                 <field name="sequence" widget="handle"/>
             </xpath>
@@ -98,7 +102,10 @@
                                domain="[('id','in',attr_line_val_ids)]"
                                options="{'no_create': True, 'no_create_edit': True}"
                                context="{'show_attribute': False}"/>
-                        <field name="domain_id"/>
+                        <field name="domain_id" context="{'product_tmpl_id': product_tmpl_id or active_id or parent.id, 'product_attribute_ids': template_attribute_ids}"/>
+                        <field name="product_tmpl_id" invisible="1"/>
+                        <field name="template_attribute_ids" invisible="1"/>
+
                     </tree>
                 </field>
                 <separator colspan="4" string="Configuration Steps" name="configurator_steps"/>
@@ -119,7 +126,7 @@
                         <field name="sequence" widget="handle"/>
                         <field name="name"/>
                         <field name="value_ids" widget="many2many_tags" context="{'_cfg_product_tmpl_id': parent.id}"/>
-                        <field name="image" widget="image" height="30px"/>
+                        <field name="image_1920" widget="image" height="30px"/>
                     </tree>
                 </field>
                 <field name="attribute_line_val_ids" invisible="1"/>
@@ -196,15 +203,10 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
-                <page string="Custom Values">
-                    <field name="value_custom_ids"/>
-                </page>
-            </xpath>
             <xpath expr='//header' position="inside">
                 <button string="Variant Prices" type="object"
                     name="get_product_attribute_values_action"
-                    attrs="{'invisible': ['|', ('attribute_value_ids', '=', False), ('config_ok', '=', False)]}"
+                    attrs="{'invisible': ['|', ('product_template_attribute_value_ids', '=', False), ('config_ok', '=', False)]}"
                     groups="product_configurator.group_product_configurator_manager"/>
                 <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
                         class="oe_highlight"

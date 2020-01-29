@@ -24,7 +24,7 @@
         <field name="name">Extras</field>
     </record>
 
-    <!-- Configuration Lines -->
+    <!-- Configuration Step Lines -->
 
     <record id="2_series_config_step_body" model="product.config.step.line">
         <field name="product_tmpl_id" ref="bmw_2_series"/>
