@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_move_picking_form_config" model="ir.ui.view">
+    <record id="view_move_form_config" model="ir.ui.view">
         <field name="name">stock.move.form.config</field>
         <field name="model">stock.move</field>
-        <field name="inherit_id" ref="stock.view_move_picking_form"/>
+        <field name="inherit_id" ref="stock.view_move_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_id']" position="after">
                 <field name="allow_configuration" invisible="1"/>
                 <field name="config_ok" invisible="1"/>
             </xpath>
 
-            <xpath expr="//group[@name='quants_grp']/.." position="after">
+            <xpath expr="//group[@name='linked_group']/.." position="after">
                 <div groups="product_configurator.group_product_configurator">
                     <label for="custom_value_ids"/>
                     <field name="custom_value_ids">
                         <tree>
                             <field name="attribute_id"/>
                             <field name="name"/>
+                            <field name="value"/>
                             <field name="attachment_ids" widget="many2many_tags"/>
                         </tree>
                     </field>
