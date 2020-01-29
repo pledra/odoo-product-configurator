@@ -8,7 +8,7 @@ class SaleOrder(ProductConfiguratorTestCases):
         self.SaleOrderId = self.env['sale.order']
         self.productPricelist = self.env['product.pricelist']
         self.resPartner = self.env.ref(
-            'product_configurator_sale.partenr1')
+            'product_configurator_sale.partenr_sale_1')
         self.currency_id = self.env.ref('base.USD')
         self.ProductConfWizard = self.env['product.configurator.sale']
 

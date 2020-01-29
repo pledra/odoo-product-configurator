@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <record id="sale.product_template_action" model="ir.actions.act_window">
         <field name="context">{"search_default_filter_to_sell":1, "search_default_filter_standard_products": 1, "sale_multi_pricelist_product_template": 1}</field>
     </record>
@@ -8,5 +7,4 @@
     <record id="product.product_normal_action_sell" model="ir.actions.act_window">
         <field name="context">{"search_default_filter_to_sell":1, "search_default_filter_standard_products": 1}</field>
     </record>
-
 </odoo>

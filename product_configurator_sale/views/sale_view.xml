@@ -6,7 +6,7 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            
+
             <xpath expr="//field[@name='order_line']" position="before">
                 <button name="action_config_start"
                         states="draft,sent"
@@ -19,6 +19,7 @@
 
             <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
                 <field name="config_ok" invisible="1"/>
+                <field name="config_session_id"/>
             </xpath>
 
             <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="after">
@@ -35,6 +36,7 @@
                                 ('state','not in',['draft','sent'])
                             ]
                         }"/>
+                    <field name="config_session_id"/>
             </xpath>
 
             <xpath expr="//form//notebook//field[@name='order_line']/form/field[@name='name']" position="after">
