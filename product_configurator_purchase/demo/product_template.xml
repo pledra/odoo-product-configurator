@@ -5,7 +5,6 @@
 
     <record id="product_configurator.bmw_2_series" model="product.template">
         <field name="type">product</field>
-        <field name="categ_id" ref="product_configurator.product_category_bmw"/>
     </record>
 
     <record id="product_configurator.product_bmw_sport_line" model="product.product">
@@ -13,10 +12,7 @@
     </record>
 
     <record id="product_configurator.product_bmw_luxury_line" model="product.product">
-        <field name="name">Luxury Line</field>
         <field name="type">product</field>
-        <field name="lst_price" eval="0"/>
-        <field name="image" type="base64" file="product_configurator/static/img/product-luxury-line.jpg"/>
     </record>
 
     <record id="product_configurator.product_bmw_model_sport_line" model="product.product">
@@ -99,7 +95,7 @@
         <field name="type">product</field>
     </record>
 
-    <record id="partenr1" model="res.partner">
+    <record id="partenr_purchase_1" model="res.partner">
         <field name="name">Test Partner</field>
         <field name="company_type">company</field>
         <field name="child_ids" eval="[(0, 0,{'name': 'Partner Contact',
