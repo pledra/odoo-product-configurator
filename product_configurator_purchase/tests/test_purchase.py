@@ -9,7 +9,7 @@ class Purchase(ProductConfiguratorTestCases):
         self.purchaseOrder = self.env['purchase.order']
         self.purchaseOrderLine = self.env['purchase.order.line']
         self.resPartner = self.env.ref(
-            'product_configurator_purchase.partenr1')
+            'product_configurator_purchase.partenr_purchase_1')
         self.currency_id = self.env.ref('base.USD')
         self.company_id = self.env.ref('base.main_company')
         self.ProductTemplate = self.env.ref(
