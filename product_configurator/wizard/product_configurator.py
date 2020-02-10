@@ -892,10 +892,9 @@ class ProductConfigurator(models.TransientModel):
         to database persistent value_ids field"""
 
         # Remove all dynamic fields from write values
-        if not self.env.context.get("reset_wizard"):
-            self.config_session_id.update_session_configuration_value(
-                vals=vals, product_tmpl_id=self.product_tmpl_id
-            )
+        self.config_session_id.update_session_configuration_value(
+            vals=vals, product_tmpl_id=self.product_tmpl_id
+        )
         vals = self._remove_dynamic_fields(vals)
 
         return super(ProductConfigurator, self).write(vals)
