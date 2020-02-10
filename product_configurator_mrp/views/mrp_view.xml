@@ -25,6 +25,17 @@
                         attrs="{'invisible': [('config_ok','=',False)]}"/>
                 </div>
             </xpath>
+            <xpath expr="//field[@name='finished_move_line_ids']/.." position="after">
+                <page string="Custom Values" name="custom_values">
+                    <field name="custom_value_ids" readonly="True" force_save="True">
+                        <tree>
+                            <field name="attribute_id"/>
+                            <field name="cfg_session_id"/>
+                            <field name="attachment_ids"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
         </field>
     </record>
 
@@ -54,10 +65,6 @@
         <field name="context">{"search_default_todo": True, "default_company_id": allowed_company_ids[0], "custom_create_variant": True}</field>
     </record>
 
-
-
-
-
     <record id="mrp_bom_form_view" model="ir.ui.view">
         <field name="name">product.config.mrp.bom.form.view</field>
         <field name="model">mrp.bom</field>
@@ -65,11 +72,12 @@
         <field name="arch" type="xml">
 
             <xpath expr="//field[@name='product_tmpl_id']" position="after">
-                <field name="config_ok"/>
+                <field name="config_ok" readonly="True" force_save="True"/>
             </xpath>
 
             <xpath expr="//field[@name='product_id']" position="attributes">
                 <attribute name="attrs">{'readonly': [('config_ok', '=', True)]}</attribute>
+                <attribute name="force_save">True</attribute>
             </xpath>
 
             <xpath expr="//field[@name='bom_product_template_attribute_value_ids']" position="attributes">

@@ -10,12 +10,22 @@ class MrpProduction(models.Model):
         string="Configurable",
         readonly=True,
     )
+    config_session_id = fields.Many2one(
+        comodel_name="product.config.session", string="Config Session"
+    )
+    custom_value_ids = fields.One2many(
+        comodel_name="product.config.session.custom.value",
+        inverse_name="product_id",
+        related="config_session_id.custom_value_ids",
+        string="Custom Values",
+    )
 
     def action_config_start(self):
         """Return action to start configuration wizard"""
         configurator_obj = self.env["product.configurator.mrp"]
         ctx = dict(
             self.env.context,
+            wizard_id=None,
             wizard_model="product.configurator.mrp",
             allow_preset_selection=True,
         )

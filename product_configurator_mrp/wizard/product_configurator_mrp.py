@@ -42,7 +42,10 @@ class ProductConfiguratorMrp(models.TransientModel):
         """ Hook to allow custom line values to be put on the newly
         created or edited lines."""
 
-        line_vals = {"product_id": product_id}
+        line_vals = {
+            "product_id": product_id,
+            "config_session_id": self.config_session_id.id,
+        }
         return line_vals
 
     def action_config_done(self):
