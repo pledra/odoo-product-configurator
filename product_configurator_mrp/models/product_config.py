@@ -66,11 +66,7 @@ class ProductConfigSession(models.Model):
         variant = super(ProductConfigSession, self).create_get_variant(
             value_ids=value_ids, custom_vals=custom_vals
         )
-        bom_values = {
-            "variant": variant,
-            "product_tmpl_id": self.product_tmpl_id,
-        }
-        mrp_bom_id = self.create_get_bom(
+        self.create_get_bom(
             variant=variant, product_tmpl_id=self.product_tmpl_id
         )
         return variant
