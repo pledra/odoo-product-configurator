@@ -7,7 +7,7 @@
                 <t t-set="model" t-value="config_image_vals['name']"/>
                 <t t-foreach="config_image_vals['config_image_ids']" t-as="config">
                     <img id="cfg_image" itemprop="image" class="img img-responsive"
-                        t-attf-src="/web/image/{{model}}/{{config}}/image"/>
+                        t-attf-src="/web/image/{{model}}/{{config}}/image_1920"/>
                 </t>
             </span>
         </div>
@@ -413,73 +413,57 @@
 
     <!-- Product configurator checkout -->
 
-    <template id="cfg_product_variant" name="Product">
+    <template id="product_price">
+        <div itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer" class="product_price mt16">
+            <h4 class="oe_price_h4 decimal_precision" t-att-data-precision="str(website.currency_id.decimal_places)">
+                <t t-set="curr_pl" t-value="website.get_current_pricelist()" />
+                <t t-set="price"
+                    t-value="product_variant.with_context(product_sessions={product_variant.id: cfg_session_id.id}, pricelist=curr_pl.id).price"/>
+                <b class="oe_price" style="white-space: nowrap;" t-esc="price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                <span itemprop="price" style="display:none;" t-esc="price"/>
+                <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
+            </h4>
+        </div>
+    </template>
 
-        <t t-set="combination_info" t-value="product_id._get_combination_info_variant(add_qty=add_qty or 1, pricelist=pricelist)"/>
-        <t t-set="product_variant" t-value="product_tmpl.env['product.product'].browse(combination_info['product_id'])"/>
-
+    <template id="cfg_product" name="Product" track="1">
+        <t t-set="combination_info" t-value="product._get_combination_info(product_id=product.id, add_qty=add_qty or 1, pricelist=pricelist)"/>
         <t t-call="website.layout">
+            <t t-set="additional_title" t-value="product.name" />
             <div itemscope="itemscope" itemtype="http://schema.org/Product" id="wrap" class="js_sale">
-                <section t-attf-class="container py-2 oe_website_sale #{'discount' if combination_info['has_discounted_price'] else ''}" id="product_detail">
+                <section t-attf-class="container py-2 oe_website_sale #{'discount' if combination_info['has_discounted_price'] else ''}" id="product_detail" t-att-data-view-track="view_track and '1' or '0'">
                     <div class="row">
-                        <div class="col-md-6">
-                            <t t-set="variant_img" t-value="product_variant and product_variant.image_variant"/>
-                            <t t-set="image_ids"  t-value="product_tmpl.product_image_ids"/>
-                            <div id="o-carousel-product" class="carousel slide" data-ride="carousel" data-interval="0">
-                              <div class="carousel-outer">
-                                <div class="carousel-inner">
-                                    <div t-if="variant_img" class="carousel-item active" itemprop="image" t-field="product_variant.image" t-options="{'widget': 'image', 'class': 'product_detail_img js_variant_img', 'alt-field': 'name', 'zoom': 'image', 'unique': str(product_tmpl['__last_update']) + (str(product_variant['__last_update']) or '')}"/>
-                                    <div t-attf-class="carousel-item#{'' if variant_img else ' active'}" itemprop="image" t-field="product_tmpl.image" t-options="{'widget': 'image', 'class': 'product_detail_img', 'alt-field': 'name', 'zoom': 'image', 'unique': product_tmpl['__last_update']}"/>
-                                    <t t-if="len(image_ids)" t-foreach="image_ids" t-as="pimg">
-                                        <div class="carousel-item" t-field="pimg.image" t-options='{"widget": "image", "class": "product_detail_img", "alt-field": "name", "zoom": "image" }'/>
-                                    </t>
-                                </div>
-
-                                <t t-if="len(image_ids) or variant_img">
-                                    <a class="carousel-control-prev" href="#o-carousel-product" role="button" data-slide="prev" >
-                                        <span class="fa fa-chevron-left" role="img" aria-label="Previous" title="Previous"/>
-                                    </a>
-                                    <a class="carousel-control-next" href="#o-carousel-product" role="button" data-slide="next">
-                                        <span class="fa fa-chevron-right" role="img" aria-label="Next" title="Next"/>
-                                    </a>
-                                </t>
-                              </div>
-
-                              <ol class="carousel-indicators" t-if="len(image_ids) or variant_img">
-                                <li t-if="variant_img" data-target="#o-carousel-product" data-slide-to="0" class="active">
-                                    <img class="img img-fluid js_variant_img_small"
-                                        t-attf-src="/website/image/product.product/{{product_variant.id}}/image/90x90"
-                                        t-att-alt="product_tmpl.name"/>
+                        <div class="col-md-4">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                     <a href="/shop">Products</a>
                                 </li>
-                                <li data-target="#o-carousel-product" t-att-data-slide-to="1 if variant_img else '0'" t-att-class="'' if variant_img else 'active'">
-                                    <img class="img img-fluid"
-                                        t-attf-src="/website/image/product.template/{{product_tmpl.id}}/image/90x90"
-                                        t-att-alt="product_tmpl.name"/>
+                                <li class="breadcrumb-item active">
+                                    <span t-field="product.name" />
                                 </li>
-                                <t t-if="len(image_ids)" t-foreach="image_ids" t-as="pimg">
-                                    <li data-target="#o-carousel-product" t-att-data-slide-to="pimg_index + (variant_img and 2 or 1)">
-                                        <img class="img img-fluid" t-attf-src="/website/image/product.image/{{pimg.id}}/image/90x90" t-att-alt="pimg.name"/>
-                                    </li>
-                                </t>
-                              </ol>
-                            </div>
+                                <li class="breadcrumb-item">
+                                    <a t-att-href="reconfigure_product_url">Reconfigure</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a t-att-href="'/shop/product/%s#ProductConfiguration' % product.id">Configure Again</a>
+                                </li>
+                            </ol>
                         </div>
-                        <div class="col-md-6 col-xl-4 offset-xl-2" id="product_details">
-                            <div>
-                                <div class="form-inline">
-                                    <t t-call="website_sale.pricelist_list">
-                                        <t t-set="_classes"></t>
-                                    </t>
-                                </div>
-                            </div>
-                            <h1 itemprop="name" t-field="product_variant.name">Product Name</h1>
-                            <span itemprop="url" style="display:none;" t-esc="'%s/website_product_configurator/open_product/%s' % (request.httprequest.url_root, slug(product_variant))"/>
-                            <form action="/shop/cart/update" method="POST">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-xl-8">
+                            <t t-call="website_sale.shop_product_carousel"/>
+                        </div>
+                        <div class="col-md-6 col-xl-4" id="product_details">
+                            <h1 itemprop="name" t-field="product.name">Product Name</h1>
+                            <span itemprop="url" style="display:none;" t-esc="product.website_url"/>
+                            <form t-if="product_variant.active" action="/shop/cart/update" method="POST">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
                                 <div class="js_product js_main_product">
                                     <t t-placeholder="select">
                                         <input type="hidden" class="product_id" name="product_id" t-att-value="product_variant.id" />
-                                        <input type="hidden" class="product_template_id" name="product_template_id" t-att-value="product_tmpl.id" />
+                                        <input type="hidden" class="product_template_id" name="product_template_id" t-att-value="product.id" />
+                                        <input type="hidden" class="config_session_id" name="config_session_id" t-att-value="cfg_session_id.id" />
                                         <div class="col-xs-12">
                                             <ul class="product_vals">
                                                 <t t-foreach="vals" t-as="val">
@@ -501,13 +485,17 @@
                                             </ul>
                                         </div>
                                     </t>
-                                    <t t-call="website_product_configurator.product_price"/>
-                                    <a role="button" id="add_to_cart" class="btn btn-primary btn-lg mt8 js_check_product a-submit" href="#">Add to Cart</a>
+                                    <t t-call="website_product_configurator.product_price" />
+                                    <!-- <p t-if="True" class="css_not_available_msg alert alert-warning">This combination does not exist.</p> -->
+                                    <a role="button" id="add_to_cart" class="btn btn-primary btn-lg mt16 js_check_product a-submit d-block d-sm-inline-block" href="#"><i class="fa fa-shopping-cart"/> Add to Cart</a>
+                                    <div id="product_option_block"/>
                                 </div>
                             </form>
-                            <hr t-if="product_tmpl.description_sale" />
-                            <div class="o_not_editable">
-                                <p t-field="product_tmpl.description_sale" class="text-muted" />
+                            <p t-elif="not product_variant.active" class="alert alert-warning">This product is no longer available.</p>
+                            <p t-else="" class="alert alert-warning">This product has no valid combination.</p>
+                            <hr t-if="product.description_sale" />
+                            <div>
+                                <p t-field="product.description_sale" class="text-muted mt-3" placeholder="A short description that will also appear on documents." />
                             </div>
                             <hr />
                             <p class="text-muted">
@@ -518,34 +506,64 @@
                         </div>
                     </div>
                 </section>
-                <div itemprop="description" t-field="product_tmpl.website_description" class="oe_structure mt16" id="product_full_description" />
+                <div itemprop="description" t-field="product.website_description" class="oe_structure mt16" id="product_full_description" />
             </div>
         </t>
     </template>
 
-    <template inherit_id='website_product_configurator.cfg_product_variant' id="product_picture_magnify" customize_show="True" name="Image Zoom">
+    <template inherit_id='website_product_configurator.cfg_product' id="product_picture_magnify_cfg" customize_show="True" name="Image Zoom">
         <xpath expr='//div[hasclass("js_sale")]' position='attributes'>
             <attribute name="class" separator=" " add="ecom-zoomable zoomodoo-next" />
         </xpath>
     </template>
 
-    <template inherit_id='website_product_configurator.cfg_product_variant' id="product_picture_magnify_auto" active="False" customize_show="True" name="Automatic Image Zoom">
+    <template inherit_id='website_product_configurator.cfg_product' id="product_picture_magnify_auto_cfg" active="False" customize_show="True" name="Automatic Image Zoom">
         <xpath expr='//div[hasclass("js_sale")]' position='attributes'>
             <attribute name="data-ecom-zoom-auto">1</attribute>
             <attribute name="class" separator=" " add="ecom-zoomable zoomodoo-next" />
+
         </xpath>
     </template>
 
-    <!-- Product options: OpenChatter -->
-    <template id="product_comment" inherit_id="website_product_configurator.cfg_product_variant" active="False" customize_show="True" name="Discussion and Rating">
-        <xpath expr="//div[@t-field='product_tmpl.website_description']" position="after">
+    <template id="recommended_products_cfg" inherit_id="website_product_configurator.cfg_product" customize_show="True" name="Alternative Products">
+        <xpath expr="//div[@id='product_full_description']" position="after">
+            <div class="container mt32" t-if="product.alternative_product_ids">
+                <h3>Alternative Products:</h3>
+                <div class="row mt16" style="">
+                    <t t-foreach="product.alternative_product_ids" t-as="alt_product">
+                        <div class="col-lg-2" style="width: 170px; height:130px; float:left; display:inline; margin-right: 10px; overflow:hidden;">
+                            <div class="mt16 text-center" style="height: 100%;">
+                                <t t-set="combination_info" t-value="alt_product._get_combination_info()"/>
+                                <div t-if="product_variant" t-field="product_variant.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded shadow o_alternative_product o_image_64_max' }" />
+                                <div t-else="" t-field="alt_product.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded shadow o_alternative_product o_image_64_max' }" />
+                                <h6>
+                                    <a t-att-href="alt_product.website_url" style="display: block">
+                                        <span t-att-title="alt_product.name" t-field="alt_product.name" class="o_text_overflow" style="display: block;" />
+                                    </a>
+                                </h6>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="recently_viewed_products_product_cfg" inherit_id="website_product_configurator.cfg_product" active="True" customize_show="True" name="Recently Viewed Products" priority="16">
+        <xpath expr="//div[@t-field='product.website_description']" position="after">
+            <t t-call="website_sale.s_products_recently_viewed"/>
+        </xpath>
+    </template>
+
+    <template id="product_comment_cfg" inherit_id="website_product_configurator.cfg_product" active="False" customize_show="True" name="Discussion and Rating" priority="15">
+        <xpath expr="//div[@t-field='product.website_description']" position="after">
             <div class="o_shop_discussion_rating">
                 <section class="container mt16 mb16">
                     <hr/>
                     <div class="row">
                         <div class="col-lg-8 offset-lg-2">
                             <t t-call="portal.message_thread">
-                                <t t-set="object" t-value="product_variant"/>
+                                <t t-set="object" t-value="product"/>
                                 <t t-set="display_rating" t-value="True"/>
                             </t>
                         </div>
@@ -555,42 +573,39 @@
         </xpath>
     </template>
 
-    <template id="product_quantity" inherit_id="website_product_configurator.cfg_product_variant" customize_show="True" name="Select Quantity">
-      <xpath expr="//a[@id='add_to_cart']" position="before">
-        <div class="css_quantity input-group oe_website_spinner" contenteditable="false">
-            <div class="input-group-prepend">
-                <a t-attf-href="#" class="btn btn-secondary js_add_cart_json" aria-label="Remove one" title="Remove one">
-                    <i class="fa fa-minus"></i>
-                </a>
+    <template id="product_quantity_cfg" inherit_id="website_product_configurator.cfg_product" customize_show="True" name="Select Quantity">
+        <xpath expr="//a[@id='add_to_cart']" position="before">
+            <div class="css_quantity input-group" contenteditable="false">
+                <div class="input-group-prepend">
+                    <a t-attf-href="#" class="btn btn-secondary js_add_cart_json" aria-label="Remove one" title="Remove one">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                </div>
+                <input type="text" class="form-control quantity" data-min="1" name="add_qty" t-att-value="add_qty or 1"/>
+                <div class="input-group-append">
+                    <a t-attf-href="#" class="btn btn-secondary float_left js_add_cart_json" aria-label="Add one" title="Add one">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </div>
             </div>
-            <input type="text" class="form-control quantity" data-min="1" name="add_qty" t-att-value="add_qty or 1"/>
-            <div class="input-group-append">
-                <a t-attf-href="#" class="btn btn-secondary float_left js_add_cart_json" aria-label="Add one" title="Add one">
-                    <i class="fa fa-plus"></i>
-                </a>
-            </div>
-        </div>
-      </xpath>
+        </xpath>
     </template>
 
-    <template id="product_price">
-      <div itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer" class="product_price mt16">
-          <h4 class="oe_price_h4 css_editable_mode_hidden">
-              <span t-attf-class="text-danger oe_default_price {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="text-decoration: line-through; white-space: nowrap;"
-                  t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"
-              />
-              <b class="oe_price" style="white-space: nowrap;" t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
-              <span itemprop="price" style="display:none;" t-esc="combination_info['list_price']"/>
-              <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
-          </h4>
-          <h4 class="css_non_editable_mode_hidden decimal_precision" t-att-data-precision="str(website.currency_id.decimal_places)">
-            <span t-field="product_tmpl.list_price"
-                t-options='{
-                   "widget": "monetary",
-                   "display_currency": product_tmpl.currency_id,
-               }'/>
-          </h4>
-      </div>
+    <template id="product_buy_now_cfg" inherit_id="website_product_configurator.cfg_product" active="False" customize_show="True" name="Buy Now Button">
+        <xpath expr="//a[@id='add_to_cart']" position="after">
+            <a role="button" id="buy_now" class="btn btn-outline-primary btn-lg mt16 d-block d-sm-inline-block" href="#"><i class="fa fa-bolt"/> Buy Now</a>
+        </xpath>
+    </template>
+
+    <template id="cart_lines_json_price" inherit_id="website_sale.cart_lines" name="Shopping Cart Lines">
+        <xpath expr="//table[hasclass('js_cart_lines')]//tbody//td[hasclass('td-price')]" position="attributes">
+            <attribute name="t-if">not line.config_session_id</attribute>
+        </xpath>
+        <xpath expr="//table[hasclass('js_cart_lines')]//tbody//td[hasclass('td-price')]" position="after">
+            <td t-if="line.config_session_id" class="text-center td-price" name="price">
+                <span t-field="line.with_context(product_sessions={line.product_id.id: line.config_session_id.id}).product_id.price" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+            </td>
+        </xpath>
     </template>
 
 </odoo>

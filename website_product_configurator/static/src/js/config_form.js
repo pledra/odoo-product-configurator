@@ -6,12 +6,12 @@ odoo.define('website_product_configurator.config_form', function (require) {
     var utils = require('web.utils');
     var core = require('web.core');
     var Dialog = require('web.Dialog');
-    var sAnimations = require('website.content.snippets.animation');
+    var publicWidget = require('web.public.widget');
     var _t = core._t;
 
-    sAnimations.registry.ProductConfigurator = sAnimations.Class.extend({
+    publicWidget.registry.ProductConfigurator = publicWidget.Widget.extend({
         selector: '.product_configurator',
-        read_events: {
+        events: {
             'change.datetimepicker #product_config_form .input-group.date': '_onChangeDateTime',
             'change #product_config_form .config_attribute': '_onChangeConfigAttribute',
             'change #product_config_form .custom_config_value.config_attachment': '_onChangeFile',
@@ -125,9 +125,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         _checkChange: function (attr_field) {
             var flag = true
-            if (attr_field.hasClass('cfg-radio')) {
+            if ($(attr_field).hasClass('cfg-radio')) {
                 flag = !($(attr_field).attr('data-old-val-id') == $(attr_field).find('input:checked').val());
-            } else if (attr_field.hasClass('cfg-select')) {
+            } else if ($(attr_field).hasClass('cfg-select')) {
                 flag = !($(attr_field).attr('data-old-val-id') == $(attr_field).val());
             }
             return flag
@@ -285,7 +285,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var flag = true;
                 if (!$(config_attr[i]).hasClass('required_config_attrib')) {
                     flag = true;
-                } else if (config_attr[i].hasClass('.cfg-radio')) {
+                } else if ($(config_attr[i]).hasClass('.cfg-radio')) {
                     flag = self._checkRequiredFieldsRadio($(config_attr[i]));
                 } else if (!config_attr[i].value.trim()  || config_attr[i].value == '0') {
                     flag = false;
@@ -553,6 +553,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
         },
 
     })
-    return sAnimations.registry.ProductConfigurator
+    return publicWidget.registry.ProductConfigurator
 
 })

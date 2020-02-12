@@ -49,26 +49,9 @@ class ProductConfigSession(models.Model):
         xml_id = ICPSudo.get_param(
             "product_configurator.default_configuration_step_website_view_id"
         )
-
-        if not xml_id or len(xml_id.split(".")) != 2:
-            return default_tmpl_xml_id
-
-        model_data_id = self.env["ir.model.data"].search(
-            [
-                ("module", "=", xml_id.split(".")[0]),
-                ("name", "=", xml_id.split(".")[1]),
-            ]
+        website_tmpl_id = self.env["res.config.settings"].xml_id_to_record_id(
+            xml_id=xml_id
         )
-
-        if not model_data_id:
-            return default_tmpl_xml_id
-
-        website_tmpl_id = self.env[model_data_id.model].browse(
-            model_data_id.res_id
-        )
-        if (
-            website_tmpl_id.inherit_id.xml_id
-            != "website_product_configurator.config_form_base"
-        ):
+        if not website_tmpl_id:
             return default_tmpl_xml_id
         return xml_id

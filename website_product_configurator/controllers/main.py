@@ -1,4 +1,5 @@
 from odoo import http
+import json
 from odoo.http import request
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.addons.http_routing.models.ir_http import slug
@@ -71,7 +72,13 @@ class ProductConfigWebsiteSale(WebsiteSale):
             if res.get("error", False):
                 return request.redirect(error_page)
         # Render the configuration template based on the configuration session
-        config_form = self.render_form(cfg_session)
+        config_form = self.render_form(
+            cfg_session,
+            product=product,
+            category=category,
+            search=search,
+            **kwargs
+        )
 
         return config_form
 
@@ -166,12 +173,18 @@ class ProductConfigWebsiteSale(WebsiteSale):
         }
         return vals
 
-    def render_form(self, cfg_session, values=None):
+    def render_form(
+        self, cfg_session, product, category, search, values=None, **kwargs
+    ):
         """Render the website form for the given template and configuration
         session"""
         if values is None:
             values = {}
+        product_values = self._prepare_product_values(
+            product=product, category=category, search=search, **kwargs
+        )
         config_vals = self.get_render_vals(cfg_session)
+        values.update(product_values)
         values.update(config_vals)
         return request.render(
             "website_product_configurator.product_configurator", values
@@ -519,7 +532,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         return {}
 
     @http.route(
-        "/product_configurator/product"
+        "/product_configurator/product/"
         '<model("product.config.session"):cfg_session_id>',
         type="http",
         auth="public",
@@ -527,7 +540,13 @@ class ProductConfigWebsiteSale(WebsiteSale):
     )
     def cfg_session(self, cfg_session_id, **post):
         """Render product page of product_id"""
-	product_id = cfg_session_id.product_id
+        if (
+            not cfg_session_id.exists()
+            or cfg_session_id.user_id != request.env.user
+            or cfg_session_id.state != "done"
+        ):
+            return request.render("website_sale.404")
+        product_id = cfg_session_id.product_id
         product_tmpl_id = product_id.product_tmpl_id
 
         custom_vals = sorted(
@@ -535,7 +554,9 @@ class ProductConfigWebsiteSale(WebsiteSale):
             key=lambda obj: obj.attribute_id.sequence,
         )
         vals = sorted(
-            product_id.product_template_attribute_value_ids.mapped('product_attribute_value_id'),
+            product_id.product_template_attribute_value_ids.mapped(
+                "product_attribute_value_id"
+            ),
             key=lambda obj: obj.attribute_id.sequence,
         )
         pricelist = get_pricelist()
@@ -547,17 +568,48 @@ class ProductConfigWebsiteSale(WebsiteSale):
             # Bizzappdev end code
             del product_config_session[product_tmpl_id.id]
             request.session["product_config_session"] = product_config_session
+
+        reconfigure_product_url = (
+            "/product_configurator/reconfigure/%s" % slug(product_id)
+        )
         values = {
-            "product_id": product_id,
-            "product_tmpl": product_tmpl_id,
+            "product_variant": product_id,
+            "product": product_tmpl_id,
             "cfg_session_id": cfg_session_id,
             "pricelist": pricelist,
             "custom_vals": custom_vals,
             "vals": vals,
+            "reconfigure_product_url": reconfigure_product_url,
         }
         return request.render(
-            "website_product_configurator.cfg_product_variant", values
+            "website_product_configurator.cfg_product", values
         )
+
+    @http.route(
+        "/product_configurator/reconfigure/"
+        '<model("product.product"):product_id>',
+        type="http",
+        auth="public",
+        website=True,
+    )
+    def reconfigure_product(self, product_id, **post):
+        try:
+            product_tmpl_id = product_id.product_tmpl_id
+
+            cfg_session = self.get_config_session(
+                product_tmpl_id=product_tmpl_id
+            )
+            cfg_session.value_ids = product_id.attribute_value_ids
+            cfg_session.session_product_id = product_id.id
+
+            return request.redirect(
+                "/shop/product/%s" % (slug(product_tmpl_id))
+            )
+        except Exception:
+            error_code = 1
+            return request.redirect(
+                "/website_product_configurator/error_page/%s" % (error_code)
+            )
 
     @http.route(
         [
@@ -578,3 +630,44 @@ class ProductConfigWebsiteSale(WebsiteSale):
             )
         vals = {"message": message, "error": error}
         return request.render("website_product_configurator.error_page", vals)
+
+    @http.route(
+        ["/shop/cart/update"],
+        type="http",
+        auth="public",
+        methods=["GET", "POST"],
+        website=True,
+        csrf=False,
+    )
+    def cart_update(self, product_id, add_qty=1, set_qty=0, **kw):
+        """This route is called when adding a product to cart (no options)."""
+        sale_order = request.website.sale_get_order(force_create=True)
+        if sale_order.state != "draft":
+            request.session["sale_order_id"] = None
+            sale_order = request.website.sale_get_order(force_create=True)
+
+        product_custom_attribute_values = None
+        if kw.get("product_custom_attribute_values"):
+            product_custom_attribute_values = json.loads(
+                kw.get("product_custom_attribute_values")
+            )
+
+        no_variant_attribute_values = None
+        if kw.get("no_variant_attribute_values"):
+            no_variant_attribute_values = json.loads(
+                kw.get("no_variant_attribute_values")
+            )
+
+        sale_order._cart_update(
+            product_id=int(product_id),
+            add_qty=add_qty,
+            set_qty=set_qty,
+            product_custom_attribute_values=product_custom_attribute_values,
+            no_variant_attribute_values=no_variant_attribute_values,
+            # BizzAppDev Customization
+            config_session_id=kw.get("config_session_id", False)
+            # BizzAppDev Customization End
+        )
+        if kw.get("express"):
+            return request.redirect("/shop/checkout?express=1")
+        return request.redirect("/shop/cart")
