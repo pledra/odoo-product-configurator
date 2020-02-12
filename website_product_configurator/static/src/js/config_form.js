@@ -125,9 +125,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         _checkChange: function (attr_field) {
             var flag = true
-            if (attr_field.tagName == 'FIELDSET') {
+            if (attr_field.hasClass('cfg-radio')) {
                 flag = !($(attr_field).attr('data-old-val-id') == $(attr_field).find('input:checked').val());
-            } else if (attr_field.tagName == 'SELECT'){
+            } else if (attr_field.hasClass('cfg-select')) {
                 flag = !($(attr_field).attr('data-old-val-id') == $(attr_field).val());
             }
             return flag
@@ -186,11 +186,11 @@ odoo.define('website_product_configurator.config_form', function (require) {
         },
 
         _setDataOldValId: function () {
-            var selections = $('select.config_attribute')
+            var selections = $('.cfg-select.config_attribute')
             _.each(selections, function (select) {
                 $(select).attr('data-old-val-id', $(select).val());
             })
-            var fieldsets = $('fieldset.config_attribute')
+            var fieldsets = $('.cfg-radio.config_attribute')
             _.each(fieldsets, function (fieldset) {
                 $(fieldset).attr('data-old-val-id', $(fieldset).find('input:checked').val() || '');
             })
@@ -285,7 +285,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var flag = true;
                 if (!$(config_attr[i]).hasClass('required_config_attrib')) {
                     flag = true;
-                } else if (config_attr[i].tagName == 'FIELDSET') {
+                } else if (config_attr[i].hasClass('.cfg-radio')) {
                     flag = self._checkRequiredFieldsRadio($(config_attr[i]));
                 } else if (!config_attr[i].value.trim()  || config_attr[i].value == '0') {
                     flag = false;
@@ -448,7 +448,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         _onClickRadioImage: function(event) {
             var val_id = $(event.currentTarget).data('val-id');
-            var value_input = $(event.currentTarget).closest('fieldset').find('.config_attr_value[data-oe-id="' + val_id + '"]');
+            var value_input = $(event.currentTarget).closest('.cfg-radio').find('.config_attr_value[data-oe-id="' + val_id + '"]');
             if (value_input.prop('disabled')) {
                 return
             }

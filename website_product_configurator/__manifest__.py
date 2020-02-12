@@ -1,6 +1,6 @@
 {
     'name': "Website Product Configurator",
-    'version': '12.0.0.0.0',
+    'version': '13.0.1.0.0',
     'summary': """Configure products in e-shop""",
     'author': "Pledra",
     'license': 'AGPL-3',
@@ -26,5 +26,5 @@
         'static/description/cover.png'
     ],
     'application': True,
-    'installable': False,
+    'installable': True,
 }

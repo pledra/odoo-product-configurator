@@ -285,7 +285,7 @@
                                   t-att-data-attr-required="line.required"
                                   t-att-multiple="'multiple' if line.multi else None"
                                   t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                                  t-att-class="'form-control config_attribute' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '') + (' d-none' if not line.value_ids else '')"
+                                  t-att-class="'form-control config_attribute cfg-select' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '') + (' d-none' if not line.value_ids else '')"
                                   t-att-data-old-val-id="(value_ids &amp; line.value_ids) and (value_ids &amp; line.value_ids).ids[0] or ''">
 
                                   <!-- t-att-disabled="'disabled' if not available_val_ids and not line.custom else None" -->
@@ -340,11 +340,11 @@
                     <t t-set="available_val" t-value="any(val.id in available_value_ids for val in line.value_ids)"/>
                     <div t-att-class="'attribute_container'">
                         <label class="control-label" t-esc="line.attribute_id.name" t-att-data-oe-id="line.attribute_id.id"></label>
-                        <fieldset t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
+                        <div t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                             t-att-data-oe-id="line.attribute_id.id"
                             t-att-data-attr-required="line.required"
                             t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
-                            t-att-class="'form-control config_attribute' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '') + (' d-none' if not line.value_ids else '')"
+                            t-att-class="'form-control config_attribute cfg-radio' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '') + (' d-none' if not line.value_ids else '')"
                             style="height: unset;"
                             t-att-data-old-val-id="(value_ids &amp; line.value_ids) and (value_ids &amp; line.value_ids).ids[0] or ''">
                             <t t-foreach="line.value_ids" t-as="value">
@@ -397,7 +397,7 @@
                                     </label>
                                 </div>
                             </t>
-                        </fieldset>
+                        </div>
                         <t t-if="line.custom">
 
                             <div t-att-class="'custom_field_container' + (' d-none' if not custom_value and line.value_ids else '')"
@@ -413,7 +413,7 @@
 
     <!-- Product configurator checkout -->
 
-      <template id="cfg_product_variant" name="Product">
+    <template id="cfg_product_variant" name="Product">
 
         <t t-set="combination_info" t-value="product_id._get_combination_info_variant(add_qty=add_qty or 1, pricelist=pricelist)"/>
         <t t-set="product_variant" t-value="product_tmpl.env['product.product'].browse(combination_info['product_id'])"/>
