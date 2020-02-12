@@ -507,8 +507,8 @@ class ProductConfigWebsiteSale(WebsiteSale):
             config_session_id.sudo().action_confirm()
             product = config_session_id.product_id
             if product:
-                redirect_url = "/website_product_configurator/open_product"
-                redirect_url += "/%s" % (slug(product))
+                redirect_url = "/product_configurator/product"
+                redirect_url += "/%s" % (slug(config_session_id))
                 return {
                     "product_id": product.id,
                     "config_session": config_session_id.id,
@@ -519,22 +519,23 @@ class ProductConfigWebsiteSale(WebsiteSale):
         return {}
 
     @http.route(
-        "/website_product_configurator/open_product/"
-        '<model("product.product"):product_id>',
+        "/product_configurator/product"
+        '<model("product.config.session"):cfg_session_id>',
         type="http",
         auth="public",
         website=True,
     )
-    def cfg_session(self, product_id, **post):
+    def cfg_session(self, cfg_session_id, **post):
         """Render product page of product_id"""
+	product_id = cfg_session_id.product_id
         product_tmpl_id = product_id.product_tmpl_id
 
         custom_vals = sorted(
-            product_id.value_custom_ids,
+            cfg_session_id.custom_value_ids,
             key=lambda obj: obj.attribute_id.sequence,
         )
         vals = sorted(
-            product_id.attribute_value_ids,
+            product_id.product_template_attribute_value_ids.mapped('product_attribute_value_id'),
             key=lambda obj: obj.attribute_id.sequence,
         )
         pricelist = get_pricelist()
@@ -549,6 +550,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
         values = {
             "product_id": product_id,
             "product_tmpl": product_tmpl_id,
+            "cfg_session_id": cfg_session_id,
             "pricelist": pricelist,
             "custom_vals": custom_vals,
             "vals": vals,
