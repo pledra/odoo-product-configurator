@@ -301,7 +301,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 field_value = field_value and field_value[0] or False
 
             config_vals.update(
-                {field_name: field_value, custom_field: custom_field_value,}
+                {field_name: field_value, custom_field: custom_field_value}
             )
         return config_vals
 

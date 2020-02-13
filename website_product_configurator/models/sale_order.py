@@ -87,8 +87,6 @@ class SaleOrder(models.Model):
                     )
                 )
 
-            product_template = product.product_tmpl_id
-            combination = product.product_template_attribute_value_ids
             product_id = product.id
             values = self._website_product_id_change(
                 self.id, product_id, qty=1
@@ -173,7 +171,7 @@ class SaleOrder(models.Model):
                     kwargs["linked_line_id"]
                 )
                 order_line.write(
-                    {"linked_line_id": linked_line.id,}
+                    {"linked_line_id": linked_line.id}
                 )
                 linked_product = product_with_context.browse(
                     linked_line.product_id.id
@@ -245,6 +243,7 @@ class SaleOrder(models.Model):
         )
         return order_line
 
+
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
@@ -254,7 +253,9 @@ class SaleOrderLine(models.Model):
     def _onchange_discount(self):
         if self.config_session_id:
             self = self.with_context(
-                product_sessions={self.product_id.id: self.config_session_id.id}
+                product_sessions={
+                    self.product_id.id: self.config_session_id.id
+                }
             )
         return super(SaleOrderLine, self)._onchange_discount()
 
@@ -271,7 +272,7 @@ class SaleOrderLine(models.Model):
         if self.config_session_id:
             session_map = {self.product_id.id: self.config_session_id.id}
             self = self.with_context(product_sessions=session_map)
-        res = super(SaleOrderLine, self).product_uom_change()
+        super(SaleOrderLine, self).product_uom_change()
 
     def _get_real_price_currency(self, product, rule_id,
                                  qty, uom, pricelist_id):
