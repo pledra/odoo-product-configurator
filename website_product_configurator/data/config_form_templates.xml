@@ -6,7 +6,7 @@
             <span id="product_config_image">
                 <t t-set="model" t-value="config_image_vals['name']"/>
                 <t t-foreach="config_image_vals['config_image_ids']" t-as="config">
-                    <img id="cfg_image" itemprop="image" class="img img-responsive"
+                    <img itemprop="image" class="cfg_image img img-responsive"
                         t-attf-src="/web/image/{{model}}/{{config}}/image_1920"/>
                 </t>
             </span>

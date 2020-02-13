@@ -219,7 +219,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
             if (config_image_vals){
                 var model = config_image_vals.name
                 config_image_vals.config_image_ids.forEach(function(line){
-                    images += "<img id='cfg_image' itemprop='image' class='img img-responsive pull-right'"
+                    images += "<img itemprop='image' class='cfg_image img img-responsive pull-right'"
                     images += "src='/web/image/"+model+"/"+line+"/image'/>"
                 })
             }

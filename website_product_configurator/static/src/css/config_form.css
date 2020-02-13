@@ -3,7 +3,7 @@
     min-height: 320px;
 }
 
-#cfg_image {
+.cfg_image {
     max-width: 90%;
     max-height: 300px;
     text-align: center;
