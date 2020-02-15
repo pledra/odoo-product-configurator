@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<record id="product_config_default_gasoline_engines" model="product.config.default">
+    <field name="product_tmpl_id" ref="bmw_2_series"/>
+    <field name="value_ids" eval="[(6, 0, [
+        ref('product_attribute_value_218i'),
+        ref('product_attribute_value_red'),
+        ])]"/>
+    <field name="domain_id" ref="product_config_domain_gasoline"/>
+</record>
+
+<record id="product_config_default_diesel_engines" model="product.config.default">
+    <field name="product_tmpl_id" ref="bmw_2_series"/>
+    <field name="value_ids" eval="[(6, 0, [
+        ref('product_attribute_value_218d'),
+        ref('product_attribute_value_black'),
+        ])]"/>
+    <field name="domain_id" ref="product_config_domain_diesel"/>
+</record>
+</odoo>
