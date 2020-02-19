@@ -36,7 +36,7 @@
               name="Configurable Variants"
               parent="menu_product_configurable_product_main" sequence="25"/>
 
-    <record id="action_general_configuration" model="ir.actions.act_window">
+    <record id="action_product_configurator_configuration" model="ir.actions.act_window">
         <field name="name">Settings</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">res.config.settings</field>
@@ -46,8 +46,8 @@
         <field name="context">{'module' : 'product_configurator'}</field>
     </record>
 
-    <menuitem id="menu_action_general_configuration"
-              action="action_general_configuration"
+    <menuitem id="menu_action_product_configurator_configuration"
+              action="action_product_configurator_configuration"
               name="Settings" active="False"
               parent="menu_product_configurable_settings" sequence="0"/>
 
