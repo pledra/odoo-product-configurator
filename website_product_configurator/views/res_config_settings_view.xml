@@ -28,8 +28,8 @@
         </record>
 
         <menuitem id="product_configurator.menu_action_product_configurator_configuration"
-              action="product_configurator.action_product_configurator_configuration"
-              name="Settings" active="True"
-              parent="product_configurator.menu_product_configurable_settings" sequence="0"/>
+            action="product_configurator.action_product_configurator_configuration"
+            name="Settings" active="True"
+            parent="product_configurator.menu_product_configurable_settings" sequence="0"/>
     </data>
 </odoo>
