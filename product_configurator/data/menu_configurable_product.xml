@@ -43,11 +43,13 @@
         <field name="view_mode">form</field>
         <field name="target">inline</field>
         <field name="context">{'module' : 'general_settings'}</field>
+        <field name="view_id" ref="product_configurator.configurator_settings_view_form"/>
+        <field name="context">{'module' : 'product_configurator'}</field>
     </record>
 
     <menuitem id="menu_action_general_configuration"
               action="action_general_configuration"
-              name="Settings"
+              name="Settings" active="False"
               parent="menu_product_configurable_settings" sequence="0"/>
 
     <record id="product_config_steps_action" model="ir.actions.act_window">
