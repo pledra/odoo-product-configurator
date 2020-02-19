@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
   <data>
 
-        <template id="cfg_session" inherit_id="website_product_configurator.cfg_session" name="Configuration Session MRP">
-            <xpath expr="//button[@id='add_to_cart']" position="before">
+        <template id="cfg_session" inherit_id="website_product_configurator.cfg_product" name="Configuration Session MRP">
+            <xpath expr="//a[@id='add_to_cart']" position="before">
                 <div class="input-group mt8">
                     <select name="assembly" class='form-control'>
                         <option value="assembled">Assembled</option>
@@ -14,4 +14,4 @@
         </template>
 
     </data>
-</openerp>
+</odoo>

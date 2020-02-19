@@ -1,11 +1,10 @@
-from openerp.http import request
+from odoo.http import request
 
-from openerp.addons.website_product_configurator.controllers.main import (
-    WebsiteProductConfig
-)
+from odoo.addons.website_product_configurator.controllers.main import ProductConfigWebsiteSale
 
 
-class WebsiteProductConfigMrp(WebsiteProductConfig):
+
+class WebsiteProductConfigMrp(ProductConfigWebsiteSale):
 
     def cart_update(self, product, post):
         if post.get('assembly') == 'kit':
