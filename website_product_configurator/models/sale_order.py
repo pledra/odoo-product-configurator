@@ -49,7 +49,12 @@ class SaleOrder(models.Model):
                 )
                 product = config_session.product_id
             session_map = {product.id: config_session_id}
-            self = self.with_context(product_sessions=session_map)
+            self = self.with_context(
+                current_sale_line=line_id,
+                default_cfg_session_id=config_session_id,
+                product_sessions=session_map,
+            )
+
 
         # Add to cart functionality
         try:
@@ -204,8 +209,16 @@ class SaleOrder(models.Model):
         session_map = self.env.context.get("product_sessions", {})
         ctx = self._context.copy()
         if not session_map:
-            for line in self.order_line:
-                session_map[line.product_id.id] = line.config_session_id.id
+            current_sale_line = self.env.context.get("current_sale_line")
+            sale_line = False
+            if current_sale_line:
+                sale_line = self.env['sale.order.line'].browse(
+                    int(current_sale_line)
+                )
+            if sale_line:
+                session_map[
+                    sale_line.product_id.id
+                ] = sale_line.cfg_session_id.id
             ctx["product_sessions"] = session_map
 
         self = self.with_context(ctx)
@@ -218,7 +231,6 @@ class SaleOrder(models.Model):
             )
             if not config_session.exists():
                 return values
-            values.update({"config_session_id": config_session.id})
         return values
 
     def _cart_find_product_line(self, product_id=None, line_id=None, **kwargs):
