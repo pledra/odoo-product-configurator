@@ -6,19 +6,20 @@
             <field name="name">res.config.settings.view.form.inherit.sale</field>
             <field name="model">res.config.settings</field>
             <field name="priority" eval="10"/>
-            <field name="inherit_id" ref="base.res_config_settings_view_form" />
+            <field name="inherit_id" ref="product_configurator.configurator_settings_view_form" />
             <field name="arch" type="xml">
-                <xpath expr="//div[hasclass('settings')]" position="inside">
-                    <div class="app_settings_block"
-                        data-string="Product Configurator"
-                        string="Product Configurator"
-                        data-key="product_configurator">
-                        <h2>Product Configurator</h2>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-12 col-lg-6 o_setting_box">
-                                <group>
-                                    <field name="website_tmpl_id"/>
-                                </group>
+                <xpath expr="//div[@data-key='product_configurator']" position="inside">
+                    <h2>Website</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box" id="configurator_website_template">
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Website Template</span>
+                                <div class="text-muted">
+                                    Set the default template for configurator tabs(Radio/Select).
+                                </div>
+                                <div class="mt16">
+                                    <field name="website_tmpl_id" class="oe_inline"/>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -26,10 +27,9 @@
             </field>
         </record>
 
-        <record id="product_configurator.action_general_configuration" model="ir.actions.act_window">
-            <field name="view_id" ref="configurator_settings_view_form"/>
-            <field name="context">{'module' : 'product_configurator'}</field>
-        </record>
-
+        <menuitem id="product_configurator.menu_action_product_configurator_configuration"
+              action="product_configurator.action_product_configurator_configuration"
+              name="Settings" active="True"
+              parent="product_configurator.menu_product_configurable_settings" sequence="0"/>
     </data>
 </odoo>
