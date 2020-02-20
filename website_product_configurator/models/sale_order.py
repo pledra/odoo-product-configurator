@@ -86,7 +86,6 @@ class SaleOrder(models.Model):
             combination = product_template._get_closest_possible_combination(
                 received_combination)
 
-
             # BizzAppDev Customization
             # prevent to change variant in cart
             # get or create (if dynamic) the correct variant
