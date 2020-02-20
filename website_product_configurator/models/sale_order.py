@@ -55,7 +55,6 @@ class SaleOrder(models.Model):
                 product_sessions=session_map,
             )
 
-
         # Add to cart functionality
         try:
             if add_qty:
