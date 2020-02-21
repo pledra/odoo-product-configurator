@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <data>
-
         <template id="cfg_session" inherit_id="website_product_configurator.cfg_product" name="Configuration Session MRP">
             <xpath expr="//a[@id='add_to_cart']" position="before">
                 <div class="input-group mt8">
@@ -12,6 +11,5 @@
                 </div>
             </xpath>
         </template>
-
     </data>
 </odoo>
