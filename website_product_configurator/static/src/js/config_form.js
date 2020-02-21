@@ -313,6 +313,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var self = this;
             var result = $.Deferred();
             var file = ev.target.files[0];
+            if (!file) {
+                return true;
+            }
             var loaded = false;
             var files_data = '';
             var BinaryReader = new FileReader();
