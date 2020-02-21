@@ -189,7 +189,7 @@
                 t-att-class="'form-control custom_config_value' + (' required_config_attrib' if (custom_value or not line.value_ids) and line.required else '')"
                 t-att-value="custom_value.value"/>
         </t>
-        <t t-if="custom_type in ['float','int']">
+        <t t-if="custom_type in ['float','integer']">
             <t t-set="custom_val" t-value="float(custom_value.value)"/>
 
             <div class="css_quantity input-group">
