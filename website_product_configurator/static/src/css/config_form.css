@@ -41,8 +41,12 @@
 
 .spinner_qty {
     padding: 0;
-    min-width: 48px;
+    min-width: 48px!important;
     text-align: center;
+}
+
+.custom_config_value.spinner_qty {
+    max-width: 50px!important;
 }
 
 .config_attribute input[type=radio], .config_attribute input[type=checkbox] {
