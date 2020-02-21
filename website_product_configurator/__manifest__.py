@@ -1,30 +1,28 @@
 {
-    'name': "Website Product Configurator",
-    'version': '13.0.1.0.0',
-    'summary': """Configure products in e-shop""",
-    'author': "Pledra",
-    'license': 'AGPL-3',
-    'website': 'http://www.pledra.com/',
-    'category': 'website',
-
-    'depends': ['website_sale', 'product_configurator'],
-
-    'data': [
-        'security/configurator_security.xml',
-        'data/ir_config_parameter_data.xml',
-        'data/config_form_templates.xml',
-        'data/cron.xml',
-        'views/assets.xml',
-        'views/product_view.xml',
-        'views/templates.xml',
-        'views/res_config_settings_view.xml',
+    "name": "Website Product Configurator",
+    "version": "13.0.1.0.0",
+    "summary": """Configure products in e-shop""",
+    "author": "Pledra",
+    "license": "AGPL-3",
+    "website": "http://www.pledra.com/",
+    "category": "website",
+    "depends": [
+        "website_sale",
+        "product_configurator",
+        "product_configurator_sale",
     ],
-    'demo': [
-        'demo/product_template_demo.xml',
+    "data": [
+        "security/configurator_security.xml",
+        "data/ir_config_parameter_data.xml",
+        "data/config_form_templates.xml",
+        "data/cron.xml",
+        "views/assets.xml",
+        "views/product_view.xml",
+        "views/templates.xml",
+        "views/res_config_settings_view.xml",
     ],
-    'images': [
-        'static/description/cover.png'
-    ],
-    'application': True,
-    'installable': True,
+    "demo": ["demo/product_template_demo.xml",],
+    "images": ["static/description/cover.png"],
+    "application": True,
+    "installable": True,
 }
