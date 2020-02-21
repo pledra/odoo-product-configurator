@@ -6,10 +6,7 @@
     "author": "Pledra",
     "license": "AGPL-3",
     "website": "http://www.pledra.com/",
-    "depends": [
-        # 'product_configurator_mrp',
-        "website_product_configurator",
-    ],
+    "depends": ["product_configurator_mrp", "website_product_configurator",],
     "data": ["views/templates.xml"],
     "application": True,
     "installable": True,
