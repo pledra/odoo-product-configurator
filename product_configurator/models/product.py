@@ -620,8 +620,11 @@ class ProductProduct(models.Model):
             products_to_update += cfg_product
         return products_to_update
 
+    @api.depends_context('product_sessions')
     def _compute_product_price(self):
         session_map = self.env.context.get('product_sessions', {})
+        if session_map and isinstance(session_map, tuple):
+            session_map = dict(session_map)
         config_session_products = self.get_products_with_session(
             session_map.copy()
         )
