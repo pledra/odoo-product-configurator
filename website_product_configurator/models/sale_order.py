@@ -202,7 +202,7 @@ class SaleOrder(models.Model):
         }
 
     def _website_product_id_change(self, order_id, product_id, qty=0):
-        session_map = self.env.context.get("product_sessions", {})
+        session_map = self.env.context.get("product_sessions", ())
         ctx = self._context.copy()
         if not session_map:
             current_sale_line = self.env.context.get("current_sale_line")
@@ -216,7 +216,7 @@ class SaleOrder(models.Model):
                     (sale_line.product_id.id, sale_line.cfg_session_id.id),
                 )
             ctx["product_sessions"] = session_map
-        elif session_map and isinstance(session_map, tuple):
+        if isinstance(session_map, tuple):
             session_map = dict(session_map)
 
         self = self.with_context(ctx)
@@ -243,8 +243,8 @@ class SaleOrder(models.Model):
 
         config_session_id = kwargs.get("config_session_id", False)
         if not config_session_id:
-            session_map = self.env.context.get("product_sessions", {})
-            if session_map and isinstance(session_map, tuple):
+            session_map = self.env.context.get("product_sessions", ())
+            if isinstance(session_map, tuple):
                 session_map = dict(session_map)
             config_session_id = session_map.get(product_id, False)
         if not config_session_id:
