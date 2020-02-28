@@ -223,7 +223,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     images += "src='/web/image/"+model+"/"+line+"/image_1920'/>"
                 })
             }
-            $('#product_config_image').html(images);
+            if (images) {
+                $('#product_config_image').html(images);
+            }
         },
 
         price_to_str: function (price, precision) {
