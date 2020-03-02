@@ -599,9 +599,11 @@ class ProductConfigWebsiteSale(WebsiteSale):
             cfg_session = self.get_config_session(
                 product_tmpl_id=product_tmpl_id
             )
-            cfg_session.value_ids = product_id.attribute_value_ids
+            tmpl_value_ids = product_id.product_template_attribute_value_ids
+            cfg_session.value_ids = tmpl_value_ids.mapped(
+                "product_attribute_value_id"
+            )
             cfg_session.session_product_id = product_id.id
-
             return request.redirect(
                 "/shop/product/%s" % (slug(product_tmpl_id))
             )

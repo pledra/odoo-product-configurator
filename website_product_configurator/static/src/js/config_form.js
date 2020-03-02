@@ -220,10 +220,12 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var model = config_image_vals.name
                 config_image_vals.config_image_ids.forEach(function(line){
                     images += "<img itemprop='image' class='cfg_image img img-responsive pull-right'"
-                    images += "src='/web/image/"+model+"/"+line+"/image'/>"
+                    images += "src='/web/image/"+model+"/"+line+"/image_1920'/>"
                 })
             }
-            $('#product_config_image').html(images);
+            if (images) {
+                $('#product_config_image').html(images);
+            }
         },
 
         price_to_str: function (price, precision) {
@@ -313,6 +315,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var self = this;
             var result = $.Deferred();
             var file = ev.target.files[0];
+            if (!file) {
+                return true;
+            }
             var loaded = false;
             var files_data = '';
             var BinaryReader = new FileReader();

@@ -48,8 +48,14 @@ class SaleOrder(models.Model):
                     config_session_id
                 )
                 product = config_session.product_id
-            session_map = {product.id: config_session_id}
-            self = self.with_context(product_sessions=session_map)
+            session_map = ((product.id, config_session_id),)
+            ctx = {
+                "current_sale_line": line_id,
+                "default_config_session_id": config_session_id,
+                "product_sessions": session_map,
+            }
+            self = self.with_context(ctx)
+            SaleOrderLineSudo = SaleOrderLineSudo.with_context(ctx)
 
         # Add to cart functionality
         try:
@@ -170,9 +176,7 @@ class SaleOrder(models.Model):
                 linked_line = SaleOrderLineSudo.browse(
                     kwargs["linked_line_id"]
                 )
-                order_line.write(
-                    {"linked_line_id": linked_line.id}
-                )
+                order_line.write({"linked_line_id": linked_line.id})
                 linked_product = product_with_context.browse(
                     linked_line.product_id.id
                 )
@@ -201,12 +205,22 @@ class SaleOrder(models.Model):
         }
 
     def _website_product_id_change(self, order_id, product_id, qty=0):
-        session_map = self.env.context.get("product_sessions", {})
+        session_map = self.env.context.get("product_sessions", ())
         ctx = self._context.copy()
         if not session_map:
-            for line in self.order_line:
-                session_map[line.product_id.id] = line.config_session_id.id
+            current_sale_line = self.env.context.get("current_sale_line")
+            sale_line = False
+            if current_sale_line:
+                sale_line = self.env["sale.order.line"].browse(
+                    int(current_sale_line)
+                )
+            if sale_line:
+                session_map = (
+                    (sale_line.product_id.id, sale_line.cfg_session_id.id),
+                )
             ctx["product_sessions"] = session_map
+        if isinstance(session_map, tuple):
+            session_map = dict(session_map)
 
         self = self.with_context(ctx)
         values = super(SaleOrder, self)._website_product_id_change(
@@ -218,7 +232,6 @@ class SaleOrder(models.Model):
             )
             if not config_session.exists():
                 return values
-            values.update({"config_session_id": config_session.id})
         return values
 
     def _cart_find_product_line(self, product_id=None, line_id=None, **kwargs):
@@ -233,7 +246,9 @@ class SaleOrder(models.Model):
 
         config_session_id = kwargs.get("config_session_id", False)
         if not config_session_id:
-            session_map = self.env.context.get("product_sessions", {})
+            session_map = self.env.context.get("product_sessions", ())
+            if isinstance(session_map, tuple):
+                session_map = dict(session_map)
             config_session_id = session_map.get(product_id, False)
         if not config_session_id:
             return order_line
@@ -245,7 +260,11 @@ class SaleOrder(models.Model):
 
 
 class SaleOrderLine(models.Model):
-    _inherit = 'sale.order.line'
+    _inherit = "sale.order.line"
+
+    def create(self, vals):
+        res = super(SaleOrderLine, self).create(vals)
+        return res
 
     @api.onchange(
         "product_id", "price_unit", "product_uom", "product_uom_qty", "tax_id"
@@ -253,15 +272,15 @@ class SaleOrderLine(models.Model):
     def _onchange_discount(self):
         if self.config_session_id:
             self = self.with_context(
-                product_sessions={
-                    self.product_id.id: self.config_session_id.id
-                }
+                product_sessions=(
+                    (self.product_id.id, self.config_session_id.id),
+                )
             )
         return super(SaleOrderLine, self)._onchange_discount()
 
     def _get_display_price(self, product):
         if self.config_session_id:
-            session_map = {self.product_id.id: self.config_session_id.id}
+            session_map = ((self.product_id.id, self.config_session_id.id),)
             self = self.with_context(product_sessions=session_map)
             product = product.with_context(product_sessions=session_map)
         res = super(SaleOrderLine, self)._get_display_price(product=product)
@@ -270,32 +289,37 @@ class SaleOrderLine(models.Model):
     @api.onchange("product_uom", "product_uom_qty")
     def product_uom_change(self):
         if self.config_session_id:
-            session_map = {self.product_id.id: self.config_session_id.id}
+            session_map = ((self.product_id.id, self.config_session_id.id),)
             self = self.with_context(product_sessions=session_map)
         super(SaleOrderLine, self).product_uom_change()
 
-    def _get_real_price_currency(self, product, rule_id,
-                                 qty, uom, pricelist_id):
+    def _get_real_price_currency(
+        self, product, rule_id, qty, uom, pricelist_id
+    ):
         if not product.config_ok:
             return super(SaleOrderLine, self)._get_real_price_currency(
-                product=product, rule_id=rule_id,
-                qty=qty, uom=uom, pricelist_id=pricelist_id
+                product=product,
+                rule_id=rule_id,
+                qty=qty,
+                uom=uom,
+                pricelist_id=pricelist_id,
             )
         currency_id = None
         product_currency = None
         if rule_id:
-            PricelistItem = self.env['product.pricelist.item']
+            PricelistItem = self.env["product.pricelist.item"]
             pricelist_item = PricelistItem.browse(rule_id)
             currency_id = pricelist_item.pricelist_id.currency_id
             if (
-                pricelist_item.base == 'pricelist' and
-                pricelist_item.base_pricelist_id
+                pricelist_item.base == "pricelist"
+                and pricelist_item.base_pricelist_id
             ):
                 product_currency = pricelist_item.base_pricelist_id.currency_id
-        product_currency = product_currency or (
-            product.company_id and
-            product.company_id.currency_id
-        ) or self.env.user.company_id.currency_id
+        product_currency = (
+            product_currency
+            or (product.company_id and product.company_id.currency_id)
+            or self.env.user.company_id.currency_id
+        )
 
         if not currency_id or currency_id.id == product_currency.id:
             currency_id = product_currency

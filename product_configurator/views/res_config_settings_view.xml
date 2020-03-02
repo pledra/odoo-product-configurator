@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data>
+        <record id="configurator_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.sale</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="10"/>
+            <field name="inherit_id" ref="base.res_config_settings_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('settings')]" position="inside">
+                    <div class="app_settings_block"
+                        data-string="Product Configurator"
+                        string="Product Configurator"
+                        data-key="product_configurator">
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
