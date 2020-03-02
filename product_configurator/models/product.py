@@ -234,10 +234,8 @@ class ProductTemplate(models.Model):
 
         # Attribute lines
         attribute_line_dict = {}
-        attribute_line_default = {"product_tmpl_id": res.id}
-        for line in self.attribute_line_ids:
-            new_line = line.copy(attribute_line_default)
-            attribute_line_dict.update({line.id: new_line.id})
+        for line in res.attribute_line_ids:
+            attribute_line_dict.update({line.attribute_id.id: line.id})
 
         # Restrictions
         for line in self.config_line_ids:
@@ -248,7 +246,7 @@ class ProductTemplate(models.Model):
                 "domain_id": new_restriction.id,
             }
             new_attribute_line_id = attribute_line_dict.get(
-                line.attribute_line_id.id, False
+                line.attribute_line_id.attribute_id.id, False
             )
             if not new_attribute_line_id:
                 continue
@@ -261,9 +259,9 @@ class ProductTemplate(models.Model):
         config_step_line_default = {"product_tmpl_id": res.id}
         for line in self.config_step_line_ids:
             new_attribute_line_ids = [
-                attribute_line_dict.get(old_attr_line.id)
+                attribute_line_dict.get(old_attr_line.attribute_id.id)
                 for old_attr_line in line.attribute_line_ids
-                if old_attr_line.id in attribute_line_dict
+                if old_attr_line.attribute_id.id in attribute_line_dict
             ]
             if new_attribute_line_ids:
                 config_step_line_default.update(

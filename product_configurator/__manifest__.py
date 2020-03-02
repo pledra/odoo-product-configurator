@@ -9,6 +9,7 @@
     "depends": ["account", "stock"],
     "data": [
         "security/configurator_security.xml",
+        "views/res_config_settings_view.xml",
         "data/menu_configurable_product.xml",
         "data/product_attribute.xml",
         "data/ir_sequence_data.xml",
