@@ -127,9 +127,10 @@ class SaleOrder(models.Model):
                 linked_product = product_with_context.browse(
                     linked_line.product_id.id
                 )
-                linked_line.name = linked_line.get_sale_order_line_multiline_description_sale(
-                    linked_product
-                )
+                linked_line.name = linked_line.\
+                    get_sale_order_line_multiline_description_sale(
+                        linked_product
+                    )
         else:
             # update line
             no_variant_attributes_price_extra = [
@@ -179,17 +180,19 @@ class SaleOrder(models.Model):
                 linked_product = product_with_context.browse(
                     linked_line.product_id.id
                 )
-                linked_line.name = linked_line.get_sale_order_line_multiline_description_sale(
-                    linked_product
-                )
+                linked_line.name = linked_line.\
+                    get_sale_order_line_multiline_description_sale(
+                        linked_product
+                    )
             # Generate the description with everything. This is done after
             # creating because the following related fields have to be set:
             # - product_no_variant_attribute_value_ids
             # - product_custom_attribute_value_ids
             # - linked_line_id
-            order_line.name = order_line.get_sale_order_line_multiline_description_sale(
-                product
-            )
+            order_line.name = order_line.\
+                get_sale_order_line_multiline_description_sale(
+                    product
+                )
 
         option_lines = self.order_line.filtered(
             lambda l: l.linked_line_id.id == order_line.id

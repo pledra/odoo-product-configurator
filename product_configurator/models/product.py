@@ -636,7 +636,8 @@ class ProductProduct(models.Model):
             cfg_product.price = product_session.price
         super(ProductProduct, standard_products)._compute_product_price()
 
-    def price_compute(self, price_type, uom=False, currency=False, company=False):
+    def price_compute(self, price_type,
+                      uom=False, currency=False, company=False):
         standard_products = self.filtered(lambda a: not a.config_ok)
         res = {}
         if standard_products:
