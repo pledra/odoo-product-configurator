@@ -602,3 +602,50 @@ class ProductProduct(models.Model):
             self[:1].check_config_user_access(mode="write")
 
         return super(ProductProduct, self).write(vals)
+
+    def get_products_with_session(self, config_session_map=None):
+        products_to_update = self.env['product.product']
+        if not config_session_map:
+            return products_to_update
+        config_session_products = self.filtered(lambda p: p.config_ok)
+        for cfg_product in config_session_products:
+            if cfg_product.id not in config_session_map.keys():
+                continue
+            product_session = self.env['product.config.session'].browse(
+                config_session_map.get(cfg_product.id)
+            )
+            if (not product_session.exists() or
+                    product_session.product_id != cfg_product):
+                continue
+            products_to_update += cfg_product
+        return products_to_update
+
+    @api.depends_context('product_sessions')
+    def _compute_product_price(self):
+        session_map = self.env.context.get('product_sessions', ())
+        if isinstance(session_map, tuple):
+            session_map = dict(session_map)
+        config_session_products = self.get_products_with_session(
+            session_map.copy()
+        )
+        standard_products = self - config_session_products
+        for cfg_product in config_session_products:
+            product_session = self.env['product.config.session'].browse(
+                session_map.get(cfg_product.id)
+            )
+            cfg_product.price = product_session.price
+        super(ProductProduct, standard_products)._compute_product_price()
+
+    def price_compute(self, price_type,
+                      uom=False, currency=False, company=False):
+        standard_products = self.filtered(lambda a: not a.config_ok)
+        res = {}
+        if standard_products:
+            res = super(ProductProduct, standard_products).price_compute(
+                price_type, uom=uom,
+                currency=currency, company=company
+            )
+        config_products = self - standard_products
+        for config_product in config_products:
+            res[config_product.id] = config_product.price
+        return res

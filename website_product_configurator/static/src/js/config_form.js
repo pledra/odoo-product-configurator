@@ -6,12 +6,12 @@ odoo.define('website_product_configurator.config_form', function (require) {
     var utils = require('web.utils');
     var core = require('web.core');
     var Dialog = require('web.Dialog');
-    var sAnimations = require('website.content.snippets.animation');
+    var publicWidget = require('web.public.widget');
     var _t = core._t;
 
-    sAnimations.registry.ProductConfigurator = sAnimations.Class.extend({
+    publicWidget.registry.ProductConfigurator = publicWidget.Widget.extend({
         selector: '.product_configurator',
-        read_events: {
+        events: {
             'change.datetimepicker #product_config_form .input-group.date': '_onChangeDateTime',
             'change #product_config_form .config_attribute': '_onChangeConfigAttribute',
             'change #product_config_form .custom_config_value.config_attachment': '_onChangeFile',
@@ -125,9 +125,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         _checkChange: function (attr_field) {
             var flag = true
-            if (attr_field.tagName == 'FIELDSET') {
+            if ($(attr_field).hasClass('cfg-radio')) {
                 flag = !($(attr_field).attr('data-old-val-id') == $(attr_field).find('input:checked').val());
-            } else if (attr_field.tagName == 'SELECT'){
+            } else if ($(attr_field).hasClass('cfg-select')) {
                 flag = !($(attr_field).attr('data-old-val-id') == $(attr_field).val());
             }
             return flag
@@ -186,11 +186,11 @@ odoo.define('website_product_configurator.config_form', function (require) {
         },
 
         _setDataOldValId: function () {
-            var selections = $('select.config_attribute')
+            var selections = $('.cfg-select.config_attribute')
             _.each(selections, function (select) {
                 $(select).attr('data-old-val-id', $(select).val());
             })
-            var fieldsets = $('fieldset.config_attribute')
+            var fieldsets = $('.cfg-radio.config_attribute')
             _.each(fieldsets, function (fieldset) {
                 $(fieldset).attr('data-old-val-id', $(fieldset).find('input:checked').val() || '');
             })
@@ -219,11 +219,13 @@ odoo.define('website_product_configurator.config_form', function (require) {
             if (config_image_vals){
                 var model = config_image_vals.name
                 config_image_vals.config_image_ids.forEach(function(line){
-                    images += "<img id='cfg_image' itemprop='image' class='img img-responsive pull-right'"
-                    images += "src='/web/image/"+model+"/"+line+"/image'/>"
+                    images += "<img itemprop='image' class='cfg_image img img-responsive pull-right'"
+                    images += "src='/web/image/"+model+"/"+line+"/image_1920'/>"
                 })
             }
-            $('#product_config_image').html(images);
+            if (images) {
+                $('#product_config_image').html(images);
+            }
         },
 
         price_to_str: function (price, precision) {
@@ -285,7 +287,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var flag = true;
                 if (!$(config_attr[i]).hasClass('required_config_attrib')) {
                     flag = true;
-                } else if (config_attr[i].tagName == 'FIELDSET') {
+                } else if ($(config_attr[i]).hasClass('.cfg-radio')) {
                     flag = self._checkRequiredFieldsRadio($(config_attr[i]));
                 } else if (!config_attr[i].value.trim()  || config_attr[i].value == '0') {
                     flag = false;
@@ -313,6 +315,9 @@ odoo.define('website_product_configurator.config_form', function (require) {
             var self = this;
             var result = $.Deferred();
             var file = ev.target.files[0];
+            if (!file) {
+                return true;
+            }
             var loaded = false;
             var files_data = '';
             var BinaryReader = new FileReader();
@@ -448,7 +453,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
 
         _onClickRadioImage: function(event) {
             var val_id = $(event.currentTarget).data('val-id');
-            var value_input = $(event.currentTarget).closest('fieldset').find('.config_attr_value[data-oe-id="' + val_id + '"]');
+            var value_input = $(event.currentTarget).closest('.cfg-radio').find('.config_attr_value[data-oe-id="' + val_id + '"]');
             if (value_input.prop('disabled')) {
                 return
             }
@@ -553,6 +558,6 @@ odoo.define('website_product_configurator.config_form', function (require) {
         },
 
     })
-    return sAnimations.registry.ProductConfigurator
+    return publicWidget.registry.ProductConfigurator
 
 })
