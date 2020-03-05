@@ -552,14 +552,36 @@ class ProductConfig(ProductConfiguratorTestCases):
                 self.attribute_vals_2.id])],
             'domain_id': self.productConfigDomainId.id
         })
-        # with self.assertRaises(ValidationError):
-        #     config_line.onchange_attribute()
 
-        # self.assertFalse(
-        #     config_line.value_ids,
-        #     'Error: If value_ids True\
-        #     Method: onchange_attribute()'
-        # )
+        line_vals = {
+            'product_tmpl_id': self.product_tmpl_id.id,
+            'attribute_line_id': self.attributeLine1.id,
+            'value_ids': [(6, 0, [
+                self.attribute_vals_1.id,
+                self.attribute_vals_2.id])],
+            'domain_id': self.productConfigDomainId.id
+        }
+        order_line_obj = self.env['product.config.line']
+        specs = order_line_obj._onchange_spec()
+        updates = order_line_obj.onchange(
+            line_vals, ['attribute_line_id'], specs
+        )
+        values = updates.get('value', {})
+        for name, val in values.items():
+            if isinstance(val, tuple):
+                values[name] = val[0]
+
+        self.assertFalse(
+            values.get('domain_id'),
+            'Error: If value_ids True\
+            Method: onchange_attribute()'
+        )
+        self.assertEqual(
+            values.get('value_ids')[0],
+            (5,),
+            'Error: If value_ids True\
+            Method: onchange_attribute()'
+        )
 
     def test_19_eval(self):
         self.attr_color.custom_type = 'binary'
