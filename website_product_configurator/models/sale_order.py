@@ -193,7 +193,7 @@ class SaleOrder(models.Model):
                     no_variant_attributes_price_extra
                 )
             }
-            values = self.with_context(ctx)._website_product_id_change(
+            values = self.with_context(**ctx)._website_product_id_change(
                 self.id, product_id, qty=quantity
             )
             if (self.pricelist_id.discount_policy == 'with_discount' and
