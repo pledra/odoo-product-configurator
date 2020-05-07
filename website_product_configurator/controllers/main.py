@@ -30,7 +30,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             {}
         )
         is_public_user = request.env.user.has_group('base.group_public')
-        cfg_session_id = product_config_sessions.get(product_tmpl_id.id)
+        cfg_session_id = product_config_sessions.get(str(product_tmpl_id.id))
         if cfg_session_id:
             cfg_session = cfg_session_obj.browse(int(cfg_session_id))
 
@@ -42,7 +42,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 user_id=request.env.user.id
             )
             product_config_sessions.update({
-                product_tmpl_id.id: cfg_session.id
+                str(product_tmpl_id.id): cfg_session.id
             })
             request.session['product_config_session'] = product_config_sessions
 
