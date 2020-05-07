@@ -1,4 +1,3 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
 from odoo import api, models, _
 from odoo.http import request
@@ -17,6 +16,7 @@ class SaleOrder(models.Model):
         self.ensure_one()
         product_context = dict(self.env.context)
         product_context.setdefault('lang', self.sudo().partner_id.lang)
+        # BizzAppDev Customization
         cfg_product = self.env['product.product'].with_context(
             product_context
         ).browse(int(product_id))
@@ -28,6 +28,7 @@ class SaleOrder(models.Model):
                 set_qty=set_qty,
                 kwargs=kwargs
             )
+        # BizzAppDev Customization End
 
         SaleOrderLineSudo = self.env['sale.order.line'].sudo().\
             with_context(product_context)
@@ -85,9 +86,11 @@ class SaleOrder(models.Model):
             combination = product_template._get_closest_possible_combination(
                 received_combination)
 
+            # BizzAppDev Customization
             # prevent to change variant in cart
             # get or create (if dynamic) the correct variant
             # product = product_template._create_product_variant(combination)
+            # BizzAppDev Customization End
 
             if not product:
                 raise UserError(_(
@@ -204,6 +207,7 @@ class SaleOrder(models.Model):
                     'quantity': quantity,
                     'date': order.date_order,
                     'pricelist': order.pricelist_id.id,
+                    'force_company': order.company_id.id,
                 })
                 product = self.env['product.product'].with_context(
                     product_context).browse(product_id)
