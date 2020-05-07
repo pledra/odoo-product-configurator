@@ -911,10 +911,14 @@ class ProductConfigSession(models.Model):
 
     @api.multi
     def get_session_search_domain(self, product_tmpl_id, state='draft',
-                                  parent_id=None):
+                                  parent_id=None, user_id=None):
+
+        if not user_id:
+            user_id = self.env.uid
+
         domain = [
             ('product_tmpl_id', '=', product_tmpl_id),
-            ('user_id', '=', self.env.uid),
+            ('user_id', '=', user_id),
             ('state', '=', state),
         ]
         if parent_id:
@@ -1422,10 +1426,11 @@ class ProductConfigSession(models.Model):
         return products
 
     @api.multi
-    def search_session(self, product_tmpl_id, parent_id=None):
+    def search_session(self, product_tmpl_id, parent_id=None, user_id=None):
         domain = self.get_session_search_domain(
             product_tmpl_id=product_tmpl_id,
-            parent_id=parent_id
+            parent_id=parent_id,
+            user_id=user_id
         )
         session = self.search(domain, order='create_date desc', limit=1)
         return session
@@ -1436,7 +1441,8 @@ class ProductConfigSession(models.Model):
         if not force_create:
             session = self.search_session(
                 product_tmpl_id=product_tmpl_id,
-                parent_id=parent_id
+                parent_id=parent_id,
+                user_id=user_id,
             )
             if session:
                 return session
