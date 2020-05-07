@@ -544,7 +544,7 @@ class ProductConfig(ProductConfiguratorTestCases):
         })
         self.productConfigDomainId.compute_domain()
         # create attribute value line 1
-        config_line = self.env['product.config.line'].create({
+        self.env['product.config.line'].create({
             'product_tmpl_id': self.product_tmpl_id.id,
             'attribute_line_id': self.attributeLine1.id,
             'value_ids': [(6, 0, [
