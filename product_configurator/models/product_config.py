@@ -180,6 +180,11 @@ class ProductConfigLine(models.Model):
         string='Restrictions'
     )
 
+    rule_description = fields.Char(
+        string='Rule Description',
+        help='User Displayed error if rule is broken'
+    )
+
     sequence = fields.Integer(string='Sequence', default=10)
 
     _order = 'product_tmpl_id, sequence, id'
@@ -229,7 +234,7 @@ class ProductConfigImage(models.Model):
             if not valid:
                 raise ValidationError(
                     _("Values entered for line '%s' generate "
-                      "a incompatible configuration" % cfg_img.name)
+                      "an incompatible configuration" % cfg_img.name)
                 )
 
 
@@ -451,7 +456,7 @@ class ProductConfigSession(models.Model):
             for x in self.custom_value_ids
         }
         valid = self.product_tmpl_id.validate_configuration(
-            self.value_ids.ids, custom_val_dict, final=False)
+            self.value_ids.ids, custom_val_dict, final=False, do_raise=True)
         if not valid:
             raise ValidationError(_('Invalid Configuration'))
         return res
