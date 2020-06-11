@@ -1,0 +1,179 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* website_product_configurator
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0-20200229\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-06-11 10:51+0000\n"
+"PO-Revision-Date: 2020-06-11 12:55+0200\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 2.3.1\n"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.cfg_product_variant
+msgid ""
+"30-day money-back guarantee<br/>\n"
+"                              Free Shipping in U.S.<br/>\n"
+"                              Buy now, get in 2 days"
+msgstr ""
+"30 giorni soddisfatto o rimborsato<br/>\n"
+"                              Spedizione gratuita in Italia<br/>\n"
+"                              Acquista ora, ricevi entro 2 giorni"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.error_page
+msgid "<b><u>There is somthing going wrong. Please try again after some time.</u></b>"
+msgstr "<b><u>Qualcosa non è andato per il verso giusto, riprova.</u></b>"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.cfg_product_variant
+msgid "<span class=\"fa fa-chevron-left\" role=\"img\" aria-label=\"Previous\" title=\"Previous\"/>"
+msgstr "<span class=\"fa fa-chevron-left\" role=\"img\" aria-label=\"Previous\" title=\"Precedente\"/>"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.cfg_product_variant
+msgid "<span class=\"fa fa-chevron-right\" role=\"img\" aria-label=\"Next\" title=\"Next\"/>"
+msgstr "<span class=\"fa fa-chevron-right\" role=\"img\" aria-label=\"Next\" title=\"Successivo\"/>"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.product_configurator
+msgid "<span><b>Price: </b></span>"
+msgstr "<span><b>Prezzo: </b></span>"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.product_configurator
+msgid "<span><b>Weight: </b></span>"
+msgstr "<span><b>Peso: </b></span>"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.config_footer
+msgid "<span>Back</span>"
+msgstr "<span>Indietro</span>"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.config_footer
+msgid "<span>Continue</span>"
+msgstr "<span>Continua</span>"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.product_configurator
+msgid "<span>kg</span>"
+msgstr "<span>kg</span>"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.config_custom_field
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.product_quantity
+msgid "Add one"
+msgstr "Aggiungi una unità"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.cfg_product_variant
+msgid "Add to Cart"
+msgstr "Aggiungi al carrello"
+
+#. module: website_product_configurator
+#: model:ir.model,name:website_product_configurator.model_res_config_settings
+msgid "Config Settings"
+msgstr "Impostazioni di configurazione"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.config_steps
+msgid "Configure"
+msgstr "Configura"
+
+#. module: website_product_configurator
+#: model:ir.actions.server,name:website_product_configurator.cron_delete_sessions_with_no_activity_ir_actions_server
+#: model:ir.cron,cron_name:website_product_configurator.cron_delete_sessions_with_no_activity
+#: model:ir.cron,name:website_product_configurator.cron_delete_sessions_with_no_activity
+msgid "Delete inactive config-sessions"
+msgstr "Cancella sessioni di configurazione inattive"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.error_page
+msgid "ERROR!"
+msgstr "ERRORE!"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.error_page
+msgid "Go Back"
+msgstr "Torna indietro"
+
+#. module: website_product_configurator
+#: code:addons/website_product_configurator/models/sale_order.py:48
+#, python-format
+msgid "It is forbidden to modify a sales order which is not in draft status."
+msgstr "E' vietato modificare un ordine di vendita che non è in stato bozza."
+
+#. module: website_product_configurator
+#: code:addons/website_product_configurator/models/sale_order.py:227
+#, python-format
+msgid "Option for:"
+msgstr "Opzione per:"
+
+#. module: website_product_configurator
+#: code:addons/website_product_configurator/models/sale_order.py:237
+#, python-format
+msgid "Option:"
+msgstr "Opzione:"
+
+#. module: website_product_configurator
+#: model:ir.model,name:website_product_configurator.model_product_config_session
+msgid "Product Config Session"
+msgstr "Sessione Configurazione Prodotto"
+
+#. module: website_product_configurator
+#: model:ir.model,name:website_product_configurator.model_product_config_step_line
+msgid "Product Config Step Lines"
+msgstr "Righe Passaggi Configurazione Prodotto"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.configurator_settings_view_form
+msgid "Product Configurator"
+msgstr "Configuratore Prodotto"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.cfg_product_variant
+msgid "Product Name"
+msgstr "Nome prodotto"
+
+#. module: website_product_configurator
+#: model:ir.model,name:website_product_configurator.model_product_template
+msgid "Product Template"
+msgstr "Modello prodotto"
+
+#. module: website_product_configurator
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.config_custom_field
+#: model_terms:ir.ui.view,arch_db:website_product_configurator.product_quantity
+msgid "Remove one"
+msgstr "Rimuovi una unità"
+
+#. module: website_product_configurator
+#: model:ir.model,name:website_product_configurator.model_sale_order
+msgid "Sale Order"
+msgstr "Ordine di vendita"
+
+#. module: website_product_configurator
+#: code:addons/website_product_configurator/models/sale_order.py:93
+#, python-format
+msgid "The given combination does not exist therefore it cannot be added to cart."
+msgstr "La combinazione inserita non esiste percui non può essere aggiunta al carrello."
+
+#. module: website_product_configurator
+#: code:addons/website_product_configurator/models/sale_order.py:64
+#, python-format
+msgid "The given product does not exist therefore it cannot be added to cart."
+msgstr "Il prodotto inserito non esiste percui non può essere aggiunto al carrello."
+
+#. module: website_product_configurator
+#: model:ir.model.fields,field_description:website_product_configurator.field_product_config_step_line__website_tmpl_id
+#: model:ir.model.fields,field_description:website_product_configurator.field_res_config_settings__website_tmpl_id
+msgid "Website Template"
+msgstr "Modello Sito Web"
