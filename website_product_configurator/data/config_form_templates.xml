@@ -277,8 +277,8 @@
                 <t t-set="custom_field_prefix" t-value="prefixes.get('custom_field_prefix')"/>
                 <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
                     <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
-                    <t t-set="available_val" t-value="any(val.id in available_value_ids for val in line.value_ids)"/>
-                    <div t-att-class="'attribute_container'">
+                    <t t-set="available_val" t-value="any(val in available_value_ids for val in (line.value_ids.ids + (line.custom and [custom_val_id.id] or [])))"/>
+                    <div t-att-class="'attribute_container' + ((not available_val) and ' d-none' or '')">
                         <label class="control-label" t-esc="line.attribute_id.name" t-att-data-oe-id="line.attribute_id.id"></label>
                         <select t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                                   t-att-data-oe-id="line.attribute_id.id"
@@ -337,8 +337,8 @@
                 <t t-set="custom_field_prefix" t-value="prefixes.get('custom_field_prefix')"/>
                 <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
                     <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
-                    <t t-set="available_val" t-value="any(val.id in available_value_ids for val in line.value_ids)"/>
-                    <div t-att-class="'attribute_container'">
+                    <t t-set="available_val" t-value="any(val in available_value_ids for val in (line.value_ids.ids + (line.custom and [custom_val_id.id] or [])))"/>
+                    <div t-att-class="'attribute_container' + ((not available_val) and ' d-none' or '')">
                         <label class="control-label" t-esc="line.attribute_id.name" t-att-data-oe-id="line.attribute_id.id"></label>
                         <fieldset t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                             t-att-data-oe-id="line.attribute_id.id"
