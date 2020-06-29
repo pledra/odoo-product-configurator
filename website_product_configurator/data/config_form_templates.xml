@@ -278,7 +278,7 @@
                 <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
                     <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
                     <t t-set="available_val" t-value="any(val in available_value_ids for val in (line.value_ids.ids + (line.custom and [custom_val_id.id] or [])))"/>
-                    <div t-att-class="'attribute_container' + ((not available_val and line.invisible) and ' d-none' or '')">
+                    <div t-att-class="'attribute_container' + ((not available_val and line.hide) and ' d-none' or '')">
                         <label class="control-label" t-esc="line.attribute_id.name" t-att-data-oe-id="line.attribute_id.id"></label>
                         <select t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                                   t-att-data-oe-id="line.attribute_id.id"
@@ -287,7 +287,7 @@
                                   t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
                                   t-att-class="'form-control config_attribute' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '') + (' d-none' if not line.value_ids else '')"
                                   t-att-data-old-val-id="(value_ids &amp; line.value_ids) and (value_ids &amp; line.value_ids).ids[0] or ''"
-                                  t-att-data-attr-invisible="line.invisible">
+                                  t-att-data-attr-hide="line.hide">
 
                                   <!-- t-att-disabled="'disabled' if not available_val_ids and not line.custom else None" -->
                             <option name=""/>
@@ -339,7 +339,7 @@
                 <t t-foreach="cfg_step_attribute_line_ids" t-as="line">
                     <t t-set="custom_value" t-value="custom_value_ids.filtered(lambda x, line=line: x.attribute_id == line.attribute_id)"/>
                     <t t-set="available_val" t-value="any(val in available_value_ids for val in (line.value_ids.ids + (line.custom and [custom_val_id.id] or [])))"/>
-                    <div t-att-class="'attribute_container' + ((not available_val and line.invisible) and ' d-none' or '')">
+                    <div t-att-class="'attribute_container' + ((not available_val and line.hide) and ' d-none' or '')">
                         <label class="control-label" t-esc="line.attribute_id.name" t-att-data-oe-id="line.attribute_id.id"></label>
                         <fieldset t-att-id="'%s%s' % (field_prefix, line.attribute_id.id)"
                             t-att-data-oe-id="line.attribute_id.id"
@@ -348,7 +348,7 @@
                             t-att-class="'form-control config_attribute' + (' required_config_attrib' if (not available_val and line.required and line.custom) or (available_val and line.required) else '') + (' d-none' if not line.value_ids else '')"
                             style="height: unset;"
                             t-att-data-old-val-id="(value_ids &amp; line.value_ids) and (value_ids &amp; line.value_ids).ids[0] or ''"
-                            t-att-data-attr-invisible="line.invisible">
+                            t-att-data-attr-hide="line.hide">
                             <t t-foreach="line.value_ids" t-as="value">
                                 <div class="radio-card-container">
                                     <div class="info_config_attr_value_radio">
