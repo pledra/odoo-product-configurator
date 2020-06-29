@@ -10,6 +10,9 @@
             <xpath expr="//notebook/page[@name='configurator']//field[@name='config_step_line_ids']//tree//field[@name='attribute_line_ids']" position="after">
                 <field name="website_tmpl_id"/>
             </xpath>
+            <xpath expr="//field[@name='attribute_line_ids']//tree//field[@name='required']" position="before">
+                <field name="invisible" invisible="not context.get('default_config_ok', False)"/>
+            </xpath>
         </field>
     </record>
 
