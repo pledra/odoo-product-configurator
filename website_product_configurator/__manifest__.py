@@ -15,7 +15,6 @@
         'data/config_form_templates.xml',
         'data/cron.xml',
         'views/assets.xml',
-        "views/product_attribute_view.xml",
         'views/product_view.xml',
         'views/templates.xml',
         'views/res_config_settings_view.xml',

@@ -95,6 +95,12 @@ class ProductAttribute(models.Model):
         string='Unit of Measure'
     )
     image = fields.Binary(string='Image')
+    hide = fields.Boolean(
+        string="Invisible",
+        help="Set in order to make attribute invisible, "
+        "when there is no available attribute values, in the configuration "
+        "interface"
+    )
 
     # TODO prevent the same attribute from being defined twice on the
     # attribute lines
@@ -159,6 +165,7 @@ class ProductAttributeLine(models.Model):
         self.required = self.attribute_id.required
         self.multi = self.attribute_id.multi
         self.custom = self.attribute_id.val_custom
+        self.hide = self.attribute_id.hide
         # TODO: Remove all dependencies pointed towards the attribute being
         # changed
 
@@ -188,6 +195,12 @@ class ProductAttributeLine(models.Model):
     product_template_value_ids = fields.Many2many(
         comodel_name='product.template.attribute.value',
         search="_search_product_template_value_ids"
+    )
+    hide = fields.Boolean(
+        string="Invisible",
+        help="Set in order to make attribute invisible, "
+        "when there is no available attribute values, in the configuration "
+        "interface"
     )
     # TODO: Constraint not allowing introducing dependencies that do not exist
     # on the product.template
