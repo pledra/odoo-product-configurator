@@ -30,7 +30,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             {}
         )
         is_public_user = request.env.user.has_group('base.group_public')
-        cfg_session_id = product_config_sessions.get(product_tmpl_id.id)
+        cfg_session_id = product_config_sessions.get(str(product_tmpl_id.id))
         if cfg_session_id:
             cfg_session = cfg_session_obj.browse(int(cfg_session_id))
 
@@ -42,7 +42,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
                 user_id=request.env.user.id
             )
             product_config_sessions.update({
-                product_tmpl_id.id: cfg_session.id
+                str(product_tmpl_id.id): cfg_session.id
             })
             request.session['product_config_session'] = product_config_sessions
 
@@ -513,12 +513,12 @@ class ProductConfigWebsiteSale(WebsiteSale):
             key=lambda obj: obj.attribute_id.sequence
         )
         pricelist = get_pricelist()
-        product_config_session = request.session.get('product_config_session')
-        if (product_config_session and
-                product_config_session.get(product_tmpl_id.id)):
-
+        product_config_session = request.session.get(
+            'product_config_session', {}
+        )
+        if product_config_session.get(str(product_tmpl_id.id)):
             # Bizzappdev end code
-            del product_config_session[product_tmpl_id.id]
+            del product_config_session[str(product_tmpl_id.id)]
             request.session['product_config_session'] = product_config_session
         values = {
             'product_id': product_id,

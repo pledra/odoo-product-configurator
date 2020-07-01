@@ -657,6 +657,10 @@ class ProductConfigurator(models.TransientModel):
                         attrs['readonly'].append(
                             (dependee_field, 'not in', list(val_ids)))
 
+                    if not attr_line.custom and attr_line.hide:
+                        attrs['invisible'].append(
+                            (dependee_field, 'not in', list(val_ids)))
+
                     if attr_line.required and not attr_line.custom:
                         attrs['required'].append(
                             (dependee_field, 'in', list(val_ids)))
