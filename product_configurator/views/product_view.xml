@@ -67,6 +67,7 @@
                 <field name="required" invisible="not context.get('default_config_ok', False)"/>
                 <field name="multi" invisible="not context.get('default_config_ok', False)" attrs="{'readonly': [('custom','=',True)]}" force_save="1"/>
                 <field name="custom" invisible="not context.get('default_config_ok', False)" attrs="{'readonly': [('multi','=',True)]}" force_save="1"/>
+                <field name="quantity" invisible="not context.get('default_config_ok', False)" attrs="{'readonly': [('custom','!=',True)]}" force_save="1"/>
             </xpath>
 
             <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='value_ids']" position="attributes">
