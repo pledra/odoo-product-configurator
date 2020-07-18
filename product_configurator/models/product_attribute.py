@@ -221,8 +221,10 @@ class ProductAttributeLine(models.Model):
     def onchange_custom_field(self):
         if not self.custom:
             self.quantity = False
+            self.attr_product_id = False
         else:
             self.quantity = self.attribute_id.quantity
+            self.attr_product_id = self.attribute_id.attr_product_id
 
     def _search_product_template_value_ids(self, operator, value):
         return [('id', operator, value)]
