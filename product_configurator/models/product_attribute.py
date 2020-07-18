@@ -38,6 +38,11 @@ class ProductAttribute(models.Model):
             self.custom_type = False
             self.quantity = False
 
+    @api.onchange('quantity')
+    def onchange_quantity(self):
+        if self.quantity:
+            self.custom_type = "int"
+
     CUSTOM_TYPES = [
         ('char', 'Char'),
         ('int', 'Integer'),
@@ -216,6 +221,8 @@ class ProductAttributeLine(models.Model):
     def onchange_custom_field(self):
         if not self.custom:
             self.quantity = False
+        else:
+            self.quantity = self.attribute_id.quantity
 
     def _search_product_template_value_ids(self, operator, value):
         return [('id', operator, value)]

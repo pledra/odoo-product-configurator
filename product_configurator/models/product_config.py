@@ -819,7 +819,7 @@ class ProductConfigSession(models.Model):
             value_ids = self.value_ids.ids
 
         if custom_vals is None:
-            custom_vals = {}
+            custom_vals = self._get_custom_vals_dict()
 
         product_tmpl = self.product_tmpl_id
         self = self.with_context({'active_id': product_tmpl.id})
@@ -834,7 +834,24 @@ class ProductConfigSession(models.Model):
             pt_attr_value_ids=av_ids,
         )
         price_extra = sum(extra_prices.values())
-        return product_tmpl.list_price + price_extra
+
+        pricelist = self.env.context.get("pricelist")
+        if pricelist:
+            pricelist = self.env["product.pricelist"].browse(pricelist)
+        else:
+            pricelist = self.env.user.partner_id.property_product_pricelist
+        custom_vals_price = 0
+        print("custom_vals ", custom_vals)
+        for attribute, custom_val in custom_vals.items():
+            attribute_id = self.env["product.attribute"].browse(attribute)
+            if attribute_id.quantity and attribute_id.attr_product_id:
+                custom_vals_price += (
+                    attribute_id.attr_product_id.with_context(
+                        pricelist=pricelist.id
+                    ).price * custom_val
+                )
+
+        return product_tmpl.list_price + price_extra + custom_vals_price
 
     def _get_config_image(
             self, value_ids=None, custom_vals=None, size=None):
