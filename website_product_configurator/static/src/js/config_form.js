@@ -181,6 +181,14 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 ) {
                     $selection.addClass('required_config_attrib');
                 }
+
+                var attr_box = $selection.closest('.attribute_container');
+                if (!domain[0][2].length && $selection.attr('data-attr-hide') && !attr_box.hasClass('d-none')) {
+                    attr_box.addClass('d-none');
+                    $selection.removeClass('textbox-border-color');
+                } else if (domain[0][2].length && attr_box.hasClass('d-none')) {
+                    attr_box.removeClass('d-none');
+                }
             });
         },
 
