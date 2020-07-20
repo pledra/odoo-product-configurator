@@ -1,0 +1,184 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_configurator_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0-20200229\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-06-11 08:53+0000\n"
+"PO-Revision-Date: 2020-06-11 10:55+0200\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 2.3.1\n"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__attribute_line_ids
+msgid "Attributes"
+msgstr "Attributi"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_sale_order_line__config_ok
+msgid "Configurable"
+msgstr "Configurabile"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__product_tmpl_id
+msgid "Configurable Template"
+msgstr "Modello Configurabile"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__config_session_id
+msgid "Configuration Session"
+msgstr "Sessione Configurazione"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__name
+msgid "Configuration Session Number"
+msgstr "Numero Sessione Configurazione"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__config_step_name
+msgid "Configuration Step"
+msgstr "Passo Configurazione"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__config_step
+msgid "Configuration Step ID"
+msgstr "ID Passaggio Configurazione"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__config_step_ids
+msgid "Configuration Steps"
+msgstr "Passaggi Configurazione"
+
+#. module: product_configurator_sale
+#: model_terms:ir.ui.view,arch_db:product_configurator_sale.sale_order_form_config
+msgid "Configure Product"
+msgstr "Configura Prodotto"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__create_uid
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__create_date
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__currency_id
+msgid "Currency"
+msgstr "Valuta"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__custom_value_ids
+#: model:ir.model.fields,field_description:product_configurator_sale.field_sale_order_line__custom_value_ids
+msgid "Custom Values"
+msgstr "Valori custom"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__id
+msgid "ID"
+msgstr "ID"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale____last_update
+msgid "Last Modified on"
+msgstr "Ultima modifica il"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__write_uid
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento di"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__write_date
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__order_id
+msgid "Order"
+msgstr "Ordine"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__order_line_id
+msgid "Order Line"
+msgstr "Riga ordine"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__product_preset_id
+msgid "Preset"
+msgstr "Preimpostazione"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__price
+msgid "Price"
+msgstr "Prezzo"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__product_img
+msgid "Product Img"
+msgstr "Img Prodotto"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__product_id
+msgid "Product Variant"
+msgstr "Variante prodotto"
+
+#. module: product_configurator_sale
+#: model_terms:ir.ui.view,arch_db:product_configurator_sale.sale_order_form_config
+msgid "Reconfigure"
+msgstr "Riconfigura"
+
+#. module: product_configurator_sale
+#: model:ir.model,name:product_configurator_sale.model_sale_order
+msgid "Sale Order"
+msgstr "Ordine di vendita"
+
+#. module: product_configurator_sale
+#: model:ir.model,name:product_configurator_sale.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Riga ordine di vendita"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,help:product_configurator_sale.field_product_configurator_sale__product_id
+msgid "Set only when re-configuring a existing variant"
+msgstr "Imposta solo quando ri-configuri una variante esistente"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__state
+msgid "State"
+msgstr "Provincia"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__user_id
+msgid "User"
+msgstr "Utente"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__value_ids
+msgid "Value"
+msgstr "Valore"
+
+#. module: product_configurator_sale
+#: model:ir.model.fields,field_description:product_configurator_sale.field_product_configurator_sale__weight
+msgid "Weight"
+msgstr "Peso"
+
+#. module: product_configurator_sale
+#: model:ir.model,name:product_configurator_sale.model_product_configurator_sale
+msgid "product.configurator.sale"
+msgstr "product.configurator.sale"
