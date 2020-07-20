@@ -70,9 +70,11 @@
                                 <field name="required"/>
                                 <field name="multi" attrs="{'readonly': [('val_custom','=',True)]}" force_save="1"/>
                                 <field name="val_custom" attrs="{'readonly': [('multi', '=', True)]}" force_save="1"/>
+                                <field name="quantity" attrs="{'invisible': [('val_custom', '=', False)], 'required': [('val_custom', '!=', False)]}"/>
                             </group>
                             <group>
                                 <field name="uom_id"/>
+                                <field name="attr_product_id" attrs="{'invisible': [('quantity', '=', False)]}"/>
                             </group>
                             <field name="description" colspan="4"/>
                         </group>
@@ -80,7 +82,7 @@
                     <page string="Custom Values" attrs="{'invisible': [('val_custom', '!=', True)]}" groups="product_configurator.group_product_configurator_manager">
                         <group>
                             <group>
-                                <field name="custom_type"/>
+                                <field name="custom_type" attrs="{'readonly': [('quantity', '=', True)]}" force_save="1"/>
                                 <field name="min_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
                                 <field name="max_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
                             </group>

@@ -36,6 +36,12 @@ class ProductAttribute(models.Model):
     def onchange_val_custom_field(self):
         if not self.val_custom:
             self.custom_type = False
+            self.quantity = False
+
+    @api.onchange('quantity')
+    def onchange_quantity(self):
+        if self.quantity:
+            self.custom_type = "int"
 
     CUSTOM_TYPES = [
         ('char', 'Char'),
@@ -101,7 +107,10 @@ class ProductAttribute(models.Model):
         "when there is no available attribute values, in the configuration "
         "interface"
     )
-
+    quantity = fields.Boolean(string="Quantity")
+    attr_product_id = fields.Many2one(
+        comodel_name="product.product", string="Product"
+    )
     # TODO prevent the same attribute from being defined twice on the
     # attribute lines
 
@@ -166,6 +175,8 @@ class ProductAttributeLine(models.Model):
         self.multi = self.attribute_id.multi
         self.custom = self.attribute_id.val_custom
         self.hide = self.attribute_id.hide
+        self.quantity = self.attribute_id.quantity
+        self.attr_product_id = self.attribute_id.attr_product_id
         # TODO: Remove all dependencies pointed towards the attribute being
         # changed
 
@@ -202,8 +213,18 @@ class ProductAttributeLine(models.Model):
         "when there is no available attribute values, in the configuration "
         "interface"
     )
+    quantity = fields.Boolean(string="Quantity")
     # TODO: Constraint not allowing introducing dependencies that do not exist
     # on the product.template
+
+    @api.onchange('custom')
+    def onchange_custom_field(self):
+        if not self.custom:
+            self.quantity = False
+            self.attr_product_id = False
+        else:
+            self.quantity = self.attribute_id.quantity
+            self.attr_product_id = self.attribute_id.attr_product_id
 
     def _search_product_template_value_ids(self, operator, value):
         return [('id', operator, value)]
