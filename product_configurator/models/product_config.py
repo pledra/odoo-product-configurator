@@ -841,7 +841,6 @@ class ProductConfigSession(models.Model):
         else:
             pricelist = self.env.user.partner_id.property_product_pricelist
         custom_vals_price = 0
-        print("custom_vals ", custom_vals)
         for attribute, custom_val in custom_vals.items():
             attribute_id = self.env["product.attribute"].browse(attribute)
             if attribute_id.quantity and attribute_id.attr_product_id:
