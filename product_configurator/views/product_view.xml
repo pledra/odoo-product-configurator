@@ -205,7 +205,7 @@
             <xpath expr='//header' position="inside">
                 <button string="Variant Prices" type="object"
                     name="get_product_attribute_values_action"
-                    attrs="{'invisible': ['|', ('attribute_value_ids', '=', False), ('config_ok', '=', False)]}"
+                    attrs="{'invisible': ['|', ('product_template_attribute_value_ids', '=', False), ('config_ok', '=', False)]}"
                     groups="product_configurator.group_product_configurator_manager"/>
                 <button name="reconfigure_product" groups="product_configurator.group_product_configurator"
                         class="oe_highlight"

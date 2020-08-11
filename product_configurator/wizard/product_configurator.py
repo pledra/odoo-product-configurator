@@ -1,6 +1,5 @@
 from lxml import etree
 
-from odoo.osv import orm
 from odoo.addons.base.models.ir_model import FIELD_TYPES
 
 from odoo import models, fields, tools, api, _
@@ -684,7 +683,6 @@ class ProductConfigurator(models.TransientModel):
                 node.attrib['widget'] = 'many2many_tags'
             # Apply the modifiers (attrs) on the newly inserted field in the
             # arch and add it to the view
-            orm.setup_modifiers(node)
             xml_dynamic_form.append(node)
 
             if attr_line.custom and custom_field in dynamic_fields:
@@ -713,7 +711,6 @@ class ProductConfigurator(models.TransientModel):
                     attrs=str(attrs),
                     widget=widget
                 )
-                orm.setup_modifiers(node)
                 xml_dynamic_form.append(node)
         return xml_view
 

@@ -190,10 +190,10 @@ class ProductAttributeLine(models.Model):
     )
 
     sequence = fields.Integer(string='Sequence', default=10)
-    product_template_value_ids = fields.Many2many(
-        comodel_name='product.template.attribute.value',
-        search="_search_product_template_value_ids"
-    )
+    # product_template_value_ids = fields.Many2many(
+    #     comodel_name='product.template.attribute.value',
+    #     search="_search_product_template_value_ids"
+    # )
     hide = fields.Boolean(
         string="Invisible",
         help="Set in order to make attribute invisible, "
@@ -248,11 +248,12 @@ class ProductAttributeValue(models.Model):
         comodel_name='product.product',
         string='Related Product'
     )
-    attribute_line_ids = fields.Many2many(
-        comodel_name='product.template.attribute.line',
-        string="Attribute Lines",
-        copy=False
-    )
+    # Seems to be replace by field "pav_attribute_line_ids" in product module
+    # attribute_line_ids = fields.Many2many(
+    #     comodel_name='product.template.attribute.line',
+    #     string="Attribute Lines",
+    #     copy=False
+    # )
     image = fields.Binary(
         string='Image',
         attachment=True,
@@ -271,14 +272,14 @@ class ProductAttributeValue(models.Model):
         copy=False
     )
 
-    @api.model
-    def create(self, vals):
-        tools.image_resize_images(vals)
-        return super(ProductAttributeValue, self).create(vals)
-
-    def write(self, vals):
-        tools.image_resize_images(vals)
-        return super(ProductAttributeValue, self).write(vals)
+    # @api.model
+    # def create(self, vals):
+    #     tools.image_resize_images(vals)
+    #     return super(ProductAttributeValue, self).create(vals)
+    #
+    # def write(self, vals):
+    #     tools.image_resize_images(vals)
+    #     return super(ProductAttributeValue, self).write(vals)
 
     @api.model
     def get_attribute_value_extra_prices(self, product_tmpl_id,

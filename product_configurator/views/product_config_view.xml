@@ -83,12 +83,13 @@
                         <field name="value" attrs="{'invisible': [('attachment_ids', '!=', [])]}"/>
                     </group>
                 </group>
-                <field name="attachment_ids" attrs="{'invisible': [('value', '!=', False)]}">
+                <field name="attachment_ids" widget="many2many_binary" attrs="{'invisible': [('value', '!=', False)]}"/>
+                <!--<field name="attachment_ids" attrs="{'invisible': [('value', '!=', False)]}">
                     <tree>
                         <field name="datas_fname"/>
                         <field name="datas"/>
                     </tree>
-                </field>
+                </field>-->
             </form>
         </field>
     </record>
@@ -192,6 +193,13 @@
         <field name="view_mode">tree,form</field>
     </record>
 
+    <record id="variants_action" model="ir.actions.act_window">
+        <field name="name">Attribute Values</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.attribute.value</field>
+        <field name="view_mode">tree</field>
+    </record>
+
     <menuitem
         id="menu_attribute_action_configuration"
         action="action_attributes_view"
@@ -201,7 +209,7 @@
 
     <menuitem
         id="menu_variants_action_configuration"
-        action="product.variants_action"
+        action="variants_action"
         parent="menu_product_configurable_settings"
         sequence="20"
         groups="product.group_product_variant"/>

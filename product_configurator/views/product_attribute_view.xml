@@ -2,11 +2,10 @@
 <odoo>
 <data>
 
-    <record id="product.variants_action" model="ir.actions.act_window">
-        <field name="view_mode">tree,form</field>
-    </record>
-
-    <record id="product.attribute_action" model="ir.actions.act_window">
+    <record id="variants_action" model="ir.actions.act_window">
+        <field name="name">Attribute Values</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.attribute.value</field>
         <field name="view_mode">tree,form</field>
     </record>
 
@@ -38,7 +37,7 @@
         <field name="priority">100</field>
         <field name="inherit_id" ref="product.product_attribute_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//form/group" position="before">
+            <xpath expr="//form/sheet/group" position="before">
                 <div class="oe_left" style="width: 500px;">
                     <field name="image" widget="image" class="oe_avatar oe_left"/>
                 </div>
@@ -50,46 +49,34 @@
             <xpath expr="//field[@name='create_variant']" position="attributes">
                 <attribute name="groups">base.group_no_one</attribute>
             </xpath>
-            <xpath expr="//group[@name='values_ids']" position="replace">
-                <notebook>
-                    <page string="Attribute Values">
-                        <field name="value_ids" widget="one2many_list" nolabel="1">
-                            <tree string="Values" editable="bottom">
-                                <field name="name"/>
-                            </tree>
-                            <form string="Values">
-                                <field name="name"/>
-                            </form>
-                        </field>
-                    </page>
-                    <page string="Configurator" groups="product_configurator.group_product_configurator_manager">
+            <xpath expr="//field[@name='value_ids']/parent::page" position="after">
+                <page string="Configurator" groups="product_configurator.group_product_configurator_manager">
+                    <group>
                         <group>
-                            <group>
-                                <!--<field name="type"/> -->
-                                <field name="hide"/>
-                                <field name="required"/>
-                                <field name="multi" attrs="{'readonly': [('val_custom','=',True)]}" force_save="1"/>
-                                <field name="val_custom" attrs="{'readonly': [('multi', '=', True)]}" force_save="1"/>
-                            </group>
-                            <group>
-                                <field name="uom_id"/>
-                            </group>
-                            <field name="description" colspan="4"/>
+                            <!--<field name="type"/> -->
+                            <field name="hide"/>
+                            <field name="required"/>
+                            <field name="multi" attrs="{'readonly': [('val_custom','=',True)]}" force_save="1"/>
+                            <field name="val_custom" attrs="{'readonly': [('multi', '=', True)]}" force_save="1"/>
                         </group>
-                    </page>
-                    <page string="Custom Values" attrs="{'invisible': [('val_custom', '!=', True)]}" groups="product_configurator.group_product_configurator_manager">
                         <group>
-                            <group>
-                                <field name="custom_type"/>
-                                <field name="min_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
-                                <field name="max_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
-                            </group>
-                            <group>
-                                <field name="search_ok"/>
-                            </group>
+                            <field name="uom_id"/>
                         </group>
-                    </page>
-                </notebook>
+                        <field name="description" colspan="4"/>
+                    </group>
+                </page>
+                <page string="Custom Values" attrs="{'invisible': [('val_custom', '!=', True)]}" groups="product_configurator.group_product_configurator_manager">
+                    <group>
+                        <group>
+                            <field name="custom_type"/>
+                            <field name="min_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
+                            <field name="max_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
+                        </group>
+                        <group>
+                            <field name="search_ok"/>
+                        </group>
+                    </group>
+                </page>
             </xpath>
         </field>
     </record>
@@ -120,13 +107,14 @@
     </record>
 
     <record id="product_attribute_value_tree_view" model="ir.ui.view">
-        <field name="name">product.config.attribute.value.tree</field>
+        <field name="name">product.attribute.value.tree</field>
         <field name="model">product.attribute.value</field>
-        <field name="inherit_id" ref="product.variants_tree_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
-                <attribute name="editable"/>
-            </xpath>
+            <tree string="Variant Values">
+                <field name="sequence" widget="handle"/>
+                <field name="attribute_id"/>
+                <field name="name"/>
+            </tree>
         </field>
     </record>
 
