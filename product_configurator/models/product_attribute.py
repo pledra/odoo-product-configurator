@@ -2,14 +2,12 @@ from ast import literal_eval
 
 from odoo import models, fields, api, _, tools
 from odoo.exceptions import ValidationError
-from odoo.addons import decimal_precision as dp
 
 
 class ProductAttribute(models.Model):
     _inherit = 'product.attribute'
     _order = 'sequence'
 
-    @api.multi
     def copy(self, default=None):
         if not default:
             default = {}
@@ -208,7 +206,6 @@ class ProductAttributeLine(models.Model):
     def _search_product_template_value_ids(self, operator, value):
         return [('id', operator, value)]
 
-    @api.multi
     @api.constrains('value_ids', 'default_val')
     def _check_default_values(self):
         for line in self.filtered(lambda l: l.default_val):
@@ -234,7 +231,6 @@ class ProductAttributeLine(models.Model):
 class ProductAttributeValue(models.Model):
     _inherit = 'product.attribute.value'
 
-    @api.multi
     def copy(self, default=None):
         if not default:
             default = {}
@@ -280,7 +276,6 @@ class ProductAttributeValue(models.Model):
         tools.image_resize_images(vals)
         return super(ProductAttributeValue, self).create(vals)
 
-    @api.multi
     def write(self, vals):
         tools.image_resize_images(vals)
         return super(ProductAttributeValue, self).write(vals)
@@ -312,7 +307,6 @@ class ProductAttributeValue(models.Model):
             extra_prices[attr_val_id.id] += line.price_extra
         return extra_prices
 
-    @api.multi
     def name_get(self):
         res = super(ProductAttributeValue, self).name_get()
         if not self._context.get('show_price_extra'):
@@ -398,7 +392,7 @@ class ProductAttributePrice(models.Model):
 
     weight_extra = fields.Float(
         string="Attribute Weight Extra",
-        digits=dp.get_precision('Stock Weight')
+        digits='Stock Weight'
     )
 
 
@@ -439,7 +433,6 @@ class ProductAttributeValueLine(models.Model):
         store=True
     )
 
-    @api.multi
     @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids',
                  'product_tmpl_id.attribute_line_ids.value_ids')
     def _compute_get_value_id(self):
@@ -448,7 +441,6 @@ class ProductAttributeValueLine(models.Model):
             value_list = template.attribute_line_ids.mapped('value_ids')
             attr_val_line.product_value_ids = [(6, 0, value_list.ids)]
 
-    @api.multi
     @api.constrains('value_ids')
     def _validate_configuration(self):
         """Ensure that the passed configuration in value_ids is a valid"""
@@ -472,7 +464,6 @@ class ProductAttributeValueCustom(models.Model):
     _name = 'product.attribute.value.custom'
     _description = "Product Attribute Value Custom"
 
-    @api.multi
     @api.depends('attribute_id', 'attribute_id.uom_id')
     def _compute_val_name(self):
         for attr_val_custom in self:

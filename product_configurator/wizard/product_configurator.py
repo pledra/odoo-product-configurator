@@ -55,7 +55,6 @@ class ProductConfigurator(models.TransientModel):
                 static_fields[field_name] = fields[field_name]
         return static_fields
 
-    @api.multi
     @api.depends('product_tmpl_id', 'value_ids', 'custom_value_ids')
     def _compute_cfg_image(self):
         # TODO: Update when allowing custom values to influence image
@@ -65,7 +64,6 @@ class ProductConfigurator(models.TransientModel):
             image = cfg_sessions.get_config_image()
             configurator.product_img = image
 
-    @api.multi
     @api.depends('product_tmpl_id', 'product_tmpl_id.attribute_line_ids')
     def _compute_attr_lines(self):
         """Use compute method instead of related due to increased flexibility
@@ -77,7 +75,6 @@ class ProductConfigurator(models.TransientModel):
 
     # TODO: We could use a m2o instead of a monkeypatched select field but
     # adding new steps should be trivial via custom development
-    @api.multi
     def get_state_selection(self):
         """Get the states of the wizard using standard values and optional
         configuration steps set on the product.template via
@@ -322,7 +319,6 @@ class ProductConfigurator(models.TransientModel):
 
         return {'value': vals, 'domain': domains}
 
-    @api.multi
     def onchange(self, values, field_name, field_onchange):
         """ Override the onchange wrapper to return domains to dynamic
         fields as onchange isn't triggered for non-db fields
@@ -344,7 +340,6 @@ class ProductConfigurator(models.TransientModel):
         required=True,
         ondelete='cascade',
         comodel_name='product.config.session',
-        oldname='config_session',
         string='Configuration Session'
     )
     attribute_line_ids = fields.One2many(
@@ -758,7 +753,6 @@ class ProductConfigurator(models.TransientModel):
             vals.update({'value_ids': [(6, 0, session.value_ids.ids)]})
         return super(ProductConfigurator, self).create(vals)
 
-    @api.multi
     def read(self, fields=None, load='_classic_read'):
         """Remove dynamic fields from the fields list and update the
         returned values with the dynamic data stored in value_ids"""
@@ -833,7 +827,6 @@ class ProductConfigurator(models.TransientModel):
             res[0].update(dynamic_vals)
         return res
 
-    @api.multi
     def write(self, vals):
         """Prevent database storage of dynamic fields and instead write values
         to database persistent value_ids field"""
@@ -848,14 +841,12 @@ class ProductConfigurator(models.TransientModel):
         res = super(ProductConfigurator, self).write(vals)
         return res
 
-    @api.multi
     def unlink(self):
         """Remove parent configuration session along with wizard"""
 
         self.mapped('config_session_id').unlink()
         return super(ProductConfigurator, self).unlink()
 
-    @api.multi
     def action_next_step(self):
         """Proceeds to the next step of the configuration process. This usually
         implies the next configuration step (if any) defined via the
@@ -884,7 +875,6 @@ class ProductConfigurator(models.TransientModel):
             return self.action_config_done()
         return self.open_step(step=next_step)
 
-    @api.multi
     def action_previous_step(self):
         """Proceeds to the next step of the configuration process. This usually
     implies the next configuration step (if any) defined via the
@@ -932,7 +922,6 @@ class ProductConfigurator(models.TransientModel):
 
         return wizard_action
 
-    @api.multi
     def action_reset(self):
         """Delete wizard and configuration session then create
         a new wizard+session and return an action for the new wizard object"""
@@ -996,7 +985,6 @@ class ProductConfigurator(models.TransientModel):
         self.config_session_id.config_step = step
         return wizard_action
 
-    @api.multi
     def action_config_done(self):
         """This method is for the final step which will be taken care by a
         separate module"""

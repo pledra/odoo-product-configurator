@@ -1,5 +1,4 @@
 from ast import literal_eval
-from odoo.addons import decimal_precision as dp
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
@@ -10,7 +9,6 @@ class ProductConfigDomain(models.Model):
     _name = 'product.config.domain'
     _description = "Domain for Config Restrictions"
 
-    @api.multi
     @api.depends('implied_ids')
     def _get_trans_implied(self):
         "Computes the transitive closure of relation implied_ids"
@@ -26,7 +24,6 @@ class ProductConfigDomain(models.Model):
         for domain in self:
             domain.trans_implied_ids = linearize(domain)
 
-    @api.multi
     def compute_domain(self):
         """ Returns a list of domains defined on a product.config.domain_line_ids
             and all implied_ids"""
@@ -191,7 +188,6 @@ class ProductConfigLine(models.Model):
 
     _order = 'product_tmpl_id, sequence, id'
 
-    @api.multi
     @api.constrains('value_ids')
     def check_value_attributes(self):
         for line in self.filtered(lambda l: l.value_ids):
@@ -228,7 +224,6 @@ class ProductConfigImage(models.Model):
 
     _order = 'sequence'
 
-    @api.multi
     @api.constrains('value_ids')
     def _check_value_ids(self):
         cfg_session_obj = self.env['product.config.session']
@@ -307,7 +302,6 @@ class ProductConfigSession(models.Model):
     _name = 'product.config.session'
     _description = "Product Config Session"
 
-    @api.multi
     @api.depends(
         'value_ids', 'product_tmpl_id.list_price',
         'product_tmpl_id.attribute_line_ids',
@@ -342,7 +336,6 @@ class ProductConfigSession(models.Model):
                 custom_vals[val.attribute_id.id] = val.value
         return custom_vals
 
-    @api.multi
     def _compute_config_step_name(self):
         """Get the config.step.line name using the string stored in config_step
          field of the session"""
@@ -399,7 +392,6 @@ class ProductConfigSession(models.Model):
 
         return product_tmpl.weight + weight_extra
 
-    @api.multi
     @api.depends(
         'value_ids', 'product_tmpl_id',
         'product_tmpl_id.attribute_line_ids',
@@ -411,7 +403,6 @@ class ProductConfigSession(models.Model):
         for cfg_session in self:
             cfg_session.weight = cfg_session.get_cfg_weight()
 
-    @api.multi
     def _compute_currency_id(self):
         main_company = self.env['res.company']._get_main_company()
         for session in self:
@@ -463,7 +454,7 @@ class ProductConfigSession(models.Model):
         compute='_compute_cfg_price',
         string='Price',
         store=True,
-        digits=dp.get_precision('Product Price')
+        digits='Product Price'
     )
     currency_id = fields.Many2one(
         comodel_name='res.currency',
@@ -482,7 +473,7 @@ class ProductConfigSession(models.Model):
     weight = fields.Float(
         string="Weight",
         compute="_compute_cfg_weight",
-        digits=dp.get_precision('Stock Weight')
+        digits='Stock Weight'
     )
     # Product preset
     product_preset_id = fields.Many2one(
@@ -492,7 +483,6 @@ class ProductConfigSession(models.Model):
             ('config_preset_ok', '=', True)]"
     )
 
-    @api.multi
     def action_confirm(self, product_id=None):
         for session in self:
             if product_id is None:
@@ -512,7 +502,6 @@ class ProductConfigSession(models.Model):
                     "product_id linked")
                 )
 
-    @api.multi
     def update_session_configuration_value(self, vals, product_tmpl_id=None):
         """Update value of configuration in current session
 
@@ -581,7 +570,6 @@ class ProductConfigSession(models.Model):
 
         self.update_config(attr_val_dict, custom_val_dict)
 
-    @api.multi
     def update_config(self, attr_val_dict=None, custom_val_dict=None):
         """Update the session object with the given value_ids and custom values.
 
@@ -661,7 +649,6 @@ class ProductConfigSession(models.Model):
             update_vals['custom_value_ids'].append((0, 0, custom_vals))
         self.write(update_vals)
 
-    @api.multi
     def write(self, vals):
         """Validate configuration when writing new values to session"""
         # TODO: Issue warning when writing to value_ids or custom_val_ids
@@ -708,7 +695,6 @@ class ProductConfigSession(models.Model):
             vals.update({'value_ids': [(6, 0, default_val_ids)]})
         return super(ProductConfigSession, self).create(vals)
 
-    @api.multi
     def create_get_variant(self, value_ids=None, custom_vals=None):
         """ Creates a new product variant with the attributes passed
         via value_ids and custom_values or retrieves an existing
@@ -765,7 +751,6 @@ class ProductConfigSession(models.Model):
 
         return variant
 
-    @api.multi
     def _get_option_values(self, pricelist, value_ids=None):
         """Return only attribute values that have products attached with a
         price set to them"""
@@ -778,7 +763,6 @@ class ProductConfigSession(models.Model):
             lambda x: x.product_id.price)
         return values
 
-    @api.multi
     def get_components_prices(self, prices, pricelist, value_ids=None):
         """Return prices of the components which make up the final
         configured variant"""
@@ -909,7 +893,6 @@ class ProductConfigSession(models.Model):
             })
         return vals
 
-    @api.multi
     def get_session_search_domain(self, product_tmpl_id, state='draft',
                                   parent_id=None, user_id=None):
 
@@ -925,7 +908,6 @@ class ProductConfigSession(models.Model):
             domain.append(('parent_id', '=', parent_id))
         return domain
 
-    @api.multi
     def get_session_vals(self, product_tmpl_id, parent_id=None, user_id=None):
         if not user_id:
             user_id = self.env.user.id
@@ -937,7 +919,6 @@ class ProductConfigSession(models.Model):
             vals.update(parent_id=parent_id)
         return vals
 
-    @api.multi
     def get_next_step(self, state, product_tmpl_id=False,
                       value_ids=False, custom_value_ids=False):
         """Find and return next step if exit. This usually
@@ -1425,7 +1406,6 @@ class ProductConfigSession(models.Model):
         products -= more_attrs
         return products
 
-    @api.multi
     def search_session(self, product_tmpl_id, parent_id=None, user_id=None):
         domain = self.get_session_search_domain(
             product_tmpl_id=product_tmpl_id,
@@ -1486,7 +1466,6 @@ class ProductConfigSession(models.Model):
         ]
         return prices
 
-    @api.multi
     def encode_custom_values(self, custom_vals):
         """ Hook to alter the values of the custom values before creating or writing
 

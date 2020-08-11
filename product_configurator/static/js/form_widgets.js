@@ -42,7 +42,6 @@ odoo.define('product_configurator.FormView', function (require) {
             res_model: 'product.configurator',
             views: [[false, 'form']],
             type: 'ir.actions.act_window',
-            view_type: 'form',
             view_mode: 'form',
             target: 'new'
           });
@@ -67,7 +66,6 @@ odoo.define('product_configurator.FormView', function (require) {
             res_model: 'product.configurator',
             views: [[false, 'form']],
             type: 'ir.actions.act_window',
-            view_type: 'form',
             view_mode: 'form',
             target: 'new'
           });
@@ -91,7 +89,6 @@ odoo.define('product_configurator.FormView', function (require) {
             res_model: 'product.configurator',
             views: [[false, 'form']],
             type: 'ir.actions.act_window',
-            view_type: 'form',
             view_mode: 'form',
             target: 'new'
           });

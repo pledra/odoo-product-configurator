@@ -2,7 +2,6 @@ from lxml import etree
 
 from odoo.exceptions import ValidationError
 from odoo import models, fields, api, _
-from odoo.addons import decimal_precision as dp
 from mako.template import Template
 from mako.runtime import Context
 from odoo.tools.safe_eval import safe_eval
@@ -15,7 +14,6 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    @api.multi
     @api.depends('product_variant_ids.product_tmpl_id')
     def _compute_product_variant_count(self):
         """For configurable products return the number of variants configured or
@@ -29,14 +27,12 @@ class ProductTemplate(models.Model):
             if config_ok and not variant_count:
                 product_tmpl.product_variant_count = 1
 
-    @api.multi
     @api.depends('attribute_line_ids.value_ids')
     def _compute_template_attr_vals(self):
         for product_tmpl in self.filtered(lambda t: t.config_ok):
             value_ids = product_tmpl.attribute_line_ids.mapped('value_ids')
             product_tmpl.attribute_line_val_ids = value_ids
 
-    @api.multi
     @api.constrains('attribute_line_ids', 'attribute_value_line_ids')
     def check_attr_value_ids(self):
         for product_tmpl in self:
@@ -50,7 +46,6 @@ class ProductTemplate(models.Model):
                       "must be defined in the attribute lines of the template")
                 )
 
-    @api.multi
     @api.constrains('attribute_value_line_ids')
     def _validate_unique_config(self):
         """Check for duplicate configurations for the same attribute value"""
@@ -120,7 +115,7 @@ class ProductTemplate(models.Model):
     )
     weight_dummy = fields.Float(
         string='Manual Weight',
-        digits=dp.get_precision('Stock Weight'),
+        digits='Stock Weight',
         help="Manual setting of product template weight",
     )
 
@@ -132,7 +127,6 @@ class ProductTemplate(models.Model):
         standard_products = self - config_products
         super(ProductTemplate, standard_products)._compute_weight()
 
-    @api.multi
     def _set_weight(self):
         for product_tmpl in self:
             product_tmpl.weight_dummy = product_tmpl.weight
@@ -142,7 +136,6 @@ class ProductTemplate(models.Model):
     def _search_weight(self, operator, value):
         return [('weight_dummy', operator, value)]
 
-    @api.multi
     def get_product_attribute_values_action(self):
         self.ensure_one()
         action = self.env.ref(
@@ -171,7 +164,6 @@ class ProductTemplate(models.Model):
                 _('Default values provided generate an invalid configuration')
             )
 
-    @api.multi
     @api.constrains('config_line_ids', 'attribute_line_ids')
     def _check_default_value_domains(self):
         for template in self:
@@ -184,12 +176,10 @@ class ProductTemplate(models.Model):
                       \n%s') % (e.name)
                 )
 
-    @api.multi
     def toggle_config(self):
         for record in self:
             record.config_ok = not record.config_ok
 
-    @api.multi
     def create_variant_ids(self):
         """ Prevent configurable products from creating variants as these serve
             only as a template for the product configurator"""
@@ -198,7 +188,6 @@ class ProductTemplate(models.Model):
             return None
         return super(ProductTemplate, templates).create_variant_ids()
 
-    @api.multi
     def unlink(self):
         """ Prevent the removal of configurable product templates
             from variants"""
@@ -214,7 +203,6 @@ class ProductTemplate(models.Model):
         res = super(ProductTemplate, self).unlink()
         return res
 
-    @api.multi
     def copy(self, default=None):
         if not default:
             default = {}
@@ -256,7 +244,6 @@ class ProductTemplate(models.Model):
             line.copy(config_step_line_default)
         return res
 
-    @api.multi
     def configure_product(self):
         return self.with_context(
             product_tmpl_id_readonly=True
@@ -319,7 +306,6 @@ class ProductTemplate(models.Model):
             self.check_config_user_access()
         return super(ProductTemplate, self).create(vals)
 
-    @api.multi
     def write(self, vals):
         change_config_ok = ('config_ok' in vals)
         configurable_templates = self.filtered(
@@ -330,7 +316,6 @@ class ProductTemplate(models.Model):
 
         return super(ProductTemplate, self).write(vals)
 
-    @api.multi
     def _get_possible_combinations(self, parent_combination=None,
                                    necessary_values=None):
         self.ensure_one()
@@ -455,7 +440,7 @@ class ProductProduct(models.Model):
         compute='_compute_product_price_extra',
         string='Variant Extra Price',
         help="This is the sum of the extra price of all attributes",
-        digits=dp.get_precision('Product Price')
+        digits='Product Price'
     )
     weight_extra = fields.Float(
         string='Weight Extra',
@@ -463,7 +448,7 @@ class ProductProduct(models.Model):
     )
     weight_dummy = fields.Float(
         string="Manual Weight",
-        digits=dp.get_precision('Stock Weight'),
+        digits='Stock Weight',
     )
     weight = fields.Float(
         compute='_compute_product_weight',
@@ -476,7 +461,6 @@ class ProductProduct(models.Model):
     config_preset_ok = fields.Boolean(
         string="Is Preset")
 
-    @api.multi
     def get_product_attribute_values_action(self):
         self.ensure_one()
         action = self.env.ref(
@@ -491,7 +475,6 @@ class ProductProduct(models.Model):
         action['context'] = context
         return action
 
-    @api.multi
     def _check_attribute_value_ids(self):
         """ Removing multi contraint attribute to enable multi selection. """
         return True
@@ -526,7 +509,6 @@ class ProductProduct(models.Model):
                 res['fields'] = xfields
         return res
 
-    @api.multi
     def unlink(self):
         """ Signal unlink from product variant through context so
             removal can be stopped for configurable templates """
@@ -538,7 +520,6 @@ class ProductProduct(models.Model):
         self.env.context = ctx
         return super(ProductProduct, self).unlink()
 
-    @api.multi
     def _compute_name(self):
         """ Compute the name of the configurable products and use template
             name for others"""
@@ -548,7 +529,6 @@ class ProductProduct(models.Model):
             else:
                 product.config_name = product.name
 
-    @api.multi
     def reconfigure_product(self):
         """ Creates and launches a product configurator wizard with a linked
         template and variant in order to re-configure an existing product.
@@ -587,7 +567,6 @@ class ProductProduct(models.Model):
             self.check_config_user_access(mode='create')
         return super(ProductProduct, self).create(vals)
 
-    @api.multi
     def write(self, vals):
         change_config_ok = ('config_ok' in vals)
         configurable_products = self.filtered(
