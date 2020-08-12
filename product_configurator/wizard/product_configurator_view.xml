@@ -8,12 +8,19 @@
             <form >
                 <header>
                     <field name="state" widget="statusbar" clickable="True"/>
-                    <button
+                    <!--<button
                         string="Reset"
                         type="object"
                         name="action_reset"
                         confirm="Are you sure? This will remove your current configuration for this template!"
                         special="no_save"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', ('product_tmpl_id', '=', False), ('state', '=', 'select')]}"/>-->
+                    <button
+                        string="Reset"
+                        type="object"
+                        name="action_reset"
+                        confirm="Are you sure? This will remove your current configuration for this template!"
                         class="oe_highlight"
                         attrs="{'invisible': ['|', ('product_tmpl_id', '=', False), ('state', '=', 'select')]}"/>
                 </header>
@@ -47,8 +54,10 @@
                 </sheet>
                 <footer>
                     <field name="value_ids" readonly="1" force_save="0" invisible="1"/>
+                    <!--<button type="object" name="action_previous_step"
+                        attrs="{'invisible': [('state','=','select')]}" string="Back" special="no_save"/>-->
                     <button type="object" name="action_previous_step"
-                        attrs="{'invisible': [('state','=','select')]}" string="Back" special="no_save"/>
+                        attrs="{'invisible': [('state','=','select')]}" string="Back"/>
                     <button type="object" name="action_next_step" class="oe_highlight" string="Next"/>
                 </footer>
             </form>
