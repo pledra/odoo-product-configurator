@@ -123,11 +123,11 @@ class TestProduct(ProductConfiguratorTestCases):
             Method: toggle_config()'
         )
         self.product_tmpl_id.toggle_config()
-        varient_value = self.product_tmpl_id.create_variant_ids()
+        varient_value = self.product_tmpl_id._create_variant_ids()
         self.assertIsNone(
             varient_value,
             'Error: If its return none\
-            Method: create_variant_ids()'
+            Method: _create_variant_ids()'
         )
 
     def test_05_unlink(self):

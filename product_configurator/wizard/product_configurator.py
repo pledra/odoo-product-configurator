@@ -329,6 +329,7 @@ class ProductConfigurator(models.TransientModel):
         )
         field_prefix = self._prefixes.get('field_prefix')
         vals = onchange_values['value']
+        vals.pop('value_ids', False)
         for key, val in vals.items():
             if isinstance(val, int) and key.startswith(field_prefix):
                 att_val = self.env['product.attribute.value'].browse(val)
@@ -384,7 +385,7 @@ class ProductConfigurator(models.TransientModel):
 
     @api.onchange('product_preset_id')
     def _onchange_product_preset(self):
-        self.value_ids = self.product_preset_id.attribute_value_ids
+        self.value_ids = self.product_preset_id.product_template_attribute_value_ids.product_attribute_value_id
 
     @api.model
     def get_field_default_attrs(self):
@@ -442,8 +443,6 @@ class ProductConfigurator(models.TransientModel):
         except Exception:
             # If no configuration steps exist then get all attribute lines
             attribute_lines = wiz.product_tmpl_id.attribute_line_ids
-
-        attribute_lines = wiz.product_tmpl_id.attribute_line_ids
 
         # Generate relational fields with domains restricting values to
         # the corresponding attributes
@@ -723,7 +722,7 @@ class ProductConfigurator(models.TransientModel):
             product = self.env['product.product'].browse(vals['product_id'])
             vals.update({
                 'product_tmpl_id': product.product_tmpl_id.id,
-                'value_ids': [(6, 0, product.attribute_value_ids.ids)]
+                'value_ids': [(6, 0, product.product_template_attribute_value_ids.product_attribute_value_id.ids)]
             })
             custom_vals = []
             for val in product.value_custom_ids:

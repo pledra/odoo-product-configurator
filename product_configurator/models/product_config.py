@@ -202,6 +202,7 @@ class ProductConfigLine(models.Model):
 
 class ProductConfigImage(models.Model):
     _name = 'product.config.image'
+    _inherit = ['image.mixin']
     _description = "Product Config Image"
 
     name = fields.Char('Name', size=128, required=True, translate=True)
@@ -212,8 +213,6 @@ class ProductConfigImage(models.Model):
         ondelete='cascade',
         required=True
     )
-
-    image = fields.Binary('Image', required=True)
 
     sequence = fields.Integer(string='Sequence', default=10)
 
@@ -860,7 +859,7 @@ class ProductConfigSession(models.Model):
             value_ids=value_ids,
             custom_vals=custom_vals
         )
-        return config_image_id.image
+        return config_image_id.image_1920
 
     @api.model
     def get_variant_vals(self, value_ids=None, custom_vals=None, **kwargs):
@@ -880,11 +879,16 @@ class ProductConfigSession(models.Model):
             custom_vals = self._get_custom_vals_dict()
 
         image = self.get_config_image(value_ids)
+        dom = [
+            ('product_attribute_value_id', 'in', value_ids),
+            ('product_tmpl_id', '=', self.product_tmpl_id.id)
+        ]
+        tmpl_attr_val_ids = self.env['product.template.attribute.value'].search(dom)
         vals = {
             'product_tmpl_id': self.product_tmpl_id.id,
-            'attribute_value_ids': [(6, 0, value_ids)],
+            'product_template_attribute_value_ids': [(6, 0, tmpl_attr_val_ids.ids)],
             'taxes_id': [(6, 0, self.product_tmpl_id.taxes_id.ids)],
-            'image': image,
+            'image_1920': image,
         }
 
         if custom_vals:
@@ -1132,7 +1136,7 @@ class ProductConfigSession(models.Model):
         ]
 
         for value_id in value_ids:
-            domain.append(('attribute_value_ids', '=', value_id))
+            domain.append(('product_template_attribute_value_ids', '=', value_id))
 
         attr_search = attr_obj.search([
             ('search_ok', '=', True),
@@ -1400,7 +1404,7 @@ class ProductConfigSession(models.Model):
         # matches
         more_attrs = products.filtered(
             lambda p:
-            len(p.attribute_value_ids) != len(value_ids) or
+            len(p.product_template_attribute_value_ids.product_attribute_value_id) != len(value_ids) or
             len(p.value_custom_ids) != len(custom_vals)
         )
         products -= more_attrs

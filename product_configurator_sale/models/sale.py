@@ -4,7 +4,6 @@ from odoo import api, fields, models
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    @api.multi
     def action_config_start(self):
         """Return action to start configuration wizard"""
         return {
@@ -36,7 +35,6 @@ class SaleOrderLine(models.Model):
         readonly=True
     )
 
-    @api.multi
     def reconfigure_product(self):
         """ Creates and launches a product configurator wizard with a linked
         template and variant in order to re-configure a existing product. It is

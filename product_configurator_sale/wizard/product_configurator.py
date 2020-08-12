@@ -29,7 +29,6 @@ class ProductConfiguratorSale(models.TransientModel):
         line_vals.update(extra_vals)
         return line_vals
 
-    @api.multi
     def action_config_done(self):
         """Parse values and execute final code before closing the wizard"""
         res = super(ProductConfiguratorSale, self).action_config_done()

@@ -5,7 +5,8 @@ from odoo.exceptions import ValidationError
 
 
 class ProductAttribute(models.Model):
-    _inherit = 'product.attribute'
+    _name = 'product.attribute'
+    _inherit = ['product.attribute', 'image.mixin']
     _order = 'sequence'
 
     def copy(self, default=None):
@@ -92,7 +93,6 @@ class ProductAttribute(models.Model):
         comodel_name='uom.uom',
         string='Unit of Measure'
     )
-    image = fields.Binary(string='Image')
     hide = fields.Boolean(
         string="Invisible",
         help="Set in order to make attribute invisible, "
@@ -229,7 +229,9 @@ class ProductAttributeLine(models.Model):
 
 
 class ProductAttributeValue(models.Model):
-    _inherit = 'product.attribute.value'
+    _name = 'product.attribute.value'
+    _inherit = ['product.attribute', 'product.attribute.value']
+
 
     def copy(self, default=None):
         if not default:
@@ -254,17 +256,7 @@ class ProductAttributeValue(models.Model):
     #     string="Attribute Lines",
     #     copy=False
     # )
-    image = fields.Binary(
-        string='Image',
-        attachment=True,
-        help="Attribute value image (Display on website for radio buttons)"
-    )
-    image_medium = fields.Binary(
-        string="Medium Image",
-        attachment=True,
-        help="Attribute value medium size image"
-        " (Display on website for radio buttons)"
-    )
+
     # prevent to add new attr-value from adding
     # in already created template
     product_ids = fields.Many2many(

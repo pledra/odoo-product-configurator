@@ -130,26 +130,25 @@ class ProductAttributes(TransactionCase):
             })
 
     def test_06_onchange_attribute(self):
-        with self.env.do_in_onchange():
-            self.ProductAttributeLineFuel.onchange_attribute()
-            self.assertFalse(
-                self.ProductAttributeLineFuel.value_ids,
-                "value_ids is not False"
-            )
-            self.assertTrue(
-                self.ProductAttributeLineFuel.required,
-                "required not exsits value"
-            )
-            self.ProductAttributeLineFuel.multi = True
-            self.assertTrue(
-                self.ProductAttributeLineFuel.multi,
-                "multi not exsits value"
-            )
-            self.ProductAttributeLineFuel.custom = True
-            self.assertTrue(
-                self.ProductAttributeLineFuel.custom,
-                "custom not exsits value"
-            )
+        self.ProductAttributeLineFuel.onchange_attribute()
+        self.assertFalse(
+            self.ProductAttributeLineFuel.value_ids,
+            "value_ids is not False"
+        )
+        self.assertTrue(
+            self.ProductAttributeLineFuel.required,
+            "required not exsits value"
+        )
+        self.ProductAttributeLineFuel.multi = True
+        self.assertTrue(
+            self.ProductAttributeLineFuel.multi,
+            "multi not exsits value"
+        )
+        self.ProductAttributeLineFuel.custom = True
+        self.assertTrue(
+            self.ProductAttributeLineFuel.custom,
+            "custom not exsits value"
+        )
 
     def test_07_check_default_values(self):
         with self.assertRaises(ValidationError):
