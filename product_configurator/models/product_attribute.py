@@ -230,7 +230,7 @@ class ProductAttributeLine(models.Model):
 
 class ProductAttributeValue(models.Model):
     _name = 'product.attribute.value'
-    _inherit = ['product.attribute', 'product.attribute.value']
+    _inherit = ['product.attribute.value', 'image.mixin']
 
 
     def copy(self, default=None):
