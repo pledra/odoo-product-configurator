@@ -150,6 +150,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                     var condition = domain[0][1];
                     if (condition == 'in' || condition == '=') {
                         if ($.inArray(parseInt(option.value), domain[0][2]) < 0) {
+                            $(option).attr('hidden', true);
                             $(option).attr('disabled', true);
                             if (option.selected) {
                                 option.selected = false;
@@ -157,12 +158,15 @@ odoo.define('website_product_configurator.config_form', function (require) {
                                 option.checked = false;
                             };
                         } else {
+                            $(option).attr('hidden', false);
                             $(option).attr('disabled', false);
                         };
                     } else if (condition == 'not in' || condition == '!=') {
                         if ($.inArray(parseInt(option.value), domain[0][2]) < 0) {
+                            $(option).attr('hidden', false);
                             $(option).attr('disabled', false);
                         } else {
+                            $(option).attr('hidden', true);
                             $(option).attr('disabled', true);
                             if (option.selected) {
                                 option.selected = false;

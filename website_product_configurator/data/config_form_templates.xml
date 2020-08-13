@@ -298,7 +298,8 @@
                                     t-att-value="value.id"
                                     t-att-data-oe-id="value.id"
                                     t-att-name="value.id"
-                                    t-att-disabled="value.id not in available_value_ids and True or False">
+                                    t-att-disabled="value.id not in available_value_ids and True or False"
+                                    t-att-hidden="value.id not in available_value_ids and True or False">
                                     <t t-esc="value.name"/>
                                     <t t-set="price_extra" t-value="extra_prices.get(value.id, 0)"/>
                                     <t t-if="price_extra">
@@ -313,7 +314,8 @@
                                       t-att-value="custom_val_id.id"
                                       t-att-data-oe-id="custom_val_id.id"
                                       t-att-name="custom_val_id.id"
-                                      t-att-disabled="custom_val_id.id not in available_value_ids and True or False">
+                                      t-att-disabled="custom_val_id.id not in available_value_ids and True or False"
+                                      t-att-hidden="custom_val_id.id not in available_value_ids and True or False">
                                       <t t-esc="custom_val_id.name"/>
                                 </option>
                             </t>
@@ -369,6 +371,7 @@
                                             t-att-data-oe-id="value.id"
                                             t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
                                             t-att-disabled="value.id not in available_value_ids and True or False"
+                                            t-att-hidden="value.id not in available_value_ids and True or False"
                                             t-att-title="value.name"/>
                                     </div>
                                     <label class="image_config_attr_value_radio"
@@ -390,6 +393,7 @@
                                         t-att-data-oe-id="custom_val_id.id"
                                         t-att-name="'%s%s' % (field_prefix, line.attribute_id.id)"
                                         t-att-disabled="custom_val_id.id not in available_value_ids and True or False"
+                                        t-att-hidden="custom_val_id.id not in available_value_ids and True or False"
                                         t-att-title="custom_val_id.name"/>
                                     <label class="image_config_attr_value_radio"
                                         for="'%s%s' % (field_prefix, line.attribute_id.id)"
