@@ -16,6 +16,6 @@
         'demo/product_template.xml'
     ],
     'test': [],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }
