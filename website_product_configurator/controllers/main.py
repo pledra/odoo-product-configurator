@@ -509,7 +509,7 @@ class ProductConfigWebsiteSale(WebsiteSale):
             key=lambda obj: obj.attribute_id.sequence
         )
         vals = sorted(
-            product_id.attribute_value_ids,
+            product_id.product_template_attribute_value_ids,
             key=lambda obj: obj.attribute_id.sequence
         )
         pricelist = get_pricelist()
