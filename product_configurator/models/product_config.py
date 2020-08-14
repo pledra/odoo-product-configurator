@@ -1136,7 +1136,7 @@ class ProductConfigSession(models.Model):
         ]
 
         for value_id in value_ids:
-            domain.append(('product_template_attribute_value_ids', '=', value_id))
+            domain.append(('product_template_attribute_value_ids.product_attribute_value_id', '=', value_id))
 
         attr_search = attr_obj.search([
             ('search_ok', '=', True),
