@@ -495,3 +495,9 @@ class ProductAttributeValueCustom(models.Model):
         ('attr_uniq', 'unique(product_id, attribute_id)',
          'Cannot have two custom values for the same attribute')
     ]
+
+    def name_get(self):
+        res = []
+        for val in self.sudo():
+            res.append((val.id, f"{val.attribute_id.name}: {val.name}"))
+        return res
