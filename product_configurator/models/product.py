@@ -294,7 +294,8 @@ class ProductTemplate(models.Model):
             'product_configurator.group_product_configurator_manager')
         user_root = self.env.ref('base.user_root')
         user_admin = self.env.ref('base.user_admin')
-        if config_manager or self.env.user.id in [user_root.id, user_admin.id]:
+        if config_manager or self.env.user.id in [user_root.id, user_admin.id] or \
+                self.env.su:
             return True
         raise ValidationError(_(
             "Sorry, you are not allowed to create/change this kind of "
@@ -565,7 +566,7 @@ class ProductProduct(models.Model):
         user_admin = self.env.ref('base.user_admin')
         if (config_manager or
                 (config_user and mode not in ['delete']) or
-                self.env.user.id in [user_root.id, user_admin.id]):
+                self.env.user.id in [user_root.id, user_admin.id]) or self.env.su:
             return True
         raise ValidationError(_(
             "Sorry, you are not allowed to create/change this kind of "
