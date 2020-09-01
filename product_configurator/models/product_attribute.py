@@ -203,6 +203,13 @@ class ProductAttributeLine(models.Model):
     # TODO: Constraint not allowing introducing dependencies that do not exist
     # on the product.template
 
+    @api.constrains('active', 'value_ids', 'attribute_id')
+    def _check_valid_values(self):
+        for rec in self:
+            if not rec.product_tmpl_id.config_ok:
+                super(ProductAttributeLine, rec)._check_valid_values()
+        return True
+
     def _search_product_template_value_ids(self, operator, value):
         return [('id', operator, value)]
 
