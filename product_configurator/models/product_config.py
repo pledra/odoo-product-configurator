@@ -679,6 +679,8 @@ class ProductConfigSession(models.Model):
         # TODO: Issue warning when writing to value_ids or custom_val_ids
 
         res = super(ProductConfigSession, self).write(vals)
+        if not self.product_tmpl_id:
+            return res
         value_ids = self.value_ids.ids
         avail_val_ids = self.values_available(value_ids)
         if set(value_ids) - set(avail_val_ids):
