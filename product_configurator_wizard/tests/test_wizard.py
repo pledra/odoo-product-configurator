@@ -54,10 +54,12 @@ class ConfigurationRules(TransactionCase):
     def test_wizard_configuration(self):
         """Test product configurator wizard"""
 
+        existing_lines = self.so.order_line
+
         # Start a new configuration wizard
         wizard_obj = self.env['product.configurator'].with_context({
             'active_model': 'sale.order',
-            'active_id': self.so.id
+            'default_order_id': self.so.id
         })
 
         wizard = wizard_obj.create({'product_tmpl_id': self.cfg_tmpl.id})
@@ -94,14 +96,11 @@ class ConfigurationRules(TransactionCase):
         self.assertTrue(len(config_variants) == 1,
                         "Wizard did not create a configurable variant")
 
-    def test_reconfiguration(self):
-        """Test reconfiguration functionality of the wizard"""
-        self.test_wizard_configuration()
+        created_line = self.so.order_line - existing_lines
+        self.assertTrue(len(created_line) == 1,
+                        "Wizard did not create an order line")
 
-        order_line = self.so.order_line.filtered(
-            lambda l: l.product_id.config_ok
-        )
-
+    def do_reconfigure(self, order_line):
         reconfig_action = order_line.reconfigure_product()
 
         wizard = self.env['product.configurator'].browse(
@@ -115,9 +114,37 @@ class ConfigurationRules(TransactionCase):
         while wizard.action_next_step():
             pass
 
+    def test_reconfiguration(self):
+        """Test reconfiguration functionality of the wizard"""
+        self.test_wizard_configuration()
+
+        existing_lines = self.so.order_line
+
+        order_line = self.so.order_line.filtered(
+            lambda l: l.product_id.config_ok
+        )
+
+        self.do_reconfigure(order_line)
+
         config_variants = self.env['product.product'].search([
             ('config_ok', '=', True)
         ])
 
         self.assertTrue(len(config_variants) == 2,
                         "Wizard reconfiguration did not create a new variant")
+
+        created_line = self.so.order_line - existing_lines
+        self.assertTrue(len(created_line) == 0,
+                        "Wizard created an order line on reconfiguration")
+
+        # test that running through again with the same values does not
+        # create another variant
+        self.do_reconfigure(order_line)
+
+        config_variants = self.env['product.product'].search([
+            ('config_ok', '=', True)
+        ])
+
+        self.assertTrue(len(config_variants) == 2,
+                        "Wizard reconfiguration created a redundant variant")
+

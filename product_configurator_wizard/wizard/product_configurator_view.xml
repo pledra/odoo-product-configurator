@@ -12,6 +12,7 @@
                 <sheet>
                     <group col="4">
                         <group name='static_form' colspan="3" states='select'>
+                            <field name="order_id" invisible="1"/>
                             <field name="product_id" invisible="1"/>
                             <field name="product_tmpl_id" attrs="{'readonly': [('product_id', '!=', False)]}" required="True"/>
                             <field attrs="{'invisible': [('attribute_line_ids', '=', [])]}" name="attribute_line_ids">

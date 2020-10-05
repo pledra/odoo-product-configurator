@@ -234,6 +234,11 @@ class ProductConfigurator(models.TransientModel):
         comodel_name='sale.order.line',
         readonly=True,
     )
+    # Needed if creating a new line for an order, so we don't rely on active_id
+    order_id = fields.Many2one(
+        comodel_name='sale.order',
+        readonly=True,
+    )
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -787,10 +792,10 @@ class ProductConfigurator(models.TransientModel):
 
         return wizard_action
 
-    def _extra_line_values(self, so, product, new=True):
+    def _so_line_values(self, so, product, new=True):
         """ Hook to allow custom line values to be put on the newly
         created or edited lines."""
-        vals = {}
+        vals = {'product_id': product.id}
         if new:
             vals.update({
                 'name': product.display_name,
@@ -824,17 +829,20 @@ class ProductConfigurator(models.TransientModel):
                   'required steps and fields.')
             )
 
-        so = self.env['sale.order'].browse(self.env.context.get('active_id'))
+        # While, at the moment, the configurator works for
+        # Sales only, this is likely to change with PO requests
+        # already waiting.
+        if self.order_line_id or self.order_id:
+            line_vals = self._so_line_values(
+                self.order_line_id.order_id or self.order_id,
+                variant,
+                new=not self.order_line_id
+                )
 
-        line_vals = {'product_id': variant.id}
-        line_vals.update(self._extra_line_values(
-            self.order_line_id.order_id or so, variant, new=True)
-        )
-
-        if self.order_line_id:
-            self.order_line_id.write(line_vals)
-        else:
-            so.write({'order_line': [(0, 0, line_vals)]})
+            if self.order_line_id:
+                self.order_line_id.write(line_vals)
+            else:
+                self.order_id.write({'order_line': [(0, 0, line_vals)]})
 
         self.unlink()
         return

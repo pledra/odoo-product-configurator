@@ -17,10 +17,10 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='order_line']" position="before">
-                <button name="%(action_wizard_product_configurator)s"
+                <button name="configure_product"
                         states="draft,sent"
                         class="oe_highlight"
-                        type="action"
+                        type="object"
                         style="margin-top: 15px;margin-bottom: 10px;"
                         string="Configure Product"
                         groups="product_configurator.group_product_configurator"/>
