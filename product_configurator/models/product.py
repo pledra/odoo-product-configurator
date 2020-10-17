@@ -63,8 +63,8 @@ class ProductTemplate(models.Model):
                 ["value_id", "value_ids"], load=False
             )
             attr_val_line_vals = [
-                (l["value_id"], tuple(l["value_ids"]))
-                for l in attr_val_line_vals
+                (line["value_id"], tuple(line["value_ids"]))
+                for line in attr_val_line_vals
             ]
             if len(set(attr_val_line_vals)) != len(attr_val_line_vals):
                 raise ValidationError(
