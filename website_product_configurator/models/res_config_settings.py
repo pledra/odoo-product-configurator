@@ -19,20 +19,13 @@ class ResConfigSettings(models.TransientModel):
     def xml_id_to_record_id(self, xml_id):
         if not xml_id or len(xml_id.split(".")) != 2:
             return False
-        model_data_id = self.env["ir.model.data"].search(
-            [
-                ("module", "=", xml_id.split(".")[0]),
-                ("name", "=", xml_id.split(".")[1]),
-            ]
-        )
-        if not model_data_id:
-            return False
-        website_tmpl_id = self.env[model_data_id.model].browse(
-            model_data_id.res_id
-        )
+
+        website_tmpl_id = self.env.ref(xml_id)
         if (
-            website_tmpl_id.inherit_id.xml_id
-            != "website_product_configurator.config_form_base"
+            website_tmpl_id.exists() and
+            website_tmpl_id.inherit_id != self.env.ref(
+                "website_product_configurator.config_form_base"
+            )
         ):
             return False
         return website_tmpl_id
@@ -57,11 +50,13 @@ class ResConfigSettings(models.TransientModel):
         )
 
         website_tmpl_xml_id = self.xml_id_to_record_id(xml_id=xml_id)
-        res.update({
-            "website_tmpl_id": (
-                website_tmpl_xml_id and
-                website_tmpl_xml_id.id or
-                website_tmpl_xml_id
-            )
-        })
+        res.update(
+            {
+                "website_tmpl_id": (
+                    website_tmpl_xml_id
+                    and website_tmpl_xml_id.id
+                    or website_tmpl_xml_id
+                )
+            }
+        )
         return res

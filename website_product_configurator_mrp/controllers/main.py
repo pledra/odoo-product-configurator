@@ -1,31 +1,41 @@
-from openerp.http import request
+from odoo.http import request
+from odoo import http
 
-from openerp.addons.website_product_configurator.controllers.main import (
-    WebsiteProductConfig
+from odoo.addons.website_product_configurator.controllers.main import (
+    ProductConfigWebsiteSale,
 )
 
 
-class WebsiteProductConfigMrp(WebsiteProductConfig):
-
-    def cart_update(self, product, post):
-        if post.get('assembly') == 'kit':
-            attr_products = product.attribute_value_ids.mapped('product_id')
-            for product in attr_products:
-                request.website.sale_get_order(force_create=1)._cart_update(
-                    product_id=int(product.id),
-                    add_qty=float(post.get('add_qty')),
-                )
-        else:
-            request.website.sale_get_order(force_create=1)._cart_update(
-                product_id=int(product.id),
-                add_qty=float(post.get('add_qty')),
+class WebsiteProductConfigMrp(ProductConfigWebsiteSale):
+    @http.route(
+        ["/shop/cart/update"],
+        type="http",
+        auth="public",
+        methods=["GET", "POST"],
+        website=True,
+        csrf=False,
+    )
+    def cart_update(self, product_id, add_qty=1, set_qty=0, **kw):
+        product = request.env["product.product"].browse(int(product_id))
+        if product.config_ok and kw.get("assembly") == "kit":
+            attr_value_ids = product.product_template_attribute_value_ids
+            attr_products = attr_value_ids.mapped(
+                "product_attribute_value_id.product_id"
             )
-        return request.redirect("/shop/cart")
+            if not attr_products:
+                return super(WebsiteProductConfigMrp, self).cart_update(
+                    product_id=product_id,
+                    add_qty=add_qty, set_qty=set_qty, **kw
+                )
 
-    def config_vars(self, product_tmpl, active_step=None, data=None):
-        res = super(WebsiteProductConfigMrp, self).config_vars(
-            product_tmpl=product_tmpl, active_step=active_step, data=data)
-        active_step = res.get('active_step')
-        if active_step and active_step.product_tmpl_id != product_tmpl:
-            pass
-        return res
+            for product_id in attr_products:
+                res = super(ProductConfigWebsiteSale, self).cart_update(
+                    product_id=product_id,
+                    add_qty=add_qty, set_qty=set_qty, **kw
+                )
+            return res
+        else:
+            return super(WebsiteProductConfigMrp, self).cart_update(
+                product_id=product_id,
+                add_qty=add_qty, set_qty=set_qty, **kw
+            )

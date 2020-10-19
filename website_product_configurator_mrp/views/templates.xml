@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+        <template id="cfg_session" inherit_id="website_product_configurator.cfg_product" name="Configuration Session MRP">
+            <xpath expr="//a[@id='add_to_cart']" position="before">
+                <t t-set="componant_products" t-value="product_variant.product_template_attribute_value_ids.mapped('product_attribute_value_id.product_id')"/>
+                <div class="input-group mt8" t-if="componant_products">
+                    <select name="assembly" class='form-control'>
+                        <option value="assembled">Assembled</option>
+                        <option value="kit">Kit</option>
+                    </select>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>
