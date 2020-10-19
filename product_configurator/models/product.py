@@ -63,8 +63,8 @@ class ProductTemplate(models.Model):
                 ["value_id", "value_ids"], load=False
             )
             attr_val_line_vals = [
-                (l["value_id"], tuple(l["value_ids"]))
-                for l in attr_val_line_vals
+                (line["value_id"], tuple(line["value_ids"]))
+                for line in attr_val_line_vals
             ]
             if len(set(attr_val_line_vals)) != len(attr_val_line_vals):
                 raise ValidationError(
@@ -490,12 +490,6 @@ class ProductProduct(models.Model):
 
     config_name = fields.Char(
         string="Name", size=256, compute="_compute_config_name"
-    )
-    price_extra = fields.Float(
-        compute="_compute_product_price_extra",
-        string="Variant Extra Price",
-        help="This is the sum of the extra price of all attributes",
-        digits="Product Price",
     )
     weight_extra = fields.Float(
         string="Weight Extra", compute="_compute_product_weight_extra"
