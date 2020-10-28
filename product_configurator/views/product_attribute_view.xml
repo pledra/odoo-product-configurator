@@ -51,11 +51,14 @@
                         <group name="config_custom_vals">
                             <group>
                                 <field name="custom_type"/>
+                                <field name="custom_digits" attrs="{'invisible': [('custom_type','not in',['float'])]}"/>
                                 <field name="search_ok"/>
                             </group>
                             <group>
-                                <field name="min_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
-                                <field name="max_val" attrs="{'invisible': [('custom_type','not in',['int','float'])]}"/>
+                                <field name="min_val" attrs="{'invisible': [('custom_type','not in',['int'])]}"/>
+                                <field name="max_val" attrs="{'invisible': [('custom_type','not in',['int'])]}"/>
+                                <field name="min_fval" attrs="{'invisible': [('custom_type','not in',['float'])]}"/>
+                                <field name="max_fval" attrs="{'invisible': [('custom_type','not in',['float'])]}"/>
                             </group>
                         </group>
                     </page>
