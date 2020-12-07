@@ -98,7 +98,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 $.blockUI(self.blockui_opts);
                     ajax.jsonRpc("/website_product_configurator/onchange", 'call', {
                         form_values: form_data,
-                        field_name: attribute[0].name,
+                        field_name: attribute[0].getAttribute("name"),
                     }).then(function(data) {
                         if (data.error) {
                             self.openWarningDialog(data.error);
@@ -287,7 +287,7 @@ odoo.define('website_product_configurator.config_form', function (require) {
                 var flag = true;
                 if (!$(config_attr[i]).hasClass('required_config_attrib')) {
                     flag = true;
-                } else if ($(config_attr[i]).hasClass('.cfg-radio')) {
+                } else if ($(config_attr[i]).hasClass('cfg-radio')) {
                     flag = self._checkRequiredFieldsRadio($(config_attr[i]));
                 } else if (!config_attr[i].value.trim()  || config_attr[i].value == '0') {
                     flag = false;
