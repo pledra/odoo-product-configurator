@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 <data>
+
+    <record id="product_template_form_view_procurement_button" model="ir.ui.view">
+        <field name="name">product.template_procurement.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="stock.product_template_form_view_procurement_button"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_update_quantity_on_hand']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', ('product_variant_count', '&lt;', 1), ('type', '!=', 'product')]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
     <record id="product_template_form_view_inherite" model="ir.ui.view">
         <field name="name">product.template.common.form</field>
         <field name="model">product.template</field>
@@ -38,9 +50,6 @@
                     string="Configure Product"
                     groups="product_configurator.group_product_configurator"
                     attrs="{'invisible': [('config_ok', '=', False)]}"/>
-            </xpath>
-            <xpath expr="//header/button[@name='action_update_quantity_on_hand']" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', ('product_variant_count', '&lt;', 1), ('type', '!=', 'product')]}</attribute>
             </xpath>
             <xpath expr="//label[@for='purchase_ok' or @for='sale_ok']" position="after">
                 <div class="oe_left" name="options" groups="base.group_user">
