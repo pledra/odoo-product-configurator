@@ -323,7 +323,7 @@ class ProductTemplate(models.Model):
         )
         user_root = self.env.ref("base.user_root")
         user_admin = self.env.ref("base.user_admin")
-        if config_manager or self.env.user.id in [user_root.id, user_admin.id]:
+        if config_manager or self.env.user.id in [user_root.id, user_admin.id] or self.env.su:
             return True
         raise ValidationError(
             _(
