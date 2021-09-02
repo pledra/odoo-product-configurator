@@ -427,7 +427,7 @@
     </template>
 
     <template id="cfg_product" name="Product" track="1">
-        <t t-set="combination_info" t-value="product._get_combination_info(product_id=product.id, add_qty=add_qty or 1, pricelist=pricelist)"/>
+        <t t-set="combination_info" t-value="product._get_combination_info(product_id=product_variant.id, add_qty=add_qty or 1, pricelist=pricelist)"/>
         <t t-call="website.layout">
             <t t-set="additional_title" t-value="product.name" />
             <div itemscope="itemscope" itemtype="http://schema.org/Product" id="wrap" class="js_sale">
