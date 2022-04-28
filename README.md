@@ -1,3 +1,13 @@
+<br />
+
+-------
+
+:warning: **This project is now archived and has been transferred to [https://github.com/oca/product-configurator](https://github.com/oca/product-configurator)**
+
+-------
+<br />
+
+
 # Odoo Product Configurator
 Odoo modules enabling dynamic product configuration
 
